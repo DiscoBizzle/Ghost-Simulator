@@ -69,6 +69,10 @@ class Game:
             pygame.QUIT: self.quit_game,
             pygame.MOUSEBUTTONDOWN: self.mouse_click,
             pygame.JOYHATMOTION: self.handle_joy,
+            pygame.JOYBUTTONUP: self.handle_joy,
+            pygame.JOYAXISMOTION: self.handle_joy,
+            pygame.JOYBUTTONDOWN: self.handle_joy,
+            pygame.JOYBALLMOTION: self.handle_joy,
         }
 
         sound.start_next_music(self.music_list)
@@ -80,7 +84,7 @@ class Game:
         while self.gameRunning:
             if self.keys[pygame.K_ESCAPE] and self.GameState != CUTSCENE:
                 self.keys[pygame.K_ESCAPE] = False
-                self.GameState = MAIN_MENU 
+                self.GameState = MAIN_MENU
             if self.keys[pygame.K_m]:
                 self.keys[pygame.K_ESCAPE] = False
                 self.GameState = CUTSCENE
@@ -207,6 +211,25 @@ class Game:
             elif y == 0:
                 self.keys[pygame.K_DOWN] = False
                 self.keys[pygame.K_UP] = False
+        if event.type == pygame.JOYBUTTONDOWN:
+            if event.button == 0:
+                self.keys[pygame.K_m] = True
+            elif event.button == 1:
+                self.keys[pygame.K_ESCAPE] = True
+            elif event.button == 2:
+                self.options['FOV'] = False
+            elif event.button == 3:
+                self.options['VOF'] = True
+        if event.type == pygame.JOYBUTTONUP:
+            if event.button == 0:
+                self.keys[pygame.K_m] = False
+            elif event.button == 1:
+                self.keys[pygame.K_ESCAPE] = False
+            elif event.button == 2:
+                self.options['FOV'] = True
+            elif event.button == 3:
+                self.options['VOF'] = False
+
 
 
     def quit_game(self, _):
