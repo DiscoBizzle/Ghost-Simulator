@@ -27,7 +27,7 @@ class Game:
         field = pygame.image.load('field.png')
         field = pygame.transform.scale(field, (GAME_WIDTH, GAME_HEIGHT))
         field.convert_alpha()
-        field.set_alpha(50)
+        field.set_alpha(100)
         self.field = field
 
         joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
@@ -43,6 +43,7 @@ class Game:
         }
 
     def gameLoop(self):
+        VOF_counter = 0
         while self.gameRunning:
             if self.keys[pygame.K_ESCAPE]:
                 self.keys[pygame.K_ESCAPE] = False
@@ -65,11 +66,9 @@ class Game:
                 self.update()
                 self.msPassed = 0
 
-            if self.options['VOF']:
-                self.surface.blit(self.field, (0, 0))
-                pygame.display.update()
-            else:
-                self.surface.fill(blackColour)
+
+            self.surface.fill(blackColour)
+
             if self.GameState == STARTUP:
                 pass
             elif self.GameState == MAIN_MENU:
@@ -80,6 +79,10 @@ class Game:
                     pygame.display.update()
                 else:
                     self.main_game_draw()
+
+            if self.options['VOF']:
+                self.surface.blit(self.field, (0, 0))
+            pygame.display.update()
 
 
     def update(self):
@@ -97,7 +100,7 @@ class Game:
         self.surface.blit(self.player1.spriteSheet, self.player1.coord, self.player1.frameRect)
 
         # now double!
-        pygame.display.update()
+        # pygame.display.update()
 
     def handle_keys(self, event):
 
