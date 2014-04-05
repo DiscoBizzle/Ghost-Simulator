@@ -49,7 +49,10 @@ class Game:
     def draw(self):
         # this runs faster than game update. animation can be done here with no problems.
         self.windowSurface.fill(blackColour)
-        pygame.draw.circle(self.windowSurface, blueColour, self.player1.coord, 20, 0)
+        temp_surf = pygame.Surface((40, 40))
+
+        pygame.draw.circle(temp_surf, blueColour, (20, 20), 20, 0)
+        self.windowSurface.blit(temp_surf, self.player1.coord)
         pygame.display.update()
 
     def handleInput(self, event):
