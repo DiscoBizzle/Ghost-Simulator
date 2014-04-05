@@ -53,7 +53,7 @@ class Game:
         self.keys = { pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False, pygame.K_ESCAPE: False, pygame.K_m: False }
 
         self.options = {'FOV': True, 'VOF': False}
-        field = pygame.image.load('field.png')
+        field = pygame.image.load('tiles/field.png')
         field = pygame.transform.scale(field, (GAME_WIDTH, GAME_HEIGHT))
         field.convert_alpha()
         field.set_alpha(100)
@@ -100,7 +100,7 @@ class Game:
                 else:
                     
                     self.surface.fill(blackColour)
-                    f = BytesIO(open("movie.mpg", "rb").read())
+                    f = BytesIO(open("movies/movie.mpg", "rb").read())
                     movie = pygame.movie.Movie(f)
                     w, h = movie.get_size()
                     
