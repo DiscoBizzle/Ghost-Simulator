@@ -4,7 +4,7 @@ WHITE = (255, 255, 255)
 GREY = (60, 60, 60)
 
 
-def test_info_draw():
+def test():
     pygame.init()
     pygame.font.init()
     screen = pygame.display.set_mode((800, 800))
@@ -149,4 +149,4 @@ class Character(object):
 
         return surf
 
-test_info_draw()
+test()
