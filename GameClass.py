@@ -74,10 +74,7 @@ class Game:
             elif self.GameState == MAIN_MENU:
                 self.Menu.display()
             elif self.GameState == MAIN_GAME:
-                if not self.options['FOV']:
-                    self.surface.fill(blackColour)
-                    pygame.display.update()
-                else:
+                if self.options['FOV']:
                     self.main_game_draw()
 
             if self.options['VOF']:
