@@ -32,7 +32,8 @@ class Player(GameObject):
     def __init__(self,x,y,w,h):
         GameObject.__init__(self, x, y, w, h)
 
-        self.animationState = ANIM_IDLE
+        self.direction = DOWN
+        self.animationState = ANIM_DOWNIDLE
         self.frameCount = 0 #no. of frames since game started
         self.currentFrame = 0
         self.maxFrames = 2
@@ -45,18 +46,22 @@ class Player(GameObject):
     def update(self, gameClass):
         # update velocity
         v_x, v_y = 0, 0
-        self.animationState = ANIM_IDLE
+        self.animationState = self. direction
         if gameClass.keys[pygame.K_DOWN]:
             v_y += 5
+            self.direction = DOWN
             self.animationState = ANIM_DOWNWALK
         if gameClass.keys[pygame.K_UP]:
             v_y -= 5
+            self.direction = UP
             self.animationState = ANIM_UPWALK
         if gameClass.keys[pygame.K_LEFT]:
             v_x -= 5
+            self.direction = LEFT
             self.animationState = ANIM_LEFTWALK
         if gameClass.keys[pygame.K_RIGHT]:
             v_x += 5
+            self.direction = RIGHT
             self.animationState = ANIM_RIGHTWALK
 
         self.frameCount += 1
