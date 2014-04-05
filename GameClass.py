@@ -43,7 +43,7 @@ class Game:
         }
 
     def gameLoop(self):
-        VOF_counter = 0
+
         while self.gameRunning:
             if self.keys[pygame.K_ESCAPE]:
                 self.keys[pygame.K_ESCAPE] = False
@@ -66,21 +66,7 @@ class Game:
                 self.update()
                 self.msPassed = 0
 
-
-            self.surface.fill(blackColour)
-
-            if self.GameState == STARTUP:
-                pass
-            elif self.GameState == MAIN_MENU:
-                self.Menu.display()
-            elif self.GameState == MAIN_GAME:
-                if self.options['FOV']:
-                    self.main_game_draw()
-
-            if self.options['VOF']:
-                self.surface.blit(self.field, (0, 0))
-            pygame.display.update()
-
+            self.main_game_draw()
 
     def update(self):
         # this is fixed timestep, 30 FPS. if game runs slower, we lag.
@@ -89,12 +75,20 @@ class Game:
 
     def main_game_draw(self):
         # this runs faster than game update. animation can be done here with no problems.
-        # self.surface.fill(blackColour)
-        temp_surf = pygame.Surface((40, 40))
 
-        pygame.draw.circle(temp_surf, blueColour, (20, 20), 20, 0)
+        self.surface.fill(blackColour)
 
-        self.surface.blit(self.player1.spriteSheet, self.player1.coord, self.player1.frameRect)
+        if self.GameState == STARTUP:
+            pass
+        elif self.GameState == MAIN_MENU:
+            self.Menu.display()
+        elif self.GameState == MAIN_GAME:
+            if self.options['FOV']:
+                self.surface.blit(self.player1.spriteSheet, self.player1.coord, self.player1.frameRect)
+
+        if self.options['VOF']:
+            self.surface.blit(self.field, (0, 0))
+        pygame.display.update()
 
         # now double!
         # pygame.display.update()
