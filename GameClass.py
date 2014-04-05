@@ -48,7 +48,7 @@ class Game:
         self.disp_object_stats = False
         self.object_stats = None
 
-        self.keys = { pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False, pygame.K_ESCAPE: False}
+        self.keys = { pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False, pygame.K_ESCAPE: False, pygame.K_m: False }
 
         self.options = {'FOV': True, 'VOF': False}
         field = pygame.image.load('field.png')
@@ -78,7 +78,10 @@ class Game:
         while self.gameRunning:
             if self.keys[pygame.K_ESCAPE]:
                 self.keys[pygame.K_ESCAPE] = False
+                self.GameState = MAIN_MENU 
+            if self.keys[pygame.K_m]:
                 self.GameState = CUTSCENE
+
             if self.GameState == STARTUP:
                 pass
             elif self.GameState == MAIN_MENU:
