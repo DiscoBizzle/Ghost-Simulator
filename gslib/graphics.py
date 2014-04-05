@@ -18,8 +18,8 @@ def draw_map(m):
             surf.blit(m.tileset, (i * grid_size, j * grid_size), area)
 
             ##TEMPORARY - DRAWS SOLID TILES FOR COLLISION DEBUG
-            if not m.grid[i][j].walkable:
-                temprect = pygame.Rect(i * grid_size, j * grid_size, TILE_SIZE, TILE_SIZE)
-                pygame.draw.rect(surf, 0x0000ff, temprect)
+            #if not m.grid[i][j].walkable:
+            #    temprect = pygame.Rect(i * grid_size, j * grid_size, TILE_SIZE, TILE_SIZE)
+            #    pygame.draw.rect(surf, 0x0000ff, temprect)
 
     return surf

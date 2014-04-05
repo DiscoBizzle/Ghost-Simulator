@@ -35,23 +35,34 @@ class GameObject(object):
                             o.fear_timer = 5
                             self.game_class.player1.fear += 100
 
-
     def move(self):
+        x_ticks, y_ticks = abs(self.velocity[0]), abs(self.velocity[1])
+        move_x_per_tick, move_y_per_tick = 1 if self.velocity[0] > 0 else -1, 1 if self.velocity[1] > 0 else -1
+
+        while x_ticks > 0 or y_ticks > 0:
+            if x_ticks > 0:
+                self.movePx(move_x_per_tick, 0)
+                x_ticks -= 1
+            if y_ticks > 0:
+                self.movePx(0, move_y_per_tick)
+                y_ticks -= 1
+
+    def movePx(self, x_dir, y_dir):
         # print '\n'
         collision = False
 
-        pro_pos = (self.coord[0] + self.velocity[0], self.coord[1] + self.velocity[1])
+        pro_pos = (self.coord[0] + x_dir, self.coord[1] + y_dir)
         pro_rect = pygame.Rect(pro_pos, self.dimensions)
         if pro_pos[0] >= 0 and pro_pos[0] + self.dimensions[0] <= LEVEL_WIDTH and \
                 pro_pos[1] >= 0 and pro_pos[1] + self.dimensions[1] <= LEVEL_HEIGHT:
-            self.coord = pro_pos
+            pass
         else:
             collision = True
 
         # begin collision detection NOTE: assumes largest object w/ collision is 64x64 (i.e. 2x2 tiles)
 
         if pro_pos[0] > 0 and pro_pos[1] > 0:
-            i = pro_pos[0]/TILE_SIZE  # get the index of the upper right tile
+            i = pro_pos[0]/TILE_SIZE  # get the index of the upper left tile
             j = pro_pos[1]/TILE_SIZE
         else:
             i = 0
@@ -70,61 +81,5 @@ class GameObject(object):
                             collision = True
                             # print('collision!')
 
-        #end collision detection
-
-        #handle collision
-        if not collision: # if no collision is detected, carry update position immediately
+        if not collision:
             self.coord = pro_pos
-            return
-        else: # if collision, deal with it, beeatch
-            x, y = pro_pos
-
-            #collision with level boundaries
-            if self.velocity[0] < 0:
-                if x <= 0:
-                    x = 0
-            elif self.velocity[0] > 0:
-                if x + self.dimensions[0] >= LEVEL_WIDTH:
-                    x = LEVEL_WIDTH - self.dimensions[0]
-            if self.velocity[1] < 0:
-                if y <= 0:
-                    y = 0
-            elif self.velocity[1] > 0:
-                if y + self.dimensions[1] >= LEVEL_HEIGHT:
-                    y = LEVEL_HEIGHT - self.dimensions[1]
-
-            #collision with tiles
-
-            if self.velocity[0] < 0: #if moving left, check collision with leftmost 3 tiles, push out if collision
-                for nj in range (j, j+2):
-                    if nj > 0 and nj < LEVEL_HEIGHT/TILE_SIZE:
-                        if not self.game_class.map.grid[i][nj].walkable:
-                            if pro_rect.colliderect(self.game_class.map.grid[i][nj].rect):
-                               x = self.game_class.map.grid[i][nj].rect.x + TILE_SIZE
-
-            elif self.velocity[0] > 0: #same for rightmost tiles
-                li = (self.coord[0] + self.dimensions[0])/TILE_SIZE
-                for nj in range (j, j+2):
-                    if nj > 0 and nj < LEVEL_HEIGHT/TILE_SIZE and li > 0 and li < LEVEL_WIDTH/TILE_SIZE:
-                        if not self.game_class.map.grid[li][nj].walkable:
-                            if pro_rect.colliderect(self.game_class.map.grid[li][nj].rect):
-                               x = self.game_class.map.grid[li][nj].rect.x - self.dimensions[0]
-
-            if self.velocity[1] < 0: #if moving up, check collision with uppermost 3 tiles, push out if collision
-                for ni in range (i, i+2):
-                    if ni > 0 and ni < LEVEL_WIDTH/TILE_SIZE:
-                        if not self.game_class.map.grid[ni][j].walkable:
-                            if pro_rect.colliderect(self.game_class.map.grid[ni][j].rect):
-                               y = self.game_class.map.grid[ni][j].rect.y + TILE_SIZE
-
-            elif self.velocity[1] > 0: #same for rightmost tiles
-                lj = (self.coord[1] + self.dimensions[1])/TILE_SIZE
-                for ni in range (i, i+2):
-                    if ni > 0 and ni < LEVEL_WIDTH/TILE_SIZE and lj > 0 and lj < LEVEL_HEIGHT/TILE_SIZE:
-                        if not self.game_class.map.grid[ni][lj].walkable:
-                            if pro_rect.colliderect(self.game_class.map.grid[ni][lj].rect):
-                               y = self.game_class.map.grid[ni][lj].rect.y - self.dimensions[1]
-
-
-
-        self.coord = x, y

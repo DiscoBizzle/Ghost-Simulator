@@ -136,7 +136,7 @@ def gen_bio():
     return ' '.join(choose_n_lines(3, "characters/bio.txt"))
 
 def gen_fears():
-    return choose_n_lines(random.randrange(1, 4), "characters/fears.txt")
+    return choose_n_lines(random.randrange(1, 4), "characters/fear_description.txt")
 
 def gen_name(gender):
     fname = "characters/first_names_{}.txt".format(gender)
