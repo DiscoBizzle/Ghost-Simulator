@@ -136,8 +136,8 @@ class Game(object):
 
                 self.fps_clock.tick()
                 self.main_game_draw()
-
-            time.sleep(0.001)
+            else:
+                time.sleep(0.001)
 
     def update(self):
         # this is fixed timestep, 30 FPS. if game runs slower, we lag.
