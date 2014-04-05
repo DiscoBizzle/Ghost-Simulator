@@ -42,17 +42,25 @@ def load_map(map_filename): # Load a map from a map file
     return grid
 
 class Tile(object):
-    def __init__(self, coord):
-        self.tileset_coord = (coord, 0)
+    def __init__(self, tile_type):
+        if tile_type != -1:
+            self.tileset_coord = (tile_type, 0)
+        else:
+            self.tileset_coord = (0, 0)
+
         self.tileset_tile_size = TILE_SIZE
         self.tileset_area = (self.tileset_coord[0] * self.tileset_tile_size, self.tileset_coord[1] * self.tileset_tile_size, self.tileset_tile_size, self.tileset_tile_size)
         self.walkable = True
+        self.tile_type = tile_type
 
 
 class Map(object):
     def __init__(self, tileset, map_file):
         self.tileset = pygame.image.load(tileset).convert()
-        self.grid = [[Tile(i*j) for i in range(10)] for j in range(10)]
+
+        tile_type_grid = load_map("tiles/testo.json")
+
+        self.grid = [[Tile(tile_type_grid[i][j]) for i in range(10)] for j in range(10)]
 
 
 test()
