@@ -116,7 +116,7 @@ def gen_character(stats=None):
     stats.setdefault('fears', gen_fears())
     stats.setdefault('gender', random.choice(('m','f')))
     stats.setdefault('name', gen_name(stats['gender']))
-    stats.setdefault('image_name', 'characters/Sprite_top.png')
+    stats.setdefault('image_name', 'characters/Sprite_front.png')
 
     return stats
 
@@ -153,7 +153,8 @@ class Character(GameObject):
         self.fears = stats['fears']
         self.stats = stats
         self.info_sheet = self.draw_info_sheet()
-        self.sprite = pygame.image.load('characters/Sprite_top.png').convert()
+        self.sprite = pygame.image.load('characters/Sprite_top.png')
+        self.sprite = pygame.transform.scale(self.sprite, self.dimensions).convert()
         self.sprite.set_colorkey((255, 0, 255))
 
     def get_stats(self, name):

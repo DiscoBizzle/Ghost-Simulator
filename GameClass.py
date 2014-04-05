@@ -27,6 +27,8 @@ class Game:
         self.testchar.velocity = (0, 1)
 
         self.objects = [self.player1, self.testchar]
+        self.disp_object_stats = False
+        self.object_stats = None
 
         self.keys = { pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False, pygame.K_ESCAPE: False}
 
@@ -46,7 +48,8 @@ class Game:
             pygame.KEYUP: self.handle_keys,
             pygame.QUIT: self.quit_game,
             pygame.MOUSEBUTTONDOWN: self.mouse_click,
-            pygame.JOYHATMOTION: self.handle_joy
+            pygame.JOYHATMOTION: self.handle_joy,
+            pygame.MOUSEMOTION: self.mouse_motion,
         }
 
         self.map = Maps.Map('tiles/martin.png', 'tiles/martin.json')
@@ -98,14 +101,16 @@ class Game:
                 self.surface.blit(self.player1.spriteSheet, self.player1.coord, self.player1.frameRect)
                 self.surface.blit(self.testchar.sprite, self.testchar.coord)
 
-            font = pygame.font.SysFont('helvetica', 20)
-            size = font.size("FEAR")
-            fear_txt = font.render("FEAR", 0, (200, 200, 200))
-            self.surface.blit(fear_txt, (0, self.dimensions[1]-32))
-            fear_bar = pygame.Surface((self.dimensions[0]*self.player1.fear/MAX_FEAR, 32))
-            fear_bar.fill((255, 0, 0))
-            self.surface.blit(fear_bar, (size[0], self.dimensions[1]-32))
+                font = pygame.font.SysFont('helvetica', 20)
+                size = font.size("FEAR")
+                fear_txt = font.render("FEAR", 0, (200, 200, 200))
+                self.surface.blit(fear_txt, (0, self.dimensions[1]-32))
+                fear_bar = pygame.Surface((self.dimensions[0]*self.player1.fear/MAX_FEAR, 32))
+                fear_bar.fill((255, 0, 0))
+                self.surface.blit(fear_bar, (size[0], self.dimensions[1]-32))
 
+                if self.disp_object_stats:
+                    self.surface.blit(self.object_stats[0], self.object_stats[1])
 
         if self.options['VOF']:
             self.surface.blit(self.field, (0, 0))
@@ -126,6 +131,15 @@ class Game:
     def mouse_click(self, event):
         if self.GameState == MAIN_MENU:
             self.Menu.mouse_event(event)
+
+    def mouse_motion(self, event):
+        for o in self.objects:
+            if o.rect.collidepoint(event.pos) and isinstance(o, character.Character):
+                self.disp_object_stats = True
+                self.object_stats = (o.info_sheet, event.pos)
+                return
+        self.disp_object_stats = False
+        self.object_stats = None
 
     def handle_joy(self, event):
         if event.type == pygame.JOYHATMOTION:

@@ -15,6 +15,7 @@ class GameObject:
 
     def update(self):
         self.move()
+        self.rect = pygame.Rect(self.coord, self.dimensions)
 
     def move(self):
         pro_pos = (self.coord[0] + self.velocity[0], self.coord[1] + self.velocity[1])
