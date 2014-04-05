@@ -11,6 +11,8 @@ class GameObject:
         self.attributes = []
         self.sprite = None
         self.frameRect = None
+        self.rect = pygame.Rect(self.coord, self.dimensions)
+
 
     def update(self):
         self.move()
