@@ -1,7 +1,7 @@
 import pygame
 # import Maps
 
-screen = pygame.display.set_mode((800, 800))
+# screen = pygame.display.set_mode((800, 800))
 
 def draw_map(m):
     grid_size = 20
