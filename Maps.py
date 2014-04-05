@@ -8,7 +8,7 @@ def test():
     pygame.init()
     pygame.font.init()
     screen = pygame.display.set_mode((800, 800))
-    m = Map('tiles/testo.png', 'tiles/testo.json')
+    m = Map('tiles/martin.png', 'tiles/martin.json')
 
     surf = Graphics.draw_map(m)
 
@@ -43,21 +43,23 @@ def load_map(map_filename): # Load a map from a map file
 
 
 class Tile(object):
-    def __init__(self, tile_type, map):
-        if tile_type != -1:
-            self.tileset_coord = (tile_type % map.tileset_cols, tile_type / map.tileset_cols)
-            print self.tileset_coord
+    def __init__(self, tile_ref, map):
+        if tile_ref != -1:
+            self.tileset_coord = (tile_ref % map.tileset_cols, tile_ref / map.tileset_cols)
         else:
             self.tileset_coord = (0, 0)
 
         self.tileset_area = (self.tileset_coord[0] * TILE_SIZE, self.tileset_coord[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE)
         self.walkable = True
-        self.tile_type = tile_type
+        self.tile_ref = tile_ref
+        if self.tile_ref in map.unwalkable:
+            self.walkable = False
 
 
 class Map(object):
     def __init__(self, tileset, map_file):
         self.tileset = pygame.image.load(tileset).convert()
+        self.unwalkable = [211, 212, 227, 228, 259, 260, 292]
         self.tileset_cols = self.tileset.get_width() / TILE_SIZE
 
         tile_type_grid = load_map(map_file)
@@ -65,4 +67,4 @@ class Map(object):
         self.grid = [[Tile(tile_type_grid[i][j], self) for i in range(len(tile_type_grid))] for j in range(len(tile_type_grid[0]))]
 
 
-test()
+# test()
