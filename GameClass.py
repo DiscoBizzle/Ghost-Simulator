@@ -20,6 +20,12 @@ class Game:
 
         self.keys = { pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False }
 
+        self.event_map = {
+            pygame.KEYDOWN: self.handle_keys,
+            pygame.KEYUP: self.handle_keys,
+            pygame.QUIT: self.quit_game
+        }
+
     def gameLoop(self):
         while self.gameRunning:
             if self.GameState == STARTUP:
@@ -32,10 +38,9 @@ class Game:
 
                 # poll event queue
                 for event in pygame.event.get():
-                    if (event.type == pygame.KEYDOWN) or (event.type == pygame.KEYUP):
-                        self.handleInput(event)
-                    elif event.type == pygame.QUIT:
-                        self.gameRunning = False
+                    response = self.event_map.get(event.type)
+                    if response is not None:
+                        response(event)
 
                 if self.msPassed > 30:
                     self.update()
@@ -61,9 +66,7 @@ class Game:
         pygame.transform.scale(self.surface, (self.dimensions[0] * 2, self.dimensions[1] * 2), self.doublingSurface)
         pygame.display.update()
 
-    def handleInput(self, event):
-        if event.type == pygame.QUIT:
-            self.gameRunning = False  # close the window, foo
+    def handle_keys(self, event):
 
         if event.type == pygame.KEYDOWN:
             if event.key in self.keys:
@@ -72,3 +75,5 @@ class Game:
             if event.key in self.keys:
                 self.keys[event.key] = False
 
+    def quit_game(self, _):
+        self.gameRunning = False
