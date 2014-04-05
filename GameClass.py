@@ -76,10 +76,11 @@ class Game:
     def gameLoop(self):
 
         while self.gameRunning:
-            if self.keys[pygame.K_ESCAPE]:
+            if self.keys[pygame.K_ESCAPE] and self.GameState != CUTSCENE:
                 self.keys[pygame.K_ESCAPE] = False
                 self.GameState = MAIN_MENU 
             if self.keys[pygame.K_m]:
+                self.keys[pygame.K_ESCAPE] = False
                 self.GameState = CUTSCENE
 
             if self.GameState == STARTUP:
