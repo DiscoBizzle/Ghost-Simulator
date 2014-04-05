@@ -1,7 +1,8 @@
 import pygame
 import random
-from GameObject import GameObject
-from Constants import *
+
+from gslib.game_object import GameObject
+from gslib.constants import *
 
 WHITE = (255, 255, 255)
 GREY = (60, 60, 60)
@@ -12,7 +13,7 @@ def test():
     pygame.font.init()
     random.seed()
     screen = pygame.display.set_mode((800, 800))
-    char = Character(gen_character({'image_name': 'characters/Sprite_front.png'}))
+    char = Character(None, 0, 0, 16, 32, gen_character({'image_name': 'characters/Sprite_front.png'}))
     screen.blit(char.info_sheet, (0, 0))
     screen.blit(char.sprite, (char.info_sheet.get_width() + 10, 0))
     pygame.display.update()
@@ -182,7 +183,7 @@ class Character(GameObject):
 
     def draw_info_sheet(self):
         font_size = 20
-        dim = w, h = (GAME_WIDTH - LEVEL_WIDTH, LEVEL_HEIGHT)
+        dim = w, h = (400, 200)
         border = 8
         surf = pygame.Surface(dim)
         fill_background(surf, border)

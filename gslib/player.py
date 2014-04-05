@@ -1,7 +1,7 @@
-from Constants import *
 import pygame
 
-from GameObject import GameObject
+from gslib.constants import *
+from gslib.game_object import GameObject
 
 
 class Player(GameObject):
@@ -20,12 +20,14 @@ class Player(GameObject):
 
         self._fear = START_FEAR
         self.fears = ['player']
+        self.overFear = False
 
     def get_fear(self):
         return self._fear
     def set_fear(self, f):
         self._fear = f
         if self._fear > MAX_FEAR:
+            self.overFear = True
             self._fear = MAX_FEAR
     fear = property(get_fear, set_fear)
 
