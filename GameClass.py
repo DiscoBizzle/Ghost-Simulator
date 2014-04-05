@@ -98,7 +98,7 @@ class Game:
             size = font.size("FEAR")
             fear_txt = font.render("FEAR", 0, (200, 200, 200))
             self.surface.blit(fear_txt, (0, self.dimensions[1]-32))
-            fear_bar = pygame.Surface((self.dimensions[0]*self.player1.fear/1000, 32))
+            fear_bar = pygame.Surface((self.dimensions[0]*self.player1.fear/MAX_FEAR, 32))
             fear_bar.fill((255, 0, 0))
             self.surface.blit(fear_bar, (size[0], self.dimensions[1]-32))
 
