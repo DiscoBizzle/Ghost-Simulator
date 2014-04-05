@@ -27,15 +27,27 @@ class GameObject:
             self.coord = pro_pos
 
         # begin collision detection NOTE: assumes largest object w/ collision is 64x64 (i.e. 2x2 tiles)
-        i = pro_pos[0]/self.dimensions[0]  # get the index of the upper right tile
-        j = pro_pos[1]/self.dimensions[1]
 
-        #check collision against the 9 possible
-        for ni in range(i,i+2):
+        if pro_pos[0] > 0 and pro_pos[1] > 0:
+            i = pro_pos[0]/TILE_SIZE  # get the index of the upper right tile
+            j = pro_pos[1]/TILE_SIZE
+        else:
+            i = 0
+            j = 0
+
+        #check collision against the 9 possible tiles surrounding object
+        collision = False
+
+        for ni in range(i, i+2):
             for nj in range(j, j+2):
-                pass
+                if ni > 0 and ni < LEVEL_WIDTH/TILE_SIZE and nj > 0 and nj < LEVEL_HEIGHT/TILE_SIZE:
+                    if not self.game_class.map.grid[ni][nj].walkable:
+                        if self.rect.colliderect(self.game_class.map.grid[ni][nj].rect):
+                            collision = True
 
         #end collision detection
+        if not collision:
+            self.coord = pro_pos
 
         x, y = pro_pos
     
