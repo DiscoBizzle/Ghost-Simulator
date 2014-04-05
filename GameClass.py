@@ -24,6 +24,11 @@ class Game:
         self.keys = { pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False, pygame.K_ESCAPE: False}
 
         self.options = {'FOV': True, 'VOF': False}
+        field = pygame.image.load('field.png')
+        field = pygame.transform.scale(field, (GAME_WIDTH, GAME_HEIGHT))
+        field.convert_alpha()
+        field.set_alpha(50)
+        self.field = field
 
         joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
         for joystick in joysticks:
@@ -60,18 +65,18 @@ class Game:
                 self.update()
                 self.msPassed = 0
 
+            if self.options['VOF']:
+                self.surface.blit(self.field, (0, 0))
+                pygame.display.update()
+            else:
+                self.surface.fill(blackColour)
             if self.GameState == STARTUP:
                 pass
             elif self.GameState == MAIN_MENU:
                 self.Menu.display()
             elif self.GameState == MAIN_GAME:
                 if not self.options['FOV']:
-                    self.surface.fill((0, 0, 0))
-                    pygame.display.update()
-                elif self.options['VOF']:
-                    field = pygame.image.load('field.png')
-                    surf = pygame.transform.scale(field, (GAME_WIDTH, GAME_HEIGHT))
-                    self.surface.blit(surf, (0, 0))
+                    self.surface.fill(blackColour)
                     pygame.display.update()
                 else:
                     self.main_game_draw()
@@ -84,7 +89,7 @@ class Game:
 
     def main_game_draw(self):
         # this runs faster than game update. animation can be done here with no problems.
-        self.surface.fill(blackColour)
+        # self.surface.fill(blackColour)
         temp_surf = pygame.Surface((40, 40))
 
         pygame.draw.circle(temp_surf, blueColour, (20, 20), 20, 0)
