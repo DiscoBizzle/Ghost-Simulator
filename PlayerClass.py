@@ -33,6 +33,7 @@ class Player:
         self.velocity = (0,0)
 
         self.animationState = ANIM_IDLE
+        self.frameCount = 0 #no. of frames since game started
         self.currentFrame = 0
         self.maxFrames = 2
         self.frameRect = pygame.Rect(self.currentFrame * SPRITE_WIDTH, self.animationState * SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT)
@@ -58,7 +59,10 @@ class Player:
             v_x += 5
             self.animationState = ANIM_RIGHTWALK
 
-        self.currentFrame += 1
+        self.frameCount += 1
+        if (self.frameCount % 4) == 0:
+            self.currentFrame += 1
+
         if self.currentFrame > self.maxFrames:
             self.currentFrame = 0
 
