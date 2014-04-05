@@ -23,11 +23,16 @@ class Game:
 
         self.options = {'FOV': True, 'VOF': False}
 
+        joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+        for joystick in joysticks:
+            joystick.init()
+
         self.event_map = {
             pygame.KEYDOWN: self.handle_keys,
             pygame.KEYUP: self.handle_keys,
             pygame.QUIT: self.quit_game,
             pygame.MOUSEBUTTONDOWN: self.mouse_click,
+            pygame.JOYHATMOTION: self.handle_joy
         }
 
     def gameLoop(self):
@@ -98,6 +103,24 @@ class Game:
     def mouse_click(self, event):
         if self.GameState == MAIN_MENU:
             self.Menu.mouse_event(event)
+
+    def handle_joy(self, event):
+        if event.type == pygame.JOYHATMOTION:
+            x, y = event.value
+            if x == -1:
+                self.keys[pygame.K_LEFT] = True
+            if x == 1:
+                self.keys[pygame.K_RIGHT] = True
+            if x == 0:
+                self.keys[pygame.K_LEFT] = False
+                self.keys[pygame.K_RIGHT] = False
+            if y == -1:
+                self.keys[pygame.K_DOWN] = True
+            if y == 1:
+                self.keys[pygame.K_UP] = True
+            if y == 0:
+                self.keys[pygame.K_DOWN] = False
+                self.keys[pygame.K_UP] = False
 
 
     def quit_game(self, _):
