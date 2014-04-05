@@ -136,48 +136,6 @@ class Game:
                 if response is not None:
                     response(event)
 
-            if self.msPassed > 30:
-                self.update()
-                self.msPassed = 0
-
-            self.main_game_draw()
-
-    def update(self):
-        # this is fixed timestep, 30 FPS. if game runs slower, we lag.
-        # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
-        #self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
-        for object in self.objects:
-            object.update()
-
-    def main_game_draw(self):
-        # this runs faster than game update. animation can be done here with no problems.
-
-        if self.GameState != CUTSCENE:
-            self.surface.fill(blackColour)
-
-        if self.GameState == STARTUP:
-            pass
-        elif self.GameState == MAIN_MENU:
-            self.Menu.display()
-        elif self.GameState == MAIN_GAME:
-            if self.options['FOV']:
-                self.surface.blit(graphics.draw_map(self.map), (0, 0))
-                for object in self.objects:
-                    self.surface.blit(object.sprite, object.coord, object.frameRect)
-
-                font = pygame.font.SysFont('helvetica', 20)
-                size = font.size("FEAR")
-                fear_txt = font.render("FEAR", True, (200, 200, 200))
-                self.surface.blit(fear_txt, (0, self.dimensions[1]-32))
-                fear_bar = pygame.Surface((self.dimensions[0]*self.player1.fear/MAX_FEAR, 32))
-                fear_bar.fill((255, 0, 0))
-                self.surface.blit(fear_bar, (size[0], self.dimensions[1]-32))
-
-                self.surface.blit(font.render('FPS: ' + str(int(self.clock.get_fps())), True, (255, 255, 0)), (0, self.dimensions[1] - 100))
-
-                if self.disp_object_stats:
-                    self.surface.blit(self.object_stats[0], self.object_stats[1])
-
             if self.msPassed > 33:
                 self.update()
                 self.msPassed = 0
