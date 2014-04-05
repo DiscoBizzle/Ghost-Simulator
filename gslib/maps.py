@@ -53,7 +53,7 @@ class Tile(object):
         self.tileset_area = (self.tileset_coord[0] * TILE_SIZE, self.tileset_coord[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE)
         self.walkable = True
         self.tile_ref = tile_ref
-        self.rect = pygame.Rect((pos[0] * TILE_SIZE, pos[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE))
+        self.rect = pygame.Rect((pos[1] * TILE_SIZE, pos[0] * TILE_SIZE, TILE_SIZE, TILE_SIZE))
         if self.tile_ref in map.unwalkable:
             self.walkable = False
 
