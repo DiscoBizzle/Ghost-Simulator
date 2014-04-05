@@ -34,3 +34,4 @@ FEAR_PER_TICK = 30
 
 MUSIC_DIR = "music"
 SOUND_DIR = "sound"
+SKILLS_FILE = "skills.json"
