@@ -1,9 +1,7 @@
 __author__ = 'Michael'
 
 import json
-import os
 from constants import *
-import player
 
 class Skill(object):
     def __init__(self, name, prereqs, effect):
