@@ -49,7 +49,7 @@ class Game:
                 self.update()
                 self.msPassed = 0
 
-                self.draw()
+            self.draw()
 
 
     def update(self):

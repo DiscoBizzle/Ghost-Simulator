@@ -2,6 +2,7 @@ import Button
 import pygame
 from Constants import *
 
+
 class MainMenu(object):
     def __init__(self, GameClass):
         self.GameClass = GameClass
@@ -22,6 +23,8 @@ class MainMenu(object):
     def goto_ball(self):
         self.GameClass.GameState = MAIN_GAME
 
+
 class OptionsMenu(object):
-    def __init__(self):
-        buttons = {}
+    def __init__(self, GameClass):
+        self.GameClas = GameClass
+        self.buttons = {}
