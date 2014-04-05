@@ -140,8 +140,9 @@ class Game(object):
         # this is fixed timestep, 30 FPS. if game runs slower, we lag.
         # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
         #self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
-        for object in self.objects:
-            object.update()
+        if self.GameState == MAIN_GAME:
+            for object in self.objects:
+                object.update()
 
     def main_game_draw(self):
         # this runs faster than game update. animation can be done here with no problems.
