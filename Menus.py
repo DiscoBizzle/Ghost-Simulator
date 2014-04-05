@@ -8,7 +8,7 @@ class MainMenu(object):
         self.GameClass = GameClass
         self.buttons = {}
         self.buttons['main_game'] = Button.Button(self, self.goto_main_game, pos=(60, 40), size=(200, 30), visible=True,
-                                                  text='BALL', border_colour=(120, 50, 80), border_width=3,
+                                                  text='Start Game', border_colour=(120, 50, 80), border_width=3,
                                                   colour=(120, 0, 0))
         self.buttons['FOV'] = Button.Button(self, self.FOV_toggle, pos=(60, 80), size=(200, 30), visible=True,
                                             text='Field of View: Yes', border_colour=(120, 50, 80), border_width=3,
