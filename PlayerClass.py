@@ -18,6 +18,8 @@ class Player(GameObject):
         self.spriteSheet = pygame.image.load('characters/GhostSheet.png').convert()
         self.spriteSheet.set_colorkey((255,0,255))
 
+        self.fear = 500
+
 
     def update(self):
         # update velocity
@@ -55,3 +57,11 @@ class Player(GameObject):
 
         # actually move
         self.move()
+
+        if v_x != 0 or v_y != 0:
+            self.fear -= 5
+            print self.fear
+
+        if self.fear <= 0:
+            self.game_class.GameState = MAIN_MENU
+            self.fear = 500
