@@ -1,5 +1,6 @@
 import pygame
 import random
+from GameObject import GameObject
 
 WHITE = (255, 255, 255)
 GREY = (60, 60, 60)
@@ -10,7 +11,7 @@ def test():
     pygame.font.init()
     random.seed()
     screen = pygame.display.set_mode((800, 800))
-    char = gen_character({'image_name': 'characters/Sprite_front.png'})
+    char = Character(gen_character({'image_name': 'characters/Sprite_front.png'}))
     screen.blit(char.info_sheet, (0, 0))
     screen.blit(char.sprite, (char.info_sheet.get_width() + 10, 0))
     pygame.display.update()
@@ -115,8 +116,9 @@ def gen_character(stats=None):
     stats.setdefault('fears', gen_fears())
     stats.setdefault('gender', random.choice(('m','f')))
     stats.setdefault('name', gen_name(stats['gender']))
+    stats.setdefault('image_name', 'characters/Sprite_top.png')
 
-    return Character(stats)
+    return stats
 
 def choose_n_lines(n, fname):
     res = []
@@ -144,8 +146,10 @@ def gen_name(gender):
 
     return "{} {}".format(first_name, second_name)
 
-class Character(pygame.sprite.Sprite):
-    def __init__(self, stats):
+
+class Character(GameObject):
+    def __init__(self, game_class, x, y, w, h, stats):
+        GameObject.__init__(self, game_class, x, y, w, h)
         self.fears = stats['fears']
         self.stats = stats
         self.info_sheet = self.draw_info_sheet()
@@ -201,6 +205,7 @@ class Character(pygame.sprite.Sprite):
             surf.blit(t, (text_left, top + i * t_height))
 
         return surf
+
 
 
 if __name__ == "__main__":

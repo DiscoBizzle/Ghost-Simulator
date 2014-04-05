@@ -7,7 +7,7 @@ class MainMenu(object):
     def __init__(self, GameClass):
         self.GameClass = GameClass
         self.buttons = {}
-        self.buttons['Ball'] = Button.Button(self, self.goto_ball, pos=(60, 40), size=(100, 30), visible=True, text='BALL')
+        self.buttons['main_game'] = Button.Button(self, self.goto_main_game, pos=(60, 40), size=(100, 30), visible=True, text='BALL')
         self.buttons['FOV'] = Button.Button(self, self.FOV_toggle, pos=(60, 80), size=(200, 30), visible=True, text='Field of View: Yes')
         self.buttons['VOF'] = Button.Button(self, self.VOF_toggle, pos=(60, 120), size=(200, 30), visible=True, text='View of Field: No')
 
@@ -22,7 +22,7 @@ class MainMenu(object):
         for button in self.buttons.itervalues():
             button.check_clicked(event.pos)
 
-    def goto_ball(self):
+    def goto_main_game(self):
         self.GameClass.GameState = MAIN_GAME
 
     def FOV_toggle(self):
@@ -42,8 +42,7 @@ class MainMenu(object):
             self.buttons['VOF'].text = 'View of Field: Yes'
 
 
-
 class OptionsMenu(object):
     def __init__(self, GameClass):
-        self.GameClas = GameClass
+        self.GameClass = GameClass
         self.buttons = {}
