@@ -33,7 +33,7 @@ class Game:
             if self.GameState == STARTUP:
                 pass
             elif self.GameState == MAIN_MENU:
-                self.Menu.display()
+                pass
             elif self.GameState == MAIN_GAME:
                 self.clock.tick()
                 self.msPassed += self.clock.get_time()
@@ -48,7 +48,13 @@ class Game:
                 self.update()
                 self.msPassed = 0
 
-            self.draw()
+
+            if self.GameState == STARTUP:
+                pass
+            elif self.GameState == MAIN_MENU:
+                self.Menu.display()
+            elif self.GameState == MAIN_GAME:
+                self.main_game_draw()
 
 
     def update(self):
@@ -56,7 +62,7 @@ class Game:
         # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
         self.player1.update(self)
 
-    def draw(self):
+    def main_game_draw(self):
         # this runs faster than game update. animation can be done here with no problems.
         self.surface.fill(blackColour)
         temp_surf = pygame.Surface((40, 40))
