@@ -19,7 +19,7 @@ class Game:
 
         self.cameraCoords = (0,0)
 
-        self.player1 = PlayerClass.Player(100,100,40,40)
+        self.player1 = PlayerClass.Player(self, 100,100,40,40)
 
         self.keys = { pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False, pygame.K_ESCAPE: False}
 
@@ -85,7 +85,7 @@ class Game:
     def update(self):
         # this is fixed timestep, 30 FPS. if game runs slower, we lag.
         # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
-        self.player1.update(self)
+        self.player1.update()
 
     def main_game_draw(self):
         # this runs faster than game update. animation can be done here with no problems.
