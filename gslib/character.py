@@ -1,13 +1,8 @@
 import pygame
 import random
-<<<<<<< Updated upstream:gslib/character.py
 
 from gslib.game_object import GameObject
 from gslib.constants import *
-=======
-from gslib.constants import *
-from gslib.game_object import GameObject
->>>>>>> Stashed changes:gslib/character.py
 
 WHITE = (255, 255, 255)
 GREY = (60, 60, 60)

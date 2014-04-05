@@ -8,10 +8,7 @@ from gslib import menus
 from gslib import maps
 from gslib import character
 from gslib import graphics
-<<<<<<< Updated upstream:gslib/game.py
 from gslib import sound
-=======
->>>>>>> Stashed changes:gslib/game.py
 from gslib.constants import *
 # doesn't seem to be needed any more
 #if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
@@ -73,18 +70,10 @@ class Game:
             pygame.JOYHATMOTION: self.handle_joy,
         }
 
-<<<<<<< Updated upstream:gslib/game.py
-        self.map = maps.Map('tiles/martin.png', 'tiles/martin.json')
-=======
-<<<<<<< HEAD
-        self.map = Maps.Map('tiles/martin.png', 'tiles/martin.json')
->>>>>>> Stashed changes:gslib/game.py
         sound.start_next_music(self.music_list)
-=======
-        self.map = maps.Map('tiles/martin.png', 'tiles/martin.json')
->>>>>>> af80d92... Fix up imports
 
-        self.bees = -1
+        self.map = maps.Map('tiles/martin.png', 'tiles/martin.json')
+
 
         self.bees = -1
 
