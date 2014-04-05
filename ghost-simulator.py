@@ -1,13 +1,13 @@
 import pygame
-import GameClass
-import PlayerClass
-from Constants import *
+
+from gslib import game
+from gslib.constants import *
 
 
 def main():
     pygame.init()
 
-    Game = GameClass.Game(GAME_WIDTH, GAME_HEIGHT)
+    Game = game.Game(GAME_WIDTH, GAME_HEIGHT)
     Game.gameLoop()
 
     pygame.quit()

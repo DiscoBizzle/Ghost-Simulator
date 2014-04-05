@@ -25,7 +25,8 @@ def create_property(var):  # creates a member variable that redraws the button w
 # self.buttons['end turn'] = button.Button(self, 'self.owner.end_turn()', pos=(60, 40), size=(100, 30), visible=True, text='End Turn')
 # Calls the "end_turn()" function of the class that created the button.
 class Button(object):
-    def __init__(self, owner, function, pos=(50, 50), size=(100, 100), visible=True, enabled=True, colour=(0, 0, 0), border_colour = (0, 0, 0), text = None, **kwargs):
+    def __init__(self, owner, function, pos=(50, 50), size=(100, 100), visible=True, enabled=True, colour=(0, 0, 0),
+                 border_colour = (0, 0, 0), border_width=2, text = None, **kwargs):
         self._pos = (0, 0)
         self.pos_setter(pos)
 
@@ -34,7 +35,7 @@ class Button(object):
         self._colour = colour
         self._visible = visible
         self._border_colour = border_colour
-        self._border_width = 2
+        self._border_width = border_width
         self._text = text
         self.enabled = enabled  # whether button can be activated, visible or not
 
@@ -85,8 +86,10 @@ class Button(object):
         self.surface.blit(temp, (self.border_width, self.border_width))
 
         font = pygame.font.SysFont('helvetica', 14)
-        text = font.render(self.text, 0, (200, 200, 200))
-        self.surface.blit(text, (self.border_width, self.border_width))
+        text = font.render(self.text, True, (200, 200, 200))
+        x = self.surface.get_width() / 2 - text.get_width() / 2
+        y = self.surface.get_height() / 2 - text.get_height() / 2
+        self.surface.blit(text, (x, y))
 
         self.surface.set_colorkey((1, 1, 1))
 
