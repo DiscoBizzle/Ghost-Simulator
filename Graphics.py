@@ -1,10 +1,11 @@
 import pygame
 # import Maps
+from Constants import *
 
 # screen = pygame.display.set_mode((800, 800))
 
 def draw_map(m):
-    grid_size = 20
+    grid_size = TILE_SIZE
     nw = len(m.grid)
     nh = len(m.grid[0])
     surf = pygame.Surface((nw * grid_size, nh * grid_size))
