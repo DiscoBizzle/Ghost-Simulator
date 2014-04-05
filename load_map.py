@@ -33,11 +33,21 @@ def load_map(map_filename): # Load a map from a map file
             lines_tmp.append(line)
 
     lines = lines_tmp
-    lines_tmp = []
+    lines_cleaned = []
 
-    tidy_property(lines, 2)
-    #for i, line in enumerate(lines):
-    #    if (line[0]=="{"):
-    #        lines_tmp.append(tidy_property(lines, i))
+    #tidy_property(lines, 2)
+    for i, line in enumerate(lines):
+        if (line[0]=="{"):
+            lines_cleaned.append(tidy_property(lines, i))
 
-    #print lines_tmp
+    #print lines_cleaned
+
+    size_str        = filter(lambda line: line[0:5]=="{size", lines_cleaned)
+    tileset_str     = filter(lambda line: line[0:8]=="{tileset", lines_cleaned)
+    tilegrid_str    = filter(lambda line: line[0:9]=="{tilegrid", lines_cleaned)
+    object_str      = filter(lambda line: line[0:7]=="{object", lines_cleaned)
+
+    #print tileset_str
+    #print tilegrid_str
+    #print size_str
+    #print object_str
