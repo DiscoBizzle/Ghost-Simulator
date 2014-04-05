@@ -35,6 +35,7 @@ class Player(GameObject):
             self.skills_learnt.append(skill[name])
             for effect in skill.effects:
                 #apply effect
+                pass
 
 
 
