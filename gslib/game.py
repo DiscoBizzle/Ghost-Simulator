@@ -165,7 +165,7 @@ class Game:
 
                 if self.player1.overFear:
                     font2 = pygame.font.SysFont('helvetica', 64)
-                    fg = font2.render("FEARGASM", 0, (200, self.bees, self.bees))
+                    fg = font2.render("FEARGASM", True, (200, self.bees, self.bees))
                     self.surface.blit(fg, ((GAME_WIDTH - fg.get_width()) / 2, (GAME_HEIGHT - fg.get_height()) / 2))
 
                 self.surface.blit(font.render('FPS: ' + str(int(self.clock.get_fps())), True, (255, 255, 0)), (0, self.dimensions[1] - 100))
