@@ -24,7 +24,6 @@ class Player(GameObject):
     def get_fear(self):
         return self._fear
     def set_fear(self, f):
-        print f, self._fear
         self._fear = f
         if self._fear > MAX_FEAR:
             self._fear = MAX_FEAR
