@@ -178,7 +178,7 @@ class Game:
                 if self.disp_object_stats:
                     self.surface.blit(self.object_stats[0], self.object_stats[1])
 
-            if self.msPassed > 30:
+            if self.msPassed > 33:
                 self.update()
                 self.msPassed = 0
 
