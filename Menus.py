@@ -16,7 +16,7 @@ class MainMenu(object):
         for button in self.buttons.itervalues():
             self.GameClass.surface.blit(button.surface, button.pos) # self.buttons[button]
 
-        pygame.display.update()
+        # pygame.display.update()
 
     def mouse_event(self, event):
         for button in self.buttons.itervalues():
