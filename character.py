@@ -148,6 +148,6 @@ class Character(object):
         return surf
 
 
-pygame.init()
-pygame.font.init()
-test_info_draw(Character('Sprite'))
+# pygame.init()
+# pygame.font.init()
+# test_info_draw(Character('Sprite'))
