@@ -91,6 +91,15 @@ class Game:
                 self.surface.blit(Graphics.draw_map(self.map), (0, 0))
                 self.surface.blit(self.player1.spriteSheet, self.player1.coord, self.player1.frameRect)
 
+            font = pygame.font.SysFont('helvetica', 20)
+            size = font.size("FEAR")
+            fear_txt = font.render("FEAR", 0, (200, 200, 200))
+            self.surface.blit(fear_txt, (0, self.dimensions[1]-32))
+            fear_bar = pygame.Surface((self.dimensions[0]*self.player1.fear/1000, 32))
+            fear_bar.fill((255, 0, 0))
+            self.surface.blit(fear_bar, (size[0], self.dimensions[1]-32))
+
+
         if self.options['VOF']:
             self.surface.blit(self.field, (0, 0))
         pygame.display.update()
