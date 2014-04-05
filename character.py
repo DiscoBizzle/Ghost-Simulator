@@ -58,16 +58,37 @@ def wrapline(text, font, maxwidth):
     return wrapped
 
 
+def text_wrap(text, font, maxwidth):
+    t = text.split('\n')
+    wrapped = []
+    for l in t:
+        wrapped += wrapline(l, font, maxwidth)
+
+    return wrapped
+
+
+def load_stats(name):
+    f = open('characters/' + name + '.txt')
+    age = f.readline()
+    age = age.strip()
+    bio = ''
+    for l in f:
+        bio += l
+
+    return age, bio
+
+
 class Character(object):
-    def __init__(self):
-        self.stats = self.get_stats()
+    def __init__(self, name):
+        self.stats = self.get_stats(name)
         self.info_sheet = self.draw_info_sheet()
 
-    def get_stats(self):
-        name = 'Bob'
-        age = '18'
-        image = 'sprite.png'
-        bio = 'A colorless, lemon-lime flavored, caffeine-free soft drink, created by the Coca-Cola Company.'
+    def get_stats(self, name):
+        name = name
+        image = 'characters/' + name + '.png'
+        age, bio = load_stats(name)
+        # age = '18'
+        # bio = 'A colorless, lemon-lime flavored, caffeine-free soft drink, created by the Coca-Cola Company.'
         return {'name': name, 'age': age, 'image_name': image, 'bio': bio}
 
     def draw_info_sheet(self):
@@ -75,7 +96,6 @@ class Character(object):
         dim = w, h = (400, 200)
         border = 8
         surf = pygame.Surface(dim)
-        # surf.fill(GREY)
         fill_background(surf, border)
 
         # draw character image
@@ -106,7 +126,7 @@ class Character(object):
         surf.blit(temp, (text_left, name_text.get_height() + age_text.get_height() + 2*border))
 
         # draw bio
-        bio = wrapline(self.stats['bio'], font, dim[0] - text_left - border)
+        bio = text_wrap(self.stats['bio'], font, dim[0] - text_left - border)
         top = name_text.get_height() + age_text.get_height() + 2*border
         t_height = name_text.get_height()
         for i, b in enumerate(bio):
@@ -115,7 +135,7 @@ class Character(object):
 
         return surf
 
-
+#
 # pygame.init()
 # pygame.font.init()
-# test_info_draw(Character())
+# test_info_draw(Character('Sprite'))
