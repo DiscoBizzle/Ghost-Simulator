@@ -17,9 +17,13 @@ class Game:
         self.clock = pygame.time.Clock()
         self.msPassed = 0
 
+        self.cameraCoords = (0,0)
+
         self.player1 = PlayerClass.Player(100,100,40,40)
 
-        self.keys = { pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False }
+        self.keys = { pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False, pygame.K_ESCAPE: False}
+
+        self.options = {'FOV': True, 'VOF': False}
 
         joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
         for joystick in joysticks:
@@ -35,6 +39,9 @@ class Game:
 
     def gameLoop(self):
         while self.gameRunning:
+            if self.keys[pygame.K_ESCAPE]:
+                self.keys[pygame.K_ESCAPE] = False
+                self.GameState = MAIN_MENU
             if self.GameState == STARTUP:
                 pass
             elif self.GameState == MAIN_MENU:
@@ -53,13 +60,21 @@ class Game:
                 self.update()
                 self.msPassed = 0
 
-
             if self.GameState == STARTUP:
                 pass
             elif self.GameState == MAIN_MENU:
                 self.Menu.display()
             elif self.GameState == MAIN_GAME:
-                self.main_game_draw()
+                if not self.options['FOV']:
+                    self.surface.fill((0, 0, 0))
+                    pygame.display.update()
+                elif self.options['VOF']:
+                    field = pygame.image.load('field.png')
+                    surf = pygame.transform.scale(field, (GAME_WIDTH, GAME_HEIGHT))
+                    self.surface.blit(surf, (0, 0))
+                    pygame.display.update()
+                else:
+                    self.main_game_draw()
 
 
     def update(self):
@@ -73,7 +88,8 @@ class Game:
         temp_surf = pygame.Surface((40, 40))
 
         pygame.draw.circle(temp_surf, blueColour, (20, 20), 20, 0)
-        self.surface.blit(temp_surf, self.player1.coord)
+
+        self.surface.blit(self.player1.spriteSheet, self.player1.coord, self.player1.frameRect)
 
         # now double!
         pygame.display.update()

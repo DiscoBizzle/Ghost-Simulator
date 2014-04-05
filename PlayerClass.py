@@ -32,17 +32,37 @@ class Player:
         self.dimensions = (w,h)
         self.velocity = (0,0)
 
+        self.animationState = ANIM_IDLE
+        self.currentFrame = 0
+        self.maxFrames = 2
+        self.frameRect = pygame.Rect(self.currentFrame * SPRITE_WIDTH, self.animationState * SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT)
+
+        self.spriteSheet = pygame.image.load('characters/GhostSheet.png').convert()
+        self.spriteSheet.set_colorkey((255,0,255))
+
+
     def update(self, gameClass):
         # update velocity
         v_x, v_y = 0, 0
+        self.animationState = ANIM_IDLE
         if gameClass.keys[pygame.K_DOWN]:
             v_y += 5
+            self.animationState = ANIM_DOWNWALK
         if gameClass.keys[pygame.K_UP]:
             v_y -= 5
+            self.animationState = ANIM_UPWALK
         if gameClass.keys[pygame.K_LEFT]:
             v_x -= 5
+            self.animationState = ANIM_LEFTWALK
         if gameClass.keys[pygame.K_RIGHT]:
             v_x += 5
+            self.animationState = ANIM_RIGHTWALK
+
+        self.currentFrame += 1
+        if self.currentFrame > self.maxFrames:
+            self.currentFrame = 0
+
+        self.frameRect = pygame.Rect(self.currentFrame * SPRITE_WIDTH, self.animationState * SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT)
 
         self.velocity = (v_x, v_y)
 
