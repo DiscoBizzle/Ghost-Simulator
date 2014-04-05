@@ -67,7 +67,6 @@ class Game:
             pygame.QUIT: self.quit_game,
             pygame.MOUSEBUTTONDOWN: self.mouse_click,
             pygame.JOYHATMOTION: self.handle_joy,
-            pygame.MOUSEMOTION: self.mouse_motion,
         }
 
         self.map = Maps.Map('tiles/martin.png', 'tiles/martin.json')
@@ -173,12 +172,14 @@ class Game:
     def mouse_click(self, event):
         if self.GameState == MAIN_MENU:
             self.Menu.mouse_event(event)
+        elif self.GameState == MAIN_GAME:
+            self.check_object_click(event)
 
-    def mouse_motion(self, event):
+    def check_object_click(self, event):
         for o in self.objects:
             if o.rect.collidepoint(event.pos) and isinstance(o, character.Character):
                 self.disp_object_stats = True
-                self.object_stats = (o.info_sheet, event.pos)
+                self.object_stats = (o.info_sheet, (GAME_WIDTH - o.info_sheet.get_width(), 0))
                 return
         self.disp_object_stats = False
         self.object_stats = None
