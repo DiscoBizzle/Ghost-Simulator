@@ -19,7 +19,9 @@ class Game:
 
         self.player1 = PlayerClass.Player(100,100,40,40)
 
-        self.keys = { pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False }
+        self.keys = { pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False, pygame.K_ESCAPE: False}
+
+        self.options = {'FOV': True, 'VOF': False}
 
         self.event_map = {
             pygame.KEYDOWN: self.handle_keys,
@@ -30,6 +32,9 @@ class Game:
 
     def gameLoop(self):
         while self.gameRunning:
+            if self.keys[pygame.K_ESCAPE]:
+                self.keys[pygame.K_ESCAPE] = False
+                self.GameState = MAIN_MENU
             if self.GameState == STARTUP:
                 pass
             elif self.GameState == MAIN_MENU:
@@ -48,13 +53,21 @@ class Game:
                 self.update()
                 self.msPassed = 0
 
-
             if self.GameState == STARTUP:
                 pass
             elif self.GameState == MAIN_MENU:
                 self.Menu.display()
             elif self.GameState == MAIN_GAME:
-                self.main_game_draw()
+                if not self.options['FOV']:
+                    self.surface.fill((0, 0, 0))
+                    pygame.display.update()
+                elif self.options['VOF']:
+                    field = pygame.image.load('field.png')
+                    surf = pygame.transform.scale(field, (GAME_WIDTH, GAME_HEIGHT))
+                    self.surface.blit(surf, (0, 0))
+                    pygame.display.update()
+                else:
+                    self.main_game_draw()
 
 
     def update(self):
