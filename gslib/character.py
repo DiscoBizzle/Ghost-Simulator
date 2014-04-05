@@ -183,7 +183,7 @@ class Character(GameObject):
 
     def draw_info_sheet(self):
         font_size = 20
-        dim = w, h = (400, 200)
+        dim = w, h = (GAME_WIDTH - LEVEL_WIDTH, LEVEL_HEIGHT)
         border = 8
         surf = pygame.Surface(dim)
         fill_background(surf, border)
