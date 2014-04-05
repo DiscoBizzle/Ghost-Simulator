@@ -129,7 +129,7 @@ class Game:
                 pass
 
 
-            if self.msPassed > (1.0/30)*1000:
+            if self.msPassed > 30:
                 self.update()
                 self.msPassed = 0
 
