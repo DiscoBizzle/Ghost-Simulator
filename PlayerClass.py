@@ -20,6 +20,7 @@ class Player(GameObject):
 
         self._fear = START_FEAR
         self.fears = ['player']
+        self.overFear = False
 
     def get_fear(self):
         return self._fear
@@ -27,6 +28,7 @@ class Player(GameObject):
         print f, self._fear
         self._fear = f
         if self._fear > MAX_FEAR:
+            self.overFear = True
             self._fear = MAX_FEAR
     fear = property(get_fear, set_fear)
 
