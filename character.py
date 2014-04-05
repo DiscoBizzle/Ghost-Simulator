@@ -114,6 +114,7 @@ def gen_character(stats=None):
     stats.setdefault('age', random.randrange(151))
     stats.setdefault('bio', gen_bio())
     stats.setdefault('fears', gen_fears())
+    stats.setdefault('feared_by', gen_fears())
     stats.setdefault('gender', random.choice(('m','f')))
     stats.setdefault('name', gen_name(stats['gender']))
     stats.setdefault('image_name', 'characters/Sprite_front.png')
@@ -151,6 +152,8 @@ class Character(GameObject):
     def __init__(self, game_class, x, y, w, h, stats):
         GameObject.__init__(self, game_class, x, y, w, h)
         self.fears = stats['fears']
+        self.feared_by = stats['feared_by']
+        self.feared_by.append('player')
         self.stats = stats
         self.info_sheet = self.draw_info_sheet()
         self.sprite = pygame.image.load('characters/Sprite_top.png')
@@ -165,9 +168,15 @@ class Character(GameObject):
 
     def update(self):
         self.update_timer += 1
-        if self.update_timer == 100:
+        if self.update_timer == 50:
             self.update_timer = 0
-            self.velocity = (random.randint(-2, 2), random.randint(-2, 2))
+            mv = self.max_velocity
+            self.velocity = (random.randint(-mv, mv), random.randint(-mv, mv))
+
+        if self.fear_timer:
+            fv = 10
+            self.velocity = (random.randint(-fv, fv), random.randint(-fv, fv))
+            self.fear_timer -= 1
         GameObject.update(self)
 
     def draw_info_sheet(self):

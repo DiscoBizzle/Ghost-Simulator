@@ -19,6 +19,7 @@ class Player(GameObject):
         self.sprite.set_colorkey((255,0,255))
 
         self.fear = START_FEAR
+        self.fears = ['player']
 
 
     def update(self):
