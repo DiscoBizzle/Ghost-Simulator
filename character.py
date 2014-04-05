@@ -7,6 +7,7 @@ GREY = (60, 60, 60)
 def test_info_draw(Character):
     screen = pygame.display.set_mode((800, 800))
     screen.blit(Character.info_sheet, (0, 0))
+    screen.blit(Character.sprite, (Character.info_sheet.get_width() + 10, 0))
     pygame.display.update()
     raw_input()
     pygame.quit()
@@ -71,24 +72,35 @@ def load_stats(name):
     f = open('characters/' + name + '.txt')
     age = f.readline()
     age = age.strip()
-    bio = ''
-    for l in f:
-        bio += l
 
-    return age, bio
+    bio = ''
+    fears = []
+    start_bio = False
+    for l in f:
+        if l.strip() == '#':
+            start_bio = True
+        else:
+            if start_bio:
+                bio += l
+            else:
+                fears.append(l.strip())
+
+    print fears
+    return age, bio, fears
 
 
 class Character(object):
     def __init__(self, name):
+        self.fears = []
         self.stats = self.get_stats(name)
         self.info_sheet = self.draw_info_sheet()
+        self.sprite = pygame.image.load('characters/' + name + '_top.png')
+        self.sprite.set_colorkey((255, 0, 255))
 
     def get_stats(self, name):
         name = name
-        image = 'characters/' + name + '.png'
-        age, bio = load_stats(name)
-        # age = '18'
-        # bio = 'A colorless, lemon-lime flavored, caffeine-free soft drink, created by the Coca-Cola Company.'
+        image = 'characters/' + name + '_front.png'
+        age, bio, self.fears = load_stats(name)
         return {'name': name, 'age': age, 'image_name': image, 'bio': bio}
 
     def draw_info_sheet(self):
@@ -135,7 +147,7 @@ class Character(object):
 
         return surf
 
-#
-# pygame.init()
-# pygame.font.init()
-# test_info_draw(Character('Sprite'))
+
+pygame.init()
+pygame.font.init()
+test_info_draw(Character('Sprite'))
