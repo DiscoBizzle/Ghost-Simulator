@@ -55,9 +55,6 @@ class Player(GameObject):
 
         self.velocity = (v_x, v_y)
 
-        # actually move
-        self.move()
-
         if v_x != 0 or v_y != 0:
             self.fear -= 5
             print self.fear
@@ -65,3 +62,6 @@ class Player(GameObject):
         if self.fear <= 0:
             self.game_class.GameState = MAIN_MENU
             self.fear = 500
+
+        # move etc.
+        GameObject.update(self)

@@ -10,6 +10,9 @@ class GameObject:
         self.velocity = (0,0)
         self.attributes = []
 
+    def update(self):
+        self.move()
+
     def move(self):
         pro_pos = (self.coord[0] + self.velocity[0], self.coord[1] + self.velocity[1])
         if pro_pos[0] >= 0 and pro_pos[0] + self.dimensions[0] <= LEVEL_WIDTH and \
