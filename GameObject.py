@@ -23,7 +23,18 @@ class GameObject:
         if pro_pos[0] >= 0 and pro_pos[0] + self.dimensions[0] <= LEVEL_WIDTH and \
                 pro_pos[1] >= 0 and pro_pos[1] + self.dimensions[1] <= LEVEL_HEIGHT:
             self.coord = pro_pos
-    
+
+        # begin collision detection NOTE: assumes largest object w/ collision is 64x64 (i.e. 2x2 tiles)
+        i = pro_pos[0]/self.dimensions[0]  # get the index of the upper right tile
+        j = pro_pos[1]/self.dimensions[1]
+
+        #check collision against the 9 possible
+        for ni in range(i,i+2):
+            for nj in range(j, j+2):
+                pass
+
+        #end collision detection
+
         x, y = pro_pos
     
         if self.velocity[0] < 0:
