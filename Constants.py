@@ -1,0 +1,4 @@
+# Game States
+STARTUP = 0
+MAIN_MENU = 1
+MAIN_GAME = 2
