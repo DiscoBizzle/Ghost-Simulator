@@ -20,14 +20,12 @@ class Player(GameObject):
 
         self._fear = START_FEAR
         self.fears = ['player']
-        self.overFear = False
 
     def get_fear(self):
         return self._fear
     def set_fear(self, f):
         self._fear = f
         if self._fear > MAX_FEAR:
-            self.overFear = True
             self._fear = MAX_FEAR
     fear = property(get_fear, set_fear)
 
@@ -67,12 +65,12 @@ class Player(GameObject):
         self.velocity = (v_x, v_y)
 
         if v_x != 0 or v_y != 0:
-            self.fear -= FEAR_PER_STEP * (v_x*v_x + v_y*v_y)
+            self.fear -= FEAR_PER_STEP * (v_x*v_x + v_y*v_y)**.5
         else:
             self.fear -= FEAR_PER_TICK
 
         if self.fear <= 0:
-            self.game_class.GameState = MAIN_MENU
+            self.game_class.GameState = GAME_OVER
             self.fear = START_FEAR
 
         # move etc.

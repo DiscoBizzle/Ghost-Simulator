@@ -1,8 +1,8 @@
+import pygame
 import random
 
-import pygame
-
 from gslib.game_object import GameObject
+from gslib.constants import *
 
 WHITE = (255, 255, 255)
 GREY = (60, 60, 60)
@@ -183,7 +183,7 @@ class Character(GameObject):
 
     def draw_info_sheet(self):
         font_size = 20
-        dim = w, h = (400, 200)
+        dim = w, h = (GAME_WIDTH - LEVEL_WIDTH, LEVEL_HEIGHT)
         border = 8
         surf = pygame.Surface(dim)
         fill_background(surf, border)
