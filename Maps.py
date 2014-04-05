@@ -15,7 +15,7 @@ def test():
     pygame.display.update()
     raw_input()
     pygame.quit()
-á
+
 
 class Tile(object):
     def __init__(self, n):
