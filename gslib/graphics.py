@@ -1,6 +1,7 @@
 import pygame
+
 # import Maps
-from Constants import *
+from gslib.constants import *
 
 # screen = pygame.display.set_mode((800, 800))
 blue = pygame.Color(0,255,0)

@@ -1,3 +1,5 @@
-.idea/**
+.idea/
+dist/
+MANIFEST
 *.pyc
 Thumbs.db
