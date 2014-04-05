@@ -9,6 +9,8 @@ Ashley
 Ben
 Benjamin
 Bob
+Brian
+Bryan
 Callum
 Charles
 Charlie
@@ -18,6 +20,7 @@ Christopher
 Cornel
 Dan
 Daniel
+Dave
 David
 Dom
 Dominic
@@ -34,13 +37,14 @@ Harry
 Henry
 Hugh
 Jack
+Jacob
 James
-Jim
 Jim
 Joe
 John
 Jolyon
 Jon
+Jonathan
 Jonjo
 Joseph
 Josh
@@ -63,6 +67,7 @@ Oli
 Oliver
 Ollie
 Oscar
+Paul
 Pete
 Peter
 Phil
