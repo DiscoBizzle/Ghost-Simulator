@@ -9,7 +9,7 @@ class Game:
     def __init__(self, windowWidth, windowHeight):
         self.GameState = MAIN_GAME
         self.gameRunning = True
-        self.winDimensions = (windowWidth,windowHeight)
+        self.winDimensions = (windowWidth, windowHeight)
         self.windowSurface = pygame.display.set_mode(self.winDimensions)
 
         self.player1 = PlayerClass.Player(100,100,20,20)
