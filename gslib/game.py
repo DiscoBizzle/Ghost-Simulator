@@ -70,12 +70,8 @@ class Game:
             pygame.MOUSEMOTION: self.mouse_motion,
         }
 
-<<<<<<< HEAD
-        self.map = Maps.Map('tiles/martin.png', 'tiles/martin.json')
-        sound.start_next_music(self.music_list)
-=======
         self.map = maps.Map('tiles/martin.png', 'tiles/martin.json')
->>>>>>> af80d92... Fix up imports
+        sound.start_next_music(self.music_list)
 
         self.bees = -1
 
