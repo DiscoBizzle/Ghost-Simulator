@@ -8,9 +8,10 @@ import character
 import sys
 import os
 
-if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
-    # On NT like Windows versions smpeg video needs windb.
-    os.environ['SDL_VIDEODRIVER'] = 'windib'
+# doesn't seem to be needed any more
+#if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
+#    # On NT like Windows versions smpeg video needs windb. -- 
+#    os.environ['SDL_VIDEODRIVER'] = 'windib'
 
 try:
     from cStringIO import StringIO as BytesIO
