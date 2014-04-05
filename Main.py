@@ -2,8 +2,9 @@ import pygame
 pygame.init()
 import GameClass
 import PlayerClass
+from Constants import *
 
-Game = GameClass.Game(640, 480)
+Game = GameClass.Game(WINDOW_WIDTH, WINDOW_HEIGHT)
 
 Game.gameLoop()
 
