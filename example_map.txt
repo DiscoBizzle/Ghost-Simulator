@@ -1,0 +1,12 @@
+{size, 3, 3}
+
+{tileset, "./tiles/"}
+
+{tilegrid,
+	abc
+	cba
+	01a
+}
+
+#object list
+{object, name, coords}
