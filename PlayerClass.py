@@ -5,8 +5,8 @@ from GameObject import GameObject
 
 
 class Player(GameObject):
-    def __init__(self, game_object, x, y, w, h):
-        GameObject.__init__(self, game_object, x, y, w, h)
+    def __init__(self, game_class, x, y, w, h):
+        GameObject.__init__(self, game_class, x, y, w, h)
 
         self.direction = DOWN
         self.animationState = ANIM_DOWNIDLE
@@ -15,8 +15,8 @@ class Player(GameObject):
         self.maxFrames = 3
         self.frameRect = pygame.Rect(self.currentFrame * SPRITE_WIDTH, self.animationState * SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT)
 
-        self.spriteSheet = pygame.image.load('characters/GhostSheet.png').convert()
-        self.spriteSheet.set_colorkey((255,0,255))
+        self.sprite = pygame.image.load('characters/GhostSheet.png').convert()
+        self.sprite.set_colorkey((255,0,255))
 
         self.fear = START_FEAR
 
@@ -56,7 +56,7 @@ class Player(GameObject):
         self.velocity = (v_x, v_y)
 
         if v_x != 0 or v_y != 0:
-            self.fear -= FEAR_PER_STEP * (v_x*v_x + v_y*v_y)/25
+            self.fear -= FEAR_PER_STEP * (v_x*v_x + v_y*v_y)
 
         if self.fear <= 0:
             self.game_class.GameState = MAIN_MENU

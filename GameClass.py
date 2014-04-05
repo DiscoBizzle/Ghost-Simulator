@@ -98,8 +98,8 @@ class Game:
         elif self.GameState == MAIN_GAME:
             if self.options['FOV']:
                 self.surface.blit(Graphics.draw_map(self.map), (0, 0))
-                self.surface.blit(self.player1.spriteSheet, self.player1.coord, self.player1.frameRect)
-                self.surface.blit(self.testchar.sprite, self.testchar.coord)
+                for object in self.objects:
+                    self.surface.blit(object.sprite, object.coord, object.frameRect)
 
                 font = pygame.font.SysFont('helvetica', 20)
                 size = font.size("FEAR")
