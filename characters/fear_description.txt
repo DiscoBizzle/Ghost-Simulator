@@ -6,7 +6,7 @@ cats:
 cheese:
 cupcake: Sunshine and lollipops and- cupcakes. All very fattening. Though it's nice to know that I'm not the only one getting a chub on.
 darkness:
-death:
+death: Death? What's scary about death?! I'm dead, and I'm having a whale of time!
 double-barrelled: Terrifying. Probably owns a mansion and big scary dogs.
 dogs: Woof woof. Bark bark. Arrrroooooo?
 dogs: Comprehensive wetware solution for converting food and attention into barks and urine.
@@ -20,12 +20,13 @@ jelly:
 kittens: Adorable! Sooo cute~! How could anyone hate kittens?! If they do, I think you should push them in a vat of acid. Burn their skin off. Kill them, is what I'm trying to say to you.
 knees: At least an order of magnitude more terrifying now that it is no longer attached to a body.
 lactose:
-light:
+light: A real-worlder who's afraid of the light? Can it be true? Clearly half-way to ghostliness already.
 other people:
 rabbits:
-religion:
-snakes:
-spiders:
+religion: Rabbis, not to be confused with rabbits, are not conventionally considered to be very scary. Now clowns, they're way up there. Their big red noses and incessant, unending honking are pretty much guaranteed to cause a mental breakdown one way or another.
+snakes: The slitheriest of the serpents. I wouldn't get near one if I were you.
+snakes: Oh, to feel them tickling around your feet, wrapping around your legs, scales pressing against skin and still further upwards... give me a moment.
+spiders: There was an old woman who swallowed a spider, that wriggled and jiggled and tickled inside her, she swallowed the spider to catch the fly, I don't know why she swallowed the fly...
 sprite: A can of Sprite. One of the more intrinsically scary drinks - look at the name, for god's sake!
 the mundane:
 the supernatural:
