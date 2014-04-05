@@ -27,7 +27,8 @@ class Game:
     def __init__(self, width, height):
         self.Menu = menus.MainMenu(self)
         self.GameState = MAIN_MENU
-        self.CutsceneStarted = False
+        self.cutscene_started = False
+        self.cutscene_next = ""
         self.gameRunning = True
         self.dimensions = (width, height)
         self.surface = pygame.display.set_mode(self.dimensions)
@@ -92,10 +93,10 @@ class Game:
                 self.clock.tick()
                 self.msPassed += self.clock.get_time()
             elif self.GameState == CUTSCENE:
-                if self.CutsceneStarted == True:
+                if self.cutscene_started == True:
                     if not movie.get_busy():
                         self.GameState = MAIN_GAME
-                        self.CutsceneStarted = False
+                        self.cutscene_started = False
                 else:
                     
                     self.surface.fill(blackColour)
@@ -108,7 +109,7 @@ class Game:
                     movie.set_display(self.surface, pygame.Rect((5, 5), (w,h)))
                     
                     movie.play()
-                    self.CutsceneStarted = True
+                    self.cutscene_started = True
 
             # poll event queue
             for event in pygame.event.get():
