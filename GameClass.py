@@ -73,6 +73,8 @@ class Game:
         self.map = Maps.Map('tiles/martin.png', 'tiles/martin.json')
         sound.start_next_music(self.music_list)
 
+        self.bees = -1
+
     def gameLoop(self):
 
         while self.gameRunning:
@@ -124,8 +126,16 @@ class Game:
     def update(self):
         # this is fixed timestep, 30 FPS. if game runs slower, we lag.
         # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
+        #self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
         for object in self.objects:
             object.update()
+
+        if self.bees == -1 and self.player1.overFear:
+            self.bees = 0
+        if self.bees > -1:
+            self.bees += 5
+        if self.bees > 255:
+            self.bees = 0
 
     def main_game_draw(self):
         # this runs faster than game update. animation can be done here with no problems.
@@ -145,11 +155,18 @@ class Game:
 
                 font = pygame.font.SysFont('helvetica', 20)
                 size = font.size("FEAR")
-                fear_txt = font.render("FEAR", 0, (200, 200, 200))
+                fear_txt = font.render("FEAR", True, (200, 200, 200))
                 self.surface.blit(fear_txt, (0, self.dimensions[1]-32))
                 fear_bar = pygame.Surface((self.dimensions[0]*self.player1.fear/MAX_FEAR, 32))
                 fear_bar.fill((255, 0, 0))
                 self.surface.blit(fear_bar, (size[0], self.dimensions[1]-32))
+
+                if self.player1.overFear:
+                    font2 = pygame.font.SysFont('helvetica', 64)
+                    fg = font2.render("FEARGASM", 0, (200, self.bees, self.bees))
+                    self.surface.blit(fg, ((GAME_WIDTH - fg.get_width()) / 2, (GAME_HEIGHT - fg.get_height()) / 2))
+
+                self.surface.blit(font.render('FPS: ' + str(int(self.clock.get_fps())), True, (255, 255, 0)), (0, self.dimensions[1] - 100))
 
                 if self.disp_object_stats:
                     self.surface.blit(self.object_stats[0], self.object_stats[1])

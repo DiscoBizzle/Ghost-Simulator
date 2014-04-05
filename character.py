@@ -1,6 +1,8 @@
 import pygame
 import random
 from GameObject import GameObject
+import Constants
+import GameClass
 
 WHITE = (255, 255, 255)
 GREY = (60, 60, 60)
@@ -11,7 +13,7 @@ def test():
     pygame.font.init()
     random.seed()
     screen = pygame.display.set_mode((800, 800))
-    char = Character(gen_character({'image_name': 'characters/Sprite_front.png'}))
+    char = Character(None, 0, 0, 16, 32, gen_character({'image_name': 'characters/Sprite_front.png'}))
     screen.blit(char.info_sheet, (0, 0))
     screen.blit(char.sprite, (char.info_sheet.get_width() + 10, 0))
     pygame.display.update()
