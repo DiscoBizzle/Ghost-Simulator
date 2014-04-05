@@ -4,6 +4,7 @@ from Constants import *
 import Menus
 import Maps
 import Graphics
+import character
 
 blackColour = pygame.Color(0, 0, 0)
 blueColour = pygame.Color(0, 0, 255)
@@ -22,8 +23,10 @@ class Game:
         self.cameraCoords = (0,0)
 
         self.player1 = PlayerClass.Player(self, 100,100,SPRITE_WIDTH, SPRITE_HEIGHT)
+        self.testchar = character.Character(self, 50, 50, 16, 16, character.gen_character())
+        self.testchar.velocity = (0, 1)
 
-        self.objects = [self.player1]
+        self.objects = [self.player1, self.testchar]
 
         self.keys = { pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False, pygame.K_ESCAPE: False}
 
