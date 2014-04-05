@@ -20,6 +20,7 @@ class Player(GameObject):
 
         self._fear = START_FEAR
         self.fears = ['player']
+        self.skills_learnt = []
 
     def get_fear(self):
         return self._fear
