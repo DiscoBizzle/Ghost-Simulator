@@ -18,8 +18,17 @@ class Player(GameObject):
         self.sprite = pygame.image.load('characters/GhostSheet.png').convert()
         self.sprite.set_colorkey((255,0,255))
 
-        self.fear = START_FEAR
+        self._fear = START_FEAR
         self.fears = ['player']
+
+    def get_fear(self):
+        return self._fear
+    def set_fear(self, f):
+        print f, self._fear
+        self._fear = f
+        if self._fear > MAX_FEAR:
+            self._fear = MAX_FEAR
+    fear = property(get_fear, set_fear)
 
 
     def update(self):
