@@ -1,8 +1,8 @@
-import pygame
 import random
-from GameObject import GameObject
-import Constants
-import GameClass
+
+import pygame
+
+from gslib.game_object import GameObject
 
 WHITE = (255, 255, 255)
 GREY = (60, 60, 60)

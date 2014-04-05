@@ -1,7 +1,7 @@
-from Constants import *
 import pygame
 
-from GameObject import GameObject
+from gslib.constants import *
+from gslib.game_object import GameObject
 
 
 class Player(GameObject):

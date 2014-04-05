@@ -1,5 +1,6 @@
-from Constants import *
 import pygame
+
+from gslib.constants import *
 
 class GameObject(object):
     def __init__(self, game_class, x, y, w, h):

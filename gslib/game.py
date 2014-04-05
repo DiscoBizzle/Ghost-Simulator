@@ -1,14 +1,14 @@
-import pygame
-import PlayerClass
-from Constants import *
-import Menus
-import Maps
-import Graphics
-import character
-import sound
 import sys
 import os
 
+import pygame
+
+from gslib import player
+from gslib import menus
+from gslib import maps
+from gslib import character
+from gslib import graphics
+from gslib.constants import *
 # doesn't seem to be needed any more
 #if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
 #    # On NT like Windows versions smpeg video needs windb. -- 
@@ -24,7 +24,7 @@ blueColour = pygame.Color(0, 0, 255)
 
 class Game:
     def __init__(self, width, height):
-        self.Menu = Menus.MainMenu(self)
+        self.Menu = menus.MainMenu(self)
         self.GameState = MAIN_MENU
         self.CutsceneStarted = False
         self.gameRunning = True
@@ -38,7 +38,7 @@ class Game:
 
         self.cameraCoords = (0,0)
 
-        self.player1 = PlayerClass.Player(self, 100,100,SPRITE_WIDTH, SPRITE_HEIGHT)
+        self.player1 = player.Player(self, 100,100,SPRITE_WIDTH, SPRITE_HEIGHT)
 
         self.objects = [self.player1]
 
@@ -70,8 +70,12 @@ class Game:
             pygame.MOUSEMOTION: self.mouse_motion,
         }
 
+<<<<<<< HEAD
         self.map = Maps.Map('tiles/martin.png', 'tiles/martin.json')
         sound.start_next_music(self.music_list)
+=======
+        self.map = maps.Map('tiles/martin.png', 'tiles/martin.json')
+>>>>>>> af80d92... Fix up imports
 
         self.bees = -1
 
@@ -149,7 +153,7 @@ class Game:
             self.Menu.display()
         elif self.GameState == MAIN_GAME:
             if self.options['FOV']:
-                self.surface.blit(Graphics.draw_map(self.map), (0, 0))
+                self.surface.blit(graphics.draw_map(self.map), (0, 0))
                 for object in self.objects:
                     self.surface.blit(object.sprite, object.coord, object.frameRect)
 

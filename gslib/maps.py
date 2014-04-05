@@ -1,7 +1,8 @@
 import pygame
-import Graphics
 import json
-from Constants import *
+
+import gslib.graphics
+from gslib.constants import *
 
 
 def test():
@@ -10,7 +11,7 @@ def test():
     screen = pygame.display.set_mode((800, 800))
     m = Map('tiles/martin.png', 'tiles/martin.json')
 
-    surf = Graphics.draw_map(m)
+    surf = graphics.draw_map(m)
 
     screen.blit(surf, (0, 0))
 
