@@ -17,6 +17,8 @@ class Game:
         self.clock = pygame.time.Clock()
         self.msPassed = 0
 
+        self.cameraCoords = (0,0)
+
         self.player1 = PlayerClass.Player(100,100,40,40)
 
         self.keys = { pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False, pygame.K_ESCAPE: False}
@@ -86,7 +88,8 @@ class Game:
         temp_surf = pygame.Surface((40, 40))
 
         pygame.draw.circle(temp_surf, blueColour, (20, 20), 20, 0)
-        self.surface.blit(temp_surf, self.player1.coord)
+
+        self.surface.blit(self.player1.spriteSheet, self.player1.coord, self.player1.frameRect)
 
         # now double!
         pygame.display.update()
