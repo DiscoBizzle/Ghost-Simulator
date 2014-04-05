@@ -36,6 +36,7 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.gameRunning = False  # close the window, foo
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
                     self.player1.velocity = (self.player1.velocity[0],-5)
