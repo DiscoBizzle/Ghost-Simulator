@@ -1,7 +1,7 @@
 from Constants import *
 import pygame
 
-class GameObject:
+class GameObject(object):
     def __init__(self, game_class, x, y, w, h):
         self.game_class = game_class
 
@@ -30,6 +30,7 @@ class GameObject:
                     if f in o.feared_by:
                         if (o.coord[0] - self.coord[0])**2 + (o.coord[1] - self.coord[1])**2 < self.fear_radius**2:
                             o.fear_timer = 5
+                            self.game_class.player1.fear += 100
 
 
     def move(self):
