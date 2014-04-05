@@ -8,6 +8,7 @@ from gslib import menus
 from gslib import maps
 from gslib import character
 from gslib import graphics
+from gslib import sound
 from gslib.constants import *
 # doesn't seem to be needed any more
 #if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
