@@ -95,12 +95,33 @@ class GameObject(object):
             #collision with tiles
 
             if self.velocity[0] < 0: #if moving left, check collision with leftmost 3 tiles, push out if collision
-
-                for nj in range (j,j+2):
+                for nj in range (j, j+2):
                     if nj > 0 and nj < LEVEL_HEIGHT/TILE_SIZE:
                         if not self.game_class.map.grid[i][nj].walkable:
                             if self.rect.colliderect(self.game_class.map.grid[i][nj].rect):
                                x = self.game_class.map.grid[i][nj].rect.x + TILE_SIZE
+            elif self.velocity[0] > 0: #same for rightmost tiles
+                li = (self.coord[0] + self.dimensions[0])/TILE_SIZE
+                for nj in range (j, j+2):
+                    if nj > 0 and nj < LEVEL_HEIGHT/TILE_SIZE and li > 0 and li < LEVEL_WIDTH/TILE_SIZE:
+                        if not self.game_class.map.grid[li][nj].walkable:
+                            if self.rect.colliderect(self.game_class.map.grid[li][nj].rect):
+                               x = self.game_class.map.grid[li][nj].rect.x - self.dimensions[0]
+
+            if self.velocity[1] < 0: #if moving up, check collision with uppermost 3 tiles, push out if collision
+                for ni in range (i, i+2):
+                    if ni > 0 and ni < LEVEL_WIDTH/TILE_SIZE:
+                        if not self.game_class.map.grid[ni][j].walkable:
+                            if self.rect.colliderect(self.game_class.map.grid[ni][j].rect):
+                               y = self.game_class.map.grid[ni][j].rect.y + TILE_SIZE
+            elif self.velocity[1] > 0: #same for rightmost tiles
+                lj = (self.coord[1] + self.dimensions[1])/TILE_SIZE
+                for ni in range (i, i+2):
+                    if ni > 0 and ni < LEVEL_WIDTH/TILE_SIZE and lj > 0 and lj < LEVEL_HEIGHT/TILE_SIZE:
+                        if not self.game_class.map.grid[ni][lj].walkable:
+                            if self.rect.colliderect(self.game_class.map.grid[ni][lj].rect):
+                               y = self.game_class.map.grid[ni][lj].rect.y - self.dimensions[1]
+
 
 
         self.coord = x, y
