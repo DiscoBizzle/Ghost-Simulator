@@ -32,7 +32,7 @@ class Player(GameObject):
 
     def learn_skill(self, skill):
         if skill.can_be_learnt(self):
-            self.skills_learnt.append(skill[name])
+            self.skills_learnt.append(skill.name)
             for effect in skill.effects:
                 #apply effect
                 pass
