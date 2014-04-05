@@ -1,4 +1,5 @@
 from Constants import *
+import pygame
 
 
 class GameObject:
