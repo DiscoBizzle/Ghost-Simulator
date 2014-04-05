@@ -5,8 +5,8 @@ from GameObject import GameObject
 
 
 class Player(GameObject):
-    def __init__(self, game_object, x, y, w, h):
-        GameObject.__init__(self, game_object, x, y, w, h)
+    def __init__(self, game_class, x, y, w, h):
+        GameObject.__init__(self, game_class, x, y, w, h)
 
         self.direction = DOWN
         self.animationState = ANIM_DOWNIDLE
