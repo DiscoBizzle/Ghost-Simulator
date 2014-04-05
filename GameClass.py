@@ -96,16 +96,16 @@ class Game:
             x, y = event.value
             if x == -1:
                 self.keys[pygame.K_LEFT] = True
-            if x == 1:
+            elif x == 1:
                 self.keys[pygame.K_RIGHT] = True
-            if x == 0:
+            elif x == 0:
                 self.keys[pygame.K_LEFT] = False
                 self.keys[pygame.K_RIGHT] = False
             if y == -1:
                 self.keys[pygame.K_DOWN] = True
-            if y == 1:
+            elif y == 1:
                 self.keys[pygame.K_UP] = True
-            if y == 0:
+            elif y == 0:
                 self.keys[pygame.K_DOWN] = False
                 self.keys[pygame.K_UP] = False
 
