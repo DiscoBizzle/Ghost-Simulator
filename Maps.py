@@ -8,7 +8,7 @@ def test():
     pygame.init()
     pygame.font.init()
     screen = pygame.display.set_mode((800, 800))
-    m = Map('tileset_test.png', 'tiles/testa.json', [[Tile(i*j) for i in range(10)] for j in range(10)])
+    m = Map('tileset_test.png', 'tiles/testa.json')
 
     surf = Graphics.draw_map(m)
 
@@ -50,10 +50,9 @@ class Tile(object):
 
 
 class Map(object):
-    def __init__(self, tileset, map_file, grid):
+    def __init__(self, tileset, map_file):
         self.tileset = pygame.image.load(tileset).convert()
-        self.grid = grid
-
+        self.grid = [[Tile(i*j) for i in range(10)] for j in range(10)]
 
 
 test()
