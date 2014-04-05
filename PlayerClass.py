@@ -12,7 +12,7 @@ class Player(GameObject):
         self.animationState = ANIM_DOWNIDLE
         self.frameCount = 0 #no. of frames since game started
         self.currentFrame = 0
-        self.maxFrames = 2
+        self.maxFrames = 3
         self.frameRect = pygame.Rect(self.currentFrame * SPRITE_WIDTH, self.animationState * SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT)
 
         self.spriteSheet = pygame.image.load('characters/GhostSheet.png').convert()
