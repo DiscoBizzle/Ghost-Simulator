@@ -110,6 +110,7 @@ class Game(object):
                 pass
             elif self.GameState == CUTSCENE:
                 if self.cutscene_started == True:
+                    print(movie.get_time(), movie.get_length(), movie.get_busy())
                     if not movie.get_busy():
                         self.GameState = MAIN_GAME
                         self.cutscene_started = False
