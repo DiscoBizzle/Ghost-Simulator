@@ -82,6 +82,13 @@ class Game:
     def gameLoop(self):
 
         while self.gameRunning:
+
+            # poll event queue
+            for event in pygame.event.get():
+                response = self.event_map.get(event.type)
+                if response is not None:
+                    response(event)
+
             if self.keys[pygame.K_ESCAPE] and self.GameState != CUTSCENE:
                 self.keys[pygame.K_ESCAPE] = False
                 self.GameState = MAIN_MENU
@@ -114,12 +121,6 @@ class Game:
                     
                     movie.play()
                     self.cutscene_started = True
-
-            # poll event queue
-            for event in pygame.event.get():
-                response = self.event_map.get(event.type)
-                if response is not None:
-                    response(event)
 
             if self.msPassed > 30:
                 self.update()
