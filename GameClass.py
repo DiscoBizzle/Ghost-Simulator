@@ -154,7 +154,7 @@ class Game:
                 if self.disp_object_stats:
                     self.surface.blit(self.object_stats[0], self.object_stats[1])
 
-        if self.options['VOF']:
+        if self.options['VOF'] and self.GameState != CUTSCENE:
             self.surface.blit(self.field, (0, 0))
         pygame.display.update()
 
