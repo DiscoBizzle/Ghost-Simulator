@@ -2,6 +2,7 @@ import sys
 import os
 
 import pygame
+import time
 
 from gslib import player
 from gslib import menus
@@ -43,11 +44,12 @@ class Game(object):
 
         self.cameraCoords = (0,0)
 
+        self.objects = []
+
         self.player1 = player.Player(self, 0, 0,SPRITE_WIDTH, SPRITE_HEIGHT)
+        self.objects.append(self.player1)
 
-        self.objects = [self.player1]
-
-        for i in range(100):
+        for i in range(1):
             self.objects.append(character.Character(self, 0, 0, 16, 16, character.gen_character()))
 
         self.disp_object_stats = False
@@ -135,6 +137,8 @@ class Game(object):
 
                 self.fps_clock.tick()
                 self.main_game_draw()
+            else:
+                time.sleep(0.001)
 
     def update(self):
         # this is fixed timestep, 30 FPS. if game runs slower, we lag.
