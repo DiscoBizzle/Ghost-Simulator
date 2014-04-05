@@ -86,7 +86,7 @@ class Button(object):
         self.surface.blit(temp, (self.border_width, self.border_width))
 
         font = pygame.font.SysFont('helvetica', 14)
-        text = font.render(self.text, 0, (200, 200, 200))
+        text = font.render(self.text, True, (200, 200, 200))
         x = self.surface.get_width() / 2 - text.get_width() / 2
         y = self.surface.get_height() / 2 - text.get_height() / 2
         self.surface.blit(text, (x, y))
