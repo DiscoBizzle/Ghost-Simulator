@@ -28,7 +28,7 @@ class Game:
         self.Menu = menus.MainMenu(self)
         self.GameState = MAIN_MENU
         self.cutscene_started = False
-        self.cutscene_next = ""
+        self.cutscene_next = VIDEO_DIR + "default.mpg"
         self.gameRunning = True
         self.dimensions = (width, height)
         self.surface = pygame.display.set_mode(self.dimensions)
@@ -100,16 +100,20 @@ class Game:
                 else:
                     
                     self.surface.fill(blackColour)
-                    f = BytesIO(open("movie.mpg", "rb").read())
-                    movie = pygame.movie.Movie(f)
-                    w, h = movie.get_size()
-                    
-                    #screen = pygame.display.set_mode((w, h))
-                    
-                    movie.set_display(self.surface, pygame.Rect((5, 5), (w,h)))
-                    
-                    movie.play()
-                    self.cutscene_started = True
+                    try:
+                        f = BytesIO(open(self.cutscene_next, "rb").read())
+                        movie = pygame.movie.Movie(f)
+                        w, h = movie.get_size()
+                        
+                        #screen = pygame.display.set_mode((w, h))
+                        
+                        movie.set_display(self.surface, pygame.Rect((5, 5), (w,h)))
+                        
+                        movie.play()
+                        self.cutscene_started = True
+                    except IOError:
+                        print "Video not found: " + self.cutscene_next
+                        self.GameState = MAIN_MENU
 
             # poll event queue
             for event in pygame.event.get():
