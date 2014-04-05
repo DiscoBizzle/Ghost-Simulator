@@ -87,7 +87,9 @@ class Game:
                 self.msPassed += self.clock.get_time()
             elif self.GameState == CUTSCENE:
                 if self.CutsceneStarted == True:
-                    pass
+                    if not movie.get_busy():
+                        self.GameState = MAIN_GAME
+                        self.CutsceneStarted = False
                 else:
                     
                     self.surface.fill(blackColour)
