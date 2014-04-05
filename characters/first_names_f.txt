@@ -22,6 +22,7 @@ Caroline
 Carrie
 Catherine
 Charlotte
+Christine
 Claire
 Clare
 Danielle
@@ -33,10 +34,13 @@ Ellen
 Ellie
 Emily
 Emma
+Fiona
+Frances
 Francesca
 Grace
 Hannah
 Harriet
+Hattie
 Helen
 Holly
 Iona
@@ -47,6 +51,7 @@ Izzi
 Izzy
 Jenn
 Jennifer
+Jenny
 Jess
 Jessica
 Josie
@@ -60,12 +65,15 @@ Kirsty
 Laura
 Lauren
 Lizzie
+Louisa
 Lucy
 Lydia
 Lynn
+Margaret
 Mariana
 Marie
 Maya
+Michele
 Nessa
 Nicola
 Nicole
@@ -76,6 +84,7 @@ Rebecca
 Ruth
 Sandra
 Sarah
+Sian
 Sophie
 Tiffanie
 Tiffany
