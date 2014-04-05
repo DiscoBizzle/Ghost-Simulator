@@ -30,6 +30,13 @@ class Player(GameObject):
             self._fear = MAX_FEAR
     fear = property(get_fear, set_fear)
 
+    def learn_skill(self, skill):
+        if skill.can_be_learnt(self):
+            self.skills_learnt.append(skill[name])
+            for effect in skill.effects:
+                #apply effect
+
+
 
     def update(self):
         # update velocity

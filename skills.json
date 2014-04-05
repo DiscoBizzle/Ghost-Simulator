@@ -1,9 +1,8 @@
 {
 "testskill":
   {
-  "name":"test",
   "prereqs":[],
-  "effect":"test"
+  "effects":"test"
   }
   
 
