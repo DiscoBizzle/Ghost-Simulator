@@ -9,6 +9,8 @@ class GameObject:
         self.dimensions = (w,h)
         self.velocity = (0,0)
         self.attributes = []
+        self.sprite = None
+        self.frameRect = None
 
     def update(self):
         self.move()
