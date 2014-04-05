@@ -20,11 +20,20 @@ class GameObject(object):
         self.update_timer = 0
         self.fear_timer = 0
 
+        #variables for animation
+        #self.sprite_sheet = spritesheet
+        self.animation_state = ANIM_DOWNIDLE
+        self.current_frame = 0
+        self.max_frames = 3
+        self.frame_rect = pygame.Rect(self.current_frame * SPRITE_WIDTH, self.animation_state * SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT)
+
+
     def update(self):
         if not self.velocity == (0, 0):
             self.move()
         self.rect = pygame.Rect(self.coord, self.dimensions)
         self.apply_fear()
+        self.animate()
 
     def apply_fear(self):
         for o in self.game_class.objects:
@@ -83,3 +92,6 @@ class GameObject(object):
 
         if not collision:
             self.coord = pro_pos
+
+    def animate(self):
+        self.current_frame += 1

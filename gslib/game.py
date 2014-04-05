@@ -14,8 +14,8 @@ from gslib import joy
 from gslib.constants import *
 # doesn't seem to be needed any more
 #if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
-#    # On NT like Windows versions smpeg video needs windb. -- 
-#    os.environ['SDL_VIDEODRIVER'] = 'windib'
+#    # On NT like Windows versions smpeg video needs windb. --
+#os.environ['SDL_VIDEODRIVER'] = ''
 
 try:
     from cStringIO import StringIO as BytesIO
@@ -110,9 +110,11 @@ class Game(object):
                 pass
             elif self.GameState == CUTSCENE:
                 if self.cutscene_started == True:
+                    print(movie.get_time(), movie.get_length(), movie.get_busy())
                     if not movie.get_busy():
                         self.GameState = MAIN_GAME
                         self.cutscene_started = False
+                        pygame.display.update()
                 else:
                     
                     self.surface.fill(blackColour)
@@ -123,7 +125,7 @@ class Game(object):
                         
                         #screen = pygame.display.set_mode((w, h))
                         
-                        movie.set_display(self.surface, pygame.Rect((5, 5), (w,h)))
+                        #movie.set_display(self.surface, pygame.Rect((5, 5), (w,h)))
                         
                         movie.play()
                         self.cutscene_started = True
