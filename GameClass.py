@@ -2,6 +2,8 @@ import pygame
 import PlayerClass
 from Constants import *
 import Menus
+import Maps
+import Graphics
 
 blackColour = pygame.Color(0, 0, 0)
 blueColour = pygame.Color(0, 0, 255)
@@ -41,6 +43,8 @@ class Game:
             pygame.MOUSEBUTTONDOWN: self.mouse_click,
             pygame.JOYHATMOTION: self.handle_joy
         }
+
+        self.map = Maps.Map('tiles/martin.png', 'tiles/martin.json')
 
     def gameLoop(self):
 
@@ -84,6 +88,7 @@ class Game:
             self.Menu.display()
         elif self.GameState == MAIN_GAME:
             if self.options['FOV']:
+                self.surface.blit(Graphics.draw_map(self.map), (0, 0))
                 self.surface.blit(self.player1.spriteSheet, self.player1.coord, self.player1.frameRect)
 
         if self.options['VOF']:
