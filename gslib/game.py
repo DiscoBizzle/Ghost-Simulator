@@ -9,6 +9,7 @@ from gslib import maps
 from gslib import character
 from gslib import graphics
 from gslib import sound
+from gslib import joy
 from gslib.constants import *
 # doesn't seem to be needed any more
 #if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
@@ -61,20 +62,18 @@ class Game(object):
         field.set_alpha(100)
         self.field = field
 
-        joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
-        for joystick in joysticks:
-            joystick.init()
+        joy.init_joys()
 
         self.event_map = {
             pygame.KEYDOWN: self.handle_keys,
             pygame.KEYUP: self.handle_keys,
             pygame.QUIT: self.quit_game,
             pygame.MOUSEBUTTONDOWN: self.mouse_click,
-            pygame.JOYHATMOTION: self.handle_joy,
-            pygame.JOYBUTTONUP: self.handle_joy,
-            pygame.JOYAXISMOTION: self.handle_joy,
-            pygame.JOYBUTTONDOWN: self.handle_joy,
-            pygame.JOYBALLMOTION: self.handle_joy,
+            pygame.JOYHATMOTION: (lambda event: joy.handle_joy(self, event)),
+            pygame.JOYBUTTONUP: (lambda event: joy.handle_joy(self, event)),
+            pygame.JOYAXISMOTION: (lambda event: joy.handle_joy(self, event)),
+            pygame.JOYBUTTONDOWN: (lambda event: joy.handle_joy(self, event)),
+            pygame.JOYBALLMOTION: (lambda event: joy.handle_joy(self, event)),
         }
 
         sound.start_next_music(self.music_list)
@@ -212,44 +211,6 @@ class Game(object):
                 return
         self.disp_object_stats = False
         self.object_stats = None
-
-    def handle_joy(self, event):
-        if event.type == pygame.JOYHATMOTION:
-            x, y = event.value
-            if x == -1:
-                self.keys[pygame.K_LEFT] = True
-            elif x == 1:
-                self.keys[pygame.K_RIGHT] = True
-            elif x == 0:
-                self.keys[pygame.K_LEFT] = False
-                self.keys[pygame.K_RIGHT] = False
-            if y == -1:
-                self.keys[pygame.K_DOWN] = True
-            elif y == 1:
-                self.keys[pygame.K_UP] = True
-            elif y == 0:
-                self.keys[pygame.K_DOWN] = False
-                self.keys[pygame.K_UP] = False
-        if event.type == pygame.JOYBUTTONDOWN:
-            if event.button == 0:
-                self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
-            elif event.button == 1:
-                self.keys[pygame.K_ESCAPE] = True
-            elif event.button == 2:
-                self.options['FOV'] = False
-            elif event.button == 3:
-                self.options['VOF'] = True
-        if event.type == pygame.JOYBUTTONUP:
-            if event.button == 0:
-                pass
-            elif event.button == 1:
-                self.keys[pygame.K_ESCAPE] = False
-            elif event.button == 2:
-                self.options['FOV'] = True
-            elif event.button == 3:
-                self.options['VOF'] = False
-
-
 
     def quit_game(self, _):
         self.gameRunning = False
