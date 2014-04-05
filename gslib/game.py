@@ -38,6 +38,8 @@ class Game:
         self.clock = pygame.time.Clock()
         self.msPassed = 0
 
+        self.fps_clock = pygame.time.Clock()
+
         self.cameraCoords = (0,0)
 
         self.player1 = player.Player(self, 100,100,SPRITE_WIDTH, SPRITE_HEIGHT)
@@ -83,6 +85,9 @@ class Game:
 
         while self.gameRunning:
 
+            self.clock.tick()
+            self.msPassed += self.clock.get_time()
+
             # poll event queue
             for event in pygame.event.get():
                 response = self.event_map.get(event.type)
@@ -101,8 +106,7 @@ class Game:
             elif self.GameState == MAIN_MENU:
                 pass
             elif self.GameState == MAIN_GAME:
-                self.clock.tick()
-                self.msPassed += self.clock.get_time()
+                pass
             elif self.GameState == CUTSCENE:
                 if self.cutscene_started == True:
                     if not movie.get_busy():
@@ -125,11 +129,12 @@ class Game:
                 pass
 
 
-            if self.msPassed > 30:
+            if self.msPassed > (1.0/30)*1000:
                 self.update()
                 self.msPassed = 0
 
-            self.main_game_draw()
+                self.fps_clock.tick()
+                self.main_game_draw()
 
     def update(self):
         # this is fixed timestep, 30 FPS. if game runs slower, we lag.
@@ -162,7 +167,7 @@ class Game:
                 fear_bar.fill((255, 0, 0))
                 self.surface.blit(fear_bar, (size[0], self.dimensions[1]-32))
 
-                self.surface.blit(font.render('FPS: ' + str(int(self.clock.get_fps())), True, (255, 255, 0)), (0, self.dimensions[1] - 100))
+                self.surface.blit(font.render('FPS: ' + str(int(self.fps_clock.get_fps())), True, (255, 255, 0)), (0, self.dimensions[1] - 100))
 
                 if self.disp_object_stats:
                     self.surface.blit(self.object_stats[0], self.object_stats[1])
@@ -226,7 +231,7 @@ class Game:
                 self.keys[pygame.K_UP] = False
         if event.type == pygame.JOYBUTTONDOWN:
             if event.button == 0:
-                self.keys[pygame.K_m] = True
+                self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
             elif event.button == 1:
                 self.keys[pygame.K_ESCAPE] = True
             elif event.button == 2:
@@ -235,7 +240,7 @@ class Game:
                 self.options['VOF'] = True
         if event.type == pygame.JOYBUTTONUP:
             if event.button == 0:
-                self.keys[pygame.K_m] = False
+                pass
             elif event.button == 1:
                 self.keys[pygame.K_ESCAPE] = False
             elif event.button == 2:
