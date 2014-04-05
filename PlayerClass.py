@@ -19,7 +19,6 @@ def check_screen_collision(p):
     return p.coord
 
 
-
 class Player:
     def __init__(self,x,y,w,h):
         self.coord = (x,y)  # top left

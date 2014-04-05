@@ -3,27 +3,6 @@ import pygame
 
 screen = pygame.display.set_mode((800, 800))
 
-# def test():
-#     pygame.init()
-#     pygame.font.init()á
-#     screen = pygame.display.set_mode((800, 800))
-#
-#     tileset = Maps.Tileset('tileset_test.png')
-#     background = [[0, 1, 2],
-#                   [1, 2, 0],
-#                   [2, 1, 0],
-#                   [1, 2, 0],
-#                   ]
-#
-#     surf = draw_grid(background, tileset)
-#
-#     screen.blit(surf, (0, 0))
-#
-#     pygame.display.update()
-#     raw_input()
-#     pygame.quit()
-
-
 def draw_map(m):
     grid_size = 20
     nw = len(m.grid)
@@ -36,6 +15,3 @@ def draw_map(m):
             surf.blit(m.tileset, (i * grid_size, j * grid_size), area)
 
     return surf
-
-
-# test()

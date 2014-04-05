@@ -16,7 +16,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.msPassed = 0
 
-        self.player1 = PlayerClass.Player(100,100,20,20)
+        self.player1 = PlayerClass.Player(100,100,40,40)
 
         self.keys = { pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False }
 
