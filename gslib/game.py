@@ -43,12 +43,12 @@ class Game(object):
 
         self.cameraCoords = (0,0)
 
-        self.player1 = player.Player(self, 100,100,SPRITE_WIDTH, SPRITE_HEIGHT)
+        self.player1 = player.Player(self, 0, 0,SPRITE_WIDTH, SPRITE_HEIGHT)
 
         self.objects = [self.player1]
 
-        for i in range(0):
-            self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
+        for i in range(100):
+            self.objects.append(character.Character(self, 0, 0, 16, 16, character.gen_character()))
 
         self.disp_object_stats = False
         self.object_stats = None
