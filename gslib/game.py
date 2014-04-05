@@ -130,12 +130,6 @@ class Game(object):
                         print "Video not found: " + self.cutscene_next
                         self.GameState = MAIN_MENU
 
-            # poll event queue
-            for event in pygame.event.get():
-                response = self.event_map.get(event.type)
-                if response is not None:
-                    response(event)
-
             if self.msPassed > 33:
                 self.update()
                 self.msPassed = 0
