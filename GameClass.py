@@ -21,7 +21,7 @@ class Game:
 
         self.cameraCoords = (0,0)
 
-        self.player1 = PlayerClass.Player(self, 100,100,40,40)
+        self.player1 = PlayerClass.Player(self, 100,100,SPRITE_WIDTH, SPRITE_HEIGHT)
 
         self.keys = { pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False, pygame.K_ESCAPE: False}
 
