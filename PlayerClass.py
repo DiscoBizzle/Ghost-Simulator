@@ -1,4 +1,5 @@
 from Constants import *
+import pygame
 
 
 def check_screen_collision(p):
@@ -25,5 +26,19 @@ class Player:
         self.dimensions = (w,h)
         self.velocity = (0,0)
 
-    def update(self):
+    def update(self, gameClass):
+        # update velocity
+        v_x, v_y = 0, 0
+        if gameClass.keys[pygame.K_DOWN]:
+            v_y += 5
+        if gameClass.keys[pygame.K_UP]:
+            v_y -= 5
+        if gameClass.keys[pygame.K_LEFT]:
+            v_x -= 5
+        if gameClass.keys[pygame.K_RIGHT]:
+            v_x += 5
+
+        self.velocity = (v_x, v_y)
+
+        # actually move
         self.coord = check_screen_collision(self)
