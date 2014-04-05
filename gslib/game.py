@@ -86,14 +86,16 @@ class Game(object):
 
         while self.gameRunning:
 
-            self.clock.tick()
-            self.msPassed += self.clock.get_time()
+            if self.GameState != CUTSCENE:
+                self.clock.tick()
+                self.msPassed += self.clock.get_time()
 
             # poll event queue
-            for event in pygame.event.get():
-                response = self.event_map.get(event.type)
-                if response is not None:
-                    response(event)
+            if self.GameState != CUTSCENE:
+                for event in pygame.event.get():
+                    response = self.event_map.get(event.type)
+                    if response is not None:
+                        response(event)
 
             if self.keys[pygame.K_ESCAPE] and self.GameState != CUTSCENE:
                 self.keys[pygame.K_ESCAPE] = False
@@ -114,10 +116,11 @@ class Game(object):
                     if not movie.get_busy():
                         self.GameState = MAIN_GAME
                         self.cutscene_started = False
-                        pygame.display.update()
+                        self.clock.get_time() # HACK
+                        # pygame.display.update()
                 else:
                     
-                    self.surface.fill(blackColour)
+                    # self.surface.fill(blackColour)
                     try:
                         f = BytesIO(open(self.cutscene_next, "rb").read())
                         movie = pygame.movie.Movie(f)
@@ -133,12 +136,15 @@ class Game(object):
                         print "Video not found: " + self.cutscene_next
                         self.GameState = MAIN_MENU
 
-            if self.msPassed > 33:
-                self.update()
-                self.msPassed = 0
+            if self.GameState != CUTSCENE:
+                if self.msPassed > 33:
+                    self.update()
+                    self.msPassed = 0
 
-                self.fps_clock.tick()
-                self.main_game_draw()
+                    self.fps_clock.tick()
+                    self.main_game_draw()
+                else:
+                    time.sleep(0.001)
             else:
                 time.sleep(0.001)
 
