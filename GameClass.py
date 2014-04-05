@@ -12,8 +12,7 @@ class Game:
         self.GameState = MAIN_MENU
         self.gameRunning = True
         self.dimensions = (width, height)
-        self.surface = pygame.Surface(self.dimensions)
-        self.doublingSurface = pygame.display.set_mode((self.dimensions[0] * 2, self.dimensions[1] * 2))
+        self.surface = pygame.display.set_mode(self.dimensions)
 
         self.clock = pygame.time.Clock()
         self.msPassed = 0
@@ -66,7 +65,6 @@ class Game:
         self.surface.blit(temp_surf, self.player1.coord)
 
         # now double!
-        pygame.transform.scale(self.surface, (self.dimensions[0] * 2, self.dimensions[1] * 2), self.doublingSurface)
         pygame.display.update()
 
     def handle_keys(self, event):
