@@ -10,6 +10,7 @@ class MainMenu(object):
         self.buttons['main_game'] = Button.Button(self, self.goto_main_game, pos=(60, 40), size=(100, 30), visible=True, text='BALL')
         self.buttons['FOV'] = Button.Button(self, self.FOV_toggle, pos=(60, 80), size=(200, 30), visible=True, text='Field of View: Yes')
         self.buttons['VOF'] = Button.Button(self, self.VOF_toggle, pos=(60, 120), size=(200, 30), visible=True, text='View of Field: No')
+        self.buttons['quit'] = Button.Button(self, self.quit, pos=(60, 240), size=(200, 30), visible=True, text='Quit')
 
     def display(self):
         # self.GameClass.surface.fill((0, 0, 0))
@@ -40,6 +41,9 @@ class MainMenu(object):
         else:
             self.GameClass.options['VOF'] = True
             self.buttons['VOF'].text = 'View of Field: Yes'
+
+    def quit(self):
+        self.GameClass.gameRunning = False
 
 
 class OptionsMenu(object):
