@@ -20,7 +20,8 @@ class GameObject(object):
         self.fear_timer = 0
 
     def update(self):
-        self.move()
+        if not self.velocity == (0, 0):
+            self.move()
         self.rect = pygame.Rect(self.coord, self.dimensions)
         self.apply_fear()
 
