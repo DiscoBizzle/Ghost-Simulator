@@ -6,7 +6,8 @@ from gslib.game_object import GameObject
 
 class Player(GameObject):
     def __init__(self, game_class, x, y, w, h):
-        GameObject.__init__(self, game_class, x, y, w, h)
+        sprite_sheet = pygame.image.load('characters/GhostSheet.png').convert()
+        GameObject.__init__(self, game_class, x, y, w, h, sprite_sheet)
 
         self.direction = DOWN
         self.animationState = ANIM_DOWNIDLE
@@ -14,9 +15,6 @@ class Player(GameObject):
         self.currentFrame = 0
         self.maxFrames = 3
         self.frameRect = pygame.Rect(self.currentFrame * SPRITE_WIDTH, self.animationState * SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT)
-
-        self.sprite = pygame.image.load('characters/GhostSheet.png').convert()
-        self.sprite.set_colorkey((255,0,255))
 
         self._fear = START_FEAR
         self.fears = ['player']

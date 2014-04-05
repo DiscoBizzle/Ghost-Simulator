@@ -4,7 +4,7 @@ import time
 from gslib.constants import *
 
 class GameObject(object):
-    def __init__(self, game_class, x, y, w, h):
+    def __init__(self, game_class, x, y, w, h, sprite_sheet):
         self.game_class = game_class
 
         self.coord = (x,y)  # top left
@@ -14,18 +14,18 @@ class GameObject(object):
         self.fear_radius = 50
         self.feared_by = []
         self.fears = []
-        self.sprite = None
-        self.frameRect = None
         self.rect = pygame.Rect(self.coord, self.dimensions)
         self.update_timer = 0
         self.fear_timer = 0
 
         #variables for animation
-        #self.sprite_sheet = spritesheet
+        self.sprite_sheet = sprite_sheet
         self.animation_state = ANIM_DOWNIDLE
+        self.frame_count = 0
         self.current_frame = 0
         self.max_frames = 3
         self.frame_rect = pygame.Rect(self.current_frame * SPRITE_WIDTH, self.animation_state * SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT)
+        self.sprite_sheet.set_colorkey((255,0,255))
 
 
     def update(self):
@@ -94,4 +94,22 @@ class GameObject(object):
             self.coord = pro_pos
 
     def animate(self):
-        self.current_frame += 1
+        self.frame_count += 1
+        if (self.frame_count % TICKS_PER_FRAME) == 0:
+            self.current_frame += 1
+
+        if self.current_frame > self.max_frames:
+            self.current_frame = 0
+
+        if self.velocity[1] > 0:
+            self.animation_state = ANIM_DOWNWALK
+        elif self.velocity[1] < 0:
+            self.animation_state = ANIM_UPWALK
+
+        if self.velocity[0] > 0:
+            self.animation_state = ANIM_RIGHTWALK
+        elif self.velocity[0] < 0:
+            self.animation_state = ANIM_LEFTWALK
+
+        self.frame_rect = pygame.Rect(self.current_frame * SPRITE_WIDTH, self.animation_state * SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT)
+
