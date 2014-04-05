@@ -22,7 +22,7 @@ except ImportError:
 blackColour = pygame.Color(0, 0, 0)
 blueColour = pygame.Color(0, 0, 255)
 
-class Game:
+class Game(object):
     def __init__(self, width, height):
         self.Menu = Menus.MainMenu(self)
         self.GameState = MAIN_MENU
