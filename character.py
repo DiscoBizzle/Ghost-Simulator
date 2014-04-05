@@ -163,6 +163,13 @@ class Character(GameObject):
         age, bio, self.fears = load_stats(name)
         return {'name': name, 'age': age, 'image_name': image, 'bio': bio}
 
+    def update(self):
+        self.update_timer += 1
+        if self.update_timer == 100:
+            self.update_timer = 0
+            self.velocity = (random.randint(-2, 2), random.randint(-2, 2))
+        GameObject.update(self)
+
     def draw_info_sheet(self):
         font_size = 20
         dim = w, h = (400, 200)

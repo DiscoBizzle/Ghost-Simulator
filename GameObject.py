@@ -13,6 +13,7 @@ class GameObject:
         self.sprite = None
         self.frameRect = None
         self.rect = pygame.Rect(self.coord, self.dimensions)
+        self.update_timer = 0
 
 
     def update(self):
