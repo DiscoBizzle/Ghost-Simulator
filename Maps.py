@@ -1,5 +1,6 @@
 import pygame
 import Graphics
+from Constants import *
 
 
 def test():
@@ -20,7 +21,7 @@ def test():
 class Tile(object):
     def __init__(self, n):
         self.tileset_coord = (n % 3, 0)
-        self.tileset_tile_size = 40
+        self.tileset_tile_size = TILE_SIZE
         self.tileset_area = (self.tileset_coord[0] * self.tileset_tile_size, self.tileset_coord[1] * self.tileset_tile_size, self.tileset_tile_size, self.tileset_tile_size)
         self.walkable = True
 
@@ -28,7 +29,6 @@ class Tile(object):
 class Map(object):
     def __init__(self, tileset):
         self.tileset = pygame.image.load(tileset).convert()
-        self.tilseset_tile_size = 40  # tile size in file
         self.grid = [[Tile(i*j) for i in range(10)] for j in range(10)]
 
 

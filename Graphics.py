@@ -5,7 +5,7 @@ screen = pygame.display.set_mode((800, 800))
 
 # def test():
 #     pygame.init()
-#     pygame.font.init()
+#     pygame.font.init()á
 #     screen = pygame.display.set_mode((800, 800))
 #
 #     tileset = Maps.Tileset('tileset_test.png')
