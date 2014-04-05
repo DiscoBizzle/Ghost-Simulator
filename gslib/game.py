@@ -114,6 +114,9 @@ class Game:
                     
                     movie.play()
                     self.cutscene_started = True
+            elif self.GameState == GAME_OVER:
+                pass
+
 
             # poll event queue
             for event in pygame.event.get():
@@ -162,6 +165,15 @@ class Game:
 
                 if self.disp_object_stats:
                     self.surface.blit(self.object_stats[0], self.object_stats[1])
+        elif self.GameState == GAME_OVER:
+            font = pygame.font.SysFont('helvetica', 80)
+            size = font.size("GAME OVER")
+            margin = (self.dimensions[0]-size[0])/2
+            self.surface.blit(font.render("GAME OVER", True, (255, 255, 255)), (margin, 100))
+            font = pygame.font.SysFont('helvetica', 20)
+            size = font.size("press esc scrub")
+            margin = (self.dimensions[0]-size[0])/2
+            self.surface.blit(font.render("press esc scrub", True, (255, 255, 255)), (margin, 200))
 
         if self.options['VOF'] and self.GameState != CUTSCENE:
             self.surface.blit(self.field, (0, 0))
