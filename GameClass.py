@@ -78,10 +78,11 @@ class Game:
     def gameLoop(self):
 
         while self.gameRunning:
-            if self.keys[pygame.K_ESCAPE]:
+            if self.keys[pygame.K_ESCAPE] and self.GameState != CUTSCENE:
                 self.keys[pygame.K_ESCAPE] = False
                 self.GameState = MAIN_MENU 
             if self.keys[pygame.K_m]:
+                self.keys[pygame.K_ESCAPE] = False
                 self.GameState = CUTSCENE
 
             if self.GameState == STARTUP:
@@ -93,7 +94,9 @@ class Game:
                 self.msPassed += self.clock.get_time()
             elif self.GameState == CUTSCENE:
                 if self.CutsceneStarted == True:
-                    pass
+                    if not movie.get_busy():
+                        self.GameState = MAIN_GAME
+                        self.CutsceneStarted = False
                 else:
                     
                     self.surface.fill(blackColour)
@@ -123,6 +126,7 @@ class Game:
     def update(self):
         # this is fixed timestep, 30 FPS. if game runs slower, we lag.
         # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
+        #self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
         for object in self.objects:
             object.update()
 
@@ -151,7 +155,7 @@ class Game:
 
                 font = pygame.font.SysFont('helvetica', 20)
                 size = font.size("FEAR")
-                fear_txt = font.render("FEAR", 0, (200, 200, 200))
+                fear_txt = font.render("FEAR", True, (200, 200, 200))
                 self.surface.blit(fear_txt, (0, self.dimensions[1]-32))
                 fear_bar = pygame.Surface((self.dimensions[0]*self.player1.fear/MAX_FEAR, 32))
                 fear_bar.fill((255, 0, 0))
@@ -162,10 +166,12 @@ class Game:
                     fg = font2.render("FEARGASM", 0, (200, self.bees, self.bees))
                     self.surface.blit(fg, ((GAME_WIDTH - fg.get_width()) / 2, (GAME_HEIGHT - fg.get_height()) / 2))
 
+                self.surface.blit(font.render('FPS: ' + str(int(self.clock.get_fps())), True, (255, 255, 0)), (0, self.dimensions[1] - 100))
+
                 if self.disp_object_stats:
                     self.surface.blit(self.object_stats[0], self.object_stats[1])
 
-        if self.options['VOF']:
+        if self.options['VOF'] and self.GameState != CUTSCENE:
             self.surface.blit(self.field, (0, 0))
         pygame.display.update()
 
