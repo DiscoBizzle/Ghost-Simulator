@@ -101,4 +101,4 @@ class Button(object):
                 self.perf_function()
 
     def perf_function(self):
-        exec ("self.owner." + self.function)
+        self.function()
