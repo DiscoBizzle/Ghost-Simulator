@@ -1,5 +1,5 @@
 from Constants import *
-
+import pygame
 
 class GameObject:
     def __init__(self, game_class, x, y, w, h):
@@ -9,6 +9,9 @@ class GameObject:
         self.dimensions = (w,h)
         self.velocity = (0,0)
         self.attributes = []
+        self.sprite = None
+        self.rect = pygame.Rect(self.coord, self.dimensions)
+
 
     def update(self):
         self.move()
