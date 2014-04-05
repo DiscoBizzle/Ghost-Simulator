@@ -6,18 +6,25 @@ blackColour = pygame.Color(0, 0, 0)
 blueColour = pygame.Color(0, 0, 255)
 
 class Game:
-    def __init__(self, windowWidth, windowHeight):
+    def __init__(self, width, height):
         self.GameState = MAIN_GAME
         self.gameRunning = True
-        self.winDimensions = (windowWidth, windowHeight)
-        self.windowSurface = pygame.display.set_mode(self.winDimensions)
+        self.dimensions = (width, height)
+        self.surface = pygame.Surface(self.dimensions)
+        self.doublingSurface = pygame.display.set_mode((self.dimensions[0] * 2, self.dimensions[1] * 2))
 
         self.clock = pygame.time.Clock()
         self.msPassed = 0
 
-        self.player1 = PlayerClass.Player(100,100,20,20)
+        self.player1 = PlayerClass.Player(100,100,40,40)
 
         self.keys = { pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False }
+
+        self.event_map = {
+            pygame.KEYDOWN: self.handle_keys,
+            pygame.KEYUP: self.handle_keys,
+            pygame.QUIT: self.quit_game
+        }
 
     def gameLoop(self):
         while self.gameRunning:
@@ -31,10 +38,9 @@ class Game:
 
                 # poll event queue
                 for event in pygame.event.get():
-                    if (event.type == pygame.KEYDOWN) or (event.type == pygame.KEYUP):
-                        self.handleInput(event)
-                    elif event.type == pygame.QUIT:
-                        self.gameRunning = False
+                    response = self.event_map.get(event.type)
+                    if response is not None:
+                        response(event)
 
                 if self.msPassed > 30:
                     self.update()
@@ -50,16 +56,17 @@ class Game:
 
     def draw(self):
         # this runs faster than game update. animation can be done here with no problems.
-        self.windowSurface.fill(blackColour)
+        self.surface.fill(blackColour)
         temp_surf = pygame.Surface((40, 40))
 
         pygame.draw.circle(temp_surf, blueColour, (20, 20), 20, 0)
-        self.windowSurface.blit(temp_surf, self.player1.coord)
+        self.surface.blit(temp_surf, self.player1.coord)
+
+        # now double!
+        pygame.transform.scale(self.surface, (self.dimensions[0] * 2, self.dimensions[1] * 2), self.doublingSurface)
         pygame.display.update()
 
-    def handleInput(self, event):
-        if event.type == pygame.QUIT:
-            self.gameRunning = False  # close the window, foo
+    def handle_keys(self, event):
 
         if event.type == pygame.KEYDOWN:
             if event.key in self.keys:
@@ -68,3 +75,5 @@ class Game:
             if event.key in self.keys:
                 self.keys[event.key] = False
 
+    def quit_game(self, _):
+        self.gameRunning = False
