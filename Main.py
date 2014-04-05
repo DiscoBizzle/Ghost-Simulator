@@ -4,7 +4,7 @@ import GameClass
 import PlayerClass
 from Constants import *
 
-Game = GameClass.Game(WINDOW_WIDTH, WINDOW_HEIGHT)
+Game = GameClass.Game(GAME_WIDTH, GAME_HEIGHT)
 
 Game.gameLoop()
 

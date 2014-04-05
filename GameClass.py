@@ -6,11 +6,12 @@ blackColour = pygame.Color(0, 0, 0)
 blueColour = pygame.Color(0, 0, 255)
 
 class Game:
-    def __init__(self, windowWidth, windowHeight):
+    def __init__(self, width, height):
         self.GameState = MAIN_GAME
         self.gameRunning = True
-        self.winDimensions = (windowWidth, windowHeight)
-        self.windowSurface = pygame.display.set_mode(self.winDimensions)
+        self.dimensions = (width, height)
+        self.surface = pygame.Surface(self.dimensions)
+        self.doublingSurface = pygame.display.set_mode((self.dimensions[0] * 2, self.dimensions[1] * 2))
 
         self.clock = pygame.time.Clock()
         self.msPassed = 0
@@ -50,11 +51,14 @@ class Game:
 
     def draw(self):
         # this runs faster than game update. animation can be done here with no problems.
-        self.windowSurface.fill(blackColour)
+        self.surface.fill(blackColour)
         temp_surf = pygame.Surface((40, 40))
 
         pygame.draw.circle(temp_surf, blueColour, (20, 20), 20, 0)
-        self.windowSurface.blit(temp_surf, self.player1.coord)
+        self.surface.blit(temp_surf, self.player1.coord)
+
+        # now double!
+        pygame.transform.scale(self.surface, (self.dimensions[0] * 2, self.dimensions[1] * 2), self.doublingSurface)
         pygame.display.update()
 
     def handleInput(self, event):
