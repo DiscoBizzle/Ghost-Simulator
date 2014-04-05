@@ -8,9 +8,10 @@ import character
 import sys
 import os
 
-if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
-    # On NT like Windows versions smpeg video needs windb.
-    os.environ['SDL_VIDEODRIVER'] = 'windib'
+# doesn't seem to be needed any more
+#if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
+#    # On NT like Windows versions smpeg video needs windb. -- 
+#    os.environ['SDL_VIDEODRIVER'] = 'windib'
 
 try:
     from cStringIO import StringIO as BytesIO
@@ -38,7 +39,7 @@ class Game:
 
         self.objects = [self.player1]
 
-        for i in range(10):
+        for i in range(2):
             self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
 
         self.disp_object_stats = False

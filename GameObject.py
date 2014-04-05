@@ -1,7 +1,6 @@
 from Constants import *
 import pygame
 
-
 class GameObject:
     def __init__(self, game_class, x, y, w, h):
         self.game_class = game_class
@@ -9,16 +8,29 @@ class GameObject:
         self.coord = (x,y)  # top left
         self.dimensions = (w,h)
         self.velocity = (0,0)
-        self.attributes = []
+        self.max_velocity = 1
+        self.fear_radius = 50
+        self.feared_by = []
+        self.fears = []
         self.sprite = None
         self.frameRect = None
         self.rect = pygame.Rect(self.coord, self.dimensions)
         self.update_timer = 0
-
+        self.fear_timer = 0
 
     def update(self):
         self.move()
         self.rect = pygame.Rect(self.coord, self.dimensions)
+        self.apply_fear()
+
+    def apply_fear(self):
+        for o in self.game_class.objects:
+            if o is not self:
+                for f in self.fears:
+                    if f in o.feared_by:
+                        if (o.coord[0] - self.coord[0])**2 + (o.coord[1] - self.coord[1])**2 < self.fear_radius**2:
+                            o.fear_timer = 5
+
 
     def move(self):
         pro_pos = (self.coord[0] + self.velocity[0], self.coord[1] + self.velocity[1])
