@@ -5,6 +5,17 @@ import Menus
 import Maps
 import Graphics
 import character
+import sys
+import os
+
+if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
+    # On NT like Windows versions smpeg video needs windb.
+    os.environ['SDL_VIDEODRIVER'] = 'windib'
+
+try:
+    from cStringIO import StringIO as BytesIO
+except ImportError:
+    from io import BytesIO
 
 blackColour = pygame.Color(0, 0, 0)
 blueColour = pygame.Color(0, 0, 255)
@@ -13,6 +24,7 @@ class Game:
     def __init__(self, width, height):
         self.Menu = Menus.MainMenu(self)
         self.GameState = MAIN_MENU
+        self.CutsceneStarted = False
         self.gameRunning = True
         self.dimensions = (width, height)
         self.surface = pygame.display.set_mode(self.dimensions)
@@ -61,7 +73,7 @@ class Game:
         while self.gameRunning:
             if self.keys[pygame.K_ESCAPE]:
                 self.keys[pygame.K_ESCAPE] = False
-                self.GameState = MAIN_MENU
+                self.GameState = CUTSCENE
             if self.GameState == STARTUP:
                 pass
             elif self.GameState == MAIN_MENU:
@@ -69,6 +81,22 @@ class Game:
             elif self.GameState == MAIN_GAME:
                 self.clock.tick()
                 self.msPassed += self.clock.get_time()
+            elif self.GameState == CUTSCENE:
+                if self.CutsceneStarted == True:
+                    pass
+                else:
+                    
+                    self.surface.fill(blackColour)
+                    f = BytesIO(open("movie.mpg", "rb").read())
+                    movie = pygame.movie.Movie(f)
+                    w, h = movie.get_size()
+                    
+                    #screen = pygame.display.set_mode((w, h))
+                    
+                    movie.set_display(self.surface, pygame.Rect((5, 5), (w,h)))
+                    
+                    movie.play()
+                    self.CutsceneStarted = True
 
             # poll event queue
             for event in pygame.event.get():
@@ -91,7 +119,8 @@ class Game:
     def main_game_draw(self):
         # this runs faster than game update. animation can be done here with no problems.
 
-        self.surface.fill(blackColour)
+        if self.GameState != CUTSCENE:
+            self.surface.fill(blackColour)
 
         if self.GameState == STARTUP:
             pass
