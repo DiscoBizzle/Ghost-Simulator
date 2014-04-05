@@ -89,7 +89,7 @@ class GameObject(object):
 
             if self.velocity[0] < 0: #if moving left, check collision with leftmost 3 tiles, push out if collision
 
-                for nj in range (0,2):
+                for nj in range (j,j+2):
                     if nj > 0 and nj < LEVEL_HEIGHT/TILE_SIZE:
                         if not self.game_class.map.grid[i][nj].walkable:
                             if self.rect.colliderect(self.game_class.map.grid[i][nj].rect):
