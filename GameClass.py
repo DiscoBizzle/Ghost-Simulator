@@ -5,6 +5,7 @@ import Menus
 import Maps
 import Graphics
 import character
+import sound
 import sys
 import os
 
@@ -29,6 +30,8 @@ class Game:
         self.gameRunning = True
         self.dimensions = (width, height)
         self.surface = pygame.display.set_mode(self.dimensions)
+        self.music_list = sound.get_music_list()
+        #self.sound_dict = sound.load_all_sounds()
 
         self.clock = pygame.time.Clock()
         self.msPassed = 0
@@ -68,6 +71,7 @@ class Game:
         }
 
         self.map = Maps.Map('tiles/martin.png', 'tiles/martin.json')
+        sound.start_next_music(self.music_list)
 
     def gameLoop(self):
 
