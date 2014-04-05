@@ -7,9 +7,9 @@ class MainMenu(object):
     def __init__(self, GameClass):
         self.GameClass = GameClass
         self.buttons = {}
-        self.buttons['Ball'] = Button.Button(self, 'goto_ball()', pos=(60, 40), size=(100, 30), visible=True, text='BALL')
-        self.buttons['FOV'] = Button.Button(self, 'FOV_toggle()', pos=(60, 80), size=(200, 30), visible=True, text='Field of View: Yes')
-        self.buttons['VOF'] = Button.Button(self, 'VOF_toggle()', pos=(60, 120), size=(200, 30), visible=True, text='View of Field: No')
+        self.buttons['Ball'] = Button.Button(self, self.goto_ball, pos=(60, 40), size=(100, 30), visible=True, text='BALL')
+        self.buttons['FOV'] = Button.Button(self, self.FOV_toggle, pos=(60, 80), size=(200, 30), visible=True, text='Field of View: Yes')
+        self.buttons['VOF'] = Button.Button(self, self.VOF_toggle, pos=(60, 120), size=(200, 30), visible=True, text='View of Field: No')
 
     def display(self):
         # self.GameClass.surface.fill((0, 0, 0))

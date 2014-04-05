@@ -5,6 +5,7 @@ dogs
 fear itself
 hair
 jelly
+kittens
 light
 rabbits
 snakes
