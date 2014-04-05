@@ -12,11 +12,11 @@ class MainMenu(object):
         self.buttons['VOF'] = Button.Button(self, 'VOF_toggle()', pos=(60, 120), size=(200, 30), visible=True, text='View of Field: No')
 
     def display(self):
-        self.GameClass.surface.fill((0, 0, 0))
+        # self.GameClass.surface.fill((0, 0, 0))
         for button in self.buttons.itervalues():
             self.GameClass.surface.blit(button.surface, button.pos) # self.buttons[button]
 
-        pygame.display.update()
+        # pygame.display.update()
 
     def mouse_event(self, event):
         for button in self.buttons.itervalues():
