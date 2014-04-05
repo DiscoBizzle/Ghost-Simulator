@@ -4,10 +4,13 @@ WHITE = (255, 255, 255)
 GREY = (60, 60, 60)
 
 
-def test_info_draw(Character):
+def test_info_draw():
+    pygame.init()
+    pygame.font.init()
     screen = pygame.display.set_mode((800, 800))
-    screen.blit(Character.info_sheet, (0, 0))
-    screen.blit(Character.sprite, (Character.info_sheet.get_width() + 10, 0))
+    char = Character('Sprite')
+    screen.blit(char.info_sheet, (0, 0))
+    screen.blit(char.sprite, (char.info_sheet.get_width() + 10, 0))
     pygame.display.update()
     raw_input()
     pygame.quit()
@@ -33,7 +36,6 @@ def truncline(text, font, maxwidth):
         cut = 0
         a = 0
         done = 1
-        old = None
         while l > maxwidth:
             a += 1
             n = text.rsplit(None, a)[0]
@@ -94,7 +96,7 @@ class Character(object):
         self.fears = []
         self.stats = self.get_stats(name)
         self.info_sheet = self.draw_info_sheet()
-        self.sprite = pygame.image.load('characters/' + name + '_top.png')
+        self.sprite = pygame.image.load('characters/' + name + '_top.png').convert()
         self.sprite.set_colorkey((255, 0, 255))
 
     def get_stats(self, name):
@@ -111,7 +113,7 @@ class Character(object):
         fill_background(surf, border)
 
         # draw character image
-        im = pygame.image.load(self.stats['image_name'])
+        im = pygame.image.load(self.stats['image_name']).convert()
         oldw = im.get_width()
         oldh = im.get_height()
         frac = (h - border*2) / float(oldh)
@@ -147,7 +149,4 @@ class Character(object):
 
         return surf
 
-
-# pygame.init()
-# pygame.font.init()
-# test_info_draw(Character('Sprite'))
+test_info_draw()
