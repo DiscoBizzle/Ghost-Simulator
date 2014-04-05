@@ -70,7 +70,7 @@ class Player(GameObject):
             self.fear -= FEAR_PER_TICK
 
         if self.fear <= 0:
-            self.game_class.GameState = MAIN_MENU
+            self.game_class.GameState = GAME_OVER
             self.fear = START_FEAR
 
         # move etc.
