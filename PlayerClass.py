@@ -1,6 +1,8 @@
 from Constants import *
 import pygame
 
+from GameObject import GameObject
+
 
 def check_screen_collision(p):
     pro_pos = (p.coord[0] + p.velocity[0], p.coord[1] + p.velocity[1])
@@ -26,11 +28,9 @@ def check_screen_collision(p):
     return x, y
 
 
-class Player:
+class Player(GameObject):
     def __init__(self,x,y,w,h):
-        self.coord = (x,y)  # top left
-        self.dimensions = (w,h)
-        self.velocity = (0,0)
+        GameObject.__init__(self, x, y, w, h)
 
         self.animationState = ANIM_IDLE
         self.frameCount = 0 #no. of frames since game started
