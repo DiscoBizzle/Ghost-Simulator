@@ -1,4 +1,5 @@
 import pygame
+import random
 
 WHITE = (255, 255, 255)
 GREY = (60, 60, 60)
@@ -7,11 +8,13 @@ GREY = (60, 60, 60)
 def test():
     pygame.init()
     pygame.font.init()
+    random.seed()
     screen = pygame.display.set_mode((800, 800))
-    char = Character('Sprite')
+    char = gen_character({'image_name': 'characters/Sprite_front.png'})
     screen.blit(char.info_sheet, (0, 0))
     screen.blit(char.sprite, (char.info_sheet.get_width() + 10, 0))
     pygame.display.update()
+    print char.fears
     raw_input()
     pygame.quit()
 
@@ -70,10 +73,14 @@ def text_wrap(text, font, maxwidth):
     return wrapped
 
 
-def load_stats(name):
-    f = open('characters/' + name + '.txt')
-    age = f.readline()
-    age = age.strip()
+def load_stats(fname):
+    f = open('characters/' + fname)
+    age = f.readline().strip()
+    try:
+        age = int(age)
+    except ValueError:
+        pass
+
 
     bio = ''
     fears = []
@@ -90,13 +97,59 @@ def load_stats(name):
     print fears
     return age, bio, fears
 
+def gen_character(stats=None):
+    """Generate a character based on the stats dictionary.
 
-class Character(object):
-    def __init__(self, name):
-        self.fears = []
-        self.stats = self.get_stats(name)
+    Any missing parameters in the dictionary are generated randomly.
+
+      - age: integer
+      - bio: string
+      - fears: list of strings
+      - name: string
+      - gender: 'm' or 'f'
+    """
+    if stats is None:
+        stats = {}
+    stats.setdefault('age', random.randrange(151))
+    stats.setdefault('bio', gen_bio())
+    stats.setdefault('fears', gen_fears())
+    stats.setdefault('gender', random.choice(('m','f')))
+    stats.setdefault('name', gen_name(stats['gender']))
+
+    return Character(stats)
+
+def choose_n_lines(n, fname):
+    res = []
+    with open(fname) as f:
+        lines = f.readlines()
+        for i in range(n):
+            ix = random.randrange(len(lines))
+            res.append(lines.pop(ix).strip())
+    return res
+
+def gen_bio():
+    return ' '.join(choose_n_lines(3, "characters/bio.txt"))
+
+def gen_fears():
+    return choose_n_lines(random.randrange(1, 4), "characters/fears.txt")
+
+def gen_name(gender):
+    fname = "characters/first_names_{}.txt".format(gender)
+
+    first_name = choose_n_lines(1, fname)[0]
+    second_name = choose_n_lines(1, "characters/second_names.txt")[0]
+
+    while random.random() > 0.9:
+        second_name = "{}-{}".format(second_name, choose_n_lines(1, "characters/second_names.txt")[0])
+
+    return "{} {}".format(first_name, second_name)
+
+class Character(pygame.sprite.Sprite):
+    def __init__(self, stats):
+        self.fears = stats['fears']
+        self.stats = stats
         self.info_sheet = self.draw_info_sheet()
-        self.sprite = pygame.image.load('characters/' + name + '_top.png').convert()
+        self.sprite = pygame.image.load('characters/Sprite_top.png').convert()
         self.sprite.set_colorkey((255, 0, 255))
 
     def get_stats(self, name):
@@ -124,7 +177,7 @@ class Character(object):
         # draw name/age and text boxes
         font = pygame.font.SysFont('comic sans', font_size)
         name_text = font.render('Name: ' + self.stats['name'], 0, WHITE)
-        age_text = font.render('Age: ' + self.stats['age'], 0, WHITE)
+        age_text = font.render('Age: ' + str(self.stats['age']), 0, WHITE)
 
         text_left = neww + border*2
 
@@ -149,4 +202,6 @@ class Character(object):
 
         return surf
 
-test()
+
+if __name__ == "__main__":
+    test()
