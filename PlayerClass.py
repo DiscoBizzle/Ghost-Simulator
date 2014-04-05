@@ -68,7 +68,7 @@ class Player(GameObject):
         if v_x != 0 or v_y != 0:
             self.fear -= FEAR_PER_STEP * (v_x*v_x + v_y*v_y)
         else:
-            self.fear -= 30
+            self.fear -= FEAR_PER_TICK
 
         if self.fear <= 0:
             self.game_class.GameState = MAIN_MENU
