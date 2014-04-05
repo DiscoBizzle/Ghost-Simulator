@@ -1,4 +1,5 @@
 import pygame
+import time
 
 from gslib.constants import *
 
@@ -36,6 +37,7 @@ class GameObject(object):
 
 
     def move(self):
+        print '\n'
         collision = False
 
         pro_pos = (self.coord[0] + self.velocity[0], self.coord[1] + self.velocity[1])
@@ -59,6 +61,10 @@ class GameObject(object):
             for nj in range(j, j+2):
                 if ni > 0 and ni < LEVEL_WIDTH/TILE_SIZE and nj > 0 and nj < LEVEL_HEIGHT/TILE_SIZE:
                     if not self.game_class.map.grid[ni][nj].walkable:
+                        pygame.draw.rect(self.game_class.surface, (200, 0, 0), self.rect)
+                        pygame.draw.rect(self.game_class.surface, (0, 200, 0), self.game_class.map.grid[ni][nj].rect)
+                        pygame.display.update()
+                        time.sleep(0.1)
                         if self.rect.colliderect(self.game_class.map.grid[ni][nj].rect):
                             collision = True
                             print('collision!')
