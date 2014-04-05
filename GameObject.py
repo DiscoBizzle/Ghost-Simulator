@@ -8,7 +8,7 @@ class GameObject:
         self.coord = (x,y)  # top left
         self.dimensions = (w,h)
         self.velocity = (0,0)
-        self.game_class = game_class
+        self.attributes = []
 
     def move(self):
         pro_pos = (self.coord[0] + self.velocity[0], self.coord[1] + self.velocity[1])
