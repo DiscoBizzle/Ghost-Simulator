@@ -17,6 +17,8 @@ class Game:
 
         self.player1 = PlayerClass.Player(100,100,20,20)
 
+        self.keys = { pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False }
+
     def gameLoop(self):
         while self.gameRunning:
             if self.GameState == STARTUP:
@@ -44,7 +46,7 @@ class Game:
     def update(self):
         # this is fixed timestep, 30 FPS. if game runs slower, we lag.
         # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
-        self.player1.update()
+        self.player1.update(self)
 
     def draw(self):
         # this runs faster than game update. animation can be done here with no problems.
@@ -56,29 +58,10 @@ class Game:
         if event.type == pygame.QUIT:
             self.gameRunning = False  # close the window, foo
 
-        # Setting velocity is OK here, but you can't do any real physics in handleInput().
-        # Do not do anything framerate-dependent in this function.
-
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
-                self.player1.velocity = (self.player1.velocity[0],-5)
-            elif event.key == pygame.K_RIGHT:
-                self.player1.velocity = (5,self.player1.velocity[1])
-            elif event.key == pygame.K_LEFT:
-                self.player1.velocity = (-5,self.player1.velocity[1])
-            elif event.key == pygame.K_DOWN:
-                self.player1.velocity = (self.player1.velocity[0],5)
-
+            if event.key in self.keys:
+                self.keys[event.key] = True
         if event.type == pygame.KEYUP:
-            if event.key == pygame.K_UP:
-                if self.player1.velocity[1] < 0:
-                    self.player1.velocity = (self.player1.velocity[0],0)
-            elif event.key == pygame.K_RIGHT:
-                if self.player1.velocity[0] > 0:
-                    self.player1.velocity = (0,self.player1.velocity[1])
-            elif event.key == pygame.K_LEFT:
-                if self.player1.velocity[0] < 0:
-                    self.player1.velocity = (0,self.player1.velocity[1])
-            elif event.key == pygame.K_DOWN:
-                if self.player1.velocity[1] > 0:
-                    self.player1.velocity = (self.player1.velocity[0],0)
+            if event.key in self.keys:
+                self.keys[event.key] = False
+
