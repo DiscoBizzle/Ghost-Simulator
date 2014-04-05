@@ -7,7 +7,7 @@ setup(name="ghost-simulator",
       data_files=[('gs-chars', ['characters/' + fname for fname in [
                     'bio.txt', 'fears.txt', 'first_names_f.txt',
                     'first_names_m.txt', 'second_names.txt',
-                    'object_description.txt',
+                    'fears_description.txt',
                     'ghostSheet.png'
             ]]),
                   ('gs-tiles', ['tiles/' + fname for fname in [
