@@ -31,12 +31,12 @@ def load_map(map_filename): # Load a map from a map file
     
     tile_map = data['layers'][0]['tiles']
 
-    grid = [[0 for i in range(width)] for j in range(height)]
+    grid = [[0 for i in range(height)] for j in range(width)]
         
     for tile in tile_map:
         x = tile['x']
         y = tile['y']
-        grid[y][x] = tile['tile']
+        grid[x][y] = tile['tile']
 
     #print grid
 
@@ -53,7 +53,7 @@ class Tile(object):
         self.tileset_area = (self.tileset_coord[0] * TILE_SIZE, self.tileset_coord[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE)
         self.walkable = True
         self.tile_ref = tile_ref
-        self.rect = pygame.Rect((pos[1] * TILE_SIZE, pos[0] * TILE_SIZE, TILE_SIZE, TILE_SIZE))
+        self.rect = pygame.Rect((pos[0] * TILE_SIZE, pos[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE))
         if self.tile_ref in map.unwalkable:
             self.walkable = False
 
@@ -66,7 +66,7 @@ class Map(object):
 
         tile_type_grid = load_map(map_file)
 
-        self.grid = [[Tile(tile_type_grid[i][j], self, (i, j)) for i in range(len(tile_type_grid))] for j in range(len(tile_type_grid[0]))]
+        self.grid = [[Tile(tile_type_grid[i][j], self, (i, j)) for j in range(len(tile_type_grid[0]))] for i in range(len(tile_type_grid))]
 
 
 # test()
