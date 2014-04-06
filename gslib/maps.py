@@ -89,21 +89,14 @@ class Map(object):
         
         self.objects = []
 
-        for o_dict in loaded_objects:
-            if o_dict['object_type']=="cat":
-                #print o_dict['x'], o_dict['y']
-                #print type(o_dict['x'])
-                #self.objects.append(character.Character(game_class, o_dict['x'], o_dict['y'], 16, 16, character.gen_character()))
-                self.objects.append(character.Character(game_class, 0, 0, 16, 16, character.gen_character()))
-
-        #print loaded_objects
-
-        for i in range(1):
+        for i in range(2):
             self.objects.append(character.Character(game_class, 0, 0, 16, 16, character.gen_character()))
 
+        for o_dict in loaded_objects:
+            if o_dict['object_type']=="hat":
+                self.objects.append(character.Character(game_class, o_dict['x'], o_dict['y'], 16, 16, character.gen_character()))
 
-        for o in self.objects:
-            print o.coord
+
 
 if __name__ == '__main__':
     test()
