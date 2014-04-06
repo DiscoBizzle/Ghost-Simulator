@@ -1,4 +1,5 @@
 import os
+import os.path
 import sys
 import time
 
@@ -15,6 +16,7 @@ from gslib import player
 from gslib import skills
 from gslib import sound
 from gslib import text_box
+from gslib import key
 from gslib.constants import *
 # doesn't seem to be needed any more
 #if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
@@ -24,13 +26,12 @@ from gslib.constants import *
 blackColour = pygame.Color(0, 0, 0)
 blueColour = pygame.Color(0, 0, 255)
 
-
 class Game(object):
     def __init__(self, width, height):
         self.Menu = menus.MainMenu(self)
         self.GameState = MAIN_MENU
         self.cutscene_started = False
-        self.cutscene_next = VIDEO_DIR + "default.mpg"
+        self.cutscene_next = os.path.join(VIDEO_DIR, "default.mpg")
         self.gameRunning = True
         self.dimensions = (width, height)
         self.surface = pygame.display.set_mode(self.dimensions)
@@ -38,7 +39,6 @@ class Game(object):
         self.sound_dict = sound.load_all_sounds()
         self.credits = credits.Credits(self)
         self.options_menu = menus.OptionsMenu(self)
-
 
         self.clock = pygame.time.Clock()
         self.msPassed = 0
@@ -69,21 +69,23 @@ class Game(object):
                      pygame.K_ESCAPE: False, pygame.K_m: False, pygame.K_s: False, pygame.K_t: False}
 
         self.options = {'FOV': True, 'VOF': False, 'torch': False}
-        field = pygame.image.load('tiles/field.png')
+        field = pygame.image.load(os.path.join(TILES_DIR, 'field.png'))
         field = pygame.transform.scale(field, (GAME_WIDTH, GAME_HEIGHT))
         field.set_alpha(100)
         field.convert_alpha()
         self.field = field
 
-        light = pygame.image.load('light.png')
+        light = pygame.image.load(os.path.join(TILES_DIR, 'light.png'))
         light.convert_alpha()
         self.light = pygame.transform.scale(light, (200, 200))
+
+        self.key_controller = key.KeyController(self)
 
         self.joy_controller = joy.JoyController(self)
 
         self.event_map = {
-            pygame.KEYDOWN: self.handle_keys,
-            pygame.KEYUP: self.handle_keys,
+            pygame.KEYDOWN: self.key_controller.handle_keys,
+            pygame.KEYUP: self.key_controller.handle_keys,
             pygame.QUIT: self.quit_game,
             pygame.MOUSEBUTTONDOWN: self.mouse_click,
             pygame.JOYHATMOTION: self.joy_controller.handle_hat,
@@ -95,8 +97,8 @@ class Game(object):
 
         #sound.start_next_music(self.music_list)
 
-        self.map2 = maps.Map('tiles/martin.png', 'tiles/martin.json', self)
-        self.map = maps.Map('tiles/level2.png', 'tiles/level2.json', self)
+        self.map2 = maps.Map(os.path.join(TILES_DIR, 'martin.png'), os.path.join(TILES_DIR, 'martin.json'), self)
+        self.map = maps.Map(os.path.join(TILES_DIR, 'level2.png'), os.path.join(TILES_DIR, 'level2.json'), self)
 
         self.buttons = {}
         self.buttons['Possess'] = button.Button(self, self.possess, pos=(LEVEL_WIDTH, 0), size=(200, 30), visible=False,
@@ -116,9 +118,7 @@ class Game(object):
         self.objects += self.map.objects
 
     def gameLoop(self):
-
         while self.gameRunning:
-
             # Update clock & pump event queue.
             # We cannot do this at the same time as playing a cutscene on linux; pygame.movie is shite.
             if not (self.GameState == CUTSCENE and (
@@ -146,7 +146,6 @@ class Game(object):
         # this is fixed timestep, 30 FPS. if game runs slower, we lag.
         # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
         #self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
-
         self.camera_coords = self.calc_camera_coord()
 
         if self.GameState == MAIN_GAME:
@@ -179,7 +178,6 @@ class Game(object):
 
     def main_game_draw(self):
         # this runs faster than game update. animation can be done here with no problems.
-
         if self.GameState != CUTSCENE:
             self.surface.fill(blackColour)
 
@@ -198,19 +196,14 @@ class Game(object):
             graphics.draw_fear_bar(self)
             graphics.draw_fps(self)
             graphics.draw_character_stats(self)
-
         elif self.GameState == GAME_OVER:
             graphics.draw_game_over(self)
-
         elif self.GameState == CREDITS:
             self.credits.display()
-
         elif self.GameState == SKILLS_SCREEN:
             self.SkillMenu.display()
-            
         elif self.GameState == OPTIONS_MENU:
             self.options_menu.display()
-
         elif self.GameState == TEXTBOX_TEST:
             graphics.draw_text_box(self)
 
@@ -228,27 +221,6 @@ class Game(object):
 
         # now double!
         # pygame.display.update()
-
-    def handle_keys(self, event):
-
-        if event.type == pygame.KEYDOWN:
-            if event.key in self.keys:
-                self.keys[event.key] = True
-        if event.type == pygame.KEYUP:
-            if event.key in self.keys:
-                self.keys[event.key] = False
-
-        if self.keys[pygame.K_ESCAPE] and self.GameState != CUTSCENE:
-            self.keys[pygame.K_ESCAPE] = False
-            self.GameState = MAIN_MENU
-        if self.keys[pygame.K_m]:
-            self.keys[pygame.K_m] = False
-            if self.GameState == MAIN_MENU or self.GameState == MAIN_GAME:
-                self.GameState = CUTSCENE
-        if self.keys[pygame.K_s] and (self.GameState == MAIN_MENU or self.GameState == MAIN_GAME):
-            self.GameState = SKILLS_SCREEN
-        if self.keys[pygame.K_t] and (self.GameState == MAIN_MENU or self.GameState == MAIN_GAME):
-            self.GameState = TEXTBOX_TEST
 
     def mouse_click(self, event):
         if self.GameState == MAIN_MENU:

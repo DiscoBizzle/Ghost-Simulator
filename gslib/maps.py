@@ -1,4 +1,5 @@
 import json
+import os.path
 
 import pygame
 
@@ -6,12 +7,11 @@ from gslib import graphics
 from gslib import character
 from gslib.constants import *
 
-
 def test():
     pygame.init()
     pygame.font.init()
     screen = pygame.display.set_mode((800, 800))
-    m = Map('tiles/martin.png', 'tiles/martin.json')
+    m = Map(os.path.join(TILE_DIR, 'martin.png'), os.path.join(TILE_DIR, 'martin.json'))
 
     surf = graphics.draw_map(m)
 
@@ -23,7 +23,6 @@ def test():
 
 
 def load_map(map_filename): # Load a map from a map file
-
     #map_f = open(map_filename, 'r')
     data = json.load(open(map_filename))
 
@@ -78,5 +77,5 @@ class Map(object):
             self.objects.append(character.Character(game_class, 0, 0, 16, 16, character.gen_character()))
 
 
-
-# test()
+if __name__ == '__main__':
+    test()

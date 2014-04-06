@@ -2,7 +2,6 @@ import json
 
 from gslib.constants import *
 
-
 class Skill(object):
     def __init__(self, name, prereqs, effects):
         self.name = name
@@ -24,7 +23,3 @@ def load_skill_dict():
     for key in raw_skill_dict:
         skill_dict[key] = Skill(key, raw_skill_dict[key]['prereqs'], raw_skill_dict[key]['effects'])
     return skill_dict
-
-
-
-

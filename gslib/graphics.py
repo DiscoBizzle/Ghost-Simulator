@@ -1,16 +1,14 @@
-import pygame
 try:
     from cStringIO import StringIO as BytesIO
 except ImportError:
     from io import BytesIO
 
+import pygame
 
-# import Maps
 from gslib.constants import *
 
 # screen = pygame.display.set_mode((800, 800))
 blue = pygame.Color(0, 255, 0)
-
 
 def draw_game_over(game_class):
     font = pygame.font.SysFont('helvetica', 80)
@@ -33,10 +31,13 @@ def draw_map(game_class):
         game_class.map_surf = pygame.Surface((nw * grid_size, nh * grid_size)).convert()
     surf = game_class.map_surf
 
+    clippy = game_class.clip_area.copy() if hasattr(game_class, 'clip_area') else pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
+    clippy.inflate_ip(64, 64)
+
     for i in range(nw):
         for j in range(nh):
             area = m.grid[i][j].tileset_area
-            if (not hasattr(game_class, 'clip_area')) or game_class.clip_area.colliderect(pygame.Rect((i * grid_size + 3 * grid_size / 2, j * grid_size + 3 * grid_size / 2), (grid_size, grid_size))):
+            if clippy.colliderect(pygame.Rect((i * grid_size, j * grid_size), (grid_size, grid_size))):
                 surf.blit(m.tileset, (i * grid_size, j * grid_size), area)
 
             ##TEMPORARY - DRAWS SOLID TILES FOR COLLISION DEBUG
@@ -49,7 +50,7 @@ def draw_map(game_class):
 
 def draw_fps(game_class):
     font = pygame.font.SysFont('helvetica', 20)
-    surf = font.render('FPS: ' + str(int(game_class.fps_clock.get_fps())), True, (255, 255, 0))
+    surf = font.render(u'FPS: ' + unicode(int(game_class.fps_clock.get_fps())), True, (255, 255, 0))
     game_class.screen_objects_to_draw.append((surf, (0, game_class.dimensions[1] - 100)))
 
 
@@ -79,8 +80,8 @@ def draw_character_stats(game_class):
 def draw_fear_bar(game_class):
     if not hasattr(game_class, 'fear_txt'):
         font = pygame.font.SysFont('helvetica', 20)
-        game_class.fear_size = font.size("FEAR")
-        game_class.fear_txt = font.render("FEAR", True, (200, 200, 200)).convert_alpha()
+        game_class.fear_size = font.size(u"FEAR")
+        game_class.fear_txt = font.render(u"FEAR", True, (200, 200, 200)).convert_alpha()
 
     if not hasattr(game_class, 'fear_surf'):
         game_class.fear_surf = pygame.Surface((game_class.dimensions[0], 32)).convert_alpha()
@@ -133,7 +134,7 @@ def draw_cutscene(game):
             game.movie.play()
             game.cutscene_started = True
         except IOError:
-            print "Video not found: " + game.cutscene_next
+            print u"Video not found: " + game.cutscene_next
             game.GameState = MAIN_MENU
 
 

@@ -2,10 +2,13 @@ import pygame
 
 
 def valid_colour(colour):
+    if len(colour) != 3:
+        return False
+        
     for i in colour:
         if i < 0 or i > 255:
-            return 0
-    return 1
+            return False
+    return True
 
 
 def create_property(var):  # creates a member variable that redraws the button when changed.
@@ -95,7 +98,6 @@ class Button(object):
         self.surface.set_colorkey((1, 1, 1))
 
     def check_clicked(self, click_pos):  # perform button function if a position is passed in that is within bounds
-
         pos = self.pos
         w, h = self.size
         w /= 2

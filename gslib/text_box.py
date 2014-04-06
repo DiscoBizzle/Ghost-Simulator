@@ -26,6 +26,7 @@ class TextBox:
         self.w = GAME_WIDTH - 2*self.x_int_pad
 
         self.portrait_surface = pygame.image.load("characters/portrait_test2.jpg").convert()
+
         self.background_surface = pygame.Surface((int(self.w), int(self.h)))  # create surface
 
         self.state = INACTIVE
