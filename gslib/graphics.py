@@ -69,12 +69,9 @@ class Graphics(object):
         elif self.game.GameState == TEXTBOX_TEST:
             self.draw_text_box()
 
-        if not self.game.options['FOV']:
-            self.screen_objects_to_draw = []
-            self.world_objects_to_draw = []
-
-        self.draw_world_objects()
-        self.draw_screen_objects()
+        if self.game.options['FOV']:
+            self.draw_world_objects()
+            self.draw_screen_objects()
 
         if self.game.options['VOF'] and self.game.GameState != CUTSCENE:
             self.surface.blit(self.field, (0, 0))
