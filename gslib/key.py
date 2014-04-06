@@ -24,15 +24,15 @@ class KeyController(object):
 
         if self.keys[pygame.K_ESCAPE] and self.game.GameState != CUTSCENE:
             self.keys[pygame.K_ESCAPE] = False
-            self.game.GameState = MAIN_MENU
+            self.game.set_state(MAIN_MENU)
         if self.keys[pygame.K_m]:
             self.keys[pygame.K_m] = False
             if self.game.GameState == MAIN_MENU or self.game.GameState == MAIN_GAME:
-                self.game.GameState = CUTSCENE
+                self.game.set_state(CUTSCENE)
         if self.keys[pygame.K_q] and (self.game.GameState == MAIN_MENU or self.game.GameState == MAIN_GAME):
-            self.game.GameState = SKILLS_SCREEN
+            self.game.set_state(SKILLS_SCREEN)
         if self.keys[pygame.K_t] and (self.game.GameState == MAIN_MENU or self.game.GameState == MAIN_GAME):
-            self.game.GameState = TEXTBOX_TEST
+            self.game.set_state(TEXTBOX_TEST)
 
         if self.game.GameState == MAIN_GAME:
             self.game.show_fears = self.keys[pygame.K_e]

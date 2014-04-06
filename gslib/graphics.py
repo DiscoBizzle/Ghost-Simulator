@@ -182,7 +182,7 @@ class Graphics(object):
                 self.game.cutscene_started = True
             except IOError:
                 print u"Video not found: " + self.game.cutscene_next
-                self.game.GameState = MAIN_MENU
+                self.game.set_state(MAIN_MENU)
 
     def draw_torch(self):
         ppos = (self.game.player1.coord[0] + self.game.player1.dimensions[0] / 2, self.game.player1.coord[1] + self.game.player1.dimensions[1] / 2)

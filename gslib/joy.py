@@ -43,9 +43,9 @@ class JoyController(object):
                                     character.gen_character()))
         elif event.button == 1:
             if self.game.GameState == MAIN_MENU:
-                self.game.GameState = MAIN_GAME
+                self.game.set_state(MAIN_GAME)
             elif self.game.GameState == MAIN_GAME or self.game.GameState == GAME_OVER:
-                self.game.GameState = MAIN_MENU
+                self.game.set_state(MAIN_MENU)
         elif event.button == 2:
             self.game.options['FOV'] = not self.game.options['FOV']
         elif event.button == 3:
