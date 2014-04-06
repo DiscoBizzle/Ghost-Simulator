@@ -98,8 +98,8 @@ class Game(object):
                                                 colour=(120, 0, 0), enabled=False)
         self.toPossess = None
 
-        self.flair_to_draw = []
-        self.hud_to_draw = []
+        self.world_objects_to_draw = []
+        self.screen_objects_to_draw = []
 
     def gameLoop(self):
 
@@ -121,9 +121,10 @@ class Game(object):
                 self.keys[pygame.K_ESCAPE] = False
                 self.GameState = MAIN_MENU
             if self.keys[pygame.K_m]:
-                self.keys[pygame.K_ESCAPE] = False
-                self.GameState = CUTSCENE
-            if self.keys[pygame.K_s]:
+                self.keys[pygame.K_m] = False
+                if self.GameState == MAIN_MENU or self.GameState == MAIN_GAME:
+                    self.GameState = CUTSCENE
+            if self.keys[pygame.K_s] and (self.GameState == MAIN_MENU or self.GameState == MAIN_GAME):
                 self.GameState = SKILLS_SCREEN
 
             if self.GameState == STARTUP:
@@ -174,21 +175,11 @@ class Game(object):
 
                 graphics.draw_fear_bar(self)
                 graphics.draw_fps(self)
-                if self.disp_object_stats:
-                    self.hud_to_draw.append((self.object_stats[0], self.object_stats[1]))
-
-                graphics.draw_flair(self)
-                graphics.draw_hud(self)
+                graphics.draw_character_stats(self)
 
         elif self.GameState == GAME_OVER:
-            font = pygame.font.SysFont('helvetica', 80)
-            size = font.size("GAME OVER")
-            margin = (self.dimensions[0] - size[0]) / 2
-            self.surface.blit(font.render("GAME OVER", True, (255, 255, 255)), (margin, 100))
-            font = pygame.font.SysFont('helvetica', 20)
-            size = font.size("press esc scrub")
-            margin = (self.dimensions[0] - size[0]) / 2
-            self.surface.blit(font.render("press esc scrub", True, (255, 255, 255)), (margin, 200))
+            graphics.draw_game_over(self)
+
         elif self.GameState == CREDITS:
             self.credits.display()
 
@@ -200,6 +191,9 @@ class Game(object):
 
         if self.options['VOF'] and self.GameState != CUTSCENE:
             self.surface.blit(self.field, (0, 0))
+
+        graphics.draw_world_objects(self)
+        graphics.draw_screen_objects(self)
         pygame.display.update()
 
         # now double!
