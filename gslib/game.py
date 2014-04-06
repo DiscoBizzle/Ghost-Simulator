@@ -67,11 +67,12 @@ class Game(object):
         self.options = {'FOV': True, 'VOF': False, 'torch': True}
         field = pygame.image.load('tiles/field.png')
         field = pygame.transform.scale(field, (GAME_WIDTH, GAME_HEIGHT))
-        field.convert_alpha()
         field.set_alpha(100)
+        field.convert_alpha()
         self.field = field
 
         light = pygame.image.load('light.png')
+        light.convert_alpha()
         self.light = pygame.transform.scale(light, (200, 200))
 
         joy.init_joys()
