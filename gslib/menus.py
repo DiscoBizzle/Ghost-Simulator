@@ -26,15 +26,15 @@ class MainMenu(Menu):
     def __init__(self, game_class):
         Menu.__init__(self, game_class)
         self.buttons['main_game'] = button.Button(self, self.go_to_main_game, order = 0, size=(200, 30), visible=True,
-                                                  text='Start Game', border_colour=(120, 50, 80), border_width=3,
+                                                  text=u'Start Game', border_colour=(120, 50, 80), border_width=3,
                                                   colour=(120, 0, 0))
-        self.buttons['credits'] = button.Button(self, self.credits, order = 1, size=(200, 30), visible=True, text='Credits',
+        self.buttons['credits'] = button.Button(self, self.credits, order = 1, size=(200, 30), visible=True, text=u'Credits',
                                              border_colour=(120, 50, 80), border_width=3,
                                              colour=(120, 0, 0))
-        self.buttons['quit'] = button.Button(self, self.quit, order = 3, size=(200, 30), visible=True, text='Quit',
+        self.buttons['quit'] = button.Button(self, self.quit, order = 3, size=(200, 30), visible=True, text=u'Quit',
                                              border_colour=(120, 50, 80), border_width=3,
                                              colour=(120, 0, 0))
-        self.buttons['options'] = button.Button(self, self.go_to_options, order = 2, size=(200, 30), visible=True, text='Options',
+        self.buttons['options'] = button.Button(self, self.go_to_options, order = 2, size=(200, 30), visible=True, text=u'Options',
                                              border_colour=(120, 50, 80), border_width=3,
                                              colour=(120, 0, 0))
 
@@ -57,34 +57,34 @@ class OptionsMenu(Menu):
     def __init__(self, game_class):
         Menu.__init__(self, game_class)
         self.buttons['FOV'] = button.Button(self, self.FOV_toggle, order = 0, size=(200, 30), visible=True,
-                                            text='Field of View: Yes', border_colour=(120, 50, 80), border_width=3,
+                                            text=u'Field of View: Yes', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
         self.buttons['VOF'] = button.Button(self, self.VOF_toggle, order = 1, size=(200, 30), visible=True,
-                                            text='View of Field: No', border_colour=(120, 50, 80), border_width=3,
+                                            text=u'View of Field: No', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
         self.buttons['sound_volume_up'] = button.Button(self, self.sound_up, order = 2, size=(200, 30), visible=True,
-                                            text='Increase Sound Volume', border_colour=(120, 50, 80), border_width=3,
+                                            text=u'Increase Sound Volume', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
         self.buttons['sound_volume_down'] = button.Button(self, self.sound_down, order = 3, size=(200, 30), visible=True,
-                                            text='Decrease Sound Volume', border_colour=(120, 50, 80), border_width=3,
+                                            text=u'Decrease Sound Volume', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
         Menu.arrange_buttons(self)
 
     def FOV_toggle(self):
         if self.game_class.options['FOV']:
             self.game_class.options['FOV'] = False
-            self.buttons['FOV'].text = 'Field of View: No'
+            self.buttons['FOV'].text = u'Field of View: No'
         else:
             self.game_class.options['FOV'] = True
-            self.buttons['FOV'].text = 'Field of View: Yes'
+            self.buttons['FOV'].text = u'Field of View: Yes'
 
     def VOF_toggle(self):
         if self.game_class.options['VOF']:
             self.game_class.options['VOF'] = False
-            self.buttons['VOF'].text = 'View of Field: No'
+            self.buttons['VOF'].text = u'View of Field: No'
         else:
             self.game_class.options['VOF'] = True
-            self.buttons['VOF'].text = 'View of Field: Yes'
+            self.buttons['VOF'].text = u'View of Field: Yes'
 
     def sound_up(self):
         for sound in self.game_class.sound_dict.itervalues():

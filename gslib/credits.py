@@ -15,8 +15,8 @@ def parse_credits_file(fname):
     with open(fname) as f:
         for line in f:
             key, names = line.split(":", 1)
-            names = [n.strip() for n in names.split(",")]
-            res[key].extend(names)
+            names = [n.strip().decode('utf-8') for n in names.split(",")]
+            res[key.decode('utf-8')].extend(names)
     return res
 
 def get_credits_size(credits, font, indent, spacing):

@@ -45,7 +45,7 @@ def load_stats(fname):
     age = f.readline().strip()
     age = int(age)
 
-    bio = ''
+    bio = u''
     fears = []
     start_bio = False
     for l in f:
@@ -53,9 +53,9 @@ def load_stats(fname):
             start_bio = True
         else:
             if start_bio:
-                bio += l
+                bio += l.decode('utf-8')
             else:
-                fears.append(l.strip())
+                fears.append(l.strip().decode('utf-8'))
 
     print fears
     return age, bio, fears
@@ -91,12 +91,12 @@ def choose_n_lines(n, fname):
         lines = f.readlines()
         for i in range(n):
             ix = random.randrange(len(lines))
-            res.append(lines.pop(ix).strip())
+            res.append(lines.pop(ix).strip().decode('utf-8'))
     return res
 
 
 def gen_bio():
-    return ' '.join(choose_n_lines(3, "characters/bio.txt"))
+    return u' '.join(choose_n_lines(3, "characters/bio.txt"))
 
 
 def gen_fears():
@@ -110,9 +110,9 @@ def gen_name(gender):
     second_name = choose_n_lines(1, "characters/second_names.txt")[0]
 
     while random.random() > 0.9:
-        second_name = "{}-{}".format(second_name, choose_n_lines(1, "characters/second_names.txt")[0])
+        second_name = u"{}-{}".format(second_name, choose_n_lines(1, "characters/second_names.txt")[0])
 
-    return "{} {}".format(first_name, second_name)
+    return u"{} {}".format(first_name, second_name)
 
 
 class Character(GameObject):
@@ -185,8 +185,8 @@ class Character(GameObject):
 
         # draw name/age and text boxes
         font = pygame.font.SysFont('comic sans', font_size)
-        name_text = font.render('Name: ' + self.stats['name'], True, WHITE)
-        age_text = font.render('Age: ' + str(self.stats['age']), True, WHITE)
+        name_text = font.render(u'Name: ' + self.stats['name'], True, WHITE)
+        age_text = font.render(u'Age: ' + str(self.stats['age']), True, WHITE)
 
         text_left = neww + border * 2
 

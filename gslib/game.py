@@ -91,10 +91,10 @@ class Game(object):
 
         self.buttons = {}
         self.buttons['Possess'] = button.Button(self, self.possess, pos=(LEVEL_WIDTH, 0), size=(200, 30), visible=False,
-                                                text='Possess', border_colour=(120, 50, 80), border_width=3,
+                                                text=u'Possess', border_colour=(120, 50, 80), border_width=3,
                                                 colour=(120, 0, 0), enabled=False)
         self.buttons['unPossess'] = button.Button(self, self.unPossess, pos=(LEVEL_WIDTH, 0), size=(200, 30), visible=False,
-                                                text='Unpossess', border_colour=(120, 50, 80), border_width=3,
+                                                text=u'Unpossess', border_colour=(120, 50, 80), border_width=3,
                                                 colour=(120, 0, 0), enabled=False)
         self.toPossess = None
 
