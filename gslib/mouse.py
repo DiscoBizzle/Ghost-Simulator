@@ -20,21 +20,21 @@ class MouseController(object):
 
     def mouse_up(self, event):
         if self.game.GameState == MAIN_MENU:
-            pass
+            self.game.Menu.mouse_event(event)
         elif self.game.GameState == MAIN_GAME:
             pass
         elif self.game.GameState == SKILLS_SCREEN:
-            pass
+            self.game.SkillMenu.mouse_event(event)
         elif self.game.GameState == OPTIONS_MENU:
             self.game.options_menu.mouse_event(event)
 
     def mouse_move(self, event):
         if self.game.GameState == MAIN_MENU:
-            pass
+            self.game.Menu.mouse_event(event)
         elif self.game.GameState == MAIN_GAME:
             pass
         elif self.game.GameState == SKILLS_SCREEN:
-            pass
+            self.game.SkillMenu.mouse_event(event)
         elif self.game.GameState == OPTIONS_MENU:
             self.game.options_menu.mouse_event(event)
 

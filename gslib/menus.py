@@ -11,7 +11,18 @@ class Menu(object):
         self.buttons = {}
         self.sliders = {}
         self.button_size = button_size
-        self.buttons_per_column = (((GAME_HEIGHT-60)/(self.button_size[1]+20)))
+        self.min_button_size = (40, 8)
+        self.hori_offset = 60
+        self.vert_offset = 40 + button_size[1] + 10
+        self.buttons_per_column = ((GAME_HEIGHT - self.vert_offset - 60) / (self.button_size[1]+20))
+
+        self.buttons['menu_scale_display'] = button.Button(self, None, order = (-1, 0), visible=True,
+                                            text=u'Menu Scale: 1.0', border_colour=(120, 50, 80), border_width=3,
+                                            colour=(120, 0, 0), size=button_size, pos=(60, 40))
+        self.sliders['menu_scale'] = slider.Slider(self, self.set_menu_scale, range=(1.0, 20.0), order=(-1, 1),
+                                                   value=1.0, size=button_size, pos=(60 + button_size[0] + 20, 40))
+        self.first_time = True
+
 
     def display(self):
         for button in self.buttons.itervalues():
@@ -28,28 +39,38 @@ class Menu(object):
 
     def arrange_buttons(self):
         for button in self.buttons.itervalues():
+            if button.order[0] == -1:
+                continue
             button.size = self.button_size
-            button.pos = (60 + int(button.order/self.buttons_per_column)*(self.button_size[0]+20), 40 + (button.order%self.buttons_per_column)*(self.button_size[1]+10))
+            button.pos = (self.hori_offset + (button.order[1] + int(button.order[0]/self.buttons_per_column)*2)*(self.button_size[0]+20), self.vert_offset + (button.order[0]%self.buttons_per_column)*(self.button_size[1]+10))
         for slider in self.sliders.itervalues():
+            if slider.order[0] == -1:
+                continue
             slider.size = self.button_size
-            slider.pos = (60 + int(slider.order/self.buttons_per_column)*(self.button_size[0]+20), 40 + (slider.order%self.buttons_per_column)*(self.button_size[1]+10))
-        print self.buttons_per_column
+            slider.pos = (self.hori_offset + (slider.order[1] + int(slider.order[0]/self.buttons_per_column)*2)*(self.button_size[0]+20), self.vert_offset + (slider.order[0]%self.buttons_per_column)*(self.button_size[1]+10))
+        print self.buttons_per_column, int(self.buttons_per_column)
 
+        if self.first_time:
+            self.first_time = False
 
+    def set_menu_scale(self, value):
+        self.button_size = (self.min_button_size[0] * value, self.min_button_size[1] * value)
+        self.buttons_per_column = ((GAME_HEIGHT - self.vert_offset - 60) / (self.button_size[1]+20))
+        self.arrange_buttons()
 
 class MainMenu(Menu):
     def __init__(self, game_class, button_size):
         Menu.__init__(self, game_class, button_size)
-        self.buttons['main_game'] = button.Button(self, self.go_to_main_game, order = 0, visible=True,
+        self.buttons['main_game'] = button.Button(self, self.go_to_main_game, order = (0, 0), visible=True,
                                                   text=u'Start Game', border_colour=(120, 50, 80), border_width=3,
                                                   colour=(120, 0, 0))
-        self.buttons['credits'] = button.Button(self, self.credits, order = 1, visible=True, text=u'Credits',
+        self.buttons['credits'] = button.Button(self, self.credits, order = (1, 0), visible=True, text=u'Credits',
+                                             border_colour=(120, 50, 80), border_width=2,
+                                             colour=(120, 0, 0))
+        self.buttons['quit'] = button.Button(self, self.game_class.quit_game, order = (3, 0), visible=True, text=u'Quit',
                                              border_colour=(120, 50, 80), border_width=3,
                                              colour=(120, 0, 0))
-        self.buttons['quit'] = button.Button(self, self.game_class.quit_game, order = 3, visible=True, text=u'Quit',
-                                             border_colour=(120, 50, 80), border_width=3,
-                                             colour=(120, 0, 0))
-        self.buttons['options'] = button.Button(self, self.go_to_options, order = 2, visible=True, text=u'Options',
+        self.buttons['options'] = button.Button(self, self.go_to_options, order = (2, 0), visible=True, text=u'Options',
                                              border_colour=(120, 50, 80), border_width=3,
                                              colour=(120, 0, 0))
 
@@ -68,24 +89,24 @@ class MainMenu(Menu):
 class OptionsMenu(Menu):
     def __init__(self, game_class, button_size):
         Menu.__init__(self, game_class, button_size)
-        self.buttons['FOV'] = button.Button(self, self.FOV_toggle, order = 0, visible=True,
+        self.buttons['FOV'] = button.Button(self, self.FOV_toggle, order = (0, 0), visible=True,
                                             text=u'Field of View: Yes', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
-        self.buttons['VOF'] = button.Button(self, self.VOF_toggle, order = 1, visible=True,
+        self.buttons['VOF'] = button.Button(self, self.VOF_toggle, order = (1, 0), visible=True,
                                             text=u'View of Field: No', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
-        self.buttons['torch'] = button.Button(self, self.torch_toggle, order = 2, visible=True,
+        self.buttons['torch'] = button.Button(self, self.torch_toggle, order = (2, 0), visible=True,
                                             text=u'Torch: Yes', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
-        self.buttons['sound_display'] = button.Button(self, None , order = 3, visible=True,
+        self.buttons['sound_display'] = button.Button(self, None , order = (3, 0), visible=True,
                                             text=u'Sound volume: '+unicode(str(int(INITIAL_SOUND_VOLUME/0.003))), border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
-        self.buttons['music_display'] = button.Button(self, None, order = 5, visible=True,
+        self.buttons['music_display'] = button.Button(self, None, order = (4, 0), visible=True,
                                             text=u'Music volume: '+unicode(str(int(INITIAL_MUSIC_VOLUME/0.003))), border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
 
-        self.sliders['sound'] = slider.Slider(self, self.set_sound, range=(0, 0.3), order = 4, value = game_class.sound_dict['scream'].get_volume())
-        self.sliders['music'] = slider.Slider(self, self.set_music, range=(0, 0.3), order = 6, value = pygame.mixer.music.get_volume())
+        self.sliders['sound'] = slider.Slider(self, self.set_sound, range=(0, 0.3), order = (3, 1), value = game_class.sound_dict['scream'].get_volume())
+        self.sliders['music'] = slider.Slider(self, self.set_music, range=(0, 0.3), order = (4, 1), value = pygame.mixer.music.get_volume())
         Menu.arrange_buttons(self)
 
     def FOV_toggle(self):
@@ -115,11 +136,10 @@ class OptionsMenu(Menu):
     def set_sound(self, value):
         for sound in self.game_class.sound_dict.itervalues():
             sound.set_volume(value)
-        self.buttons['sound_display'].text = u'Sound Volume:' + unicode(str(int(value/0.003)))
+        self.buttons['sound_display'].text = u'Sound Volume: ' + unicode(str(int(value/0.003)))
     def set_music(self, value):
         pygame.mixer.music.set_volume(value)
-        self.buttons['music_display'].text = u'Music Volume:' + unicode(str(int(value/0.003)))
-
+        self.buttons['music_display'].text = u'Music Volume: ' + unicode(str(int(value/0.003)))
 
 
 class SkillsMenu(Menu):
@@ -135,7 +155,7 @@ class SkillsMenu(Menu):
                 skill_colour = UNLEARNABLE_COLOUR
             f = lambda skill2=skill: self.learn_skill(skill2)
             self.buttons[skill] = button.Button(self, f, text = skill, border_colour = (120, 50, 80),
-                                                border_width = 3, colour = skill_colour, order = temp_order)
+                                                border_width = 3, colour = skill_colour, order = (temp_order, 0))
             temp_order += 1
         Menu.arrange_buttons(self)
 
