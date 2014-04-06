@@ -1,5 +1,3 @@
-
-
 def truncline(text, font, maxwidth):
     real = len(text)
     stext = text
