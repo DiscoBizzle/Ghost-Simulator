@@ -49,6 +49,7 @@ class GameObject(object):
                             o.coord[1] - self.coord[1]) ** 2 < self.fear_radius ** 2:
                             o.fear_timer = 5
                             self.game_class.player1.fear += 100
+                            self.game_class.sound_dict['scream'].play()
 
     def move(self):
         x_ticks, y_ticks = abs(self.velocity[0]), abs(self.velocity[1])

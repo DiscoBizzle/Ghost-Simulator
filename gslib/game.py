@@ -34,7 +34,7 @@ class Game(object):
         self.dimensions = (width, height)
         self.surface = pygame.display.set_mode(self.dimensions)
         self.music_list = sound.get_music_list()
-        #self.sound_dict = sound.load_all_sounds()
+        self.sound_dict = sound.load_all_sounds()
         self.credits = credits.Credits(self)
 
 
@@ -124,7 +124,6 @@ class Game(object):
                 self.GameState = CUTSCENE
             if self.keys[pygame.K_s]:
                 self.GameState = SKILLS_SCREEN
-                print self.player1.skills_learnt
 
             if self.GameState == STARTUP:
                 pass
