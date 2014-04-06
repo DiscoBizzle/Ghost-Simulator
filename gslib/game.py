@@ -43,6 +43,8 @@ class Game(object):
         self.credits = credits.Credits(self)
         self.options_menu = menus.OptionsMenu(self)
 
+        self.graphics = graphics.Graphics(self)
+
         self.clock = pygame.time.Clock()
         self.msPassed = 0
 
@@ -146,13 +148,14 @@ class Game(object):
                         response(event)
 
             if self.GameState == CUTSCENE:
-                graphics.draw_cutscene(self)
+                self.graphics.draw_cutscene()
+                time.sleep(0.001)
             elif self.msPassed > 33:
                 self.update()
                 self.msPassed = 0
 
                 self.fps_clock.tick()
-                self.main_game_draw()
+                self.graphics.main_game_draw()
             else:
                 time.sleep(0.001)  # note: sleeping not only a good idea but necessary for pygame.movie os x
 
@@ -201,48 +204,7 @@ class Game(object):
 
         return coord
 
-    def main_game_draw(self):
-        # this runs faster than game update. animation can be done here with no problems.
-        if self.GameState != CUTSCENE:
-            self.surface.fill(blackColour)
 
-        if self.GameState == STARTUP:
-            pass
-        elif self.GameState == MAIN_MENU:
-            self.Menu.display()
-        elif self.GameState == MAIN_GAME:
-            graphics.draw_map(self)
-            graphics.draw_objects(self)
-            if self.options['torch']:
-                graphics.draw_torch(self)
-
-            graphics.draw_buttons(self)
-
-            graphics.draw_fear_bar(self)
-            graphics.draw_fps(self)
-            graphics.draw_character_stats(self)
-        elif self.GameState == GAME_OVER:
-            graphics.draw_game_over(self)
-        elif self.GameState == CREDITS:
-            self.credits.display()
-        elif self.GameState == SKILLS_SCREEN:
-            self.SkillMenu.display()
-        elif self.GameState == OPTIONS_MENU:
-            self.options_menu.display()
-        elif self.GameState == TEXTBOX_TEST:
-            graphics.draw_text_box(self)
-
-        if not self.options['FOV']:
-            self.screen_objects_to_draw = []
-            self.world_objects_to_draw = []
-
-        graphics.draw_world_objects(self)
-        graphics.draw_screen_objects(self)
-
-        if self.options['VOF'] and self.GameState != CUTSCENE:
-            self.surface.blit(self.field, (0, 0))
-
-        pygame.display.update()
 
         # now double!
         # pygame.display.update()
