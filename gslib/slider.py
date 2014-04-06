@@ -28,7 +28,6 @@ class Slider(object):
     value = create_property('value')
     fore_colour = create_property('fore_colour')
     back_colour = create_property('back_colour')
-    pass
 
     def redraw(self):
         surf = pygame.Surface(self.dim)
