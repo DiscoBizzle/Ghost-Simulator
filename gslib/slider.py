@@ -35,7 +35,7 @@ class Slider(object):
         self._value = val
         if self._value > self.max:
             self._value = self.max
-        if self._value > self.min:
+        if self._value < self.min:
             self._value = self.min
         self.redraw()
     value = property(get_value, set_value)
