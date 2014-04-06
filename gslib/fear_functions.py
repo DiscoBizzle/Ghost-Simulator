@@ -42,3 +42,10 @@ def im_possessed(owner, game_class):
         game_class.world_objects_to_draw.append((surf, pos))
     return func
 
+def evaluate_fear(scary, scared):
+    fear_level = 0
+    for fear in scary.fears:
+        if fear in scared.scared_of:
+            fear_level += 100
+
+    return fear_level

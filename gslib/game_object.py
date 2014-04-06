@@ -4,6 +4,7 @@ import pygame
 
 from gslib.constants import *
 
+from fear_functions import evaluate_fear
 
 class GameObject(object):
     def __init__(self, game_class, x, y, w, h, sprite_sheet):
@@ -14,7 +15,7 @@ class GameObject(object):
         self.velocity = (0, 0)
         self.max_velocity = 1
         self.fear_radius = 50
-        self.feared_by = []
+        self.scared_of = []
         self.fears = []
         self.rect = pygame.Rect(self.coord, self.dimensions)
         self.update_timer = 0
@@ -46,11 +47,12 @@ class GameObject(object):
                 continue
             if o is not self:
                 for f in self.fears:
-                    if f in o.feared_by:
+                    if f in o.scared_of:
                         if (o.coord[0] - self.coord[0]) ** 2 + (
                             o.coord[1] - self.coord[1]) ** 2 < self.fear_radius ** 2:
                             o.fear_timer = 5
-                            self.game_class.player1.fear += 100
+                            #self.fear_level += evaluate_fear(self, o)
+                            self.game_class.player1.fear += evaluate_fear(self, o)
                             if o.scream_timer <= 0:
                                 self.game_class.sound_dict['scream'].play()
                                 o.scream_timer = 60

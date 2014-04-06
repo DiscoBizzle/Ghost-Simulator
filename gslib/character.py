@@ -75,7 +75,7 @@ def gen_character(stats=None):
     stats.setdefault('age', random.randrange(151))
     stats.setdefault('bio', gen_bio())
     stats.setdefault('fears', gen_fears())
-    stats.setdefault('feared_by', gen_fears())
+    stats.setdefault('scared_of', gen_fears())
     stats.setdefault('gender', random.choice(('m', 'f')))
     stats.setdefault('name', gen_name(stats['gender']))
     stats.setdefault('image_name', os.path.join(CHARACTER_DIR, 'Sprite_front.png'))
@@ -117,8 +117,8 @@ class Character(GameObject):
     def __init__(self, game_class, x, y, w, h, stats):
         GameObject.__init__(self, game_class, x, y, w, h, pygame.image.load(os.path.join(CHARACTER_DIR, 'DudeSheet.png')).convert())
         self.fears = stats['fears']
-        self.feared_by = stats['feared_by']
-        self.feared_by.append('player')
+        self.scared_of = stats['scared_of']
+        self.scared_of.append('player')
         self.stats = stats
         self.info_sheet = self.draw_info_sheet()
         self.sprite = pygame.image.load(os.path.join(CHARACTER_DIR, 'Sprite_top.png'))
