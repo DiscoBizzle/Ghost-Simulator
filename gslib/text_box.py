@@ -20,7 +20,7 @@ class TextBox:
         self.h = 256
         self.w = GAME_WIDTH - 2*self.x_int_pad
 
-        self.portrait_surface = pygame.image.load("characters/portrait_test.png").convert()
+        self.portrait_surface = pygame.image.load("characters/portrait_test.jpg").convert()
 
         self.state = INACTIVE
         self.coord = (self.x_ext_pad, GAME_HEIGHT - self.h - self.y_ext_pad)
