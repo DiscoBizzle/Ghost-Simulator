@@ -19,6 +19,11 @@ class Player(GameObject):
 
         self.possessing = False
 
+        self.move_up = False
+        self.move_down = False
+        self.move_left = False
+        self.move_right = False
+
     def get_fear(self):
         return self._fear
 
@@ -44,19 +49,19 @@ class Player(GameObject):
 
         self.animation_state = self.direction
 
-        if self.game_class.keys[pygame.K_DOWN]:
+        if self.move_down:
             v_y += 5
             self.direction = DOWN
             self.animation_state = ANIM_DOWNWALK
-        if self.game_class.keys[pygame.K_UP]:
+        if self.move_up:
             v_y -= 5
             self.direction = UP
             self.animation_state = ANIM_UPWALK
-        if self.game_class.keys[pygame.K_LEFT]:
+        if self.move_left:
             v_x -= 5
             self.direction = LEFT
             self.animation_state = ANIM_LEFTWALK
-        if self.game_class.keys[pygame.K_RIGHT]:
+        if self.move_right:
             v_x += 5
             self.direction = RIGHT
             self.animation_state = ANIM_RIGHTWALK

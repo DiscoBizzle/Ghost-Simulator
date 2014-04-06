@@ -65,9 +65,6 @@ class Game(object):
         self.disp_object_stats = False
         self.object_stats = None
 
-        self.keys = {pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False,
-                     pygame.K_ESCAPE: False, pygame.K_m: False, pygame.K_s: False, pygame.K_t: False}
-
         self.options = {'FOV': True, 'VOF': False, 'torch': False}
         field = pygame.image.load(os.path.join(TILES_DIR, 'field.png'))
         field = pygame.transform.scale(field, (GAME_WIDTH, GAME_HEIGHT))
@@ -80,6 +77,8 @@ class Game(object):
         self.light = pygame.transform.scale(light, (200, 200))
 
         self.key_controller = key.KeyController(self)
+        # HACK
+        self.keys = self.key_controller.keys
 
         self.joy_controller = joy.JoyController(self)
 
