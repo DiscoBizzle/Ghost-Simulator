@@ -97,8 +97,8 @@ class Game(object):
                                                 colour=(120, 0, 0), enabled=False)
         self.toPossess = None
 
-        self.flair_to_draw = []
-        self.hud_to_draw = []
+        self.world_objects_to_draw = []
+        self.screen_objects_to_draw = []
 
     def gameLoop(self):
 
@@ -174,9 +174,9 @@ class Game(object):
                 graphics.draw_fear_bar(self)
                 graphics.draw_fps(self)
                 if self.disp_object_stats:
-                    self.hud_to_draw.append((self.object_stats[0], self.object_stats[1]))
+                    self.screen_objects_to_draw.append((self.object_stats[0], self.object_stats[1]))
 
-                graphics.draw_flair(self)
+                graphics.draw_world_objects(self)
                 graphics.draw_hud(self)
 
         elif self.GameState == GAME_OVER:

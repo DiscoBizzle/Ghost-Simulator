@@ -29,18 +29,18 @@ def draw_map(game_class):
             #    temprect = pygame.Rect(i * grid_size, j * grid_size, TILE_SIZE, TILE_SIZE)
             #    pygame.draw.rect(surf, 0x0000ff, temprect)
 
-    game_class.flair_to_draw = [(surf, (0, 0))] + game_class.flair_to_draw
+    game_class.world_objects_to_draw = [(surf, (0, 0))] + game_class.world_objects_to_draw
 
 
 def draw_fps(game_class):
     font = pygame.font.SysFont('helvetica', 20)
     surf = font.render('FPS: ' + str(int(game_class.fps_clock.get_fps())), True, (255, 255, 0))
-    game_class.hud_to_draw.append((surf, (0, game_class.dimensions[1] - 100)))
+    game_class.screen_objects_to_draw.append((surf, (0, game_class.dimensions[1] - 100)))
 
 
 def draw_buttons(game_class):
     for button in game_class.buttons.itervalues():
-        game_class.hud_to_draw.append((button.surface, button.pos))
+        game_class.screen_objects_to_draw.append((button.surface, button.pos))
 
 
 def draw_objects(game_class):
@@ -53,7 +53,7 @@ def draw_objects(game_class):
         surf.fill((255, 0, 255))
         surf.blit(o.sprite_sheet, (0, 0), o.frame_rect)
         surf.set_colorkey((255, 0, 255))
-        game_class.flair_to_draw.append((surf, (o.coord[0] + o.dimensions[0] - SPRITE_WIDTH, o.coord[1] + o.dimensions[1] - SPRITE_HEIGHT)))
+        game_class.world_objects_to_draw.append((surf, (o.coord[0] + o.dimensions[0] - SPRITE_WIDTH, o.coord[1] + o.dimensions[1] - SPRITE_HEIGHT)))
 
 
 def draw_fear_bar(game_class):
@@ -64,19 +64,19 @@ def draw_fear_bar(game_class):
 
     surf.blit(fear_txt, (0, 0))
     pygame.draw.rect(surf, (255, 0, 0), pygame.Rect((size[0], 0), (game_class.dimensions[0] - size[0], 32)))
-    game_class.hud_to_draw.append((surf, (0, game_class.dimensions[1] - 32)))
+    game_class.screen_objects_to_draw.append((surf, (0, game_class.dimensions[1] - 32)))
 
 
-def draw_flair(game_class):
-    for f in game_class.flair_to_draw:
+def draw_world_objects(game_class): # stuff relative to camera
+    for f in game_class.world_objects_to_draw:
         blit_camera(game_class, f[0], f[1])
-    game_class.flair_to_draw = []
+    game_class.world_objects_to_draw = []
 
 
-def draw_hud(game_class):
-    for f in game_class.hud_to_draw:
+def draw_hud(game_class): # stuff relative to screen
+    for f in game_class.screen_objects_to_draw:
         blit(game_class, f[0], f[1])
-    game_class.hud_to_draw = []
+    game_class.screen_objects_to_draw = []
 
 
 def blit(game_class, surf, pos):
@@ -85,7 +85,9 @@ def blit(game_class, surf, pos):
 
 def blit_camera(game_class, surf, pos):
     cpos = (pos[0] - game_class.camera_coords[0], pos[1] - game_class.camera_coords[1])
-    game_class.surface.blit(surf, cpos)    
+    game_class.surface.blit(surf, cpos)
+
+
 def draw_cutscene(game):
     #print game.cutscene_started
     #print hasattr(game, 'movie')
