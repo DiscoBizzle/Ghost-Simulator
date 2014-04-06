@@ -2,10 +2,13 @@ import pygame
 
 
 def valid_colour(colour):
+    if len(colour) != 3:
+        return False
+        
     for i in colour:
         if i < 0 or i > 255:
-            return 0
-    return 1
+            return False
+    return True
 
 
 def create_property(var):  # creates a member variable that redraws the button when changed.
