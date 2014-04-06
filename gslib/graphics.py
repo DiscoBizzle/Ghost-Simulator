@@ -24,3 +24,12 @@ def draw_map(m):
             #    pygame.draw.rect(surf, 0x0000ff, temprect)
 
     return surf
+
+def draw_flair(game_class):
+    for f in game_class.flair_to_draw:
+        blit_camera(game_class, f[0], f[1])
+    game_class.flair_to_draw = []
+
+def blit_camera(game_class, surf, pos):
+    cpos = (pos[0] - game_class.camera_coords[0], pos[1] - game_class.camera_coords[1])
+    game_class.surface.blit(surf, cpos)

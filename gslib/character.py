@@ -131,7 +131,8 @@ class Character(GameObject):
         self.sprite = pygame.transform.scale(self.sprite, self.dimensions).convert()
         self.sprite.set_colorkey((255, 0, 255))
         self.isPossessed = False
-        self.fear_function = fear_functions.im_scared(self, game_class)
+        self.fear_function = None
+        self.possess_function = fear_functions.im_possessed(self, game_class)
 
     def get_stats(self, name):
         name = name
@@ -152,16 +153,16 @@ class Character(GameObject):
                 self.velocity = (random.randint(-fv, fv), random.randint(-fv, fv))
                 self.fear_timer -= 1
         else:
-            self.fear_function()
+            self.possess_function()
             self.velocity = (0, 0)
             if self.game_class.keys[pygame.K_DOWN]:
-                self.velocity = (0, self.max_velocity)
+                self.velocity = (self.velocity[0], self.max_velocity)
             if self.game_class.keys[pygame.K_UP]:
-                self.velocity = (0, -self.max_velocity)
+                self.velocity = (self.velocity[0], -self.max_velocity)
             if self.game_class.keys[pygame.K_LEFT]:
-                self.velocity = (-self.max_velocity, 0)
+                self.velocity = (-self.max_velocity, self.velocity[1])
             if self.game_class.keys[pygame.K_RIGHT]:
-                self.velocity = (self.max_velocity, 0)
+                self.velocity = (self.max_velocity, self.velocity[1])
         GameObject.update(self)
 
     def draw_info_sheet(self):

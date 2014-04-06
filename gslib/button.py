@@ -95,6 +95,7 @@ class Button(object):
         self.surface.set_colorkey((1, 1, 1))
 
     def check_clicked(self, click_pos):  # perform button function if a position is passed in that is within bounds
+
         pos = self.pos
         w, h = self.size
         w /= 2

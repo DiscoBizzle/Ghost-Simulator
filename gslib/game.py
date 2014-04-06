@@ -94,6 +94,8 @@ class Game(object):
                                                 colour=(120, 0, 0), enabled=False)
         self.toPossess = None
 
+        self.flair_to_draw = []
+
     def gameLoop(self):
 
         while self.gameRunning:
@@ -199,6 +201,7 @@ class Game(object):
                 self.surface.blit(font.render('FPS: ' + str(int(self.fps_clock.get_fps())), True, (255, 255, 0)),
                                   (0, self.dimensions[1] - 100))
 
+                graphics.draw_flair(self)
                 if self.disp_object_stats:
                     self.surface.blit(self.object_stats[0], self.object_stats[1])
                     #self.surface.blit(0, 0)
@@ -236,7 +239,7 @@ class Game(object):
             self.check_object_click(event)
 
     def check_object_click(self, event):
-        if event.pos[0] > LEVEL_WIDTH or event.pos[1] > LEVEL_HEIGHT:
+        if event.pos[0] > LEVEL_WIDTH or event.pos[1] > LEVEL_HEIGHT: # make track camera
             return
         for o in self.objects:
             st = SELECTION_TOLERANCE

@@ -73,11 +73,11 @@ def speech_bubble(text, width, text_colour=(0, 0, 0)):
     return surf
 
 
-def im_scared(owner, game_class):
+def im_possessed(owner, game_class):
     def func():
-        surf = speech_bubble("I'm scared!", 100)
-        pos = owner.coord
-        game_class.surface.blit(surf, pos)
+        surf = speech_bubble("I'm possessed!", 150)
+        pos = (owner.coord[0] + owner.dimensions[0], owner.coord[1] - surf.get_height())
+        game_class.flair_to_draw.append((surf, pos))
         print pos
     return func
 
