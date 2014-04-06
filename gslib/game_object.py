@@ -18,6 +18,7 @@ class GameObject(object):
         self.rect = pygame.Rect(self.coord, self.dimensions)
         self.update_timer = 0
         self.fear_timer = 0
+        self.scream_timer = 0
 
         #variables for animation
         self.sprite_sheet = sprite_sheet
@@ -49,7 +50,11 @@ class GameObject(object):
                             o.coord[1] - self.coord[1]) ** 2 < self.fear_radius ** 2:
                             o.fear_timer = 5
                             self.game_class.player1.fear += 100
-                            self.game_class.sound_dict['scream'].play()
+                            if o.scream_timer <= 0:
+                                self.game_class.sound_dict['scream'].play()
+                                o.scream_timer = 60
+                            else:
+                                o.scream_timer -= 1
 
     def move(self):
         x_ticks, y_ticks = abs(self.velocity[0]), abs(self.velocity[1])
