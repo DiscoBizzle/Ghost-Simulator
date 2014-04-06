@@ -120,9 +120,10 @@ class Game(object):
                 self.keys[pygame.K_ESCAPE] = False
                 self.GameState = MAIN_MENU
             if self.keys[pygame.K_m]:
-                self.keys[pygame.K_ESCAPE] = False
-                self.GameState = CUTSCENE
-            if self.keys[pygame.K_s]:
+                self.keys[pygame.K_m] = False
+                if self.GameState == MAIN_MENU or MAIN_GAME:
+                    self.GameState = CUTSCENE
+            if self.keys[pygame.K_s] and self.GameState == (MAIN_MENU or MAIN_GAME):
                 self.GameState = SKILLS_SCREEN
 
             if self.GameState == STARTUP:
