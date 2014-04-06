@@ -1,4 +1,5 @@
 import os
+import os.path
 import sys
 import time
 
@@ -30,7 +31,7 @@ class Game(object):
         self.Menu = menus.MainMenu(self)
         self.GameState = MAIN_MENU
         self.cutscene_started = False
-        self.cutscene_next = VIDEO_DIR + "default.mpg"
+        self.cutscene_next = os.path.join(VIDEO_DIR, "default.mpg")
         self.gameRunning = True
         self.dimensions = (width, height)
         self.surface = pygame.display.set_mode(self.dimensions)
@@ -69,13 +70,13 @@ class Game(object):
                      pygame.K_ESCAPE: False, pygame.K_m: False, pygame.K_s: False, pygame.K_t: False}
 
         self.options = {'FOV': True, 'VOF': False, 'torch': False}
-        field = pygame.image.load('tiles/field.png')
+        field = pygame.image.load(os.path.join(TILES_DIR, 'field.png'))
         field = pygame.transform.scale(field, (GAME_WIDTH, GAME_HEIGHT))
         field.set_alpha(100)
         field.convert_alpha()
         self.field = field
 
-        light = pygame.image.load('light.png')
+        light = pygame.image.load(os.path.join(TILES_DIR, 'light.png'))
         light.convert_alpha()
         self.light = pygame.transform.scale(light, (200, 200))
 

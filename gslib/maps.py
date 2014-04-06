@@ -1,4 +1,5 @@
 import json
+import os.path
 
 import pygame
 
@@ -11,7 +12,7 @@ def test():
     pygame.init()
     pygame.font.init()
     screen = pygame.display.set_mode((800, 800))
-    m = Map('tiles/martin.png', 'tiles/martin.json')
+    m = Map(os.path.join(TILE_DIR, 'martin.png'), os.path.join(TILE_DIR, 'martin.json'))
 
     surf = graphics.draw_map(m)
 

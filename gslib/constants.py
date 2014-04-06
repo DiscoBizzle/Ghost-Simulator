@@ -1,3 +1,12 @@
+import os.path
+import sys
+
+def fallback_files(target, *fnames):
+    for fname in fnames:
+        if os.path.exists(fname):
+            return fname
+    raise Exception("Couldn't find {}".format(target))
+
 # Game States
 STARTUP = 0
 MAIN_MENU = 1
@@ -43,12 +52,13 @@ FEAR_PER_STEP = 15
 FEAR_PER_TICK = 30
 POSSESSION_RANGE = 50
 
-MUSIC_DIR = "music"
-SOUND_DIR = "sound"
-VIDEO_DIR = "video"
-CHARACTER_DIR = "characters"
-CREDITS_FILE = "credits.txt"
-SKILLS_FILE = "skills.json"
+MUSIC_DIR = fallback_files("music dir", "music", os.path.join(sys.prefix, "gs-music"))
+SOUND_DIR = fallback_files("sound dir", "sound", os.path.join(sys.prefix, "gs-sound"))
+VIDEO_DIR = fallback_files("video dir", "video", os.path.join(sys.prefix, "gs-video"))
+CHARACTER_DIR = fallback_files("characters dir", "characters", os.path.join(sys.prefix, "gs-chars"))
+TILES_DIR = fallback_files("tiles dir", "tiles", os.path.join(sys.prefix, 'gs-tiles'))
+CREDITS_FILE = fallback_files("credits file", "credits.txt", os.path.join(sys.prefix, 'gs-data', 'credits.txt'))
+SKILLS_FILE = fallback_files("skills file", "skills.json", os.path.join(sys.prefix, 'gs-data', 'skills.json'))
 
 LEARNT_SKILL_COLOUR = (0, 150, 0)
 CAN_BE_LEARNT_COLOUR = (0, 0, 150)
