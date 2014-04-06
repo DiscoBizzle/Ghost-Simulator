@@ -1,20 +1,27 @@
 import pygame
 
 from gslib import button
+from gslib import slider
 from gslib.constants import *
+
 
 class Menu(object):
     def __init__(self, game_class):
         self.game_class = game_class
         self.buttons = {}
+        self.sliders = {}
 
     def display(self):
         for button in self.buttons.itervalues():
             self.game_class.graphics.surface.blit(button.surface, button.pos)
 
     def mouse_event(self, event):
-        for button in self.buttons.itervalues():
-            button.check_clicked(event.pos)
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            for button in self.buttons.itervalues():
+                button.check_clicked(event.pos)
+        if event.type == pygame.MOUSEMOTION:
+            for slider in self.sliders.itervalues():
+                slider.check_clicked(event.pos)
 
     def arrange_buttons(self):
         for button in self.buttons.itervalues():
@@ -67,6 +74,8 @@ class OptionsMenu(Menu):
         self.buttons['sound_volume_down'] = button.Button(self, self.sound_down, order = 4, size=(200, 30), visible=True,
                                             text=u'Decrease Sound Volume', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
+
+        self.sliders['test'] = slider.Slider(self)
         Menu.arrange_buttons(self)
 
     def FOV_toggle(self):

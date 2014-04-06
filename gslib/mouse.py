@@ -18,6 +18,16 @@ class MouseController(object):
         elif self.game.GameState == OPTIONS_MENU:
             self.game.options_menu.mouse_event(event)
 
+    def mouse_move(self, event):
+        if self.game.GameState == MAIN_MENU:
+            pass
+        elif self.game.GameState == MAIN_GAME:
+            pass
+        elif self.game.GameState == SKILLS_SCREEN:
+            pass
+        elif self.game.GameState == OPTIONS_MENU:
+            self.game.options_menu.mouse_event(event)
+
     def check_object_click(self, event):
         if event.pos[0] > LEVEL_WIDTH or event.pos[1] > LEVEL_HEIGHT: # make track camera
             return
