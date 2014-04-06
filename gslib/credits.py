@@ -66,6 +66,8 @@ class Credits(object):
         self.spacing = spacing
         self.font = pygame.font.SysFont("helvetica", size)
         self.surface = pygame.Surface(get_credits_size(self.credits, self.font, self.indent, self.spacing))
+        self.v_offset = game.surface.get_height()
+        self.margin = (game.surface.get_width() - self.surface.get_width())/4
 
     def display(self):
         height = 0
@@ -88,17 +90,11 @@ class Credits(object):
             height += self.spacing
 
         self.GameClass.surface.fill(self.bg_col)
+        self.GameClass.surface.blit(self.surface, (self.margin, self.v_offset))
 
-        margin = (self.GameClass.surface.get_width() - self.surface.get_width())/4
-        height = self.GameClass.surface.get_height()
-
-        self.GameClass.surface.blit(self.surface, (margin, height))
-
-        while height > -self.surface.get_height():
-            height -= 1
-            self.GameClass.surface.fill(self.bg_col)
-            self.GameClass.surface.blit(self.surface, (margin, height))
-            pygame.display.update()
-            pygame.time.wait(30)
-
-        self.GameClass.GameState = MAIN_MENU
+    def update(self):
+        self.GameClass.surface.fill(self.bg_col)
+        self.v_offset -= 1
+        if self.v_offset < -self.GameClass.surface.get_height():
+            self.GameClass.GameState = MAIN_MENU
+        self.GameClass.surface.blit(self.surface, (self.margin, self.v_offset))

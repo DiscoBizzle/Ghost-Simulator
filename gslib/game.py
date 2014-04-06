@@ -155,6 +155,8 @@ class Game(object):
         if self.GameState == MAIN_GAME:
             for obj in self.objects:
                 obj.update()
+        elif self.GameState == CREDITS:
+            self.credits.update()
 
     def calc_camera_coord(self):
         coord = (self.player1.coord[0] - (GAME_WIDTH/2), self.player1.coord[1] - (GAME_HEIGHT/2))
