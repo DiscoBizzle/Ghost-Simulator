@@ -28,19 +28,27 @@ class Graphics(object):
         self.light_surf = pygame.Surface((GAME_WIDTH, GAME_HEIGHT)).convert_alpha()
         self.light_size = self.light.get_size()
 
+        font = pygame.font.SysFont(FONT, 20)
+        self.fear_size = font.size(u"FEAR")
+        self.fear_txt = font.render(u"FEAR", True, (200, 200, 200)).convert_alpha()
+        self.fear_surf = pygame.Surface((self.game.dimensions[0], 32)).convert_alpha()
+
+        font = pygame.font.SysFont(FONT, 80)
+        self.game_over_txt1_size = font.size(u"GAME OVER")
+        self.game_over_txt1 = font.render(u"GAME OVER", True, (255, 255, 255))
+
+        font = pygame.font.SysFont(FONT, 20)
+        self.game_over_txt2_size = font.size(u"press esc scrub")
+        self.game_over_txt2 = font.render(u"press esc scrub", True, (255, 255, 255))
+
         self.clip_area = pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
 
     def draw_game_over(self):
-        font = pygame.font.SysFont(FONT, 80)
-        size = font.size("GAME OVER")
-        margin = (self.game.dimensions[0] - size[0]) / 2
-        self.game.screen_objects_to_draw.append((font.render("GAME OVER", True, (255, 255, 255)), (margin, 100)))
-    
-        font = pygame.font.SysFont(FONT, 20)
-        size = font.size("press esc scrub")
-        margin = (self.game.dimensions[0] - size[0]) / 2
-        self.game.screen_objects_to_draw.append((font.render("press esc scrub", True, (255, 255, 255)), (margin, 200)))
-    
+        margin = (self.game.dimensions[0] - self.game_over_txt1_size[0]) / 2
+        self.game.screen_objects_to_draw.append((self.game_over_txt1, (margin, 100)))
+
+        margin = (self.game.dimensions[0] - self.game_over_txt2_size[0]) / 2
+        self.game.screen_objects_to_draw.append((self.game_over_txt2, (margin, 200)))
     
     def main_game_draw(self):
         # this runs faster than game update. animation can be done here with no problems.
@@ -81,8 +89,7 @@ class Graphics(object):
             self.surface.blit(self.field, (0, 0))
 
         pygame.display.update()
-    
-    
+
     def draw_map(self):
         m = self.game.map
         grid_size = TILE_SIZE
@@ -107,19 +114,16 @@ class Graphics(object):
                 #    pygame.draw.rect(surf, 0x0000ff, temprect)
     
         self.game.world_objects_to_draw = [(surf, (0, 0))] + self.game.world_objects_to_draw
-    
-    
+
     def draw_fps(self):
         font = pygame.font.SysFont(FONT, 20)
         surf = font.render(u'FPS: ' + unicode(int(self.game.fps_clock.get_fps())), True, (255, 255, 0))
         self.game.screen_objects_to_draw.append((surf, (0, self.game.dimensions[1] - 100)))
-    
-    
+
     def draw_buttons(self):
         for button in self.game.buttons.itervalues():
             self.game.screen_objects_to_draw.append((button.surface, button.pos))
-    
-    
+
     def draw_objects(self):
         self.game.objects.sort((lambda x, y: cmp(x.coord[1], y.coord[1])))
         for o in self.game.objects:
@@ -131,35 +135,22 @@ class Graphics(object):
             surf.blit(o.sprite_sheet, (0, 0), o.frame_rect)
             surf.set_colorkey((255, 0, 255))
             self.game.world_objects_to_draw.append((surf, (o.coord[0] + o.dimensions[0] - SPRITE_WIDTH, o.coord[1] + o.dimensions[1] - SPRITE_HEIGHT)))
-    
-    
+
     def draw_character_stats(self):
         if self.game.disp_object_stats:
             self.game.screen_objects_to_draw.append((self.game.object_stats[0], self.game.object_stats[1]))
-    
-    
+
     def draw_fear_bar(self):
-        if not hasattr(self.game, 'fear_txt'):
-            font = pygame.font.SysFont(FONT, 20)
-            self.game.fear_size = font.size(u"FEAR")
-            self.game.fear_txt = font.render(u"FEAR", True, (200, 200, 200)).convert_alpha()
-    
-        if not hasattr(self.game, 'fear_surf'):
-            self.game.fear_surf = pygame.Surface((self.game.dimensions[0], 32)).convert_alpha()
-    
-        surf = self.game.fear_surf
-        surf.fill((0, 0, 0))
-        surf.blit(self.game.fear_txt, (0, 0))
-        pygame.draw.rect(surf, (255, 0, 0), pygame.Rect((self.game.fear_size[0], 0), ((self.game.dimensions[0] - self.game.fear_size[0]) * (self.game.player1.fear/float(MAX_FEAR)), 32)))
-        self.game.screen_objects_to_draw.append((surf, (0, self.game.dimensions[1] - 32)))
-    
-    
+        self.fear_surf.fill(black)
+        self.fear_surf.blit(self.fear_txt, (0, 0))
+        pygame.draw.rect(self.fear_surf, (255, 0, 0), pygame.Rect((self.fear_size[0], 0), ((self.game.dimensions[0] - self.fear_size[0]) * (self.game.player1.fear/float(MAX_FEAR)), 32)))
+        self.game.screen_objects_to_draw.append((self.fear_surf, (0, self.game.dimensions[1] - 32)))
+
     def draw_world_objects(self):  # stuff relative to camera
         for f in self.game.world_objects_to_draw:
             self.blit_camera(f[0], f[1])
         self.game.world_objects_to_draw = []
-    
-    
+
     def draw_screen_objects(self):  # stuff relative to screen
         for f in self.game.screen_objects_to_draw:
             self.surface.blit(f[0], f[1])
@@ -168,26 +159,26 @@ class Graphics(object):
     def blit_camera(self, surf, pos):
         cpos = (pos[0] - self.game.camera_coords[0], pos[1] - self.game.camera_coords[1])
         self.surface.blit(surf, cpos)
-    
+
     def draw_cutscene(self):
         #print game.cutscene_started
         #print hasattr(game, 'movie')
         #print game.GameState
     
-        if self.game.cutscene_started and hasattr(self.game, 'movie'):
-            if not self.game.movie.get_busy():
+        if self.game.cutscene_started and hasattr(self, 'movie'):
+            if not self.movie.get_busy():
                 self.game.GameState = MAIN_GAME
                 self.game.cutscene_started = False
                 self.game.clock.get_time()  # hack required for pygame.game.movie linux
-                del self.game.movie  # hack required for pygame.movie mac os x
+                del self.movie  # hack required for pygame.movie mac os x
         else:
-            self.surface.fill(pygame.Color(0, 0, 0))
+            self.surface.fill(black)
             pygame.display.update()
             try:
                 f = BytesIO(open(self.game.cutscene_next, "rb").read())
-                self.game.movie = pygame.movie.Movie(f)
-                w, h = self.game.movie.get_size()
-                self.game.movie.play()
+                self.movie = pygame.movie.Movie(f)
+                w, h = self.movie.get_size()
+                self.movie.play()
                 self.game.cutscene_started = True
             except IOError:
                 print u"Video not found: " + self.game.cutscene_next
@@ -208,8 +199,7 @@ class Graphics(object):
         pygame.draw.rect(self.light_surf, (0, 0, 0, 255), pygame.Rect((0, hole.bottom), (GAME_WIDTH, GAME_HEIGHT)))
         self.light_surf.blit(self.light, (hole.left, hole.top))
         self.game.screen_objects_to_draw.append((self.light_surf, (0, 0)))
-    
-    
+
     def draw_text_box(self):
         self.surface.blit(self.game.text_box_test.background_surface, (0, 0))
         self.game.text_box_test.create_text_surface()
