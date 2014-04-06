@@ -14,6 +14,7 @@ from gslib import menus
 from gslib import player
 from gslib import skills
 from gslib import sound
+from gslib import text_box
 from gslib.constants import *
 # doesn't seem to be needed any more
 #if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
@@ -58,11 +59,14 @@ class Game(object):
         # for i in range(5):
         #     self.objects.append(character.Character(self, 0, 0, 16, 16, character.gen_character()))
 
+        self.text_box_test = text_box.TextBox("hello")
+        self.text_box_test.create_background_surface()
+
         self.disp_object_stats = False
         self.object_stats = None
 
         self.keys = {pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False,
-                     pygame.K_ESCAPE: False, pygame.K_m: False, pygame.K_s: False}
+                     pygame.K_ESCAPE: False, pygame.K_m: False, pygame.K_s: False, pygame.K_t: False}
 
         self.options = {'FOV': True, 'VOF': False, 'torch': False}
         field = pygame.image.load('tiles/field.png')
@@ -207,6 +211,9 @@ class Game(object):
         elif self.GameState == OPTIONS_MENU:
             self.options_menu.display()
 
+        elif self.GameState == TEXTBOX_TEST:
+            graphics.draw_text_box(self)
+
         if not self.options['FOV']:
             self.screen_objects_to_draw = []
             self.world_objects_to_draw = []
@@ -240,6 +247,8 @@ class Game(object):
                 self.GameState = CUTSCENE
         if self.keys[pygame.K_s] and (self.GameState == MAIN_MENU or self.GameState == MAIN_GAME):
             self.GameState = SKILLS_SCREEN
+        if self.keys[pygame.K_t] and (self.GameState == MAIN_MENU or self.GameState == MAIN_GAME):
+            self.GameState = TEXTBOX_TEST
 
     def mouse_click(self, event):
         if self.GameState == MAIN_MENU:

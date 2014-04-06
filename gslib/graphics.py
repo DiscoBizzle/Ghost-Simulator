@@ -91,13 +91,13 @@ def draw_fear_bar(game_class):
     game_class.screen_objects_to_draw.append((surf, (0, game_class.dimensions[1] - 32)))
 
 
-def draw_world_objects(game_class): # stuff relative to camera
+def draw_world_objects(game_class):  # stuff relative to camera
     for f in game_class.world_objects_to_draw:
         blit_camera(game_class, f[0], f[1])
     game_class.world_objects_to_draw = []
 
 
-def draw_screen_objects(game_class): # stuff relative to screen
+def draw_screen_objects(game_class):  # stuff relative to screen
     for f in game_class.screen_objects_to_draw:
         blit(game_class, f[0], f[1])
     game_class.screen_objects_to_draw = []
@@ -157,3 +157,7 @@ def draw_torch(game_class):
     pygame.draw.rect(surf, (0, 0, 0, 255), pygame.Rect((0, hole.bottom), (GAME_WIDTH, GAME_HEIGHT)))
     game_class.screen_objects_to_draw.append((surf, (0, 0)))
     game_class.world_objects_to_draw.append((game_class.light, (ppos[0] - light_size[0]/2, ppos[1] - light_size[1]/2)))
+
+
+def draw_text_box(game_class):
+    game_class.surface.blit(game_class.text_box_test.background_surface, (0, 0))
