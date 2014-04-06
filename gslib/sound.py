@@ -1,11 +1,9 @@
-__author__ = 'Michael'
-
 import os
-import pygame
 import random
 
-from gslib.constants import *
+import pygame
 
+from gslib.constants import *
 
 def load_all_sounds():
     sound_dict = {}

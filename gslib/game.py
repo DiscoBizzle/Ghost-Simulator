@@ -1,8 +1,8 @@
-import sys
 import os
+import sys
+import time
 
 import pygame
-import time
 
 from gslib import player
 from gslib import menus

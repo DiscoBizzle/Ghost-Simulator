@@ -1,6 +1,6 @@
 import pygame
 
-import character
+from gslib import character
 
 
 def init_joys():

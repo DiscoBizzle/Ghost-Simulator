@@ -1,6 +1,5 @@
-__author__ = 'Michael'
-
 import json
+
 from gslib.constants import *
 
 

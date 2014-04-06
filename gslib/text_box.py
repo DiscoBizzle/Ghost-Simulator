@@ -1,5 +1,6 @@
-from constants import *
 import pygame
+
+from gslib.constants import *
 
 #define a list of textbox states
 INACTIVE = 0

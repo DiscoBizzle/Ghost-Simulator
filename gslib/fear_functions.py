@@ -1,5 +1,6 @@
 import pygame
-from text_functions import *
+
+from gslib.text_functions import *
 
 def test():
     pygame.init()

@@ -1,10 +1,11 @@
-import pygame
 import random
 
+import pygame
+
+from gslib import fear_functions
 from gslib.game_object import GameObject
 from gslib.constants import *
-import fear_functions
-from fear_functions import text_wrap
+from gslib.fear_functions import text_wrap
 
 WHITE = (255, 255, 255)
 GREY = (60, 60, 60)
