@@ -5,7 +5,7 @@ setup(name="ghost-simulator",
       packages=['gslib'],
       scripts=['ghost-simulator.py'],
       data_files=[('gs-chars', ['characters/' + fname for fname in [
-          'bio.txt', 'fears.txt', 'first_names_f.txt',
+          'bio.txt', 'first_names_f.txt',
           'first_names_m.txt', 'second_names.txt',
           'fears_description.txt',
           'ghostSheet.png']]),
