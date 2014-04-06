@@ -17,6 +17,7 @@ from gslib import skills
 from gslib import sound
 from gslib import text_box
 from gslib import key
+from gslib import mouse
 from gslib.constants import *
 # doesn't seem to be needed any more
 #if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
@@ -80,13 +81,15 @@ class Game(object):
         # HACK
         self.keys = self.key_controller.keys
 
+        self.mouse_controller = mouse.MouseController(self)
+
         self.joy_controller = joy.JoyController(self)
 
         self.event_map = {
             pygame.KEYDOWN: self.key_controller.handle_keys,
             pygame.KEYUP: self.key_controller.handle_keys,
             pygame.QUIT: self.quit_game,
-            pygame.MOUSEBUTTONDOWN: self.mouse_click,
+            pygame.MOUSEBUTTONDOWN: self.mouse_controller.mouse_click,
             pygame.JOYHATMOTION: self.joy_controller.handle_hat,
             pygame.JOYBUTTONDOWN: self.joy_controller.handle_buttondown,
             pygame.JOYBUTTONUP: self.joy_controller.handle_buttonup,
@@ -234,53 +237,6 @@ class Game(object):
         # now double!
         # pygame.display.update()
 
-    def mouse_click(self, event):
-        if self.GameState == MAIN_MENU:
-            self.Menu.mouse_event(event)
-        elif self.GameState == MAIN_GAME:
-            self.check_button_click(event)
-            self.check_object_click(event)
-        elif self.GameState == SKILLS_SCREEN:
-            self.SkillMenu.mouse_event(event)
-        elif self.GameState == OPTIONS_MENU:
-            self.options_menu.mouse_event(event)
-
-    def check_object_click(self, event):
-        if event.pos[0] > LEVEL_WIDTH or event.pos[1] > LEVEL_HEIGHT: # make track camera
-            return
-        for o in self.objects:
-            st = SELECTION_TOLERANCE
-            temp_rect = pygame.Rect((o.coord[0] - st, o.coord[1] - st), (o.dimensions[0] + 2*st, o.dimensions[1] + 2*st))
-            if temp_rect.collidepoint((event.pos[0]+self.camera_coords[0],event.pos[1]+self.camera_coords[1])) and isinstance(o, character.Character):
-                self.disp_object_stats = True
-                self.object_stats = (o.info_sheet, (GAME_WIDTH - o.info_sheet.get_width(), 0))
-                if self.player1.possessing:
-                    return
-                self.toPossess = o
-                self.buttons['Possess'].visible = True
-                # self.buttons['Possess'].enabled = True
-                self.buttons['Possess'].pos = (GAME_WIDTH - o.info_sheet.get_width(), o.info_sheet.get_height())
-                self.buttons['unPossess'].pos = (GAME_WIDTH - o.info_sheet.get_width(), o.info_sheet.get_height())
-                return
-        self.disp_object_stats = False
-        self.object_stats = None
-        self.buttons['Possess'].visible = False
-        self.buttons['Possess'].enabled = False
-
-    def check_button_click(self, event):
-        for button in self.buttons.itervalues():
-            button.check_clicked(event.pos)
-
-        if self.player1.possessing:
-            self.buttons['Possess'].visible = False
-            self.buttons['Possess'].enabled = False
-            self.buttons['unPossess'].visible = True
-            self.buttons['unPossess'].enabled = True
-        else:
-            self.buttons['Possess'].visible = True
-            self.buttons['Possess'].enabled = True
-            self.buttons['unPossess'].visible = False
-            self.buttons['unPossess'].enabled = False
 
     def possess(self):
         self.toPossess.isPossessed = True
