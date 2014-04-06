@@ -17,6 +17,9 @@ class MainMenu(object):
         self.buttons['VOF'] = button.Button(self, self.VOF_toggle, pos=(60, 120), size=(200, 30), visible=True,
                                             text='View of Field: No', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
+        self.buttons['credits'] = button.Button(self, self.credits, pos=(60, 160), size=(200, 30), visible=True, text='Credits',
+                                             border_colour=(120, 50, 80), border_width=3,
+                                             colour=(120, 0, 0))
         self.buttons['quit'] = button.Button(self, self.quit, pos=(60, 240), size=(200, 30), visible=True, text='Quit',
                                              border_colour=(120, 50, 80), border_width=3,
                                              colour=(120, 0, 0))
@@ -53,6 +56,9 @@ class MainMenu(object):
 
     def quit(self):
         self.GameClass.gameRunning = False
+
+    def credits(self):
+        self.GameClass.GameState = CREDITS
 
 
 class OptionsMenu(object):
