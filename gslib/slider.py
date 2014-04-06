@@ -29,7 +29,17 @@ class Slider(object):
 
         self.redraw()
 
-    value = create_property('value')
+    def get_value(self):
+        return self._value
+    def set_value(self, val):
+        self._value = val
+        if self._value > self.max:
+            self._value = self.max
+        if self._value > self.min:
+            self._value = self.min
+        self.redraw()
+    value = property(get_value, set_value)
+
     fore_colour = create_property('fore_colour')
     back_colour = create_property('back_colour')
 

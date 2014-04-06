@@ -88,7 +88,7 @@ class Graphics(object):
             self.game.map_surf = pygame.Surface((nw * grid_size, nh * grid_size)).convert()
         surf = self.game.map_surf
     
-        clippy = self.game.clip_area.copy() if hasattr(self.game, 'clip_area') else pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
+        clippy = self.game.clip_area.copy()# if hasattr(self.game, 'clip_area') else pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
         clippy.inflate_ip(64, 64)
     
         for i in range(nw):
