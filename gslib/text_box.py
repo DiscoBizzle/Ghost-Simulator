@@ -28,8 +28,10 @@ class TextBox:
         self.line_space = 2
 
         self.num_chars = 1
+        self.char_increment = 2
+        self.tick = 0  # counts the number of ticks since textbox appeared
 
-        self.h = 224
+        self.h = 160
         self.w = GAME_WIDTH - 2*self.x_int_pad
 
         self.portrait_surface = pygame.image.load("characters/portrait_test2.jpg").convert()
@@ -61,4 +63,7 @@ class TextBox:
         for i, l in enumerate(lines):
             t = self.font.render(l, True, self.text_color)
             self.text_surface.blit(t, (self.x_text_pad, self.y_text_pad + i * (t.get_height()+self.line_space)))
-        self.num_chars += 1
+
+            self.tick += 1
+            if self.tick % TICKS_PER_CHAR == 0:
+                self.num_chars += self.char_increment
