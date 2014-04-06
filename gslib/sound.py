@@ -17,6 +17,7 @@ def load_all_sounds():
 
 def get_music_list():
     musicList = []
+    pygame.mixer.music.set_volume(INITIAL_MUSIC_VOLUME)
     for f in os.listdir(MUSIC_DIR):
         if f[-4:] in (".ogg", ".wav"):
             musicList.append(os.path.join(MUSIC_DIR, f))

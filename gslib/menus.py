@@ -72,11 +72,15 @@ class OptionsMenu(Menu):
         self.buttons['torch'] = button.Button(self, self.torch_toggle, order = 2, size=(200, 30), visible=True,
                                             text=u'Torch: Yes', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
-        self.buttons['sound_display'] = button.Button(self, self.sound_display, order = 3, size=(200, 30), visible=True,
-                                            text=u'Sound volume:'+unicode(str(int(INITIAL_SOUND_VOLUME/0.003))), border_colour=(120, 50, 80), border_width=3,
+        self.buttons['sound_display'] = button.Button(self, None , order = 3, size=(200, 30), visible=True,
+                                            text=u'Sound volume: '+unicode(str(int(INITIAL_SOUND_VOLUME/0.003))), border_colour=(120, 50, 80), border_width=3,
+                                            colour=(120, 0, 0))
+        self.buttons['music_display'] = button.Button(self, None, order = 5, size=(200, 30), visible=True,
+                                            text=u'Music volume: '+unicode(str(int(INITIAL_MUSIC_VOLUME/0.003))), border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
 
         self.sliders['sound'] = slider.Slider(self, self.set_sound, range=(0, 0.3), order = 4, dim = (200, 30), value = game_class.sound_dict['scream'].get_volume())
+        self.sliders['music'] = slider.Slider(self, self.set_music, range=(0, 0.3), order = 6, dim = (200, 30), value = pygame.mixer.music.get_volume())
         Menu.arrange_buttons(self)
 
     def FOV_toggle(self):
@@ -107,8 +111,10 @@ class OptionsMenu(Menu):
         for sound in self.game_class.sound_dict.itervalues():
             sound.set_volume(value)
         self.buttons['sound_display'].text = u'Sound Volume:' + unicode(str(int(value/0.003)))
-    def sound_display(self):
-        pass
+    def set_music(self, value):
+        pygame.mixer.music.set_volume(value)
+        self.buttons['music_display'].text = u'Music Volume:' + unicode(str(int(value/0.003)))
+
 
 
 class SkillsMenu(object):

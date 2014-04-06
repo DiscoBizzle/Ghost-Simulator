@@ -108,4 +108,5 @@ class Button(object):
                 self.perf_function()
 
     def perf_function(self):
-        self.function()
+        if self.function is not None:
+            self.function()

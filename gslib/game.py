@@ -94,7 +94,7 @@ class Game(object):
             pygame.JOYBALLMOTION: self.joy_controller.handle_ball,
         }
 
-        #sound.start_next_music(self.music_list)
+        sound.start_next_music(self.music_list)
 
         self.map_list = []
         self.map_list.append(maps.Map(os.path.join(TILES_DIR, 'level2.png'), os.path.join(TILES_DIR, 'level2.json'), self))
