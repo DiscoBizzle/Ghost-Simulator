@@ -104,7 +104,6 @@ class OptionsMenu(Menu):
             self.buttons['torch'].text = u'Torch: Yes'
 
     def set_sound(self, value):
-        print value
         for sound in self.game_class.sound_dict.itervalues():
             sound.set_volume(value)
 
