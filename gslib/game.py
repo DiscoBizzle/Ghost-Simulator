@@ -86,12 +86,12 @@ class Game(object):
 
         while self.gameRunning:
 
-            if self.GameState != CUTSCENE:
+            # Update clock & pump event queue.
+            # We cannot do this at the same time as playing a cutscene on linux; pygame.movie is shite.
+            if not (self.GameState == CUTSCENE and (sys.platform == "linux2" or sys.platform == "linux" or sys.platform == "linux3")):
                 self.clock.tick()
                 self.msPassed += self.clock.get_time()
 
-            # poll event queue
-            if self.GameState != CUTSCENE:
                 for event in pygame.event.get():
                     response = self.event_map.get(event.type)
                     if response is not None:
@@ -111,43 +111,33 @@ class Game(object):
             elif self.GameState == MAIN_GAME:
                 pass
             elif self.GameState == CUTSCENE:
-                if self.cutscene_started == True:
+                if self.cutscene_started:
                     if not movie.get_busy():
                         self.GameState = MAIN_GAME
                         self.cutscene_started = False
-                        self.clock.get_time() # HACK
-                        del movie
-                        # pygame.display.update()
+                        self.clock.get_time() # hack required for pygame.movie linux
+                        del movie # hack required for pygame.movie mac os x
                 else:
-                    
                     self.surface.fill(blackColour)
                     pygame.display.update()
                     try:
                         f = BytesIO(open(self.cutscene_next, "rb").read())
                         movie = pygame.movie.Movie(f)
                         w, h = movie.get_size()
-                        
-                        #screen = pygame.display.set_mode((w, h))
-                        
-                        #movie.set_display(self.surface, pygame.Rect((5, 5), (w,h)))
-                        
                         movie.play()
                         self.cutscene_started = True
                     except IOError:
                         print "Video not found: " + self.cutscene_next
                         self.GameState = MAIN_MENU
 
-            if self.GameState != CUTSCENE:
-                if self.msPassed > 33:
-                    self.update()
-                    self.msPassed = 0
+            if self.GameState != CUTSCENE and self.msPassed > 33:
+                self.update()
+                self.msPassed = 0
 
-                    self.fps_clock.tick()
-                    self.main_game_draw()
-                else:
-                    time.sleep(0.001)
+                self.fps_clock.tick()
+                self.main_game_draw()
             else:
-                time.sleep(0.001)
+                time.sleep(0.001) # note: sleeping not only a good idea but necessary for pygame.movie os x
 
     def update(self):
         # this is fixed timestep, 30 FPS. if game runs slower, we lag.
