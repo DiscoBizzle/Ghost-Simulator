@@ -11,10 +11,13 @@ class Menu(object):
         self.buttons = {}
         self.sliders = {}
         self.button_size = button_size
-        self.min_button_size = (40, 8)
+        self.original_button_size = button_size
+        mi = min(button_size[0], button_size[1])
+        frac = 8.0/mi
+        self.min_button_size = (button_size[0] * frac, button_size[1] * frac)
         self.hori_offset = 60
         self.vert_offset = 40 + button_size[1] + 10
-        self.buttons_per_column = ((GAME_HEIGHT - self.vert_offset - 60) / (self.button_size[1]+20))
+        self.buttons_per_column = ((GAME_HEIGHT - self.vert_offset) / (self.button_size[1]+20)) - 1
 
         self.buttons['menu_scale_display'] = button.Button(self, None, order = (-1, 0), visible=True,
                                             text=u'Menu Scale: 1.0', border_colour=(120, 50, 80), border_width=3,
@@ -55,8 +58,9 @@ class Menu(object):
 
     def set_menu_scale(self, value):
         self.button_size = (self.min_button_size[0] * value, self.min_button_size[1] * value)
-        self.buttons_per_column = ((GAME_HEIGHT - self.vert_offset - 60) / (self.button_size[1]+20))
+        self.buttons_per_column = int(((GAME_HEIGHT - self.vert_offset) / (self.button_size[1]+20))) #- 1
         self.arrange_buttons()
+        self.buttons['menu_scale_display'].text = u"Menu scale: " + unicode(str(round(self.button_size[0]/self.original_button_size[0],2)))
 
 class MainMenu(Menu):
     def __init__(self, game_class, button_size):

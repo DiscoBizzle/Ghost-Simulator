@@ -28,7 +28,7 @@ from gslib.constants import *
 
 class Game(object):
     def __init__(self):
-        self.Menu = menus.MainMenu(self, (200,30))
+        self.Menu = menus.MainMenu(self, (161,100))
         self.GameState = MAIN_MENU
         self.cutscene_started = False
         self.cutscene_next = os.path.join(VIDEO_DIR, "default.mpg")

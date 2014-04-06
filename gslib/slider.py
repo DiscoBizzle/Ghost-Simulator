@@ -13,7 +13,7 @@ def create_property(var):  # creates a member variable that redraws the button w
 
 
 class Slider(object):
-    def __init__(self, owner, func, pos=(0, 0), range=(0, 100), value=50, size=(100, 20), back_colour=(255, 0, 0), fore_colour=(0, 255, 0), order=0):
+    def __init__(self, owner, func, pos=(0, 0), range=(0, 100), value=50, size=(100, 20), back_colour=(120, 0, 0), fore_colour=(0, 120, 0), order=0):
         self.owner = owner
         self.min, self.max = range
         self._value = value
