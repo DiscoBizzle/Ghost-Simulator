@@ -41,7 +41,7 @@ class Player(GameObject):
         # update velocity
         v_x, v_y = 0, 0
 
-        self.animationState = self.direction
+        self.animation_state = self.direction
 
         if self.game_class.keys[pygame.K_DOWN]:
             v_y += 5

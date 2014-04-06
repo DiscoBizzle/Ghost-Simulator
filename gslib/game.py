@@ -46,11 +46,11 @@ class Game(object):
 
         self.objects = []
 
-        self.player1 = player.Player(self, 0, 0,SPRITE_WIDTH, SPRITE_HEIGHT)
+        self.player1 = player.Player(self, 0, 0, 16, 16)
         self.objects.append(self.player1)
 
         for i in range(1):
-            self.objects.append(character.Character(self, 0, 0, 16, 32, character.gen_character()))
+            self.objects.append(character.Character(self, 0, 0, 16, 16, character.gen_character()))
 
         self.disp_object_stats = False
         self.object_stats = None
@@ -161,7 +161,7 @@ class Game(object):
             if self.options['FOV']:
                 self.surface.blit(graphics.draw_map(self.map), (0, 0))
                 for object in self.objects:
-                    self.surface.blit(object.sprite_sheet, object.coord, object.frame_rect)
+                    self.surface.blit(object.sprite_sheet, (object.coord[0]+object.dimensions[0]-SPRITE_WIDTH, object.coord[1]+object.dimensions[1]-SPRITE_HEIGHT), object.frame_rect)
 
                 font = pygame.font.SysFont('helvetica', 20)
                 size = font.size("FEAR")
