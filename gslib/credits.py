@@ -64,7 +64,7 @@ class Credits(object):
         self.name_col = name_col
         self.bg_col = bg_col
         self.spacing = spacing
-        self.font = pygame.font.SysFont("helvetica", size)
+        self.font = pygame.font.SysFont(FONT, size)
         self.surface = pygame.Surface(get_credits_size(self.credits, self.font, self.indent, self.spacing))
         self.v_offset = game.graphics.surface.get_height()
         self.margin = (game.graphics.surface.get_width() - game.graphics.surface.get_width())/4

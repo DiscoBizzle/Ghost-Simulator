@@ -27,12 +27,12 @@ class Graphics(object):
         self.light = pygame.transform.scale(self.light, (200, 200))
 
     def draw_game_over(self):
-        font = pygame.font.SysFont('helvetica', 80)
+        font = pygame.font.SysFont(FONT, 80)
         size = font.size("GAME OVER")
         margin = (self.game.dimensions[0] - size[0]) / 2
         self.game.screen_objects_to_draw.append((font.render("GAME OVER", True, (255, 255, 255)), (margin, 100)))
     
-        font = pygame.font.SysFont('helvetica', 20)
+        font = pygame.font.SysFont(FONT, 20)
         size = font.size("press esc scrub")
         margin = (self.game.dimensions[0] - size[0]) / 2
         self.game.screen_objects_to_draw.append((font.render("press esc scrub", True, (255, 255, 255)), (margin, 200)))
@@ -106,7 +106,7 @@ class Graphics(object):
     
     
     def draw_fps(self):
-        font = pygame.font.SysFont('helvetica', 20)
+        font = pygame.font.SysFont(FONT, 20)
         surf = font.render(u'FPS: ' + unicode(int(self.game.fps_clock.get_fps())), True, (255, 255, 0))
         self.game.screen_objects_to_draw.append((surf, (0, self.game.dimensions[1] - 100)))
     
@@ -136,7 +136,7 @@ class Graphics(object):
     
     def draw_fear_bar(self):
         if not hasattr(self.game, 'fear_txt'):
-            font = pygame.font.SysFont('helvetica', 20)
+            font = pygame.font.SysFont(FONT, 20)
             self.game.fear_size = font.size(u"FEAR")
             self.game.fear_txt = font.render(u"FEAR", True, (200, 200, 200)).convert_alpha()
     
