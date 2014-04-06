@@ -49,7 +49,7 @@ class Game(object):
         self.player1 = player.Player(self, 0, 0, 16, 16)
         self.objects.append(self.player1)
 
-        for i in range(1):
+        for i in range(100):
             self.objects.append(character.Character(self, 0, 0, 16, 16, character.gen_character()))
 
         self.disp_object_stats = False
