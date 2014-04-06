@@ -29,12 +29,15 @@ def draw_map(game_class):
     grid_size = TILE_SIZE
     nw = len(m.grid)
     nh = len(m.grid[0])
-    surf = pygame.Surface((nw * grid_size, nh * grid_size))
+    if not hasattr(game_class, 'map_surf'):
+        game_class.map_surf = pygame.Surface((nw * grid_size, nh * grid_size)).convert()
+    surf = game_class.map_surf
 
     for i in range(nw):
         for j in range(nh):
             area = m.grid[i][j].tileset_area
-            surf.blit(m.tileset, (i * grid_size, j * grid_size), area)
+            if (not hasattr(game_class, 'clip_area')) or game_class.clip_area.colliderect(pygame.Rect((i * grid_size + 3 * grid_size / 2, j * grid_size + 3 * grid_size / 2), (grid_size, grid_size))):
+                surf.blit(m.tileset, (i * grid_size, j * grid_size), area)
 
             ##TEMPORARY - DRAWS SOLID TILES FOR COLLISION DEBUG
             #if not m.grid[i][j].walkable:
@@ -74,13 +77,17 @@ def draw_character_stats(game_class):
 
 
 def draw_fear_bar(game_class):
-    font = pygame.font.SysFont('helvetica', 20)
-    size = font.size("FEAR")
-    fear_txt = font.render("FEAR", True, (200, 200, 200))
-    surf = pygame.Surface((game_class.dimensions[0], 32))
+    if not hasattr(game_class, 'fear_txt'):
+        font = pygame.font.SysFont('helvetica', 20)
+        game_class.fear_size = font.size("FEAR")
+        game_class.fear_txt = font.render("FEAR", True, (200, 200, 200)).convert_alpha()
 
-    surf.blit(fear_txt, (0, 0))
-    pygame.draw.rect(surf, (255, 0, 0), pygame.Rect((size[0], 0), ((game_class.dimensions[0] - size[0]) * (game_class.player1.fear/float(MAX_FEAR)), 32)))
+    if not hasattr(game_class, 'fear_surf'):
+        game_class.fear_surf = pygame.Surface((game_class.dimensions[0], 32)).convert_alpha()
+
+    surf = game_class.fear_surf
+    surf.blit(game_class.fear_txt, (0, 0))
+    pygame.draw.rect(surf, (255, 0, 0), pygame.Rect((game_class.fear_size[0], 0), ((game_class.dimensions[0] - game_class.fear_size[0]) * (game_class.player1.fear/float(MAX_FEAR)), 32)))
     game_class.screen_objects_to_draw.append((surf, (0, game_class.dimensions[1] - 32)))
 
 
@@ -131,14 +138,22 @@ def draw_cutscene(game):
 
 
 def draw_torch(game_class):
-
     ppos = (game_class.player1.coord[0] + game_class.player1.dimensions[0] / 2, game_class.player1.coord[1] + game_class.player1.dimensions[1] / 2)
 
-    surf = pygame.Surface((GAME_WIDTH, GAME_HEIGHT))
-    surf.fill((0, 0, 0))
     light_size = game_class.light.get_size()
+    if not hasattr(game_class, 'hole_surf'):
+        game_class.hole_surf = pygame.Surface((GAME_WIDTH, GAME_HEIGHT)).convert_alpha()
+    surf = game_class.hole_surf
+    surf.fill((0, 0, 0, 0))
+
     hole = pygame.Rect((ppos[0] - light_size[0]/2 - game_class.camera_coords[0], ppos[1] - light_size[1]/2 - game_class.camera_coords[1]), light_size)
-    pygame.draw.rect(surf, (1, 1, 1), hole)
-    surf.set_colorkey((1, 1, 1))
+    if hasattr(game_class, 'clip_area'):
+        game_class.old_clip_area = game_class.clip_area
+    game_class.clip_area = hole
+
+    pygame.draw.rect(surf, (0, 0, 0, 255), pygame.Rect((0, 0), (GAME_WIDTH, hole.top)))
+    pygame.draw.rect(surf, (0, 0, 0, 255), pygame.Rect((0, 0), (hole.left, GAME_HEIGHT)))
+    pygame.draw.rect(surf, (0, 0, 0, 255), pygame.Rect((hole.right, 0), (GAME_WIDTH, GAME_HEIGHT)))
+    pygame.draw.rect(surf, (0, 0, 0, 255), pygame.Rect((0, hole.bottom), (GAME_WIDTH, GAME_HEIGHT)))
     game_class.screen_objects_to_draw.append((surf, (0, 0)))
     game_class.world_objects_to_draw.append((game_class.light, (ppos[0] - light_size[0]/2, ppos[1] - light_size[1]/2)))
