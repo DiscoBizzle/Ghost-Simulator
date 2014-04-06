@@ -85,7 +85,7 @@ class Game(object):
             pygame.JOYBALLMOTION: (lambda event: joy.handle_joy(self, event)),
         }
 
-        sound.start_next_music(self.music_list)
+        #sound.start_next_music(self.music_list)
 
         self.map = maps.Map('tiles/martin.png', 'tiles/martin.json')
 

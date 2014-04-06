@@ -62,6 +62,12 @@ class OptionsMenu(Menu):
         self.buttons['VOF'] = button.Button(self, self.VOF_toggle, order = 1, size=(200, 30), visible=True,
                                             text='View of Field: No', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
+        self.buttons['sound_volume_up'] = button.Button(self, self.sound_up, order = 2, size=(200, 30), visible=True,
+                                            text='Increase Sound Volume', border_colour=(120, 50, 80), border_width=3,
+                                            colour=(120, 0, 0))
+        self.buttons['sound_volume_down'] = button.Button(self, self.sound_down, order = 3, size=(200, 30), visible=True,
+                                            text='Decrease Sound Volume', border_colour=(120, 50, 80), border_width=3,
+                                            colour=(120, 0, 0))
         Menu.arrange_buttons(self)
 
     def FOV_toggle(self):
@@ -79,6 +85,17 @@ class OptionsMenu(Menu):
         else:
             self.game_class.options['VOF'] = True
             self.buttons['VOF'].text = 'View of Field: Yes'
+
+    def sound_up(self):
+        for sound in self.game_class.sound_dict.itervalues():
+            if sound.get_volume != 1:
+                sound.set_volume(sound.get_volume()+0.1)
+
+    def sound_down(self):
+        for sound in self.game_class.sound_dict.itervalues():
+            if sound.get_volume != 0:
+                sound.set_volume(sound.get_volume()-0.1)
+
 
 class SkillsMenu(object):
     def __init__(self, game_class):
