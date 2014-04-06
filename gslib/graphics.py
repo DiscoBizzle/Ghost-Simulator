@@ -112,7 +112,6 @@ def blit_camera(game_class, surf, pos):
     cpos = (pos[0] - game_class.camera_coords[0], pos[1] - game_class.camera_coords[1])
     game_class.surface.blit(surf, cpos)
 
-
 def draw_cutscene(game):
     #print game.cutscene_started
     #print hasattr(game, 'movie')
@@ -162,3 +161,5 @@ def draw_torch(game_class):
 
 def draw_text_box(game_class):
     game_class.surface.blit(game_class.text_box_test.background_surface, (0, 0))
+    game_class.text_box_test.create_text_surface()
+    game_class.surface.blit(game_class.text_box_test.text_surface, (game_class.text_box_test.text_frame_rect.x, game_class.text_box_test.text_frame_rect.y))

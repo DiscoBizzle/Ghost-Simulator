@@ -59,7 +59,7 @@ class Game(object):
         # for i in range(5):
         #     self.objects.append(character.Character(self, 0, 0, 16, 16, character.gen_character()))
 
-        self.text_box_test = text_box.TextBox("hello")
+        self.text_box_test = text_box.TextBox("Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go. Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go. Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go.")
         self.text_box_test.create_background_surface()
 
         self.disp_object_stats = False

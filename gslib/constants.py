@@ -45,6 +45,7 @@ ANIM_DOWNWALK = 6
 ANIM_LEFTWALK = 7
 
 TICKS_PER_FRAME = 8  # number of game frames for each sprite animation frame
+TICKS_PER_CHAR = 1 #the rate at which characters are "typed" in textboxes
 
 MAX_FEAR = 25000
 START_FEAR = 20000
