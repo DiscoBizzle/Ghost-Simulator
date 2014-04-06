@@ -25,17 +25,15 @@ from gslib.constants import *
 #    # On NT like Windows versions smpeg video needs windb. --
 #os.environ['SDL_VIDEODRIVER'] = ''
 
-blackColour = pygame.Color(0, 0, 0)
-blueColour = pygame.Color(0, 0, 255)
 
 class Game(object):
-    def __init__(self, width, height):
+    def __init__(self):
         self.Menu = menus.MainMenu(self)
         self.GameState = MAIN_MENU
         self.cutscene_started = False
         self.cutscene_next = os.path.join(VIDEO_DIR, "default.mpg")
-        self.gameRunning = True
-        self.dimensions = (width, height)
+        self.game_running = True
+        self.dimensions = (GAME_WIDTH, GAME_HEIGHT)
         self.graphics = graphics.Graphics(self)
         pygame.display.set_caption("Ghost Simulator v. 0.000000001a")
         self.music_list = sound.get_music_list()
@@ -44,7 +42,7 @@ class Game(object):
         self.options_menu = menus.OptionsMenu(self)
 
         self.clock = pygame.time.Clock()
-        self.msPassed = 0
+        self.ms_passed = 0
 
         self.fps_clock = pygame.time.Clock()
 
@@ -105,17 +103,17 @@ class Game(object):
         self.map_index = 0
         self.map = self.map_list[self.map_index]
 
-        self.buttons = {}
-        self.buttons['Possess'] = button.Button(self, self.possess, pos=(LEVEL_WIDTH, 0), size=(200, 30), visible=False,
-                                                text=u'Possess', border_colour=(120, 50, 80), border_width=3,
-                                                colour=(120, 0, 0), enabled=False)
-        self.buttons['unPossess'] = button.Button(self, self.unPossess, pos=(LEVEL_WIDTH, 0), size=(200, 30), visible=False,
-                                                text=u'Unpossess', border_colour=(120, 50, 80), border_width=3,
-                                                colour=(120, 0, 0), enabled=False)
+        self.buttons = {
+            'Possess': button.Button(self, self.possess, pos=(LEVEL_WIDTH, 0), size=(200, 30), visible=False,
+                                     text=u'Possess', border_colour=(120, 50, 80), border_width=3,
+                                     colour=(120, 0, 0), enabled=False),
+            'unPossess': button.Button(self, self.unPossess, pos=(LEVEL_WIDTH, 0), size=(200, 30), visible=False,
+                                       text=u'Unpossess', border_colour=(120, 50, 80), border_width=3,
+                                       colour=(120, 0, 0), enabled=False),
+            'change_map': button.Button(self, self.change_map, pos=(0, 0), size=(20, 20), visible=True,
+                                        text=u'M', border_colour=(120, 50, 80), border_width=3,
+                                        colour=(120, 0, 0), enabled=True)}
 
-        self.buttons['change_map'] = button.Button(self, self.change_map, pos=(0, 0), size=(20, 20), visible=True,
-                                                text=u'M', border_colour=(120, 50, 80), border_width=3,
-                                                colour=(120, 0, 0), enabled=True)
         self.toPossess = None
 
         self.world_objects_to_draw = []
@@ -126,14 +124,14 @@ class Game(object):
 
         self.clip_area = pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
 
-    def gameLoop(self):
-        while self.gameRunning:
+    def game_loop(self):
+        while self.game_running:
             # Update clock & pump event queue.
             # We cannot do this at the same time as playing a cutscene on linux; pygame.movie is shite.
             if not (self.GameState == CUTSCENE and (
                         sys.platform == "linux2" or sys.platform == "linux" or sys.platform == "linux3")):
                 self.clock.tick()
-                self.msPassed += self.clock.get_time()
+                self.ms_passed += self.clock.get_time()
 
                 for event in pygame.event.get():
                     response = self.event_map.get(event.type)
@@ -143,9 +141,9 @@ class Game(object):
             if self.GameState == CUTSCENE:
                 self.graphics.draw_cutscene()
                 time.sleep(0.001)
-            elif self.msPassed > 33:
+            elif self.ms_passed > 33:
                 self.update()
-                self.msPassed = 0
+                self.ms_passed = 0
 
                 self.fps_clock.tick()
                 self.graphics.main_game_draw()
@@ -227,4 +225,4 @@ class Game(object):
         self.clip_area = pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
 
     def quit_game(self):
-        self.gameRunning = False
+        self.game_running = False

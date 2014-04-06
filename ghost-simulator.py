@@ -9,8 +9,8 @@ from gslib.constants import *
 def main():
     pygame.init()
 
-    Game = game.Game(GAME_WIDTH, GAME_HEIGHT)
-    Game.gameLoop()
+    g = game.Game()
+    g.game_loop()
 
     pygame.quit()
 
