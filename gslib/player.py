@@ -19,10 +19,6 @@ class Player(GameObject):
 
         self.possessing = False
 
-        self.move_up = False
-        self.move_down = False
-        self.move_left = False
-        self.move_right = False
 
     def get_fear(self):
         return self._fear

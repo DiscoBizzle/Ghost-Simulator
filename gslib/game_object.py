@@ -32,6 +32,11 @@ class GameObject(object):
                                       SPRITE_WIDTH, SPRITE_HEIGHT)
         self.sprite_sheet.set_colorkey((255, 0, 255))
 
+        self.move_up = False
+        self.move_down = False
+        self.move_left = False
+        self.move_right = False
+
     def update(self):
         if not self.velocity == (0, 0):
             self.move()

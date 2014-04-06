@@ -17,6 +17,8 @@ from gslib import skills
 from gslib import sound
 from gslib import text_box
 from gslib import key
+from gslib import mouse
+from gslib import fear_functions
 from gslib.constants import *
 # doesn't seem to be needed any more
 #if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
@@ -49,17 +51,21 @@ class Game(object):
 
         self.objects = []
 
-        self.player1 = player.Player(self, 0, 0, 16, 16)
-        self.objects.append(self.player1)
+        self.players = []
+        self.players.append(player.Player(self, 0, 0, 16, 16))
+        self.players.append(player.Player(self, 0, 0, 16, 16))
+        self.player1 = self.players[0]
+
+        self.objects += self.players
 
         self.skills_dict = skills.load_skill_dict()
         self.SkillMenu = menus.SkillsMenu(self)
-
 
         # for i in range(5):
         #     self.objects.append(character.Character(self, 0, 0, 16, 16, character.gen_character()))
 
         self.text_box_test = text_box.TextBox("Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go. Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go. Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go.")
+
         self.text_box_test.create_background_surface()
 
         self.disp_object_stats = False
@@ -80,13 +86,15 @@ class Game(object):
         # HACK
         self.keys = self.key_controller.keys
 
+        self.mouse_controller = mouse.MouseController(self)
+
         self.joy_controller = joy.JoyController(self)
 
         self.event_map = {
             pygame.KEYDOWN: self.key_controller.handle_keys,
             pygame.KEYUP: self.key_controller.handle_keys,
             pygame.QUIT: self.quit_game,
-            pygame.MOUSEBUTTONDOWN: self.mouse_click,
+            pygame.MOUSEBUTTONDOWN: self.mouse_controller.mouse_click,
             pygame.JOYHATMOTION: self.joy_controller.handle_hat,
             pygame.JOYBUTTONDOWN: self.joy_controller.handle_buttondown,
             pygame.JOYBUTTONUP: self.joy_controller.handle_buttonup,
@@ -96,8 +104,12 @@ class Game(object):
 
         #sound.start_next_music(self.music_list)
 
-        self.map2 = maps.Map(os.path.join(TILES_DIR, 'martin.png'), os.path.join(TILES_DIR, 'martin.json'), self)
-        self.map = maps.Map(os.path.join(TILES_DIR, 'level2.png'), os.path.join(TILES_DIR, 'level2.json'), self)
+        self.map_list = []
+        self.map_list.append(maps.Map(os.path.join(TILES_DIR, 'level2.png'), os.path.join(TILES_DIR, 'level2.json'), self))
+        self.map_list.append(maps.Map(os.path.join(TILES_DIR, 'martin.png'), os.path.join(TILES_DIR, 'martin.json'), self))
+
+        self.map_index = 0
+        self.map = self.map_list[self.map_index]
 
         self.buttons = {}
         self.buttons['Possess'] = button.Button(self, self.possess, pos=(LEVEL_WIDTH, 0), size=(200, 30), visible=False,
@@ -115,6 +127,8 @@ class Game(object):
         self.world_objects_to_draw = []
         self.screen_objects_to_draw = []
         self.objects += self.map.objects
+
+        self.show_fears = False
 
     def gameLoop(self):
         while self.gameRunning:
@@ -146,6 +160,8 @@ class Game(object):
         # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
         #self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
         self.camera_coords = self.calc_camera_coord()
+        if self.show_fears:
+            self.say_fears()
 
         if self.GameState == MAIN_GAME:
             for obj in self.objects:
@@ -154,7 +170,16 @@ class Game(object):
             self.credits.update()
 
     def calc_camera_coord(self):
-        coord = (self.player1.coord[0] - (GAME_WIDTH/2), self.player1.coord[1] - (GAME_HEIGHT/2))
+        avg_pos = [0, 0]
+        c = 0
+        for p in self.players:
+            c += 1
+            avg_pos[0] += p.coord[0]
+            avg_pos[1] += p.coord[1]
+
+        avg_pos = (avg_pos[0] / c, avg_pos[1] / c)
+        # coord = (self.player1.coord[0] - (GAME_WIDTH/2), self.player1.coord[1] - (GAME_HEIGHT/2))
+        coord = (avg_pos[0] - (GAME_WIDTH/2), avg_pos[1] - (GAME_HEIGHT/2))
         pad = -32
 
         # bottom
@@ -221,53 +246,19 @@ class Game(object):
         # now double!
         # pygame.display.update()
 
-    def mouse_click(self, event):
-        if self.GameState == MAIN_MENU:
-            self.Menu.mouse_event(event)
-        elif self.GameState == MAIN_GAME:
-            self.check_button_click(event)
-            self.check_object_click(event)
-        elif self.GameState == SKILLS_SCREEN:
-            self.SkillMenu.mouse_event(event)
-        elif self.GameState == OPTIONS_MENU:
-            self.options_menu.mouse_event(event)
-
-    def check_object_click(self, event):
-        if event.pos[0] > LEVEL_WIDTH or event.pos[1] > LEVEL_HEIGHT: # make track camera
-            return
+    def say_fears(self):
         for o in self.objects:
-            st = SELECTION_TOLERANCE
-            temp_rect = pygame.Rect((o.coord[0] - st, o.coord[1] - st), (o.dimensions[0] + 2*st, o.dimensions[1] + 2*st))
-            if temp_rect.collidepoint((event.pos[0]+self.camera_coords[0],event.pos[1]+self.camera_coords[1])) and isinstance(o, character.Character):
-                self.disp_object_stats = True
-                self.object_stats = (o.info_sheet, (GAME_WIDTH - o.info_sheet.get_width(), 0))
-                if self.player1.possessing:
-                    return
-                self.toPossess = o
-                self.buttons['Possess'].visible = True
-                # self.buttons['Possess'].enabled = True
-                self.buttons['Possess'].pos = (GAME_WIDTH - o.info_sheet.get_width(), o.info_sheet.get_height())
-                self.buttons['unPossess'].pos = (GAME_WIDTH - o.info_sheet.get_width(), o.info_sheet.get_height())
-                return
-        self.disp_object_stats = False
-        self.object_stats = None
-        self.buttons['Possess'].visible = False
-        self.buttons['Possess'].enabled = False
+            if isinstance(o, player.Player):
+                continue
+            text = ''
+            for f in o.scared_of:
+                if f != 'player':
+                    text += f + '\n'
+            surf = fear_functions.speech_bubble(text, 300)
+            pos = (o.coord[0] + o.dimensions[0], o.coord[1] - surf.get_height())
+            self.world_objects_to_draw.append((surf, pos))
 
-    def check_button_click(self, event):
-        for button in self.buttons.itervalues():
-            button.check_clicked(event.pos)
 
-        if self.player1.possessing:
-            self.buttons['Possess'].visible = False
-            self.buttons['Possess'].enabled = False
-            self.buttons['unPossess'].visible = True
-            self.buttons['unPossess'].enabled = True
-        else:
-            self.buttons['Possess'].visible = True
-            self.buttons['Possess'].enabled = True
-            self.buttons['unPossess'].visible = False
-            self.buttons['unPossess'].enabled = False
 
     def possess(self):
         self.toPossess.isPossessed = True
@@ -280,8 +271,10 @@ class Game(object):
         self.toPossess = None
 
     def change_map(self):
-        self.map, self.map2 = self.map2, self.map
-        self.objects = [self.player1] + self.map.objects
+        self.map_index += 1
+        self.map_index %= len(self.map_list)
+        self.map = self.map_list[self.map_index]
+        self.objects = self.players + self.map.objects
 
     def quit_game(self, _):
         self.gameRunning = False
