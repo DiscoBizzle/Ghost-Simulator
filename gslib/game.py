@@ -16,6 +16,7 @@ from gslib import player
 from gslib import skills
 from gslib import sound
 from gslib import text_box
+from gslib import key
 from gslib.constants import *
 # doesn't seem to be needed any more
 #if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
@@ -39,7 +40,6 @@ class Game(object):
         self.sound_dict = sound.load_all_sounds()
         self.credits = credits.Credits(self)
         self.options_menu = menus.OptionsMenu(self)
-
 
         self.clock = pygame.time.Clock()
         self.msPassed = 0
@@ -80,11 +80,13 @@ class Game(object):
         light.convert_alpha()
         self.light = pygame.transform.scale(light, (200, 200))
 
+        self.key_controller = key.KeyController(self)
+
         self.joy_controller = joy.JoyController(self)
 
         self.event_map = {
-            pygame.KEYDOWN: self.handle_keys,
-            pygame.KEYUP: self.handle_keys,
+            pygame.KEYDOWN: self.key_controller.handle_keys,
+            pygame.KEYUP: self.key_controller.handle_keys,
             pygame.QUIT: self.quit_game,
             pygame.MOUSEBUTTONDOWN: self.mouse_click,
             pygame.JOYHATMOTION: self.joy_controller.handle_hat,
@@ -229,27 +231,6 @@ class Game(object):
 
         # now double!
         # pygame.display.update()
-
-    def handle_keys(self, event):
-
-        if event.type == pygame.KEYDOWN:
-            if event.key in self.keys:
-                self.keys[event.key] = True
-        if event.type == pygame.KEYUP:
-            if event.key in self.keys:
-                self.keys[event.key] = False
-
-        if self.keys[pygame.K_ESCAPE] and self.GameState != CUTSCENE:
-            self.keys[pygame.K_ESCAPE] = False
-            self.GameState = MAIN_MENU
-        if self.keys[pygame.K_m]:
-            self.keys[pygame.K_m] = False
-            if self.GameState == MAIN_MENU or self.GameState == MAIN_GAME:
-                self.GameState = CUTSCENE
-        if self.keys[pygame.K_s] and (self.GameState == MAIN_MENU or self.GameState == MAIN_GAME):
-            self.GameState = SKILLS_SCREEN
-        if self.keys[pygame.K_t] and (self.GameState == MAIN_MENU or self.GameState == MAIN_GAME):
-            self.GameState = TEXTBOX_TEST
 
     def mouse_click(self, event):
         if self.GameState == MAIN_MENU:
