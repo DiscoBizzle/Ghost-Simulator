@@ -4,12 +4,8 @@ MAIN_MENU = 1
 MAIN_GAME = 2
 CUTSCENE = 3
 GAME_OVER = 4
-<<<<<<< HEAD
-SKILLS_SCREEN = 5
-=======
 SKILL_SCREEN = 5
 CREDITS = 6
->>>>>>> Start credits implementation
 
 GAME_WIDTH = 1280
 GAME_HEIGHT = 720
