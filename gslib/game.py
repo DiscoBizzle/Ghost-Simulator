@@ -20,11 +20,6 @@ from gslib.constants import *
 #    # On NT like Windows versions smpeg video needs windb. --
 #os.environ['SDL_VIDEODRIVER'] = ''
 
-try:
-    from cStringIO import StringIO as BytesIO
-except ImportError:
-    from io import BytesIO
-
 blackColour = pygame.Color(0, 0, 0)
 blueColour = pygame.Color(0, 0, 255)
 
@@ -137,24 +132,7 @@ class Game(object):
             elif self.GameState == MAIN_GAME:
                 pass
             elif self.GameState == CUTSCENE:
-                if self.cutscene_started:
-                    if not movie.get_busy():
-                        self.GameState = MAIN_GAME
-                        self.cutscene_started = False
-                        self.clock.get_time()  # hack required for pygame.movie linux
-                        del movie  # hack required for pygame.movie mac os x
-                else:
-                    self.surface.fill(blackColour)
-                    pygame.display.update()
-                    try:
-                        f = BytesIO(open(self.cutscene_next, "rb").read())
-                        movie = pygame.movie.Movie(f)
-                        w, h = movie.get_size()
-                        movie.play()
-                        self.cutscene_started = True
-                    except IOError:
-                        print "Video not found: " + self.cutscene_next
-                        self.GameState = MAIN_MENU
+                graphics.draw_cutscene(self)
 
             if self.GameState != CUTSCENE and self.msPassed > 33:
                 self.update()
