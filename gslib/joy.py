@@ -48,6 +48,8 @@ class JoyController(object):
             self.game.options['FOV'] = not self.game.options['FOV']
         elif event.button == 3:
             self.game.options['VOF'] = not self.game.options['VOF']
+        elif event.button == 4:
+            self.game.options['torch'] = not self.game.options['torch']
 
     def handle_buttonup(self, event):
         pass
