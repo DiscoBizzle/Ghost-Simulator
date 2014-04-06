@@ -153,8 +153,8 @@ class Game(object):
         self.camera_coords = self.calc_camera_coord()
 
         if self.GameState == MAIN_GAME:
-            for object in self.objects:
-                object.update()
+            for obj in self.objects:
+                obj.update()
 
     def calc_camera_coord(self):
         coord = (self.player1.coord[0] - (GAME_WIDTH/2), self.player1.coord[1] - (GAME_HEIGHT/2))
