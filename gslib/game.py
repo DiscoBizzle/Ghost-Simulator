@@ -239,8 +239,9 @@ class Game(object):
         if event.pos[0] > LEVEL_WIDTH or event.pos[1] > LEVEL_HEIGHT:
             return
         for o in self.objects:
-            # if o.rect.collidepoint(event.pos) and isinstance(o, character.Character):
-            if o.rect.collidepoint((event.pos[0]+self.camera_coords[0],event.pos[1]+self.camera_coords[1])) and isinstance(o, character.Character):
+            st = SELECTION_TOLERANCE
+            temp_rect = pygame.Rect((o.coord[0] - st, o.coord[1] - st), (o.dimensions[0] + 2*st, o.dimensions[1] + 2*st))
+            if temp_rect.collidepoint((event.pos[0]+self.camera_coords[0],event.pos[1]+self.camera_coords[1])) and isinstance(o, character.Character):
                 self.disp_object_stats = True
                 self.object_stats = (o.info_sheet, (GAME_WIDTH - o.info_sheet.get_width(), 0))
                 if self.player1.possessing:
