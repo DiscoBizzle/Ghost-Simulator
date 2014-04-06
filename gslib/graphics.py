@@ -69,12 +69,9 @@ class Graphics(object):
         elif self.game.GameState == TEXTBOX_TEST:
             self.draw_text_box()
 
-        if not self.game.options['FOV']:
-            self.screen_objects_to_draw = []
-            self.world_objects_to_draw = []
-
-        self.draw_world_objects()
-        self.draw_screen_objects()
+        if self.game.options['FOV']:
+            self.draw_world_objects()
+            self.draw_screen_objects()
 
         if self.game.options['VOF'] and self.game.GameState != CUTSCENE:
             self.surface.blit(self.field, (0, 0))
@@ -91,7 +88,7 @@ class Graphics(object):
             self.game.map_surf = pygame.Surface((nw * grid_size, nh * grid_size)).convert()
         surf = self.game.map_surf
     
-        clippy = self.game.clip_area.copy() if hasattr(self.game, 'clip_area') else pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
+        clippy = self.game.clip_area.copy()# if hasattr(self.game, 'clip_area') else pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
         clippy.inflate_ip(64, 64)
     
         for i in range(nw):

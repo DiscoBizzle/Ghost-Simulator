@@ -124,6 +124,8 @@ class Game(object):
 
         self.show_fears = False
 
+        self.clip_area = pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
+
     def gameLoop(self):
         while self.gameRunning:
             # Update clock & pump event queue.
@@ -222,6 +224,7 @@ class Game(object):
         self.map_index %= len(self.map_list)
         self.map = self.map_list[self.map_index]
         self.objects = self.players + self.map.objects
+        self.clip_area = pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
 
     def quit_game(self):
         self.gameRunning = False
