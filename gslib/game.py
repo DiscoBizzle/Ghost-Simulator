@@ -121,26 +121,9 @@ class Game(object):
                     if response is not None:
                         response(event)
 
-            if self.keys[pygame.K_ESCAPE] and self.GameState != CUTSCENE:
-                self.keys[pygame.K_ESCAPE] = False
-                self.GameState = MAIN_MENU
-            if self.keys[pygame.K_m]:
-                self.keys[pygame.K_m] = False
-                if self.GameState == MAIN_MENU or self.GameState == MAIN_GAME:
-                    self.GameState = CUTSCENE
-            if self.keys[pygame.K_s] and (self.GameState == MAIN_MENU or self.GameState == MAIN_GAME):
-                self.GameState = SKILLS_SCREEN
-
-            if self.GameState == STARTUP:
-                pass
-            elif self.GameState == MAIN_MENU:
-                pass
-            elif self.GameState == MAIN_GAME:
-                pass
-            elif self.GameState == CUTSCENE:
+            if self.GameState == CUTSCENE:
                 graphics.draw_cutscene(self)
-
-            if self.GameState != CUTSCENE and self.msPassed > 33:
+            elif self.msPassed > 33:
                 self.update()
                 self.msPassed = 0
 
@@ -241,6 +224,16 @@ class Game(object):
         if event.type == pygame.KEYUP:
             if event.key in self.keys:
                 self.keys[event.key] = False
+
+        if self.keys[pygame.K_ESCAPE] and self.GameState != CUTSCENE:
+            self.keys[pygame.K_ESCAPE] = False
+            self.GameState = MAIN_MENU
+        if self.keys[pygame.K_m]:
+            self.keys[pygame.K_m] = False
+            if self.GameState == MAIN_MENU or self.GameState == MAIN_GAME:
+                self.GameState = CUTSCENE
+        if self.keys[pygame.K_s] and (self.GameState == MAIN_MENU or self.GameState == MAIN_GAME):
+            self.GameState = SKILLS_SCREEN
 
     def mouse_click(self, event):
         if self.GameState == MAIN_MENU:
