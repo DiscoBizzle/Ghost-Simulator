@@ -14,7 +14,10 @@ class Menu(object):
         self.original_button_size = button_size
         mi = min(button_size[0], button_size[1])
         frac = 8.0/mi
+        self.frac = frac
         self.min_button_size = (button_size[0] * frac, button_size[1] * frac)
+        self.base_font_size = 20
+        self.font_size = self.base_font_size
         self.hori_offset = 60
         self.vert_offset = 40 + button_size[1] + 10
         self.buttons_per_column = ((GAME_HEIGHT - self.vert_offset) / (self.button_size[1]+20)) - 1
@@ -45,6 +48,7 @@ class Menu(object):
             if button.order[0] == -1:
                 continue
             button.size = self.button_size
+            button.font_size = self.font_size
             button.pos = (self.hori_offset + (button.order[1] + int(button.order[0]/self.buttons_per_column)*2)*(self.button_size[0]+20), self.vert_offset + (button.order[0]%self.buttons_per_column)*(self.button_size[1]+10))
         for slider in self.sliders.itervalues():
             if slider.order[0] == -1:
@@ -60,6 +64,7 @@ class Menu(object):
         self.button_size = (self.min_button_size[0] * value, self.min_button_size[1] * value)
         self.buttons_per_column = int(((GAME_HEIGHT - self.vert_offset) / (self.button_size[1]+20))) #- 1
         self.arrange_buttons()
+        self.font_size = int(self.base_font_size * value * self.frac)
         self.buttons['menu_scale_display'].text = u"Menu scale: " + unicode(str(round(self.button_size[0]/self.original_button_size[0],2)))
 
 class MainMenu(Menu):

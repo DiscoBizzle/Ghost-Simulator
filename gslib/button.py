@@ -30,7 +30,7 @@ def create_property(var):  # creates a member variable that redraws the button w
 # Calls the "end_turn()" function of the class that created the button.
 class Button(object):
     def __init__(self, owner, function, pos=(50, 50), size=(100, 100), visible=True, enabled=True, colour=(0, 0, 0),
-                 border_colour=(0, 0, 0), border_width=2, text=None, **kwargs):
+                 border_colour=(0, 0, 0), border_width=2, text=None, font_size=14, **kwargs):
         self._pos = (0, 0)
         self.pos_setter(pos)
 
@@ -41,6 +41,7 @@ class Button(object):
         self._border_colour = border_colour
         self._border_width = border_width
         self._text = text
+        self._font_size = font_size
         self.enabled = enabled  # whether button can be activated, visible or not
 
         for arg in kwargs:  # allows for additional arbitrary arguments to be passed in, useful for more complicated button functions
@@ -70,6 +71,7 @@ class Button(object):
     border_colour = create_property('border_colour')
     border_width = create_property('border_width')
     text = create_property('text')
+    font_size = create_property('font_size')
 
     def redraw(self):
         if not (self.size[0] > 0 and self.size[1] > 0): raise Exception('Negative button size')
@@ -90,7 +92,7 @@ class Button(object):
         temp.fill(self.colour)
         self.surface.blit(temp, (self.border_width, self.border_width))
 
-        font = pygame.font.SysFont(FONT, 14)
+        font = pygame.font.SysFont(FONT, self.font_size)
         text = font.render(self.text, True, (200, 200, 200))
         x = self.surface.get_width() / 2 - text.get_width() / 2
         y = self.surface.get_height() / 2 - text.get_height() / 2
