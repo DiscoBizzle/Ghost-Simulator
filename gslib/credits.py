@@ -87,9 +87,18 @@ class Credits(object):
 
             height += self.spacing
 
-        self.GameClass.surface.fill((0, 0, 0))
+        self.GameClass.surface.fill(self.bg_col)
 
         margin = (self.GameClass.surface.get_width() - self.surface.get_width())/4
         height = self.GameClass.surface.get_height()
 
         self.GameClass.surface.blit(self.surface, (margin, height))
+
+        while height > -self.surface.get_height():
+            height -= 1
+            self.GameClass.surface.fill(self.bg_col)
+            self.GameClass.surface.blit(self.surface, (margin, height))
+            pygame.display.update()
+            pygame.time.wait(30)
+
+        self.GameClass.GameState = MAIN_MENU
