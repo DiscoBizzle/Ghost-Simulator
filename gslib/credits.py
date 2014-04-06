@@ -57,7 +57,7 @@ class Credits(object):
             - spacing: the vertical gap between the blocks of names
             - size: the text size
         """
-        self.credits = parse_credits_file("credits.txt")
+        self.credits = parse_credits_file(CREDITS_FILE)
         self.GameClass = game
         self.indent = indent
         self.title_col = title_col

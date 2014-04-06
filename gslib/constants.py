@@ -44,8 +44,9 @@ POSSESSION_RANGE = 50
 
 MUSIC_DIR = "music"
 SOUND_DIR = "sound"
-
-VIDEO_DIR = "video/"
+VIDEO_DIR = "video"
+CHARACTER_DIR = "characters"
+CREDITS_FILE = "credits.txt"
 SKILLS_FILE = "skills.json"
 
 LEARNT_SKILL_COLOUR = (0, 150, 0)
