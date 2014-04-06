@@ -159,29 +159,23 @@ class Game(object):
     def calc_camera_coord(self):
         coord = (self.player1.coord[0] - (GAME_WIDTH/2), self.player1.coord[1] - (GAME_HEIGHT/2))
         pad = -32
-        # top left
+
+        # bottom
+        if coord[1] > (LEVEL_HEIGHT - GAME_HEIGHT) / 2 + pad:
+            coord = (coord[0], (LEVEL_HEIGHT - GAME_HEIGHT) / 2 + pad)
+
+        # right
+        if coord[0] > (LEVEL_WIDTH - GAME_WIDTH)/2 - pad:
+            coord = ((LEVEL_WIDTH - GAME_WIDTH)/2 - pad, coord[1])
+
+        # left
         if coord[0] < pad:
             coord = (pad, coord[1])
+
+        # top
         if coord[1] < pad:
             coord = (coord[0], pad)
 
-        # top right
-        if coord[0] > GAME_WIDTH - pad:
-            coord = (GAME_WIDTH - pad, coord[1])
-        if coord[1] > GAME_HEIGHT - pad:
-            coord = (coord[0], GAME_HEIGHT - pad)
-
-        # top left
-        if coord[0] < pad:
-            coord = (pad, coord[1])
-        if coord[1] < pad:
-            coord = (coord[0], pad)
-
-        # top left
-        if coord[0] < pad:
-            coord = (pad, coord[1])
-        if coord[1] < pad:
-            coord = (coord[0], pad)
         return coord
 
     def main_game_draw(self):
