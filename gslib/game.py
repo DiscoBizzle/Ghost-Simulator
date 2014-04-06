@@ -58,7 +58,7 @@ class Game(object):
         self.objects += self.players
 
         self.skills_dict = skills.load_skill_dict()
-        self.SkillMenu = menus.SkillsMenu(self)
+        self.SkillMenu = menus.SkillsMenu(self, (200,150))
 
         # for i in range(5):
         #     self.objects.append(character.Character(self, 0, 0, 16, 16, character.gen_character()))

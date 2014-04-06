@@ -11,7 +11,7 @@ class Menu(object):
         self.buttons = {}
         self.sliders = {}
         self.button_size = button_size
-        self.buttons_per_column = ((GAME_HEIGHT-60)%self.button_size[1]+20)
+        self.buttons_per_column = (((GAME_HEIGHT-60)/(self.button_size[1]+20)))
 
     def display(self):
         for button in self.buttons.itervalues():
@@ -33,6 +33,7 @@ class Menu(object):
         for slider in self.sliders.itervalues():
             slider.size = self.button_size
             slider.pos = (60 + int(slider.order/self.buttons_per_column)*(self.button_size[0]+20), 40 + (slider.order%self.buttons_per_column)*(self.button_size[1]+10))
+        print self.buttons_per_column
 
 
 
@@ -121,12 +122,10 @@ class OptionsMenu(Menu):
 
 
 
-class SkillsMenu(object):
-    def __init__(self, game_class):
-        self.game_class = game_class
-        self.buttons = {}
-        x_offset = 0
-        y_offset = 0
+class SkillsMenu(Menu):
+    def __init__(self, game_class, button_size):
+        Menu.__init__(self, game_class, button_size)
+        temp_order = 0
         for skill in self.game_class.skills_dict:
             if skill in self.game_class.player1.skills_learnt:
                 skill_colour = LEARNT_SKILL_COLOUR
@@ -135,22 +134,10 @@ class SkillsMenu(object):
             else:
                 skill_colour = UNLEARNABLE_COLOUR
             f = lambda skill2=skill: self.learn_skill(skill2)
-            self.buttons[skill] = button.Button(self, f, pos = (60 + x_offset, 40 + y_offset),
-                                                size = (200, 150), text = skill, border_colour = (120, 50, 80),
-                                                border_width = 3, colour = skill_colour)
-            if x_offset < GAME_WIDTH - 420:
-                x_offset += 220
-            else:
-                x_offset = 0
-                y_offset += 170
-
-    def display(self):
-        for button in self.buttons.itervalues():
-            self.game_class.graphics.surface.blit(button.surface, button.pos)
-
-    def mouse_event(self, event):
-        for button in self.buttons.itervalues():
-            button.check_clicked(event.pos)
+            self.buttons[skill] = button.Button(self, f, text = skill, border_colour = (120, 50, 80),
+                                                border_width = 3, colour = skill_colour, order = temp_order)
+            temp_order += 1
+        Menu.arrange_buttons(self)
 
     def learn_skill(self, skill):
         self.game_class.player1.learn_skill(skill)
