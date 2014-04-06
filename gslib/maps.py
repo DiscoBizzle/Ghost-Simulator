@@ -33,7 +33,6 @@ def open_map_json(map_filename):
 
 def load_map(map_filename): # Load a map and objects from a map file
     data = open_map_json(map_filename)
-    print map_filename
 
     width = data['tileswide']
     height = data['tileshigh']
@@ -84,14 +83,27 @@ class Map(object):
         self.tileset_cols = self.tileset.get_width() / TILE_SIZE
 
         tile_type_grid = load_map(map_file)
-        loaded_objects = load_objects(map_file)
-
         self.grid = [[Tile(tile_type_grid[i][j], self, (i, j)) for j in range(len(tile_type_grid[0]))] for i in range(len(tile_type_grid))]
 
+        loaded_objects = load_objects(map_file) # gives a list of dicts, each dict associated with an object from the map
+        
         self.objects = []
+
+        for o_dict in loaded_objects:
+            if o_dict['object_type']=="cat":
+                #print o_dict['x'], o_dict['y']
+                #print type(o_dict['x'])
+                #self.objects.append(character.Character(game_class, o_dict['x'], o_dict['y'], 16, 16, character.gen_character()))
+                self.objects.append(character.Character(game_class, 0, 0, 16, 16, character.gen_character()))
+
+        #print loaded_objects
+
         for i in range(1):
             self.objects.append(character.Character(game_class, 0, 0, 16, 16, character.gen_character()))
 
+
+        for o in self.objects:
+            print o.coord
 
 if __name__ == '__main__':
     test()
