@@ -12,6 +12,7 @@ from gslib import graphics
 from gslib import sound
 from gslib import joy
 from gslib import button
+from gslib import skills
 from gslib.constants import *
 # doesn't seem to be needed any more
 #if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
@@ -39,6 +40,7 @@ class Game(object):
         self.music_list = sound.get_music_list()
         #self.sound_dict = sound.load_all_sounds()
 
+
         self.clock = pygame.time.Clock()
         self.msPassed = 0
 
@@ -51,6 +53,10 @@ class Game(object):
         self.player1 = player.Player(self, 0, 0, 16, 16)
         self.objects.append(self.player1)
 
+        self.skills_dict = skills.load_skill_dict()
+        self.SkillMenu = menus.SkillsMenu(self)
+
+
         for i in range(5):
             self.objects.append(character.Character(self, 0, 0, 16, 16, character.gen_character()))
 
@@ -58,7 +64,7 @@ class Game(object):
         self.object_stats = None
 
         self.keys = {pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False,
-                     pygame.K_ESCAPE: False, pygame.K_m: False}
+                     pygame.K_ESCAPE: False, pygame.K_m: False, pygame.K_s: False}
 
         self.options = {'FOV': True, 'VOF': False}
         field = pygame.image.load('tiles/field.png')
@@ -116,6 +122,9 @@ class Game(object):
             if self.keys[pygame.K_m]:
                 self.keys[pygame.K_ESCAPE] = False
                 self.GameState = CUTSCENE
+            if self.keys[pygame.K_s]:
+                self.GameState = SKILLS_SCREEN
+                print self.player1.skills_learnt
 
             if self.GameState == STARTUP:
                 pass
@@ -208,6 +217,9 @@ class Game(object):
             margin = (self.dimensions[0] - size[0]) / 2
             self.surface.blit(font.render("press esc scrub", True, (255, 255, 255)), (margin, 200))
 
+        elif self.GameState == SKILLS_SCREEN:
+            self.SkillMenu.display()
+
         if self.options['VOF'] and self.GameState != CUTSCENE:
             self.surface.blit(self.field, (0, 0))
         pygame.display.update()
@@ -230,6 +242,9 @@ class Game(object):
         elif self.GameState == MAIN_GAME:
             self.check_button_click(event)
             self.check_object_click(event)
+        elif self.GameState == SKILLS_SCREEN:
+            self.SkillMenu.mouse_event(event)
+
 
     def check_object_click(self, event):
         for o in self.objects:

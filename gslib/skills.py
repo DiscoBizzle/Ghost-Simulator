@@ -5,7 +5,7 @@ from gslib.constants import *
 
 
 class Skill(object):
-    def __init__(self, name, prereqs, effect):
+    def __init__(self, name, prereqs, effects):
         self.name = name
         self.prereqs = prereqs
         self.effects = effects

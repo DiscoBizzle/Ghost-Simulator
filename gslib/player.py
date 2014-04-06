@@ -31,11 +31,13 @@ class Player(GameObject):
     fear = property(get_fear, set_fear)
 
     def learn_skill(self, skill):
-        if skill.can_be_learnt(self):
-            self.skills_learnt.append(skill.name)
-            for effect in skill.effects:
+        if self.game_class.skills_dict[skill].can_be_learnt(self):
+            self.skills_learnt.append(self.game_class.skills_dict[skill].name)
+            for effect in self.game_class.skills_dict[skill].effects:
                 #apply effect
                 pass
+            return True
+        return False
 
 
     def update(self):
