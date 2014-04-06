@@ -34,7 +34,7 @@ ANIM_RIGHTWALK = 5
 ANIM_DOWNWALK = 6
 ANIM_LEFTWALK = 7
 
-TICKS_PER_FRAME = 4  # number of game frames for each sprite animation frame
+TICKS_PER_FRAME = 8  # number of game frames for each sprite animation frame
 
 MAX_FEAR = 25000
 START_FEAR = 20000

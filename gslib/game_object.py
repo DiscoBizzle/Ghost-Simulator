@@ -113,15 +113,25 @@ class GameObject(object):
         if self.current_frame > self.max_frames:
             self.current_frame = 0
 
-        if self.velocity[1] > 0:
-            self.animation_state = ANIM_DOWNWALK
-        elif self.velocity[1] < 0:
-            self.animation_state = ANIM_UPWALK
+        if self.velocity[1] == 0 and self.velocity[0] == 0:
+            if self.animation_state == ANIM_DOWNWALK:
+                self.animation_state = ANIM_DOWNIDLE
+            if self.animation_state == ANIM_RIGHTWALK:
+                self.animation_state = ANIM_RIGHTIDLE
+            if self.animation_state == ANIM_UPWALK:
+                self.animation_state = ANIM_UPIDLE
+            if self.animation_state == ANIM_LEFTWALK:
+                self.animation_state = ANIM_LEFTIDLE
+        else:
+            if self.velocity[1] > 0:
+                self.animation_state = ANIM_DOWNWALK
+            elif self.velocity[1] < 0:
+                self.animation_state = ANIM_UPWALK
 
-        if self.velocity[0] > 0:
-            self.animation_state = ANIM_RIGHTWALK
-        elif self.velocity[0] < 0:
-            self.animation_state = ANIM_LEFTWALK
+            if self.velocity[0] > 0:
+                self.animation_state = ANIM_RIGHTWALK
+            elif self.velocity[0] < 0:
+                self.animation_state = ANIM_LEFTWALK
 
         self.frame_rect = pygame.Rect(self.current_frame * SPRITE_WIDTH, self.animation_state * SPRITE_HEIGHT,
                                       SPRITE_WIDTH, SPRITE_HEIGHT)

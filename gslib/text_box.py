@@ -36,4 +36,3 @@ class TextBox:
         self.background_surface.fill(self.bg_color) #fill background
         self.background_surface.blit(self.portrait_surface, self.portrait_rect) #blit portrait
         pygame.draw.rect(self.background_surface, self.text_frame_color, self.text_frame_rect) #fill text background
-        
