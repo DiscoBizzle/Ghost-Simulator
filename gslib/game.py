@@ -232,13 +232,17 @@ class Game(object):
             self.check_object_click(event)
 
     def check_object_click(self, event):
+        if event.pos[0] > LEVEL_WIDTH or event.pos[1] > LEVEL_HEIGHT:
+            return
         for o in self.objects:
             if o.rect.collidepoint(event.pos) and isinstance(o, character.Character):
                 self.disp_object_stats = True
                 self.object_stats = (o.info_sheet, (GAME_WIDTH - o.info_sheet.get_width(), 0))
+                if self.player1.possessing:
+                    return
                 self.toPossess = o
                 self.buttons['Possess'].visible = True
-                self.buttons['Possess'].enabled = True
+                # self.buttons['Possess'].enabled = True
                 self.buttons['Possess'].pos = (GAME_WIDTH - o.info_sheet.get_width(), o.info_sheet.get_height())
                 self.buttons['unPossess'].pos = (GAME_WIDTH - o.info_sheet.get_width(), o.info_sheet.get_height())
                 return

@@ -84,3 +84,14 @@ class Player(GameObject):
 
         # move etc.
         GameObject.update(self)
+
+        if self.game_class.toPossess:
+            if (self.coord[0] - self.game_class.toPossess.coord[0])**2 + (self.coord[1] - self.game_class.toPossess.coord[1])**2 < POSSESSION_RANGE**2:
+                self.game_class.buttons['Possess'].enabled = True
+                self.game_class.buttons['Possess'].colour = (120, 0, 0)
+                self.game_class.buttons['Possess'].border_colour = (120, 50, 80)
+            else:
+                self.game_class.buttons['Possess'].enabled = False
+                self.game_class.buttons['Possess'].colour = (60, 60, 60)
+                self.game_class.buttons['Possess'].border_colour = (60, 25, 40)
+
