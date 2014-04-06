@@ -200,8 +200,8 @@ class Character(GameObject):
 
         # draw name/age and text boxes
         font = pygame.font.SysFont('comic sans', font_size)
-        name_text = font.render('Name: ' + self.stats['name'], 0, WHITE)
-        age_text = font.render('Age: ' + str(self.stats['age']), 0, WHITE)
+        name_text = font.render('Name: ' + self.stats['name'], True, WHITE)
+        age_text = font.render('Age: ' + str(self.stats['age']), True, WHITE)
 
         text_left = neww + border*2
 
@@ -221,7 +221,7 @@ class Character(GameObject):
         top = name_text.get_height() + age_text.get_height() + 2*border
         t_height = name_text.get_height()
         for i, b in enumerate(bio):
-            t = font.render(b, 0, WHITE)
+            t = font.render(b, True, WHITE)
             surf.blit(t, (text_left, top + i * t_height))
 
         return surf
