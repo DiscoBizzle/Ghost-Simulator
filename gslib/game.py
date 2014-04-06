@@ -98,6 +98,7 @@ class Game(object):
         self.toPossess = None
 
         self.flair_to_draw = []
+        self.hud_to_draw = []
 
     def gameLoop(self):
 
@@ -166,34 +167,19 @@ class Game(object):
             self.Menu.display()
         elif self.GameState == MAIN_GAME:
             if self.options['FOV']:
-                self.surface.blit(graphics.draw_map(self.map), (-self.camera_coords[0], -self.camera_coords[1]))
-                self.objects.sort((lambda x, y: cmp(x.coord[1], y.coord[1])))
-                for o in self.objects:
-                    if o == self.player1:
-                        if o.possessing:
-                            continue
-                    self.surface.blit(o.sprite_sheet, (
-                    o.coord[0] + o.dimensions[0] - SPRITE_WIDTH - self.camera_coords[0], o.coord[1] + o.dimensions[1] - SPRITE_HEIGHT - self.camera_coords[1]),
-                                      o.frame_rect)
+                graphics.draw_map(self)
+                graphics.draw_objects(self)
 
-                for button in self.buttons.itervalues():
-                    self.surface.blit(button.surface, button.pos)
+                graphics.draw_buttons(self)
 
-                font = pygame.font.SysFont('helvetica', 20)
-                size = font.size("FEAR")
-                fear_txt = font.render("FEAR", True, (200, 200, 200))
-                self.surface.blit(fear_txt, (0, self.dimensions[1] - 32))
-                fear_bar = pygame.Surface((self.dimensions[0] * self.player1.fear / MAX_FEAR, 32))
-                fear_bar.fill((255, 0, 0))
-                self.surface.blit(fear_bar, (size[0], self.dimensions[1] - 32))
-
-                self.surface.blit(font.render('FPS: ' + str(int(self.fps_clock.get_fps())), True, (255, 255, 0)),
-                                  (0, self.dimensions[1] - 100))
+                graphics.draw_fear_bar(self)
+                graphics.draw_fps(self)
+                if self.disp_object_stats:
+                    self.hud_to_draw.append((self.object_stats[0], self.object_stats[1]))
 
                 graphics.draw_flair(self)
-                if self.disp_object_stats:
-                    self.surface.blit(self.object_stats[0], self.object_stats[1])
-                    #self.surface.blit(0, 0)
+                graphics.draw_hud(self)
+
         elif self.GameState == GAME_OVER:
             font = pygame.font.SysFont('helvetica', 80)
             size = font.size("GAME OVER")

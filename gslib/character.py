@@ -169,7 +169,7 @@ class Character(GameObject):
         font_size = 20
         #dim = w, h = (GAME_WIDTH - LEVEL_WIDTH, int((GAME_WIDTH - LEVEL_WIDTH) / 1.6))
 
-        h = GAME_HEIGHT/2
+        h = 200
         w = int(h * 1.6)
         dim = (w,h)
 
