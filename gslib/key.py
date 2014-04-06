@@ -23,10 +23,8 @@ class KeyController(object):
                 self.keys[event.key] = False
 
         if self.keys[pygame.K_ESCAPE] and self.game.GameState != CUTSCENE:
-            self.keys[pygame.K_ESCAPE] = False
             self.game.set_state(MAIN_MENU)
         if self.keys[pygame.K_m]:
-            self.keys[pygame.K_m] = False
             if self.game.GameState == MAIN_MENU or self.game.GameState == MAIN_GAME:
                 self.game.set_state(CUTSCENE)
         if self.keys[pygame.K_q] and (self.game.GameState == MAIN_MENU or self.game.GameState == MAIN_GAME):

@@ -226,7 +226,7 @@ class Game(object):
         self.graphics.clip_area = pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
 
     def set_state(self, state):
-        self.GameState == state
+        self.GameState = state
 
     def quit_game(self):
         self.game_running = False
