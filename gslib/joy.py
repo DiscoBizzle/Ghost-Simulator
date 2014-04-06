@@ -17,6 +17,7 @@ class JoyController(object):
             for joystick in self.joysticks:
                 joystick.init()
 
+
     def handle_hat(self, event):
         x, y = event.value
         if x == -1:
@@ -34,6 +35,7 @@ class JoyController(object):
             self.game.keys[pygame.K_DOWN] = False
             self.game.keys[pygame.K_UP] = False
 
+
     def handle_buttondown(self, event):
         if event.button == 0:
             self.game.objects.append(character.Character(self.game, self.game.player1.coord[0], self.game.player1.coord[1], 16, 16,
@@ -50,8 +52,10 @@ class JoyController(object):
         elif event.button == 4:
             self.game.options['torch'] = not self.game.options['torch']
 
+
     def handle_buttonup(self, event):
         pass
+
 
     def handle_axis(self, event):
         if event.axis == 0:
@@ -70,6 +74,7 @@ class JoyController(object):
             else:
                 self.game.keys[pygame.K_DOWN] = False
                 self.game.keys[pygame.K_UP] = False
+
 
     def handle_ball(self, event):
         if event.axis == 0:

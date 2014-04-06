@@ -1,16 +1,14 @@
-import pygame
 try:
     from cStringIO import StringIO as BytesIO
 except ImportError:
     from io import BytesIO
 
+import pygame
 
-# import Maps
 from gslib.constants import *
 
 # screen = pygame.display.set_mode((800, 800))
 blue = pygame.Color(0, 255, 0)
-
 
 def draw_game_over(game_class):
     font = pygame.font.SysFont('helvetica', 80)

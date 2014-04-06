@@ -26,7 +26,6 @@ from gslib.constants import *
 blackColour = pygame.Color(0, 0, 0)
 blueColour = pygame.Color(0, 0, 255)
 
-
 class Game(object):
     def __init__(self, width, height):
         self.Menu = menus.MainMenu(self)
@@ -119,9 +118,7 @@ class Game(object):
         self.objects += self.map.objects
 
     def gameLoop(self):
-
         while self.gameRunning:
-
             # Update clock & pump event queue.
             # We cannot do this at the same time as playing a cutscene on linux; pygame.movie is shite.
             if not (self.GameState == CUTSCENE and (
@@ -149,7 +146,6 @@ class Game(object):
         # this is fixed timestep, 30 FPS. if game runs slower, we lag.
         # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
         #self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
-
         self.camera_coords = self.calc_camera_coord()
 
         if self.GameState == MAIN_GAME:
@@ -182,7 +178,6 @@ class Game(object):
 
     def main_game_draw(self):
         # this runs faster than game update. animation can be done here with no problems.
-
         if self.GameState != CUTSCENE:
             self.surface.fill(blackColour)
 
@@ -201,19 +196,14 @@ class Game(object):
             graphics.draw_fear_bar(self)
             graphics.draw_fps(self)
             graphics.draw_character_stats(self)
-
         elif self.GameState == GAME_OVER:
             graphics.draw_game_over(self)
-
         elif self.GameState == CREDITS:
             self.credits.display()
-
         elif self.GameState == SKILLS_SCREEN:
             self.SkillMenu.display()
-            
         elif self.GameState == OPTIONS_MENU:
             self.options_menu.display()
-
         elif self.GameState == TEXTBOX_TEST:
             graphics.draw_text_box(self)
 

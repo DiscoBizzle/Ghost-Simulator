@@ -11,7 +11,6 @@ from gslib.fear_functions import text_wrap
 WHITE = (255, 255, 255)
 GREY = (60, 60, 60)
 
-
 def test():
     pygame.init()
     pygame.font.init()
@@ -37,9 +36,6 @@ def fill_background(surface, border_size):
     for i in range(w / bw + 1):
         for j in range(h / bh + 1):
             surface.blit(border, (i * bw, j * bh))
-
-
-
 
 
 def load_stats(fname):
@@ -119,7 +115,6 @@ def gen_name(gender):
 
 class Character(GameObject):
     def __init__(self, game_class, x, y, w, h, stats):
-
         GameObject.__init__(self, game_class, x, y, w, h, pygame.image.load(os.path.join(CHARACTER_DIR, 'DudeSheet.png')).convert())
         self.fears = stats['fears']
         self.feared_by = stats['feared_by']

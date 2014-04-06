@@ -21,7 +21,6 @@ class Menu(object):
             button.pos = (60, 40 + button.order*40)
 
 
-
 class MainMenu(Menu):
     def __init__(self, game_class):
         Menu.__init__(self, game_class)

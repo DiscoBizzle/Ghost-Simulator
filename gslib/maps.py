@@ -7,7 +7,6 @@ from gslib import graphics
 from gslib import character
 from gslib.constants import *
 
-
 def test():
     pygame.init()
     pygame.font.init()
@@ -24,7 +23,6 @@ def test():
 
 
 def load_map(map_filename): # Load a map from a map file
-
     #map_f = open(map_filename, 'r')
     data = json.load(open(map_filename))
 
@@ -79,5 +77,5 @@ class Map(object):
             self.objects.append(character.Character(game_class, 0, 0, 16, 16, character.gen_character()))
 
 
-
-# test()
+if __name__ == '__main__':
+    test()
