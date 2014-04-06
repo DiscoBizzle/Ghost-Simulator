@@ -64,3 +64,5 @@ SKILLS_FILE = fallback_files("skills file", "skills.json", os.path.join(sys.pref
 LEARNT_SKILL_COLOUR = (0, 150, 0)
 CAN_BE_LEARNT_COLOUR = (0, 0, 150)
 UNLEARNABLE_COLOUR = (150, 0, 0)
+
+INITIAL_SOUND_VOLUME = 0.2

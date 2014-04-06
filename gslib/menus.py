@@ -27,6 +27,9 @@ class Menu(object):
     def arrange_buttons(self):
         for button in self.buttons.itervalues():
             button.pos = (60, 40 + button.order*40)
+        for slider in self.sliders.itervalues():
+            slider.pos = (60, 40 + slider.order*40)
+
 
 
 class MainMenu(Menu):
@@ -69,14 +72,11 @@ class OptionsMenu(Menu):
         self.buttons['torch'] = button.Button(self, self.torch_toggle, order = 2, size=(200, 30), visible=True,
                                             text=u'Torch: Yes', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
-        self.buttons['sound_volume_up'] = button.Button(self, self.sound_up, order = 3, size=(200, 30), visible=True,
-                                            text=u'Increase Sound Volume', border_colour=(120, 50, 80), border_width=3,
-                                            colour=(120, 0, 0))
-        self.buttons['sound_volume_down'] = button.Button(self, self.sound_down, order = 4, size=(200, 30), visible=True,
-                                            text=u'Decrease Sound Volume', border_colour=(120, 50, 80), border_width=3,
+        self.buttons['sound_display'] = button.Button(self, self.sound_display() , order = 3, size=(200, 30), visible=True,
+                                            text=u'Sound volume:'+unicode(str(INITIAL_SOUND_VOLUME)), border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
 
-        self.sliders['sound'] = slider.Slider(self, self.set_sound, range=(0, 1))
+        self.sliders['sound'] = slider.Slider(self, self.set_sound, range=(0, 0.3), order = 5, dim = (200, 30), value = game_class.sound_dict['scream'].get_volume())
         Menu.arrange_buttons(self)
 
     def FOV_toggle(self):
@@ -106,16 +106,9 @@ class OptionsMenu(Menu):
     def set_sound(self, value):
         for sound in self.game_class.sound_dict.itervalues():
             sound.set_volume(value)
-
-    def sound_up(self):
-        for sound in self.game_class.sound_dict.itervalues():
-            if sound.get_volume != 1:
-                sound.set_volume(sound.get_volume()+0.1)
-
-    def sound_down(self):
-        for sound in self.game_class.sound_dict.itervalues():
-            if sound.get_volume != 0:
-                sound.set_volume(sound.get_volume()-0.1)
+        self.buttons['sound_display'].text = u'Sound Volume:' + unicode(str(value))
+    def sound_display(self):
+        pass
 
 
 class SkillsMenu(object):
