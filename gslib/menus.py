@@ -10,7 +10,7 @@ class Menu(object):
 
     def display(self):
         for button in self.buttons.itervalues():
-            self.game_class.surface.blit(button.surface, button.pos)
+            self.game_class.graphics.surface.blit(button.surface, button.pos)
 
     def mouse_event(self, event):
         for button in self.buttons.itervalues():
@@ -132,7 +132,7 @@ class SkillsMenu(object):
 
     def display(self):
         for button in self.buttons.itervalues():
-            self.game_class.surface.blit(button.surface, button.pos)
+            self.game_class.graphics.surface.blit(button.surface, button.pos)
 
     def mouse_event(self, event):
         for button in self.buttons.itervalues():

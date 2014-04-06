@@ -15,6 +15,16 @@ black = pygame.Color(0, 0, 0)
 class Graphics(object):
     def __init__(self, game):
         self.game = game
+        self.surface = pygame.display.set_mode(self.game.dimensions)
+
+        self.field = pygame.image.load(os.path.join(TILES_DIR, 'field.png'))
+        self.field = pygame.transform.scale(self.field, (GAME_WIDTH, GAME_HEIGHT))
+        self.field.set_alpha(100)
+        self.field.convert_alpha()
+
+        self.light = pygame.image.load(os.path.join(TILES_DIR, 'light.png'))
+        self.light.convert_alpha()
+        self.light = pygame.transform.scale(self.light, (200, 200))
 
     def draw_game_over(self):
         font = pygame.font.SysFont('helvetica', 80)
@@ -31,7 +41,7 @@ class Graphics(object):
     def main_game_draw(self):
         # this runs faster than game update. animation can be done here with no problems.
         if self.game.GameState != CUTSCENE:
-            self.game.surface.fill(black)
+            self.surface.fill(black)
 
         if self.game.GameState == STARTUP:
             pass
@@ -67,7 +77,7 @@ class Graphics(object):
         self.draw_screen_objects()
 
         if self.game.options['VOF'] and self.game.GameState != CUTSCENE:
-            self.game.surface.blit(self.game.field, (0, 0))
+            self.surface.blit(self.field, (0, 0))
 
         pygame.display.update()
     
@@ -155,12 +165,12 @@ class Graphics(object):
     
     
     def blit(self, surf, pos):
-        self.game.surface.blit(surf, pos)
+        self.surface.blit(surf, pos)
     
     
     def blit_camera(self, surf, pos):
         cpos = (pos[0] - self.game.camera_coords[0], pos[1] - self.game.camera_coords[1])
-        self.game.surface.blit(surf, cpos)
+        self.surface.blit(surf, cpos)
     
     def draw_cutscene(self):
         #print game.cutscene_started
@@ -174,7 +184,7 @@ class Graphics(object):
                 self.game.clock.get_time()  # hack required for pygame.game.movie linux
                 del self.game.movie  # hack required for pygame.movie mac os x
         else:
-            self.game.surface.fill(pygame.Color(0, 0, 0))
+            self.surface.fill(pygame.Color(0, 0, 0))
             pygame.display.update()
             try:
                 f = BytesIO(open(self.game.cutscene_next, "rb").read())
@@ -190,7 +200,7 @@ class Graphics(object):
     def draw_torch(self):
         ppos = (self.game.player1.coord[0] + self.game.player1.dimensions[0] / 2, self.game.player1.coord[1] + self.game.player1.dimensions[1] / 2)
     
-        light_size = self.game.light.get_size()
+        light_size = self.light.get_size()
         if not hasattr(self.game, 'hole_surf'):
             self.game.hole_surf = pygame.Surface((GAME_WIDTH, GAME_HEIGHT)).convert_alpha()
         surf = self.game.hole_surf
@@ -206,10 +216,10 @@ class Graphics(object):
         pygame.draw.rect(surf, (0, 0, 0, 255), pygame.Rect((hole.right, 0), (GAME_WIDTH, GAME_HEIGHT)))
         pygame.draw.rect(surf, (0, 0, 0, 255), pygame.Rect((0, hole.bottom), (GAME_WIDTH, GAME_HEIGHT)))
         self.game.screen_objects_to_draw.append((surf, (0, 0)))
-        self.game.world_objects_to_draw.append((self.game.light, (ppos[0] - light_size[0]/2, ppos[1] - light_size[1]/2)))
+        self.game.world_objects_to_draw.append((self.light, (ppos[0] - light_size[0]/2, ppos[1] - light_size[1]/2)))
     
     
     def draw_text_box(self):
-        self.game.surface.blit(self.game.text_box_test.background_surface, (0, 0))
+        self.surface.blit(self.game.text_box_test.background_surface, (0, 0))
         self.game.text_box_test.create_text_surface()
-        self.game.surface.blit(self.game.text_box_test.text_surface, (self.game.text_box_test.text_frame_rect.x, self.game.text_box_test.text_frame_rect.y))
+        self.surface.blit(self.game.text_box_test.text_surface, (self.game.text_box_test.text_frame_rect.x, self.game.text_box_test.text_frame_rect.y))

@@ -36,14 +36,12 @@ class Game(object):
         self.cutscene_next = os.path.join(VIDEO_DIR, "default.mpg")
         self.gameRunning = True
         self.dimensions = (width, height)
-        self.surface = pygame.display.set_mode(self.dimensions)
+        self.graphics = graphics.Graphics(self)
         pygame.display.set_caption("Ghost Simulator v. 0.000000001a")
         self.music_list = sound.get_music_list()
         self.sound_dict = sound.load_all_sounds()
         self.credits = credits.Credits(self)
         self.options_menu = menus.OptionsMenu(self)
-
-        self.graphics = graphics.Graphics(self)
 
         self.clock = pygame.time.Clock()
         self.msPassed = 0
@@ -75,15 +73,6 @@ class Game(object):
         self.object_stats = None
 
         self.options = {'FOV': True, 'VOF': False, 'torch': False}
-        field = pygame.image.load(os.path.join(TILES_DIR, 'field.png'))
-        field = pygame.transform.scale(field, (GAME_WIDTH, GAME_HEIGHT))
-        field.set_alpha(100)
-        field.convert_alpha()
-        self.field = field
-
-        light = pygame.image.load(os.path.join(TILES_DIR, 'light.png'))
-        light.convert_alpha()
-        self.light = pygame.transform.scale(light, (200, 200))
 
         self.key_controller = key.KeyController(self)
         # HACK
@@ -204,11 +193,6 @@ class Game(object):
 
         return coord
 
-
-
-        # now double!
-        # pygame.display.update()
-
     def say_fears(self):
         for o in self.objects:
             if isinstance(o, player.Player):
@@ -220,8 +204,6 @@ class Game(object):
             surf = fear_functions.speech_bubble(text, 300)
             pos = (o.coord[0] + o.dimensions[0], o.coord[1] - surf.get_height())
             self.world_objects_to_draw.append((surf, pos))
-
-
 
     def possess(self):
         self.toPossess.isPossessed = True
