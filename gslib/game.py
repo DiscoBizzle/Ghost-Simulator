@@ -252,7 +252,7 @@ class Game(object):
         self.map_index += 1
         self.map_index %= len(self.map_list)
         self.map = self.map_list[self.map_index]
-        self.objects = [self.player1] + self.map.objects
+        self.objects = self.players + self.map.objects
 
     def quit_game(self, _):
         self.gameRunning = False
