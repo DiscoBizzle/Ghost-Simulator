@@ -43,10 +43,7 @@ def fill_background(surface, border_size):
 def load_stats(fname):
     f = open('characters/' + fname)
     age = f.readline().strip()
-    try:
-        age = int(age)
-    except ValueError:
-        pass
+    age = int(age)
 
     bio = ''
     fears = []
