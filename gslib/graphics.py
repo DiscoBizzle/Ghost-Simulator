@@ -1,4 +1,9 @@
 import pygame
+try:
+    from cStringIO import StringIO as BytesIO
+except ImportError:
+    from io import BytesIO
+
 
 # import Maps
 from gslib.constants import *
@@ -24,3 +29,27 @@ def draw_map(m):
             #    pygame.draw.rect(surf, 0x0000ff, temprect)
 
     return surf
+
+def draw_cutscene(game):
+    #print game.cutscene_started
+    #print hasattr(game, 'movie')
+    #print game.GameState
+
+    if game.cutscene_started and hasattr(game, 'movie'):
+        if not game.movie.get_busy():
+            game.GameState = MAIN_GAME
+            game.cutscene_started = False
+            game.clock.get_time()  # hack required for pygame.game.movie linux
+            del game.movie  # hack required for pygame.movie mac os x
+    else:
+        game.surface.fill(pygame.Color(0, 0, 0))
+        pygame.display.update()
+        try:
+            f = BytesIO(open(game.cutscene_next, "rb").read())
+            game.movie = pygame.movie.Movie(f)
+            w, h = game.movie.get_size()
+            game.movie.play()
+            game.cutscene_started = True
+        except IOError:
+            print "Video not found: " + game.cutscene_next
+            game.GameState = MAIN_MENU
