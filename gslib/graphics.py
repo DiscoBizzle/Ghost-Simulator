@@ -33,10 +33,13 @@ def draw_map(game_class):
         game_class.map_surf = pygame.Surface((nw * grid_size, nh * grid_size)).convert()
     surf = game_class.map_surf
 
+    clippy = game_class.clip_area.copy() if hasattr(game_class, 'clip_area') else pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
+    clippy.inflate_ip(64, 64)
+
     for i in range(nw):
         for j in range(nh):
             area = m.grid[i][j].tileset_area
-            if (not hasattr(game_class, 'clip_area')) or game_class.clip_area.colliderect(pygame.Rect((i * grid_size + 3 * grid_size / 2, j * grid_size + 3 * grid_size / 2), (grid_size, grid_size))):
+            if clippy.colliderect(pygame.Rect((i * grid_size, j * grid_size), (grid_size, grid_size))):
                 surf.blit(m.tileset, (i * grid_size, j * grid_size), area)
 
             ##TEMPORARY - DRAWS SOLID TILES FOR COLLISION DEBUG
