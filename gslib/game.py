@@ -49,15 +49,15 @@ class Game(object):
 
         self.objects = []
 
-        self.player1 = player.Player(self, 0, 0, 16, 16)
-        self.objects.append(self.player1)
+        self.players = []
+        self.players.append(player.Player(self, 0, 0, 16, 16))
+        self.players.append(player.Player(self, 0, 0, 16, 16))
+        self.player1 = self.players[0]
+
+        self.objects += self.players
 
         self.skills_dict = skills.load_skill_dict()
         self.SkillMenu = menus.SkillsMenu(self)
-
-
-        # for i in range(5):
-        #     self.objects.append(character.Character(self, 0, 0, 16, 16, character.gen_character()))
 
         self.text_box_test = text_box.TextBox("hello")
         self.text_box_test.create_background_surface()
@@ -96,8 +96,12 @@ class Game(object):
 
         #sound.start_next_music(self.music_list)
 
-        self.map2 = maps.Map(os.path.join(TILES_DIR, 'martin.png'), os.path.join(TILES_DIR, 'martin.json'), self)
-        self.map = maps.Map(os.path.join(TILES_DIR, 'level2.png'), os.path.join(TILES_DIR, 'level2.json'), self)
+        self.map_list = []
+        self.map_list.append(maps.Map(os.path.join(TILES_DIR, 'level2.png'), os.path.join(TILES_DIR, 'level2.json'), self))
+        self.map_list.append(maps.Map(os.path.join(TILES_DIR, 'martin.png'), os.path.join(TILES_DIR, 'martin.json'), self))
+
+        self.map_index = 0
+        self.map = self.map_list[self.map_index]
 
         self.buttons = {}
         self.buttons['Possess'] = button.Button(self, self.possess, pos=(LEVEL_WIDTH, 0), size=(200, 30), visible=False,
@@ -154,7 +158,16 @@ class Game(object):
             self.credits.update()
 
     def calc_camera_coord(self):
-        coord = (self.player1.coord[0] - (GAME_WIDTH/2), self.player1.coord[1] - (GAME_HEIGHT/2))
+        avg_pos = [0, 0]
+        c = 0
+        for p in self.players:
+            c += 1
+            avg_pos[0] += p.coord[0]
+            avg_pos[1] += p.coord[1]
+
+        avg_pos = (avg_pos[0] / c, avg_pos[1] / c)
+        # coord = (self.player1.coord[0] - (GAME_WIDTH/2), self.player1.coord[1] - (GAME_HEIGHT/2))
+        coord = (avg_pos[0] - (GAME_WIDTH/2), avg_pos[1] - (GAME_HEIGHT/2))
         pad = -32
 
         # bottom
@@ -280,7 +293,9 @@ class Game(object):
         self.toPossess = None
 
     def change_map(self):
-        self.map, self.map2 = self.map2, self.map
+        self.map_index += 1
+        self.map_index %= len(self.map_list)
+        self.map = self.map_list[self.map_index]
         self.objects = [self.player1] + self.map.objects
 
     def quit_game(self, _):
