@@ -20,7 +20,10 @@ def parse_credits_file(fname):
     return res
 
 def get_credits_size(credits, font, indent, spacing):
-    """Calculate the size required for the credits."""
+    """Calculate the size required for the credits.
+
+    Arguments are as in the Credits class __init__ method.
+    """
     if indent < 0:
         indent = -indent
     width, height = (0, 0)
@@ -43,6 +46,17 @@ def get_credits_size(credits, font, indent, spacing):
 class Credits(object):
     def __init__(self, game, indent=20, title_col=(255, 255, 255),
             name_col=(255, 255, 255), bg_col=(0, 0, 0), spacing=20, size=14):
+        """Display a credits screen for game.
+
+        Arguments:
+            - game: the game whose surface to write to
+            - indent: the difference between the header and names. Can be negative
+            - title_col: colour of the job titles
+            - name_col: colour of the names
+            - bg_col: background colour
+            - spacing: the vertical gap between the blocks of names
+            - size: the text size
+        """
         self.credits = parse_credits_file("credits.txt")
         self.GameClass = game
         self.indent = indent
