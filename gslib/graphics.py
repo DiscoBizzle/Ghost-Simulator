@@ -73,7 +73,7 @@ def draw_world_objects(game_class): # stuff relative to camera
     game_class.world_objects_to_draw = []
 
 
-def draw_hud(game_class): # stuff relative to screen
+def draw_screen_objects(game_class): # stuff relative to screen
     for f in game_class.screen_objects_to_draw:
         blit(game_class, f[0], f[1])
     game_class.screen_objects_to_draw = []

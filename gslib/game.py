@@ -177,7 +177,7 @@ class Game(object):
                     self.screen_objects_to_draw.append((self.object_stats[0], self.object_stats[1]))
 
                 graphics.draw_world_objects(self)
-                graphics.draw_hud(self)
+                graphics.draw_screen_objects(self)
 
         elif self.GameState == GAME_OVER:
             font = pygame.font.SysFont('helvetica', 80)
