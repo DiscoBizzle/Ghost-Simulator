@@ -1,7 +1,7 @@
 import pygame
 import json
 
-import gslib.graphics
+from gslib import graphics
 from gslib.constants import *
 
 

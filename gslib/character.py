@@ -166,6 +166,7 @@ class Character(GameObject):
         self.sprite = pygame.image.load('characters/Sprite_top.png')
         self.sprite = pygame.transform.scale(self.sprite, self.dimensions).convert()
         self.sprite.set_colorkey((255, 0, 255))
+        self.isPossessed = False
 
     def get_stats(self, name):
         name = name
@@ -174,16 +175,27 @@ class Character(GameObject):
         return {'name': name, 'age': age, 'image_name': image, 'bio': bio}
 
     def update(self):
-        self.update_timer += 1
-        if self.update_timer == 50:
-            self.update_timer = 0
-            mv = self.max_velocity
-            self.velocity = (random.randint(-mv, mv), random.randint(-mv, mv))
+        if not self.isPossessed:
+            self.update_timer += 1
+            if self.update_timer == 50:
+                self.update_timer = 0
+                mv = self.max_velocity
+                self.velocity = (random.randint(-mv, mv), random.randint(-mv, mv))
 
-        if self.fear_timer:
-            fv = 10
-            self.velocity = (random.randint(-fv, fv), random.randint(-fv, fv))
-            self.fear_timer -= 1
+            if self.fear_timer:
+                fv = 10
+                self.velocity = (random.randint(-fv, fv), random.randint(-fv, fv))
+                self.fear_timer -= 1
+        else:
+            self.velocity = (0, 0)
+            if self.game_class.keys[pygame.K_DOWN]:
+                self.velocity = (0, 5)
+            if self.game_class.keys[pygame.K_UP]:
+                self.velocity = (0, -5)
+            if self.game_class.keys[pygame.K_LEFT]:
+                self.velocity = (-5, 0)
+            if self.game_class.keys[pygame.K_RIGHT]:
+                self.velocity = (5, 0)
         GameObject.update(self)
 
     def draw_info_sheet(self):

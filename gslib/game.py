@@ -11,6 +11,7 @@ from gslib import character
 from gslib import graphics
 from gslib import sound
 from gslib import joy
+from gslib import button
 from gslib.constants import *
 # doesn't seem to be needed any more
 #if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
@@ -83,6 +84,15 @@ class Game(object):
         sound.start_next_music(self.music_list)
 
         self.map = maps.Map('tiles/martin.png', 'tiles/martin.json')
+
+        self.buttons = {}
+        self.buttons['Possess'] = button.Button(self, self.possess, pos=(LEVEL_WIDTH, 0), size=(200, 30), visible=False,
+                                                text='Possess', border_colour=(120, 50, 80), border_width=3,
+                                                colour=(120, 0, 0), enabled=False)
+        self.buttons['unPossess'] = button.Button(self, self.unPossess, pos=(LEVEL_WIDTH, 0), size=(200, 30), visible=False,
+                                                text='Unpossess', border_colour=(120, 50, 80), border_width=3,
+                                                colour=(120, 0, 0), enabled=False)
+        self.toPossess = None
 
     def gameLoop(self):
 
@@ -165,9 +175,15 @@ class Game(object):
                 self.surface.blit(graphics.draw_map(self.map), (0, 0))
                 self.objects.sort((lambda x, y: cmp(x.coord[1], y.coord[1])))
                 for o in self.objects:
+                    if o == self.player1:
+                        if o.possessing:
+                            continue
                     self.surface.blit(o.sprite_sheet, (
                     o.coord[0] + o.dimensions[0] - SPRITE_WIDTH, o.coord[1] + o.dimensions[1] - SPRITE_HEIGHT),
                                       o.frame_rect)
+
+                for button in self.buttons.itervalues():
+                    self.surface.blit(button.surface, button.pos)
 
                 font = pygame.font.SysFont('helvetica', 20)
                 size = font.size("FEAR")
@@ -212,6 +228,7 @@ class Game(object):
         if self.GameState == MAIN_MENU:
             self.Menu.mouse_event(event)
         elif self.GameState == MAIN_GAME:
+            self.check_button_click(event)
             self.check_object_click(event)
 
     def check_object_click(self, event):
@@ -219,9 +236,41 @@ class Game(object):
             if o.rect.collidepoint(event.pos) and isinstance(o, character.Character):
                 self.disp_object_stats = True
                 self.object_stats = (o.info_sheet, (GAME_WIDTH - o.info_sheet.get_width(), 0))
+                self.toPossess = o
+                self.buttons['Possess'].visible = True
+                self.buttons['Possess'].enabled = True
+                self.buttons['Possess'].pos = (GAME_WIDTH - o.info_sheet.get_width(), o.info_sheet.get_height())
+                self.buttons['unPossess'].pos = (GAME_WIDTH - o.info_sheet.get_width(), o.info_sheet.get_height())
                 return
         self.disp_object_stats = False
         self.object_stats = None
+        self.buttons['Possess'].visible = False
+        self.buttons['Possess'].enabled = False
+
+    def check_button_click(self, event):
+        for button in self.buttons.itervalues():
+            button.check_clicked(event.pos)
+
+        if self.player1.possessing:
+            self.buttons['Possess'].visible = False
+            self.buttons['Possess'].enabled = False
+            self.buttons['unPossess'].visible = True
+            self.buttons['unPossess'].enabled = True
+        else:
+            self.buttons['Possess'].visible = True
+            self.buttons['Possess'].enabled = True
+            self.buttons['unPossess'].visible = False
+            self.buttons['unPossess'].enabled = False
+
+    def possess(self):
+        self.toPossess.isPossessed = True
+        self.player1.possessing = True
+
+    def unPossess(self):
+        self.toPossess.isPossessed = False
+        self.player1.possessing = False
+        self.player1.coord = self.toPossess.coord
+        self.toPossess = None
 
     def quit_game(self, _):
         self.gameRunning = False
