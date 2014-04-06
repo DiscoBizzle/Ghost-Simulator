@@ -14,14 +14,15 @@ class Menu(object):
     def display(self):
         for button in self.buttons.itervalues():
             self.game_class.graphics.surface.blit(button.surface, button.pos)
+        for slider in self.sliders.itervalues():
+            self.game_class.graphics.surface.blit(slider.surface, slider.pos)
 
     def mouse_event(self, event):
+        for slider in self.sliders.itervalues():
+            slider.check_clicked(event)
         if event.type == pygame.MOUSEBUTTONDOWN:
             for button in self.buttons.itervalues():
                 button.check_clicked(event.pos)
-        if event.type == pygame.MOUSEMOTION:
-            for slider in self.sliders.itervalues():
-                slider.check_clicked(event.pos)
 
     def arrange_buttons(self):
         for button in self.buttons.itervalues():
@@ -75,7 +76,7 @@ class OptionsMenu(Menu):
                                             text=u'Decrease Sound Volume', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
 
-        self.sliders['test'] = slider.Slider(self)
+        self.sliders['sound'] = slider.Slider(self, self.set_sound, range=(0, 1))
         Menu.arrange_buttons(self)
 
     def FOV_toggle(self):
@@ -101,6 +102,11 @@ class OptionsMenu(Menu):
         else:
             self.game_class.options['torch'] = True
             self.buttons['torch'].text = u'Torch: Yes'
+
+    def set_sound(self, value):
+        print value
+        for sound in self.game_class.sound_dict.itervalues():
+            sound.set_volume(value)
 
     def sound_up(self):
         for sound in self.game_class.sound_dict.itervalues():
