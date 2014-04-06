@@ -75,18 +75,18 @@ class Game(object):
         light.convert_alpha()
         self.light = pygame.transform.scale(light, (200, 200))
 
-        joy.init_joys()
+        self.joy_controller = joy.JoyController(self)
 
         self.event_map = {
             pygame.KEYDOWN: self.handle_keys,
             pygame.KEYUP: self.handle_keys,
             pygame.QUIT: self.quit_game,
             pygame.MOUSEBUTTONDOWN: self.mouse_click,
-            pygame.JOYHATMOTION: (lambda event: joy.handle_joy(self, event)),
-            pygame.JOYBUTTONUP: (lambda event: joy.handle_joy(self, event)),
-            pygame.JOYAXISMOTION: (lambda event: joy.handle_joy(self, event)),
-            pygame.JOYBUTTONDOWN: (lambda event: joy.handle_joy(self, event)),
-            pygame.JOYBALLMOTION: (lambda event: joy.handle_joy(self, event)),
+            pygame.JOYHATMOTION: self.joy_controller.handle_hat,
+            pygame.JOYBUTTONDOWN: self.joy_controller.handle_buttondown,
+            pygame.JOYBUTTONUP: self.joy_controller.handle_buttonup,
+            pygame.JOYAXISMOTION: self.joy_controller.handle_axis,
+            pygame.JOYBALLMOTION: self.joy_controller.handle_ball,
         }
 
         #sound.start_next_music(self.music_list)
