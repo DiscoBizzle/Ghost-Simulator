@@ -30,30 +30,30 @@ def fill_background(surface, border_size):
     w = surface.get_width()
     h = surface.get_height()
 
-    for i in range(w/bw + 1):
-        for j in range(h/bh + 1):
-            surface.blit(border, (i*bw, j*bh))
+    for i in range(w / bw + 1):
+        for j in range(h / bh + 1):
+            surface.blit(border, (i * bw, j * bh))
 
 
 def truncline(text, font, maxwidth):
-        real = len(text)
-        stext = text
-        l = font.size(text)[0]
-        cut = 0
-        a = 0
-        done = 1
-        while l > maxwidth:
-            a += 1
-            n = text.rsplit(None, a)[0]
-            if stext == n:
-                cut += 1
-                stext = n[:-cut]
-            else:
-                stext = n
-            l = font.size(stext)[0]
-            real = len(stext)
-            done = 0
-        return real, done, stext
+    real = len(text)
+    stext = text
+    l = font.size(text)[0]
+    cut = 0
+    a = 0
+    done = 1
+    while l > maxwidth:
+        a += 1
+        n = text.rsplit(None, a)[0]
+        if stext == n:
+            cut += 1
+            stext = n[:-cut]
+        else:
+            stext = n
+        l = font.size(stext)[0]
+        real = len(stext)
+        done = 0
+    return real, done, stext
 
 
 def wrapline(text, font, maxwidth):
@@ -84,7 +84,6 @@ def load_stats(fname):
     except ValueError:
         pass
 
-
     bio = ''
     fears = []
     start_bio = False
@@ -99,6 +98,7 @@ def load_stats(fname):
 
     print fears
     return age, bio, fears
+
 
 def gen_character(stats=None):
     """Generate a character based on the stats dictionary.
@@ -117,11 +117,12 @@ def gen_character(stats=None):
     stats.setdefault('bio', gen_bio())
     stats.setdefault('fears', gen_fears())
     stats.setdefault('feared_by', gen_fears())
-    stats.setdefault('gender', random.choice(('m','f')))
+    stats.setdefault('gender', random.choice(('m', 'f')))
     stats.setdefault('name', gen_name(stats['gender']))
     stats.setdefault('image_name', 'characters/Sprite_front.png')
 
     return stats
+
 
 def choose_n_lines(n, fname):
     res = []
@@ -132,11 +133,14 @@ def choose_n_lines(n, fname):
             res.append(lines.pop(ix).strip())
     return res
 
+
 def gen_bio():
     return ' '.join(choose_n_lines(3, "characters/bio.txt"))
 
+
 def gen_fears():
     return choose_n_lines(random.randrange(1, 4), "characters/fear_description.txt")
+
 
 def gen_name(gender):
     fname = "characters/first_names_{}.txt".format(gender)
@@ -193,9 +197,9 @@ class Character(GameObject):
         im = pygame.image.load(self.stats['image_name']).convert()
         oldw = im.get_width()
         oldh = im.get_height()
-        frac = (h - border*2) / float(oldh)
+        frac = (h - border * 2) / float(oldh)
         neww = int(oldw * frac)
-        im = pygame.transform.scale(im, (neww, h-border*2))
+        im = pygame.transform.scale(im, (neww, h - border * 2))
         surf.blit(im, (border, border))
 
         # draw name/age and text boxes
@@ -203,7 +207,7 @@ class Character(GameObject):
         name_text = font.render('Name: ' + self.stats['name'], True, WHITE)
         age_text = font.render('Age: ' + str(self.stats['age']), True, WHITE)
 
-        text_left = neww + border*2
+        text_left = neww + border * 2
 
         temp = pygame.Surface((dim[0] - text_left - border, name_text.get_height() + age_text.get_height()))
         temp.fill(GREY)
@@ -212,20 +216,20 @@ class Character(GameObject):
         surf.blit(name_text, (text_left, border))
         surf.blit(age_text, (text_left, border + name_text.get_height()))
 
-        temp = pygame.Surface((dim[0] - text_left - border, dim[1] - (name_text.get_height() + age_text.get_height() + 3*border)))
+        temp = pygame.Surface(
+            (dim[0] - text_left - border, dim[1] - (name_text.get_height() + age_text.get_height() + 3 * border)))
         temp.fill(GREY)
-        surf.blit(temp, (text_left, name_text.get_height() + age_text.get_height() + 2*border))
+        surf.blit(temp, (text_left, name_text.get_height() + age_text.get_height() + 2 * border))
 
         # draw bio
         bio = text_wrap(self.stats['bio'], font, dim[0] - text_left - border)
-        top = name_text.get_height() + age_text.get_height() + 2*border
+        top = name_text.get_height() + age_text.get_height() + 2 * border
         t_height = name_text.get_height()
         for i, b in enumerate(bio):
             t = font.render(b, True, WHITE)
             surf.blit(t, (text_left, top + i * t_height))
 
         return surf
-
 
 
 if __name__ == "__main__":

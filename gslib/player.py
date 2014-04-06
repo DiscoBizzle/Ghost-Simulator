@@ -11,7 +11,8 @@ class Player(GameObject):
 
         self.direction = DOWN
         self.animation_state = ANIM_DOWNIDLE
-        self.frame_rect = pygame.Rect(self.current_frame * SPRITE_WIDTH, self.animation_state * SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT)
+        self.frame_rect = pygame.Rect(self.current_frame * SPRITE_WIDTH, self.animation_state * SPRITE_HEIGHT,
+                                      SPRITE_WIDTH, SPRITE_HEIGHT)
 
         self._fear = START_FEAR
         self.fears = ['player']
@@ -19,10 +20,12 @@ class Player(GameObject):
 
     def get_fear(self):
         return self._fear
+
     def set_fear(self, f):
         self._fear = f
         if self._fear > MAX_FEAR:
             self._fear = MAX_FEAR
+
     fear = property(get_fear, set_fear)
 
     def learn_skill(self, skill):
@@ -31,7 +34,6 @@ class Player(GameObject):
             for effect in skill.effects:
                 #apply effect
                 pass
-
 
 
     def update(self):
@@ -64,12 +66,13 @@ class Player(GameObject):
         if self.current_frame > self.max_frames:
             self.current_frame = 0
 
-        self.frame_rect = pygame.Rect(self.current_frame * SPRITE_WIDTH, self.animation_state * SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT)
+        self.frame_rect = pygame.Rect(self.current_frame * SPRITE_WIDTH, self.animation_state * SPRITE_HEIGHT,
+                                      SPRITE_WIDTH, SPRITE_HEIGHT)
 
         self.velocity = (v_x, v_y)
 
         if v_x != 0 or v_y != 0:
-            self.fear -= FEAR_PER_STEP * (v_x*v_x + v_y*v_y)**.5
+            self.fear -= FEAR_PER_STEP * (v_x * v_x + v_y * v_y) ** .5
         else:
             self.fear -= FEAR_PER_TICK
 
