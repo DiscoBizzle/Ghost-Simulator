@@ -64,12 +64,15 @@ class Game(object):
         self.keys = {pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False,
                      pygame.K_ESCAPE: False, pygame.K_m: False, pygame.K_s: False}
 
-        self.options = {'FOV': True, 'VOF': False}
+        self.options = {'FOV': True, 'VOF': False, 'torch': True}
         field = pygame.image.load('tiles/field.png')
         field = pygame.transform.scale(field, (GAME_WIDTH, GAME_HEIGHT))
         field.convert_alpha()
         field.set_alpha(100)
         self.field = field
+
+        light = pygame.image.load('light.png')
+        self.light = pygame.transform.scale(light, (200, 200))
 
         joy.init_joys()
 
@@ -193,7 +196,8 @@ class Game(object):
         elif self.GameState == MAIN_GAME:
             graphics.draw_map(self)
             graphics.draw_objects(self)
-            graphics.draw_torch(self)
+            if self.options['torch']:
+                graphics.draw_torch(self)
 
             graphics.draw_buttons(self)
 

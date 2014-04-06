@@ -62,10 +62,13 @@ class OptionsMenu(Menu):
         self.buttons['VOF'] = button.Button(self, self.VOF_toggle, order = 1, size=(200, 30), visible=True,
                                             text=u'View of Field: No', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
-        self.buttons['sound_volume_up'] = button.Button(self, self.sound_up, order = 2, size=(200, 30), visible=True,
+        self.buttons['torch'] = button.Button(self, self.torch_toggle, order = 2, size=(200, 30), visible=True,
+                                            text=u'Torch: Yes', border_colour=(120, 50, 80), border_width=3,
+                                            colour=(120, 0, 0))
+        self.buttons['sound_volume_up'] = button.Button(self, self.sound_up, order = 3, size=(200, 30), visible=True,
                                             text=u'Increase Sound Volume', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
-        self.buttons['sound_volume_down'] = button.Button(self, self.sound_down, order = 3, size=(200, 30), visible=True,
+        self.buttons['sound_volume_down'] = button.Button(self, self.sound_down, order = 4, size=(200, 30), visible=True,
                                             text=u'Decrease Sound Volume', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
         Menu.arrange_buttons(self)
@@ -85,6 +88,14 @@ class OptionsMenu(Menu):
         else:
             self.game_class.options['VOF'] = True
             self.buttons['VOF'].text = u'View of Field: Yes'
+
+    def torch_toggle(self):
+        if self.game_class.options['torch']:
+            self.game_class.options['torch'] = False
+            self.buttons['torch'].text = u'Torch: No'
+        else:
+            self.game_class.options['torch'] = True
+            self.buttons['torch'].text = u'Torch: Yes'
 
     def sound_up(self):
         for sound in self.game_class.sound_dict.itervalues():

@@ -131,23 +131,14 @@ def draw_cutscene(game):
 
 
 def draw_torch(game_class):
-    # rect1 = pygame.Surface((GAME_WIDTH, (GAME_HEIGHT/2) - 128))
-    # game_class.world_objects_to_draw.append((rect1, (0, 0)))
-    # game_class.world_objects_to_draw.append((rect1, (0, (GAME_HEIGHT/2) + 128)))
-    # rect2 = pygame.Surface(((GAME_WIDTH/2) - 128, 256))
-    # game_class.world_objects_to_draw.append((rect2, (0, (GAME_HEIGHT/2) - 128)))
-    # game_class.world_objects_to_draw.append((rect2, ((GAME_WIDTH/2) + 128, (GAME_HEIGHT/2) - 128)))
 
     ppos = (game_class.player1.coord[0] + game_class.player1.dimensions[0] / 2, game_class.player1.coord[1] + game_class.player1.dimensions[1] / 2)
 
     surf = pygame.Surface((GAME_WIDTH, GAME_HEIGHT))
     surf.fill((0, 0, 0))
-    light = pygame.image.load('light.png')
-    light = pygame.transform.scale(light, (200, 200))
-    light_size = light.get_size()
+    light_size = game_class.light.get_size()
     hole = pygame.Rect((ppos[0] - light_size[0]/2 - game_class.camera_coords[0], ppos[1] - light_size[1]/2 - game_class.camera_coords[1]), light_size)
     pygame.draw.rect(surf, (1, 1, 1), hole)
     surf.set_colorkey((1, 1, 1))
-    # surf.blit(light, hole.topleft)
     game_class.screen_objects_to_draw.append((surf, (0, 0)))
-    game_class.world_objects_to_draw.append((light, (ppos[0] - light_size[0]/2, ppos[1] - light_size[1]/2)))
+    game_class.world_objects_to_draw.append((game_class.light, (ppos[0] - light_size[0]/2, ppos[1] - light_size[1]/2)))
