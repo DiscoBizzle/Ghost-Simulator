@@ -150,11 +150,39 @@ class Game(object):
         # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
         #self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
 
-        self.camera_coords = (self.player1.coord[0] - (GAME_WIDTH/2), self.player1.coord[1] - (GAME_HEIGHT/2))
+        self.camera_coords = self.calc_camera_coord()
 
         if self.GameState == MAIN_GAME:
             for object in self.objects:
                 object.update()
+
+    def calc_camera_coord(self):
+        coord = (self.player1.coord[0] - (GAME_WIDTH/2), self.player1.coord[1] - (GAME_HEIGHT/2))
+        pad = -32
+        # top left
+        if coord[0] < pad:
+            coord = (pad, coord[1])
+        if coord[1] < pad:
+            coord = (coord[0], pad)
+
+        # top right
+        if coord[0] > GAME_WIDTH - pad:
+            coord = (GAME_WIDTH - pad, coord[1])
+        if coord[1] > GAME_HEIGHT - pad:
+            coord = (coord[0], GAME_HEIGHT - pad)
+
+        # top left
+        if coord[0] < pad:
+            coord = (pad, coord[1])
+        if coord[1] < pad:
+            coord = (coord[0], pad)
+
+        # top left
+        if coord[0] < pad:
+            coord = (pad, coord[1])
+        if coord[1] < pad:
+            coord = (coord[0], pad)
+        return coord
 
     def main_game_draw(self):
         # this runs faster than game update. animation can be done here with no problems.
@@ -167,15 +195,14 @@ class Game(object):
         elif self.GameState == MAIN_MENU:
             self.Menu.display()
         elif self.GameState == MAIN_GAME:
-            if self.options['FOV']:
-                graphics.draw_map(self)
-                graphics.draw_objects(self)
+            graphics.draw_map(self)
+            graphics.draw_objects(self)
 
-                graphics.draw_buttons(self)
+            graphics.draw_buttons(self)
 
-                graphics.draw_fear_bar(self)
-                graphics.draw_fps(self)
-                graphics.draw_character_stats(self)
+            graphics.draw_fear_bar(self)
+            graphics.draw_fps(self)
+            graphics.draw_character_stats(self)
 
         elif self.GameState == GAME_OVER:
             graphics.draw_game_over(self)
@@ -185,15 +212,20 @@ class Game(object):
 
         elif self.GameState == SKILLS_SCREEN:
             self.SkillMenu.display()
-
+            
         elif self.GameState == OPTIONS_MENU:
             self.options_menu.display()
+
+        if not self.options['FOV']:
+            self.screen_objects_to_draw = []
+            self.world_objects_to_draw = []
+
+        graphics.draw_world_objects(self)
+        graphics.draw_screen_objects(self)
 
         if self.options['VOF'] and self.GameState != CUTSCENE:
             self.surface.blit(self.field, (0, 0))
 
-        graphics.draw_world_objects(self)
-        graphics.draw_screen_objects(self)
         pygame.display.update()
 
         # now double!
