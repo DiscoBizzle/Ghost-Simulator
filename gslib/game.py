@@ -121,7 +121,7 @@ class Game(object):
                 self.GameState = MAIN_MENU
             if self.keys[pygame.K_m]:
                 self.keys[pygame.K_m] = False
-                if self.GameState == MAIN_MENU or MAIN_GAME:
+                if self.GameState == MAIN_MENU or self.GameState == MAIN_GAME:
                     self.GameState = CUTSCENE
             if self.keys[pygame.K_s] and (self.GameState == MAIN_MENU or self.GameState == MAIN_GAME):
                 self.GameState = SKILLS_SCREEN
