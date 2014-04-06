@@ -12,6 +12,18 @@ from gslib.constants import *
 blue = pygame.Color(0, 255, 0)
 
 
+def draw_game_over(game_class):
+    font = pygame.font.SysFont('helvetica', 80)
+    size = font.size("GAME OVER")
+    margin = (game_class.dimensions[0] - size[0]) / 2
+    game_class.screen_objects_to_draw.append((font.render("GAME OVER", True, (255, 255, 255)), (margin, 100)))
+
+    font = pygame.font.SysFont('helvetica', 20)
+    size = font.size("press esc scrub")
+    margin = (game_class.dimensions[0] - size[0]) / 2
+    game_class.screen_objects_to_draw.append((font.render("press esc scrub", True, (255, 255, 255)), (margin, 200)))
+
+
 def draw_map(game_class):
     m = game_class.map
     grid_size = TILE_SIZE
@@ -56,6 +68,11 @@ def draw_objects(game_class):
         game_class.world_objects_to_draw.append((surf, (o.coord[0] + o.dimensions[0] - SPRITE_WIDTH, o.coord[1] + o.dimensions[1] - SPRITE_HEIGHT)))
 
 
+def draw_character_stats(game_class):
+    if game_class.disp_object_stats:
+        game_class.screen_objects_to_draw.append((game_class.object_stats[0], game_class.object_stats[1]))
+
+
 def draw_fear_bar(game_class):
     font = pygame.font.SysFont('helvetica', 20)
     size = font.size("FEAR")
@@ -63,7 +80,7 @@ def draw_fear_bar(game_class):
     surf = pygame.Surface((game_class.dimensions[0], 32))
 
     surf.blit(fear_txt, (0, 0))
-    pygame.draw.rect(surf, (255, 0, 0), pygame.Rect((size[0], 0), (game_class.dimensions[0] - size[0], 32)))
+    pygame.draw.rect(surf, (255, 0, 0), pygame.Rect((size[0], 0), ((game_class.dimensions[0] - size[0]) * (game_class.player1.fear/float(MAX_FEAR)), 32)))
     game_class.screen_objects_to_draw.append((surf, (0, game_class.dimensions[1] - 32)))
 
 
