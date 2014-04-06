@@ -9,7 +9,7 @@ class KeyController(object):
 
         self.keys = {pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False,
                      pygame.K_ESCAPE: False, pygame.K_m: False, pygame.K_q: False, pygame.K_t: False,
-                     pygame.K_w: False, pygame.K_s: False, pygame.K_a: False, pygame.K_d: False}
+                     pygame.K_w: False, pygame.K_s: False, pygame.K_a: False, pygame.K_d: False, pygame.K_e: False}
 
         self.player_map = {0: {'up': pygame.K_UP, 'down': pygame.K_DOWN, 'left': pygame.K_LEFT, 'right': pygame.K_RIGHT},
                            1: {'up': pygame.K_w, 'down': pygame.K_s, 'left': pygame.K_a, 'right': pygame.K_d}}
@@ -33,6 +33,9 @@ class KeyController(object):
             self.game.GameState = SKILLS_SCREEN
         if self.keys[pygame.K_t] and (self.game.GameState == MAIN_MENU or self.game.GameState == MAIN_GAME):
             self.game.GameState = TEXTBOX_TEST
+
+        if self.game.GameState == MAIN_GAME:
+            self.game.show_fears = self.keys[pygame.K_e]
 
         for i, p in enumerate(self.game.players):
             p.move_down = self.keys[self.player_map[i]['down']]

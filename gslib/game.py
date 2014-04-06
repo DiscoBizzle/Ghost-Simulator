@@ -18,6 +18,7 @@ from gslib import sound
 from gslib import text_box
 from gslib import key
 from gslib import mouse
+from gslib import fear_functions
 from gslib.constants import *
 # doesn't seem to be needed any more
 #if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
@@ -123,6 +124,8 @@ class Game(object):
         self.screen_objects_to_draw = []
         self.objects += self.map.objects
 
+        self.show_fears = False
+
     def gameLoop(self):
         while self.gameRunning:
             # Update clock & pump event queue.
@@ -153,6 +156,8 @@ class Game(object):
         # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
         #self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
         self.camera_coords = self.calc_camera_coord()
+        if self.show_fears:
+            self.say_fears()
 
         if self.GameState == MAIN_GAME:
             for obj in self.objects:
@@ -236,6 +241,19 @@ class Game(object):
 
         # now double!
         # pygame.display.update()
+
+    def say_fears(self):
+        for o in self.objects:
+            if isinstance(o, player.Player):
+                continue
+            text = ''
+            for f in o.scared_of:
+                if f != 'player':
+                    text += f + '\n'
+            surf = fear_functions.speech_bubble(text, 300)
+            pos = (o.coord[0] + o.dimensions[0], o.coord[1] - surf.get_height())
+            self.world_objects_to_draw.append((surf, pos))
+
 
 
     def possess(self):
