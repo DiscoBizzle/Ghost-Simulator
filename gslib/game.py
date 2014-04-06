@@ -37,6 +37,7 @@ class Game(object):
         self.gameRunning = True
         self.dimensions = (width, height)
         self.surface = pygame.display.set_mode(self.dimensions)
+        pygame.display.set_caption("Ghost Simulator v. 0.000000001a")
         self.music_list = sound.get_music_list()
         self.sound_dict = sound.load_all_sounds()
         self.credits = credits.Credits(self)
