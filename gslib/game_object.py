@@ -40,6 +40,8 @@ class GameObject(object):
         for o in self.game_class.objects:
             if o == self.game_class.player1 and self.game_class.player1.possessing:
                 continue
+            if o == self.game_class.toPossess:
+                continue
             if o is not self:
                 for f in self.fears:
                     if f in o.feared_by:

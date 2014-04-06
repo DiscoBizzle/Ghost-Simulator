@@ -50,6 +50,7 @@ def text_wrap(text, font, maxwidth):
 
     return wrapped
 
+
 def speech_bubble(text, width, text_colour=(0, 0, 0)):
     font = pygame.font.SysFont('helvetica', 14)
 
@@ -78,6 +79,5 @@ def im_possessed(owner, game_class):
         surf = speech_bubble("I'm possessed!", 150)
         pos = (owner.coord[0] + owner.dimensions[0], owner.coord[1] - surf.get_height())
         game_class.flair_to_draw.append((surf, pos))
-        print pos
     return func
 
