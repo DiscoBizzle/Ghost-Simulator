@@ -5,14 +5,14 @@ setup(name="ghost-simulator",
       packages=['gslib'],
       scripts=['ghost-simulator.py'],
       data_files=[('gs-chars', ['characters/' + fname for fname in [
-                    'bio.txt', 'fears.txt', 'first_names_f.txt',
-                    'first_names_m.txt', 'second_names.txt',
-                    'fears_description.txt',
-                    'ghostSheet.png']]),
+          'bio.txt', 'fears.txt', 'first_names_f.txt',
+          'first_names_m.txt', 'second_names.txt',
+          'fears_description.txt',
+          'ghostSheet.png']]),
                   ('gs-tiles', ['tiles/' + fname for fname in [
-                    'martin.json', 'martin.png', 'field.png']]),
+                      'martin.json', 'martin.png', 'field.png']]),
                   ('gs-music', ['music/' + fname for fname in [
-                    'transylvania.ogg']]),
+                      'transylvania.ogg']]),
                   ('gs-movies', ['movies/' + fname for fname in [
-                    'movie.mpg']])],
-      )
+                      'movie.mpg']])],
+)

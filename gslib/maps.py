@@ -20,7 +20,7 @@ def test():
     pygame.quit()
 
 
-def load_map(map_filename): # Load a map from a map file
+def load_map(map_filename):  # Load a map from a map file
 
     #map_f = open(map_filename, 'r')
     data = json.load(open(map_filename))
@@ -28,11 +28,10 @@ def load_map(map_filename): # Load a map from a map file
     width = data['tileswide']
     height = data['tileshigh']
 
-    
     tile_map = data['layers'][0]['tiles']
 
     grid = [[0 for i in range(height)] for j in range(width)]
-        
+
     for tile in tile_map:
         x = tile['x']
         y = tile['y']
@@ -61,12 +60,14 @@ class Tile(object):
 class Map(object):
     def __init__(self, tileset, map_file):
         self.tileset = pygame.image.load(tileset).convert()
-        self.unwalkable = [211, 212, 227, 228, 259, 260, 275, 276, 292, 491, 493, 501, 502, 517, 518, 583, 584, 599, 600, 615, 616, 631, 632, 1046, 1236, 1252, 1302, 1303, 1304, 1318, 1319, 1320]
+        self.unwalkable = [211, 212, 227, 228, 259, 260, 275, 276, 292, 491, 493, 501, 502, 517, 518, 583, 584, 599,
+                           600, 615, 616, 631, 632, 1046, 1236, 1252, 1302, 1303, 1304, 1318, 1319, 1320]
         self.tileset_cols = self.tileset.get_width() / TILE_SIZE
 
         tile_type_grid = load_map(map_file)
 
-        self.grid = [[Tile(tile_type_grid[i][j], self, (i, j)) for j in range(len(tile_type_grid[0]))] for i in range(len(tile_type_grid))]
+        self.grid = [[Tile(tile_type_grid[i][j], self, (i, j)) for j in range(len(tile_type_grid[0]))] for i in
+                     range(len(tile_type_grid))]
 
 
 # test()

@@ -25,6 +25,7 @@ except ImportError:
 blackColour = pygame.Color(0, 0, 0)
 blueColour = pygame.Color(0, 0, 255)
 
+
 class Game(object):
     def __init__(self, width, height):
         self.Menu = menus.MainMenu(self)
@@ -42,7 +43,7 @@ class Game(object):
 
         self.fps_clock = pygame.time.Clock()
 
-        self.camera_coords = (0,0)
+        self.camera_coords = (0, 0)
 
         self.objects = []
 
@@ -55,7 +56,8 @@ class Game(object):
         self.disp_object_stats = False
         self.object_stats = None
 
-        self.keys = { pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False, pygame.K_ESCAPE: False, pygame.K_m: False }
+        self.keys = {pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False,
+                     pygame.K_ESCAPE: False, pygame.K_m: False}
 
         self.options = {'FOV': True, 'VOF': False}
         field = pygame.image.load('tiles/field.png')
@@ -88,7 +90,8 @@ class Game(object):
 
             # Update clock & pump event queue.
             # We cannot do this at the same time as playing a cutscene on linux; pygame.movie is shite.
-            if not (self.GameState == CUTSCENE and (sys.platform == "linux2" or sys.platform == "linux" or sys.platform == "linux3")):
+            if not (self.GameState == CUTSCENE and (
+                        sys.platform == "linux2" or sys.platform == "linux" or sys.platform == "linux3")):
                 self.clock.tick()
                 self.msPassed += self.clock.get_time()
 
@@ -115,8 +118,8 @@ class Game(object):
                     if not movie.get_busy():
                         self.GameState = MAIN_GAME
                         self.cutscene_started = False
-                        self.clock.get_time() # hack required for pygame.movie linux
-                        del movie # hack required for pygame.movie mac os x
+                        self.clock.get_time()  # hack required for pygame.movie linux
+                        del movie  # hack required for pygame.movie mac os x
                 else:
                     self.surface.fill(blackColour)
                     pygame.display.update()
@@ -137,7 +140,7 @@ class Game(object):
                 self.fps_clock.tick()
                 self.main_game_draw()
             else:
-                time.sleep(0.001) # note: sleeping not only a good idea but necessary for pygame.movie os x
+                time.sleep(0.001)  # note: sleeping not only a good idea but necessary for pygame.movie os x
 
     def update(self):
         # this is fixed timestep, 30 FPS. if game runs slower, we lag.
@@ -162,28 +165,31 @@ class Game(object):
                 self.surface.blit(graphics.draw_map(self.map), (0, 0))
                 self.objects.sort((lambda x, y: cmp(x.coord[1], y.coord[1])))
                 for o in self.objects:
-                    self.surface.blit(o.sprite_sheet, (o.coord[0]+o.dimensions[0]-SPRITE_WIDTH, o.coord[1]+o.dimensions[1]-SPRITE_HEIGHT), o.frame_rect)
+                    self.surface.blit(o.sprite_sheet, (
+                    o.coord[0] + o.dimensions[0] - SPRITE_WIDTH, o.coord[1] + o.dimensions[1] - SPRITE_HEIGHT),
+                                      o.frame_rect)
 
                 font = pygame.font.SysFont('helvetica', 20)
                 size = font.size("FEAR")
                 fear_txt = font.render("FEAR", True, (200, 200, 200))
-                self.surface.blit(fear_txt, (0, self.dimensions[1]-32))
-                fear_bar = pygame.Surface((self.dimensions[0]*self.player1.fear/MAX_FEAR, 32))
+                self.surface.blit(fear_txt, (0, self.dimensions[1] - 32))
+                fear_bar = pygame.Surface((self.dimensions[0] * self.player1.fear / MAX_FEAR, 32))
                 fear_bar.fill((255, 0, 0))
-                self.surface.blit(fear_bar, (size[0], self.dimensions[1]-32))
+                self.surface.blit(fear_bar, (size[0], self.dimensions[1] - 32))
 
-                self.surface.blit(font.render('FPS: ' + str(int(self.fps_clock.get_fps())), True, (255, 255, 0)), (0, self.dimensions[1] - 100))
+                self.surface.blit(font.render('FPS: ' + str(int(self.fps_clock.get_fps())), True, (255, 255, 0)),
+                                  (0, self.dimensions[1] - 100))
 
                 if self.disp_object_stats:
                     self.surface.blit(self.object_stats[0], self.object_stats[1])
         elif self.GameState == GAME_OVER:
             font = pygame.font.SysFont('helvetica', 80)
             size = font.size("GAME OVER")
-            margin = (self.dimensions[0]-size[0])/2
+            margin = (self.dimensions[0] - size[0]) / 2
             self.surface.blit(font.render("GAME OVER", True, (255, 255, 255)), (margin, 100))
             font = pygame.font.SysFont('helvetica', 20)
             size = font.size("press esc scrub")
-            margin = (self.dimensions[0]-size[0])/2
+            margin = (self.dimensions[0] - size[0]) / 2
             self.surface.blit(font.render("press esc scrub", True, (255, 255, 255)), (margin, 200))
 
         if self.options['VOF'] and self.GameState != CUTSCENE:

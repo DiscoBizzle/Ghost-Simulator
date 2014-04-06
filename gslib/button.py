@@ -26,7 +26,7 @@ def create_property(var):  # creates a member variable that redraws the button w
 # Calls the "end_turn()" function of the class that created the button.
 class Button(object):
     def __init__(self, owner, function, pos=(50, 50), size=(100, 100), visible=True, enabled=True, colour=(0, 0, 0),
-                 border_colour = (0, 0, 0), border_width=2, text = None, **kwargs):
+                 border_colour=(0, 0, 0), border_width=2, text=None, **kwargs):
         self._pos = (0, 0)
         self.pos_setter(pos)
 
@@ -45,7 +45,8 @@ class Button(object):
         self.owner = owner  # container that created the button, allows for the button function to interact with its creator
         self.function = function
 
-        self.surface = pygame.Surface(self._size)  # keep track of the button surface, takes more memory but is faster than redrawing every time
+        self.surface = pygame.Surface(
+            self._size)  # keep track of the button surface, takes more memory but is faster than redrawing every time
         self.redraw()
 
     def pos_setter(self, pos):
@@ -81,7 +82,7 @@ class Button(object):
 
         # to create border: fill with border colour, then blit a smaller rectangle with main colour
         self.surface.fill(self.border_colour)
-        temp = pygame.Surface((self.size[0] - 2*self.border_width, self.size[1] - 2*self.border_width))
+        temp = pygame.Surface((self.size[0] - 2 * self.border_width, self.size[1] - 2 * self.border_width))
         temp.fill(self.colour)
         self.surface.blit(temp, (self.border_width, self.border_width))
 

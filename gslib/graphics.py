@@ -4,7 +4,8 @@ import pygame
 from gslib.constants import *
 
 # screen = pygame.display.set_mode((800, 800))
-blue = pygame.Color(0,255,0)
+blue = pygame.Color(0, 255, 0)
+
 
 def draw_map(m):
     grid_size = TILE_SIZE

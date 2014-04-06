@@ -3,6 +3,7 @@ __author__ = 'Michael'
 import json
 from gslib.constants import *
 
+
 class Skill(object):
     def __init__(self, name, prereqs, effect):
         self.name = name
@@ -17,11 +18,12 @@ class Skill(object):
                 return False
         return True
 
+
 def load_skill_dict():
     raw_skill_dict = json.load(open(SKILLS_FILE))
     skill_dict = {}
     for key in raw_skill_dict:
-        skill_dict[key] = Skill(key,raw_skill_dict[key]['prereqs'],raw_skill_dict[key]['effects'])
+        skill_dict[key] = Skill(key, raw_skill_dict[key]['prereqs'], raw_skill_dict[key]['effects'])
     return skill_dict
 
 
