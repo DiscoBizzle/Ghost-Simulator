@@ -3,6 +3,8 @@ import random
 
 from gslib.game_object import GameObject
 from gslib.constants import *
+import fear_functions
+from fear_functions import text_wrap
 
 WHITE = (255, 255, 255)
 GREY = (60, 60, 60)
@@ -35,45 +37,7 @@ def fill_background(surface, border_size):
             surface.blit(border, (i * bw, j * bh))
 
 
-def truncline(text, font, maxwidth):
-    real = len(text)
-    stext = text
-    l = font.size(text)[0]
-    cut = 0
-    a = 0
-    done = 1
-    while l > maxwidth:
-        a += 1
-        n = text.rsplit(None, a)[0]
-        if stext == n:
-            cut += 1
-            stext = n[:-cut]
-        else:
-            stext = n
-        l = font.size(stext)[0]
-        real = len(stext)
-        done = 0
-    return real, done, stext
 
-
-def wrapline(text, font, maxwidth):
-    done = 0
-    wrapped = []
-
-    while not done:
-        nl, done, stext = truncline(text, font, maxwidth)
-        wrapped.append(stext.strip())
-        text = text[nl:]
-    return wrapped
-
-
-def text_wrap(text, font, maxwidth):
-    t = text.split('\n')
-    wrapped = []
-    for l in t:
-        wrapped += wrapline(l, font, maxwidth)
-
-    return wrapped
 
 
 def load_stats(fname):
@@ -167,6 +131,8 @@ class Character(GameObject):
         self.sprite = pygame.transform.scale(self.sprite, self.dimensions).convert()
         self.sprite.set_colorkey((255, 0, 255))
         self.isPossessed = False
+        self.fear_function = None
+        self.possess_function = fear_functions.im_possessed(self, game_class)
 
     def get_stats(self, name):
         name = name
@@ -187,20 +153,26 @@ class Character(GameObject):
                 self.velocity = (random.randint(-fv, fv), random.randint(-fv, fv))
                 self.fear_timer -= 1
         else:
+            self.possess_function()
             self.velocity = (0, 0)
             if self.game_class.keys[pygame.K_DOWN]:
-                self.velocity = (0, 5)
+                self.velocity = (self.velocity[0], self.max_velocity)
             if self.game_class.keys[pygame.K_UP]:
-                self.velocity = (0, -5)
+                self.velocity = (self.velocity[0], -self.max_velocity)
             if self.game_class.keys[pygame.K_LEFT]:
-                self.velocity = (-5, 0)
+                self.velocity = (-self.max_velocity, self.velocity[1])
             if self.game_class.keys[pygame.K_RIGHT]:
-                self.velocity = (5, 0)
+                self.velocity = (self.max_velocity, self.velocity[1])
         GameObject.update(self)
 
     def draw_info_sheet(self):
         font_size = 20
-        dim = w, h = (GAME_WIDTH - LEVEL_WIDTH, int((GAME_WIDTH - LEVEL_WIDTH) / 1.6))
+        #dim = w, h = (GAME_WIDTH - LEVEL_WIDTH, int((GAME_WIDTH - LEVEL_WIDTH) / 1.6))
+
+        h = GAME_HEIGHT/2
+        w = int(h * 1.6)
+        dim = (w,h)
+
         border = 8
         surf = pygame.Surface(dim)
         fill_background(surf, border)

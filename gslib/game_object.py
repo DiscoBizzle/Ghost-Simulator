@@ -29,7 +29,6 @@ class GameObject(object):
                                       SPRITE_WIDTH, SPRITE_HEIGHT)
         self.sprite_sheet.set_colorkey((255, 0, 255))
 
-
     def update(self):
         if not self.velocity == (0, 0):
             self.move()
@@ -39,6 +38,8 @@ class GameObject(object):
 
     def apply_fear(self):
         for o in self.game_class.objects:
+            if o == self.game_class.player1 and self.game_class.player1.possessing:
+                continue
             if o is not self:
                 for f in self.fears:
                     if f in o.feared_by:

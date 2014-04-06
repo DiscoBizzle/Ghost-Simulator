@@ -100,6 +100,8 @@ class Game(object):
                                                 colour=(120, 0, 0), enabled=False)
         self.toPossess = None
 
+        self.flair_to_draw = []
+
     def gameLoop(self):
 
         while self.gameRunning:
@@ -165,6 +167,9 @@ class Game(object):
         # this is fixed timestep, 30 FPS. if game runs slower, we lag.
         # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
         #self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
+
+        self.camera_coords = (self.player1.coord[0] - (GAME_WIDTH/2), self.player1.coord[1] - (GAME_HEIGHT/2))
+
         if self.GameState == MAIN_GAME:
             for object in self.objects:
                 object.update()
@@ -181,14 +186,14 @@ class Game(object):
             self.Menu.display()
         elif self.GameState == MAIN_GAME:
             if self.options['FOV']:
-                self.surface.blit(graphics.draw_map(self.map), (0, 0))
+                self.surface.blit(graphics.draw_map(self.map), (-self.camera_coords[0], -self.camera_coords[1]))
                 self.objects.sort((lambda x, y: cmp(x.coord[1], y.coord[1])))
                 for o in self.objects:
                     if o == self.player1:
                         if o.possessing:
                             continue
                     self.surface.blit(o.sprite_sheet, (
-                    o.coord[0] + o.dimensions[0] - SPRITE_WIDTH, o.coord[1] + o.dimensions[1] - SPRITE_HEIGHT),
+                    o.coord[0] + o.dimensions[0] - SPRITE_WIDTH - self.camera_coords[0], o.coord[1] + o.dimensions[1] - SPRITE_HEIGHT - self.camera_coords[1]),
                                       o.frame_rect)
 
                 for button in self.buttons.itervalues():
@@ -205,8 +210,10 @@ class Game(object):
                 self.surface.blit(font.render('FPS: ' + str(int(self.fps_clock.get_fps())), True, (255, 255, 0)),
                                   (0, self.dimensions[1] - 100))
 
+                graphics.draw_flair(self)
                 if self.disp_object_stats:
                     self.surface.blit(self.object_stats[0], self.object_stats[1])
+                    #self.surface.blit(0, 0)
         elif self.GameState == GAME_OVER:
             font = pygame.font.SysFont('helvetica', 80)
             size = font.size("GAME OVER")
@@ -247,13 +254,19 @@ class Game(object):
 
 
     def check_object_click(self, event):
+        if event.pos[0] > LEVEL_WIDTH or event.pos[1] > LEVEL_HEIGHT: # make track camera
+            return
         for o in self.objects:
-            if o.rect.collidepoint(event.pos) and isinstance(o, character.Character):
+            st = SELECTION_TOLERANCE
+            temp_rect = pygame.Rect((o.coord[0] - st, o.coord[1] - st), (o.dimensions[0] + 2*st, o.dimensions[1] + 2*st))
+            if temp_rect.collidepoint((event.pos[0]+self.camera_coords[0],event.pos[1]+self.camera_coords[1])) and isinstance(o, character.Character):
                 self.disp_object_stats = True
                 self.object_stats = (o.info_sheet, (GAME_WIDTH - o.info_sheet.get_width(), 0))
+                if self.player1.possessing:
+                    return
                 self.toPossess = o
                 self.buttons['Possess'].visible = True
-                self.buttons['Possess'].enabled = True
+                # self.buttons['Possess'].enabled = True
                 self.buttons['Possess'].pos = (GAME_WIDTH - o.info_sheet.get_width(), o.info_sheet.get_height())
                 self.buttons['unPossess'].pos = (GAME_WIDTH - o.info_sheet.get_width(), o.info_sheet.get_height())
                 return
