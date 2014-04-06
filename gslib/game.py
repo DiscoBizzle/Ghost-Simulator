@@ -91,7 +91,8 @@ class Game(object):
 
         #sound.start_next_music(self.music_list)
 
-        self.map = maps.Map('tiles/martin.png', 'tiles/martin.json')
+        self.map2 = maps.Map('tiles/martin.png', 'tiles/martin.json')
+        self.map = maps.Map('tiles/level2.png', 'tiles/level2.json')
 
         self.buttons = {}
         self.buttons['Possess'] = button.Button(self, self.possess, pos=(LEVEL_WIDTH, 0), size=(200, 30), visible=False,

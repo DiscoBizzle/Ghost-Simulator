@@ -59,11 +59,17 @@ class Tile(object):
             self.walkable = False
 
 
+        if pos[0] == 0:
+            print tile_ref, self.walkable
+
+
 class Map(object):
     def __init__(self, tileset, map_file):
         self.tileset = pygame.image.load(tileset).convert()
         self.unwalkable = [211, 212, 227, 228, 259, 260, 275, 276, 292, 491, 493, 501, 502, 517, 518, 583, 584, 599,
-                           600, 615, 616, 631, 632, 1046, 1236, 1252, 1302, 1303, 1304, 1318, 1319, 1320]
+                           600, 615, 616, 631, 632, 1046, 1236, 1252, 1302, 1303, 1304, 1318, 1319, 1320,
+                           995, 915, 916, 931, 932, 1081, 1082, 1083, 1097, 1099, 346, 1032, 196, 244,
+                           ]
         self.tileset_cols = self.tileset.get_width() / TILE_SIZE
 
         tile_type_grid = load_map(map_file)
