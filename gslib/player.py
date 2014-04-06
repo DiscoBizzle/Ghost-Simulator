@@ -4,8 +4,8 @@ from gslib.constants import *
 from gslib.game_object import GameObject
 
 class Player(GameObject):
-    def __init__(self, game_class, x, y, w, h):
-        sprite_sheet = pygame.image.load(os.path.join(CHARACTER_DIR, 'GhostSheet.png')).convert()
+    def __init__(self, game_class, x, y, w, h, sprite_sheet_address):
+        sprite_sheet = pygame.image.load(os.path.join(CHARACTER_DIR, sprite_sheet_address)).convert()
         GameObject.__init__(self, game_class, x, y, w, h, sprite_sheet)
 
         self.direction = DOWN
