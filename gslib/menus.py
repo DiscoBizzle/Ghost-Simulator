@@ -30,7 +30,7 @@ class MainMenu(Menu):
         self.buttons['credits'] = button.Button(self, self.credits, order = 1, size=(200, 30), visible=True, text=u'Credits',
                                              border_colour=(120, 50, 80), border_width=3,
                                              colour=(120, 0, 0))
-        self.buttons['quit'] = button.Button(self, self.quit, order = 3, size=(200, 30), visible=True, text=u'Quit',
+        self.buttons['quit'] = button.Button(self, self.game_class.quit_game, order = 3, size=(200, 30), visible=True, text=u'Quit',
                                              border_colour=(120, 50, 80), border_width=3,
                                              colour=(120, 0, 0))
         self.buttons['options'] = button.Button(self, self.go_to_options, order = 2, size=(200, 30), visible=True, text=u'Options',
@@ -44,9 +44,6 @@ class MainMenu(Menu):
 
     def go_to_options(self):
         self.game_class.GameState = OPTIONS_MENU
-
-    def quit(self):
-        self.game_class.gameRunning = False
 
     def credits(self):
         self.game_class.GameState = CREDITS

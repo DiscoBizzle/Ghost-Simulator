@@ -85,7 +85,7 @@ class Game(object):
         self.event_map = {
             pygame.KEYDOWN: self.key_controller.handle_keys,
             pygame.KEYUP: self.key_controller.handle_keys,
-            pygame.QUIT: self.quit_game,
+            pygame.QUIT: (lambda _: self.quit_game()),
             pygame.MOUSEBUTTONDOWN: self.mouse_controller.mouse_click,
             pygame.JOYHATMOTION: self.joy_controller.handle_hat,
             pygame.JOYBUTTONDOWN: self.joy_controller.handle_buttondown,
@@ -221,5 +221,5 @@ class Game(object):
         self.map = self.map_list[self.map_index]
         self.objects = self.players + self.map.objects
 
-    def quit_game(self, _):
+    def quit_game(self):
         self.gameRunning = False
