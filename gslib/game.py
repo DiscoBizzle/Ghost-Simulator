@@ -28,7 +28,7 @@ from gslib.constants import *
 
 class Game(object):
     def __init__(self):
-        self.Menu = menus.MainMenu(self)
+        self.Menu = menus.MainMenu(self, (200,30))
         self.GameState = MAIN_MENU
         self.cutscene_started = False
         self.cutscene_next = os.path.join(VIDEO_DIR, "default.mpg")
@@ -39,7 +39,7 @@ class Game(object):
         self.music_list = sound.get_music_list()
         self.sound_dict = sound.load_all_sounds()
         self.credits = credits.Credits(self)
-        self.options_menu = menus.OptionsMenu(self)
+        self.options_menu = menus.OptionsMenu(self, (200, 50))
 
         self.clock = pygame.time.Clock()
         self.ms_passed = 0
