@@ -189,13 +189,13 @@ class Character(GameObject):
         else:
             self.velocity = (0, 0)
             if self.game_class.keys[pygame.K_DOWN]:
-                self.velocity = (0, 5)
+                self.velocity = (0, self.max_velocity)
             if self.game_class.keys[pygame.K_UP]:
-                self.velocity = (0, -5)
+                self.velocity = (0, -self.max_velocity)
             if self.game_class.keys[pygame.K_LEFT]:
-                self.velocity = (-5, 0)
+                self.velocity = (-self.max_velocity, 0)
             if self.game_class.keys[pygame.K_RIGHT]:
-                self.velocity = (5, 0)
+                self.velocity = (self.max_velocity, 0)
         GameObject.update(self)
 
     def draw_info_sheet(self):
