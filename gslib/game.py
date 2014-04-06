@@ -55,8 +55,8 @@ class Game(object):
         self.SkillMenu = menus.SkillsMenu(self)
 
 
-        for i in range(5):
-            self.objects.append(character.Character(self, 0, 0, 16, 16, character.gen_character()))
+        # for i in range(5):
+        #     self.objects.append(character.Character(self, 0, 0, 16, 16, character.gen_character()))
 
         self.disp_object_stats = False
         self.object_stats = None
@@ -64,7 +64,7 @@ class Game(object):
         self.keys = {pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False,
                      pygame.K_ESCAPE: False, pygame.K_m: False, pygame.K_s: False}
 
-        self.options = {'FOV': True, 'VOF': False, 'torch': True}
+        self.options = {'FOV': True, 'VOF': False, 'torch': False}
         field = pygame.image.load('tiles/field.png')
         field = pygame.transform.scale(field, (GAME_WIDTH, GAME_HEIGHT))
         field.set_alpha(100)
@@ -91,8 +91,8 @@ class Game(object):
 
         #sound.start_next_music(self.music_list)
 
-        self.map2 = maps.Map('tiles/martin.png', 'tiles/martin.json')
-        self.map = maps.Map('tiles/level2.png', 'tiles/level2.json')
+        self.map2 = maps.Map('tiles/martin.png', 'tiles/martin.json', self)
+        self.map = maps.Map('tiles/level2.png', 'tiles/level2.json', self)
 
         self.buttons = {}
         self.buttons['Possess'] = button.Button(self, self.possess, pos=(LEVEL_WIDTH, 0), size=(200, 30), visible=False,
@@ -101,10 +101,15 @@ class Game(object):
         self.buttons['unPossess'] = button.Button(self, self.unPossess, pos=(LEVEL_WIDTH, 0), size=(200, 30), visible=False,
                                                 text=u'Unpossess', border_colour=(120, 50, 80), border_width=3,
                                                 colour=(120, 0, 0), enabled=False)
+
+        self.buttons['change_map'] = button.Button(self, self.change_map, pos=(0, 0), size=(20, 20), visible=True,
+                                                text=u'M', border_colour=(120, 50, 80), border_width=3,
+                                                colour=(120, 0, 0), enabled=True)
         self.toPossess = None
 
         self.world_objects_to_draw = []
         self.screen_objects_to_draw = []
+        self.objects += self.map.objects
 
     def gameLoop(self):
 
@@ -293,6 +298,10 @@ class Game(object):
         self.player1.possessing = False
         self.player1.coord = self.toPossess.coord
         self.toPossess = None
+
+    def change_map(self):
+        self.map, self.map2 = self.map2, self.map
+        self.objects = [self.player1] + self.map.objects
 
     def quit_game(self, _):
         self.gameRunning = False
