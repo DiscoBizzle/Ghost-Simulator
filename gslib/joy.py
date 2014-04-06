@@ -28,7 +28,7 @@ def handle_joy(self, event):
             self.keys[pygame.K_UP] = False
     if event.type == pygame.JOYBUTTONDOWN:
         if event.button == 0:
-            self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
+            self.objects.append(character.Character(self, 0, 0, 16, 16, character.gen_character()))
         elif event.button == 1:
             self.keys[pygame.K_ESCAPE] = True
         elif event.button == 2:
