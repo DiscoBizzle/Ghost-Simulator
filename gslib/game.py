@@ -191,6 +191,7 @@ class Game(object):
         elif self.GameState == MAIN_GAME:
             graphics.draw_map(self)
             graphics.draw_objects(self)
+            graphics.draw_torch(self)
 
             graphics.draw_buttons(self)
 

@@ -128,3 +128,14 @@ def draw_cutscene(game):
         except IOError:
             print "Video not found: " + game.cutscene_next
             game.GameState = MAIN_MENU
+
+
+def draw_torch(game_class):
+    rect1 = pygame.Surface((GAME_WIDTH, (GAME_HEIGHT/2) - 128))
+    game_class.world_objects_to_draw.append((rect1, (0, 0)))
+    game_class.world_objects_to_draw.append((rect1, (0, (GAME_HEIGHT/2) + 128)))
+    rect2 = pygame.Surface(((GAME_WIDTH/2) - 128, 256))
+    game_class.world_objects_to_draw.append((rect2, (0, (GAME_HEIGHT/2) - 128)))
+    game_class.world_objects_to_draw.append((rect2, ((GAME_WIDTH/2) + 128, (GAME_HEIGHT/2) - 128)))
+    light = pygame.image.load('light.png')
+    game_class.world_objects_to_draw.append((light, ((GAME_WIDTH/2) - 128, (GAME_HEIGHT/2) - 128)))
