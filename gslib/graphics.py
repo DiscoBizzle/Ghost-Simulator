@@ -25,6 +25,10 @@ class Graphics(object):
         self.light = pygame.image.load(os.path.join(TILES_DIR, 'light.png'))
         self.light.convert_alpha()
         self.light = pygame.transform.scale(self.light, (200, 200))
+        self.light_surf = pygame.Surface((GAME_WIDTH, GAME_HEIGHT)).convert_alpha()
+        self.light_size = self.light.get_size()
+
+        self.clip_area = pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
 
     def draw_game_over(self):
         font = pygame.font.SysFont(FONT, 80)
@@ -88,7 +92,7 @@ class Graphics(object):
             self.game.map_surf = pygame.Surface((nw * grid_size, nh * grid_size)).convert()
         surf = self.game.map_surf
     
-        clippy = self.game.clip_area.copy()# if hasattr(self.game, 'clip_area') else pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
+        clippy = self.clip_area.copy()# if hasattr(self.game, 'clip_area') else pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
         clippy.inflate_ip(64, 64)
     
         for i in range(nw):
@@ -158,14 +162,9 @@ class Graphics(object):
     
     def draw_screen_objects(self):  # stuff relative to screen
         for f in self.game.screen_objects_to_draw:
-            self.blit(f[0], f[1])
+            self.surface.blit(f[0], f[1])
         self.game.screen_objects_to_draw = []
-    
-    
-    def blit(self, surf, pos):
-        self.surface.blit(surf, pos)
-    
-    
+
     def blit_camera(self, surf, pos):
         cpos = (pos[0] - self.game.camera_coords[0], pos[1] - self.game.camera_coords[1])
         self.surface.blit(surf, cpos)
@@ -193,28 +192,22 @@ class Graphics(object):
             except IOError:
                 print u"Video not found: " + self.game.cutscene_next
                 self.game.GameState = MAIN_MENU
-    
-    
+
     def draw_torch(self):
         ppos = (self.game.player1.coord[0] + self.game.player1.dimensions[0] / 2, self.game.player1.coord[1] + self.game.player1.dimensions[1] / 2)
+
+        self.light_surf.fill((0, 0, 0, 0))
     
-        light_size = self.light.get_size()
-        if not hasattr(self.game, 'hole_surf'):
-            self.game.hole_surf = pygame.Surface((GAME_WIDTH, GAME_HEIGHT)).convert_alpha()
-        surf = self.game.hole_surf
-        surf.fill((0, 0, 0, 0))
+        hole = pygame.Rect((ppos[0] - self.light_size[0]/2 - self.game.camera_coords[0], ppos[1] - self.light_size[1]/2 - self.game.camera_coords[1]), self.light_size)
+
+        self.clip_area = hole
     
-        hole = pygame.Rect((ppos[0] - light_size[0]/2 - self.game.camera_coords[0], ppos[1] - light_size[1]/2 - self.game.camera_coords[1]), light_size)
-        if hasattr(self.game, 'clip_area'):
-            self.game.old_clip_area = self.game.clip_area
-        self.game.clip_area = hole
-    
-        pygame.draw.rect(surf, (0, 0, 0, 255), pygame.Rect((0, 0), (GAME_WIDTH, hole.top)))
-        pygame.draw.rect(surf, (0, 0, 0, 255), pygame.Rect((0, 0), (hole.left, GAME_HEIGHT)))
-        pygame.draw.rect(surf, (0, 0, 0, 255), pygame.Rect((hole.right, 0), (GAME_WIDTH, GAME_HEIGHT)))
-        pygame.draw.rect(surf, (0, 0, 0, 255), pygame.Rect((0, hole.bottom), (GAME_WIDTH, GAME_HEIGHT)))
-        self.game.screen_objects_to_draw.append((surf, (0, 0)))
-        self.game.world_objects_to_draw.append((self.light, (ppos[0] - light_size[0]/2, ppos[1] - light_size[1]/2)))
+        pygame.draw.rect(self.light_surf, (0, 0, 0, 255), pygame.Rect((0, 0), (GAME_WIDTH, hole.top)))
+        pygame.draw.rect(self.light_surf, (0, 0, 0, 255), pygame.Rect((0, 0), (hole.left, GAME_HEIGHT)))
+        pygame.draw.rect(self.light_surf, (0, 0, 0, 255), pygame.Rect((hole.right, 0), (GAME_WIDTH, GAME_HEIGHT)))
+        pygame.draw.rect(self.light_surf, (0, 0, 0, 255), pygame.Rect((0, hole.bottom), (GAME_WIDTH, GAME_HEIGHT)))
+        self.light_surf.blit(self.light, (hole.left, hole.top))
+        self.game.screen_objects_to_draw.append((self.light_surf, (0, 0)))
     
     
     def draw_text_box(self):

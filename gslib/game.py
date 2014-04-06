@@ -122,7 +122,7 @@ class Game(object):
 
         self.show_fears = False
 
-        self.clip_area = pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
+
 
     def game_loop(self):
         while self.game_running:
@@ -222,7 +222,7 @@ class Game(object):
         self.map_index %= len(self.map_list)
         self.map = self.map_list[self.map_index]
         self.objects = self.players + self.map.objects
-        self.clip_area = pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
+        self.graphics.clip_area = pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
 
     def quit_game(self):
         self.game_running = False

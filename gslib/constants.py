@@ -68,4 +68,4 @@ UNLEARNABLE_COLOUR = (150, 0, 0)
 INITIAL_SOUND_VOLUME = 0.2
 INITIAL_MUSIC_VOLUME = 0.2
 
-FONT = 'papyrus'
+FONT = 'papyrus, helvetica'

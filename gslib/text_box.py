@@ -16,7 +16,7 @@ class TextBox:
         self.bg_color = pygame.Color(125, 25, 32)
         self.text_frame_color = pygame.Color(0, 0, 0)
         self.text_color = pygame.Color(150,255,150)
-        self.font = pygame.font.SysFont('helvetica', 16)
+        self.font = pygame.font.SysFont(FONT, 16)
         self.text = text
 
         self.x_ext_pad = 16
