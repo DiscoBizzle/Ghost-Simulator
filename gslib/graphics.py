@@ -49,7 +49,7 @@ def draw_map(game_class):
 
 def draw_fps(game_class):
     font = pygame.font.SysFont('helvetica', 20)
-    surf = font.render('FPS: ' + str(int(game_class.fps_clock.get_fps())), True, (255, 255, 0))
+    surf = font.render(u'FPS: ' + unicode(int(game_class.fps_clock.get_fps())), True, (255, 255, 0))
     game_class.screen_objects_to_draw.append((surf, (0, game_class.dimensions[1] - 100)))
 
 
@@ -79,8 +79,8 @@ def draw_character_stats(game_class):
 def draw_fear_bar(game_class):
     if not hasattr(game_class, 'fear_txt'):
         font = pygame.font.SysFont('helvetica', 20)
-        game_class.fear_size = font.size("FEAR")
-        game_class.fear_txt = font.render("FEAR", True, (200, 200, 200)).convert_alpha()
+        game_class.fear_size = font.size(u"FEAR")
+        game_class.fear_txt = font.render(u"FEAR", True, (200, 200, 200)).convert_alpha()
 
     if not hasattr(game_class, 'fear_surf'):
         game_class.fear_surf = pygame.Surface((game_class.dimensions[0], 32)).convert_alpha()
@@ -133,7 +133,7 @@ def draw_cutscene(game):
             game.movie.play()
             game.cutscene_started = True
         except IOError:
-            print "Video not found: " + game.cutscene_next
+            print u"Video not found: " + game.cutscene_next
             game.GameState = MAIN_MENU
 
 
