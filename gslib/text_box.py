@@ -11,14 +11,14 @@ CLOSING = 4
 class TextBox:
     def __init__(self, text):
         self.bg_color = pygame.Color((125, 25, 32))
-        self.text_frame_color = pygame.Color((0,0,0))
+        self.text_frame_color = pygame.Color((0, 0, 0))
         self.x_ext_pad = 16
         self.y_ext_pad = 16
         self.x_int_pad = 16
         self.y_int_pad = 16
 
         self.h = 256
-        self.w = GAME_WIDTH - 2*self.x_pad
+        self.w = GAME_WIDTH - 2*self.x_int_pad
 
         self.portrait_surface = pygame.image.load("characters/portrait_test.png").convert()
 
