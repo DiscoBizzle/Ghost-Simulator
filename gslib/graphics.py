@@ -144,6 +144,7 @@ class Graphics(object):
             self.game.fear_surf = pygame.Surface((self.game.dimensions[0], 32)).convert_alpha()
     
         surf = self.game.fear_surf
+        surf.fill((0, 0, 0))
         surf.blit(self.game.fear_txt, (0, 0))
         pygame.draw.rect(surf, (255, 0, 0), pygame.Rect((self.game.fear_size[0], 0), ((self.game.dimensions[0] - self.game.fear_size[0]) * (self.game.player1.fear/float(MAX_FEAR)), 32)))
         self.game.screen_objects_to_draw.append((surf, (0, self.game.dimensions[1] - 32)))

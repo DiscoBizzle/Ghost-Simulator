@@ -4,7 +4,7 @@ import pygame
 
 from gslib.constants import *
 
-from fear_functions import harvest_fear
+from gslib import fear_functions
 
 class GameObject(object):
     def __init__(self, game_class, x, y, w, h, sprite_sheet):
@@ -56,7 +56,7 @@ class GameObject(object):
                 for f in self.fears:
                     if f in o.scared_of:
                         old_fear_level = o.fear
-                        o.fear = harvest_fear(self, o)
+                        o.fear = fear_functions.harvest_fear(self, o)
                         self.game_class.player1.fear += o.fear
 
                         if o.fear >= o.scream_thresh:

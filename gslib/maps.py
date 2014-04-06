@@ -73,7 +73,7 @@ class Map(object):
         self.grid = [[Tile(tile_type_grid[i][j], self, (i, j)) for j in range(len(tile_type_grid[0]))] for i in range(len(tile_type_grid))]
 
         self.objects = []
-        for i in range(5):
+        for i in range(1):
             self.objects.append(character.Character(game_class, 0, 0, 16, 16, character.gen_character()))
 
 
