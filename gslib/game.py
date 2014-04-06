@@ -13,6 +13,7 @@ from gslib import sound
 from gslib import joy
 from gslib import button
 from gslib import skills
+from gslib import credits
 from gslib.constants import *
 # doesn't seem to be needed any more
 #if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
@@ -39,6 +40,7 @@ class Game(object):
         self.surface = pygame.display.set_mode(self.dimensions)
         self.music_list = sound.get_music_list()
         #self.sound_dict = sound.load_all_sounds()
+        self.credits = credits.Credits(self)
 
 
         self.clock = pygame.time.Clock()
@@ -223,6 +225,8 @@ class Game(object):
             size = font.size("press esc scrub")
             margin = (self.dimensions[0] - size[0]) / 2
             self.surface.blit(font.render("press esc scrub", True, (255, 255, 255)), (margin, 200))
+        elif self.GameState == CREDITS:
+            self.credits.display()
 
         elif self.GameState == SKILLS_SCREEN:
             self.SkillMenu.display()
