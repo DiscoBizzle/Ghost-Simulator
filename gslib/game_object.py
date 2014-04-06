@@ -4,7 +4,7 @@ import pygame
 
 from gslib.constants import *
 
-from fear_functions import evaluate_fear
+from fear_functions import harvest_fear
 
 class GameObject(object):
     def __init__(self, game_class, x, y, w, h, sprite_sheet):
@@ -21,6 +21,8 @@ class GameObject(object):
         self.update_timer = 0
         self.fear_timer = 0
         self.scream_timer = 0
+        self.fear = 0
+        self.scream_thresh = 50
 
         #variables for animation
         self.sprite_sheet = sprite_sheet
@@ -53,14 +55,14 @@ class GameObject(object):
             if o is not self:
                 for f in self.fears:
                     if f in o.scared_of:
-                        if (o.coord[0] - self.coord[0]) ** 2 + (
-                            o.coord[1] - self.coord[1]) ** 2 < self.fear_radius ** 2:
-                            o.fear_timer = 5
-                            #self.fear_level += evaluate_fear(self, o)
-                            self.game_class.player1.fear += evaluate_fear(self, o)
+                        old_fear_level = o.fear
+                        o.fear = harvest_fear(self, o)
+                        self.game_class.player1.fear += o.fear
+
+                        if o.fear >= o.scream_thresh:
                             if o.scream_timer <= 0:
                                 self.game_class.sound_dict['scream'].play()
-                                o.scream_timer = 60
+                                o.scream_timer = 120
                             else:
                                 o.scream_timer -= 1
 
