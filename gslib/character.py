@@ -153,7 +153,7 @@ def gen_name(gender):
 class Character(GameObject):
     def __init__(self, game_class, x, y, w, h, stats):
 
-        GameObject.__init__(self, game_class, x, y, w, h, pygame.image.load('characters/GhostSheet.png').convert())
+        GameObject.__init__(self, game_class, x, y, w, h, pygame.image.load('characters/DudeSheet.png').convert())
         self.fears = stats['fears']
         self.feared_by = stats['feared_by']
         self.feared_by.append('player')
