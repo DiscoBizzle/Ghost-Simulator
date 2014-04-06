@@ -21,28 +21,43 @@ def test():
     raw_input()
     pygame.quit()
 
+def open_map_json(map_filename):
+    try:
+        f = open(map_filename, 'r')
+        data = json.load(f)
+        f.close()
+    except IOError:
+        print "Couldn't open map file \"" + map_filename + "\"."
 
-def load_map(map_filename): # Load a map from a map file
-    #map_f = open(map_filename, 'r')
-    data = json.load(open(map_filename))
+    return data
+
+def load_map(map_filename): # Load a map and objects from a map file
+    data = open_map_json(map_filename)
+    print map_filename
 
     width = data['tileswide']
     height = data['tileshigh']
 
     
     tile_map = data['layers'][0]['tiles']
-
-    grid = [[0 for i in range(height)] for j in range(width)]
+    map_grid = [[0 for i in range(height)] for j in range(width)]
         
     for tile in tile_map:
         x = tile['x']
         y = tile['y']
-        grid[x][y] = tile['tile']
+        map_grid[x][y] = tile['tile']
 
-    #print grid
 
-    return grid
+    return map_grid
 
+def load_objects(map_filename):
+    data = open_map_json(map_filename)
+    try:
+        obj_list = data['layers'][1]['objects']
+    except:
+        obj_list = []
+        print "Couldn't load any objects from map file \"" + map_filename + "\"."
+    return obj_list
 
 class Tile(object):
     def __init__(self, tile_ref, map, pos):
@@ -69,6 +84,7 @@ class Map(object):
         self.tileset_cols = self.tileset.get_width() / TILE_SIZE
 
         tile_type_grid = load_map(map_file)
+        loaded_objects = load_objects(map_file)
 
         self.grid = [[Tile(tile_type_grid[i][j], self, (i, j)) for j in range(len(tile_type_grid[0]))] for i in range(len(tile_type_grid))]
 
