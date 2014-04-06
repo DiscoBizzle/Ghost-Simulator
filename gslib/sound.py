@@ -12,7 +12,8 @@ def load_all_sounds():
     for f in os.listdir(SOUND_DIR):
         if f[-4:] in (".ogg", ".wav"):
             sound_dict[f[:-4]] = pygame.mixer.Sound(os.path.join(SOUND_DIR, f))
-
+    for sound in sound_dict.itervalues():
+        sound.set_volume(0.2)
     return sound_dict
 
 

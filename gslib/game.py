@@ -36,6 +36,7 @@ class Game(object):
         self.music_list = sound.get_music_list()
         self.sound_dict = sound.load_all_sounds()
         self.credits = credits.Credits(self)
+        self.options_menu = menus.OptionsMenu(self)
 
 
         self.clock = pygame.time.Clock()
@@ -194,6 +195,9 @@ class Game(object):
         elif self.GameState == SKILLS_SCREEN:
             self.SkillMenu.display()
 
+        elif self.GameState == OPTIONS_MENU:
+            self.options_menu.display()
+
         if self.options['VOF'] and self.GameState != CUTSCENE:
             self.surface.blit(self.field, (0, 0))
         pygame.display.update()
@@ -218,7 +222,8 @@ class Game(object):
             self.check_object_click(event)
         elif self.GameState == SKILLS_SCREEN:
             self.SkillMenu.mouse_event(event)
-
+        elif self.GameState == OPTIONS_MENU:
+            self.options_menu.mouse_event(event)
 
     def check_object_click(self, event):
         if event.pos[0] > LEVEL_WIDTH or event.pos[1] > LEVEL_HEIGHT: # make track camera

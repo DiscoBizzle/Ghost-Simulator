@@ -3,69 +3,82 @@ import pygame
 from gslib import button
 from gslib.constants import *
 
-
-class MainMenu(object):
-    def __init__(self, GameClass):
-        self.GameClass = GameClass
+class Menu(object):
+    def __init__(self, game_class):
+        self.game_class = game_class
         self.buttons = {}
-        self.buttons['main_game'] = button.Button(self, self.goto_main_game, pos=(60, 40), size=(200, 30), visible=True,
-                                                  text='Start Game', border_colour=(120, 50, 80), border_width=3,
-                                                  colour=(120, 0, 0))
-        self.buttons['FOV'] = button.Button(self, self.FOV_toggle, pos=(60, 80), size=(200, 30), visible=True,
-                                            text='Field of View: Yes', border_colour=(120, 50, 80), border_width=3,
-                                            colour=(120, 0, 0))
-        self.buttons['VOF'] = button.Button(self, self.VOF_toggle, pos=(60, 120), size=(200, 30), visible=True,
-                                            text='View of Field: No', border_colour=(120, 50, 80), border_width=3,
-                                            colour=(120, 0, 0))
-        self.buttons['credits'] = button.Button(self, self.credits, pos=(60, 160), size=(200, 30), visible=True, text='Credits',
-                                             border_colour=(120, 50, 80), border_width=3,
-                                             colour=(120, 0, 0))
-        self.buttons['quit'] = button.Button(self, self.quit, pos=(60, 240), size=(200, 30), visible=True, text='Quit',
-                                             border_colour=(120, 50, 80), border_width=3,
-                                             colour=(120, 0, 0))
 
     def display(self):
-        # self.GameClass.surface.fill((0, 0, 0))
         for button in self.buttons.itervalues():
-            self.GameClass.surface.blit(button.surface, button.pos)  # self.buttons[button]
-
-            # pygame.display.update()
+            self.game_class.surface.blit(button.surface, button.pos)
 
     def mouse_event(self, event):
         for button in self.buttons.itervalues():
             button.check_clicked(event.pos)
 
-    def goto_main_game(self):
-        self.GameClass.GameState = MAIN_GAME
+    def arrange_buttons(self):
+        for button in self.buttons.itervalues():
+            button.pos = (60, 40 + button.order*40)
+
+
+
+class MainMenu(Menu):
+    def __init__(self, game_class):
+        Menu.__init__(self, game_class)
+        self.buttons['main_game'] = button.Button(self, self.go_to_main_game, order = 0, size=(200, 30), visible=True,
+                                                  text='Start Game', border_colour=(120, 50, 80), border_width=3,
+                                                  colour=(120, 0, 0))
+        self.buttons['credits'] = button.Button(self, self.credits, order = 1, size=(200, 30), visible=True, text='Credits',
+                                             border_colour=(120, 50, 80), border_width=3,
+                                             colour=(120, 0, 0))
+        self.buttons['quit'] = button.Button(self, self.quit, order = 3, size=(200, 30), visible=True, text='Quit',
+                                             border_colour=(120, 50, 80), border_width=3,
+                                             colour=(120, 0, 0))
+        self.buttons['options'] = button.Button(self, self.go_to_options, order = 2, size=(200, 30), visible=True, text='Options',
+                                             border_colour=(120, 50, 80), border_width=3,
+                                             colour=(120, 0, 0))
+
+        Menu.arrange_buttons(self)
+
+    def go_to_main_game(self):
+        self.game_class.GameState = MAIN_GAME
+
+    def go_to_options(self):
+        self.game_class.GameState = OPTIONS_MENU
+
+    def quit(self):
+        self.game_class.gameRunning = False
+
+    def credits(self):
+        self.game_class.GameState = CREDITS
+
+
+class OptionsMenu(Menu):
+    def __init__(self, game_class):
+        Menu.__init__(self, game_class)
+        self.buttons['FOV'] = button.Button(self, self.FOV_toggle, order = 0, size=(200, 30), visible=True,
+                                            text='Field of View: Yes', border_colour=(120, 50, 80), border_width=3,
+                                            colour=(120, 0, 0))
+        self.buttons['VOF'] = button.Button(self, self.VOF_toggle, order = 1, size=(200, 30), visible=True,
+                                            text='View of Field: No', border_colour=(120, 50, 80), border_width=3,
+                                            colour=(120, 0, 0))
+        Menu.arrange_buttons(self)
 
     def FOV_toggle(self):
-        if self.GameClass.options['FOV']:
-            self.GameClass.options['FOV'] = False
+        if self.game_class.options['FOV']:
+            self.game_class.options['FOV'] = False
             self.buttons['FOV'].text = 'Field of View: No'
         else:
-            self.GameClass.options['FOV'] = True
+            self.game_class.options['FOV'] = True
             self.buttons['FOV'].text = 'Field of View: Yes'
 
     def VOF_toggle(self):
-        if self.GameClass.options['VOF']:
-            self.GameClass.options['VOF'] = False
+        if self.game_class.options['VOF']:
+            self.game_class.options['VOF'] = False
             self.buttons['VOF'].text = 'View of Field: No'
         else:
-            self.GameClass.options['VOF'] = True
+            self.game_class.options['VOF'] = True
             self.buttons['VOF'].text = 'View of Field: Yes'
-
-    def quit(self):
-        self.GameClass.gameRunning = False
-
-    def credits(self):
-        self.GameClass.GameState = CREDITS
-
-
-class OptionsMenu(object):
-    def __init__(self, GameClass):
-        self.GameClass = GameClass
-        self.buttons = {}
-
 
 class SkillsMenu(object):
     def __init__(self, GameClass):
@@ -92,7 +105,7 @@ class SkillsMenu(object):
 
     def display(self):
         for button in self.buttons.itervalues():
-            self.GameClass.surface.blit(button.surface, button.pos)
+            self.game_class.surface.blit(button.surface, button.pos)
 
     def mouse_event(self, event):
         for button in self.buttons.itervalues():
