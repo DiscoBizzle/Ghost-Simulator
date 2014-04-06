@@ -81,15 +81,15 @@ class OptionsMenu(Menu):
             self.buttons['VOF'].text = 'View of Field: Yes'
 
 class SkillsMenu(object):
-    def __init__(self, GameClass):
-        self.GameClass = GameClass
+    def __init__(self, game_class):
+        self.game_class = game_class
         self.buttons = {}
         x_offset = 0
         y_offset = 0
-        for skill in self.GameClass.skills_dict:
-            if skill in self.GameClass.player1.skills_learnt:
+        for skill in self.game_class.skills_dict:
+            if skill in self.game_class.player1.skills_learnt:
                 skill_colour = LEARNT_SKILL_COLOUR
-            elif self.GameClass.skills_dict[skill].can_be_learnt(self.GameClass.player1):
+            elif self.game_class.skills_dict[skill].can_be_learnt(self.game_class.player1):
                 skill_colour = CAN_BE_LEARNT_COLOUR
             else:
                 skill_colour = UNLEARNABLE_COLOUR
@@ -112,13 +112,13 @@ class SkillsMenu(object):
             button.check_clicked(event.pos)
 
     def learn_skill(self, skill):
-        self.GameClass.player1.learn_skill(skill)
-        print self.GameClass.player1.skills_learnt
+        self.game_class.player1.learn_skill(skill)
+        print self.game_class.player1.skills_learnt
 
         for skill in self.buttons:
-            if skill in self.GameClass.player1.skills_learnt:
+            if skill in self.game_class.player1.skills_learnt:
                 skill_colour = LEARNT_SKILL_COLOUR
-            elif self.GameClass.skills_dict[skill].can_be_learnt(self.GameClass.player1):
+            elif self.game_class.skills_dict[skill].can_be_learnt(self.game_class.player1):
                 skill_colour = CAN_BE_LEARNT_COLOUR
             else:
                 skill_colour = UNLEARNABLE_COLOUR
