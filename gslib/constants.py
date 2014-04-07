@@ -64,6 +64,7 @@ TILES_DIR = fallback_files("tiles dir", "tiles", os.path.join(sys.prefix, 'gs-ti
 CREDITS_FILE = fallback_files("credits file", "credits.txt", os.path.join(sys.prefix, 'gs-data', 'credits.txt'))
 SKILLS_FILE = fallback_files("skills file", "skills.json", os.path.join(sys.prefix, 'gs-data', 'skills.json'))
 KEYMAP_FILE = fallback_files("keymap file", "keymap.txt", os.path.join(sys.prefix, 'gs-data', 'keymap.txt'))
+OPTIONS_FILE = fallback_files("options file", "options.txt", os.path.join(sys.prefix, 'gs-data', 'options.txt'))
 
 LEARNT_SKILL_COLOUR = (0, 150, 0)
 CAN_BE_LEARNT_COLOUR = (0, 0, 150)

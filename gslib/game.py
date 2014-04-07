@@ -130,7 +130,8 @@ class Game(object):
         self.show_fears = False
         self.show_ranges = False
 
-
+        self.load_options()
+        self.key_controller.load()
 
     def game_loop(self):
         while self.game_running:
@@ -260,3 +261,31 @@ class Game(object):
 
     def quit_game(self):
         self.game_running = False
+
+    def save_options(self):
+        f = open(OPTIONS_FILE, 'w')
+        for option, val in self.options.iteritems():
+            f.write(option + ';' + str(val) + '~' + str(type(val)) + '\n')
+        f.close()
+
+    def load_options(self):
+        f = open(OPTIONS_FILE, 'r')
+        for l in f:
+            semi = l.find(';')
+            tilde = l.find('~')
+            option = l[:semi]
+            val = l[semi+1:tilde]
+            typ = l[tilde+1:]
+            typ = typ.rstrip()
+            if typ == "<type 'bool'>":
+                if val == 'True':
+                    val = True
+                else:
+                    val = False
+            elif typ == "<type 'int'>":
+                val = int(val)
+            elif typ == "<type 'float'>":
+                val = float(val)
+
+            self.options[option] = val
+        f.close()

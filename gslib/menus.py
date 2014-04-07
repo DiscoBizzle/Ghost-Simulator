@@ -27,7 +27,7 @@ class Menu(object):
                                             colour=(120, 0, 0), size=(200, 50), pos=(60, 40))
         self.sliders['menu_scale'] = slider.Slider(self, self.set_menu_scale, range=(1.0, 5.0/frac), order=(-1, 1),
                                                    value=1.0/frac, size=(200, 50), pos=(60 + 200 + 20, 40),
-                                                   visible=False, enabled=False)
+                                                   visible=False, enabled=self.game_class.options['menu_scale'])
         # self.first_time = True
 
     def display(self):
@@ -143,6 +143,12 @@ class OptionsMenu(Menu):
         self.buttons['key_bind'] = button.Button(self, self.keybind_toggle, order = (6, 0), visible=True,
                                             text=u'Keybind Menu', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
+        self.buttons['load'] = button.Button(self, self.load, order = (7, 0), visible=True,
+                                            text=u'Load Options', border_colour=(120, 50, 80), border_width=3,
+                                            colour=(120, 0, 0))
+        self.buttons['save'] = button.Button(self, self.save, order = (7, 1), visible=True,
+                                            text=u'Save Options', border_colour=(120, 50, 80), border_width=3,
+                                            colour=(120, 0, 0))
         Menu.arrange_buttons(self)
 
     def FOV_toggle(self):
@@ -185,12 +191,21 @@ class OptionsMenu(Menu):
             self.arrange_buttons()
 
     def set_sound(self, value):
+        self.game_class.options['sound_volume'] = value
         for sound in self.game_class.sound_dict.itervalues():
             sound.set_volume(value)
         self.buttons['sound_display'].text = u'Sound Volume: ' + unicode(str(int(value/0.003)))
+
     def set_music(self, value):
+        self.game_class.options['music_volume'] = value
         pygame.mixer.music.set_volume(value)
         self.buttons['music_display'].text = u'Music Volume: ' + unicode(str(int(value/0.003)))
+
+    def load(self):
+        self.game_class.load_options()
+
+    def save(self):
+        self.game_class.save_options()
 
 
 class SkillsMenu(Menu):
