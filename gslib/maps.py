@@ -39,17 +39,28 @@ def load_map(map_filename): # Load a map and objects from a map file
 
     # Use the last "tiles" layer to get the tile map -- in the future will need to get more layers
     all_layers = [item for item in data['layers'] if "tiles" in item]
-    tile_map = all_layers[-1]['tiles']
+
+    for l in all_layers:
+        if l['name'] == 'background':
+            tile_map = l['tiles']
+        elif l['name'] == 'collision':
+            coll_map = l['tiles']
 
     map_grid = [[0 for i in range(height)] for j in range(width)]
-        
+    coll_grid = [[0 for i in range(height)] for j in range(width)]
+
     for tile in tile_map:
         x = tile['x']
         y = tile['y']
         map_grid[x][y] = tile['tile']
 
+    for tile in coll_map:
+        x = tile['x']
+        y = tile['y']
+        coll_grid[x][y] = tile['tile']
 
-    return map_grid
+    return map_grid, coll_grid
+
 
 def load_objects(map_filename):
     data = open_map_json(map_filename)
@@ -60,8 +71,10 @@ def load_objects(map_filename):
         print "Couldn't load any objects from map file \"" + map_filename + "\"."
     return obj_list
 
+
 class Tile(object):
-    def __init__(self, tile_ref, map, pos):
+    def __init__(self, tile_type_grid, coll_grid, map, pos):
+        tile_ref = tile_type_grid[pos[0]][pos[1]]
         if tile_ref != -1:
             self.tileset_coord = (tile_ref % map.tileset_cols, tile_ref / map.tileset_cols)
         else:
@@ -71,21 +84,22 @@ class Tile(object):
         self.walkable = True
         self.tile_ref = tile_ref
         self.rect = pygame.Rect((pos[0] * TILE_SIZE, pos[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE))
-        if self.tile_ref in map.unwalkable:
-            self.walkable = False
+
+        if coll_grid:
+            if coll_grid[pos[0]][pos[1]] == 1330:
+                self.walkable = False
+        else:
+            if self.tile_ref in map.unwalkable:
+                self.walkable = False
 
 
 class Map(object):
     def __init__(self, tileset, map_file, game_class):
         self.tileset = pygame.image.load(tileset).convert()
-        self.unwalkable = [211, 212, 227, 228, 259, 260, 275, 276, 292, 491, 493, 501, 502, 517, 518, 583, 584, 599,
-                           600, 615, 616, 631, 632, 1046, 1236, 1252, 1302, 1303, 1304, 1318, 1319, 1320,
-                           995, 915, 916, 931, 932, 1081, 1082, 1083, 1097, 1099, 346, 1032, 196, 244,
-                           ]
         self.tileset_cols = self.tileset.get_width() / TILE_SIZE
 
-        tile_type_grid = load_map(map_file)
-        self.grid = [[Tile(tile_type_grid[i][j], self, (i, j)) for j in range(len(tile_type_grid[0]))] for i in range(len(tile_type_grid))]
+        tile_type_grid, coll_grid = load_map(map_file)
+        self.grid = [[Tile(tile_type_grid, coll_grid, self, (i, j)) for j in range(len(tile_type_grid[0]))] for i in range(len(tile_type_grid))]
 
         loaded_objects = load_objects(map_file) # gives a list of dicts, each dict associated with an object from the map
         
