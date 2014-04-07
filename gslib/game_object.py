@@ -46,6 +46,15 @@ class GameObject(object):
         self.apply_fear()
         self.animate()
 
+    def check_distance(self, other, distance):
+        x = self.coord[0] + self.dimensions[0]/2 - (other.coord[0] + other.dimensions[0]/2)
+        y = self.coord[1] + self.dimensions[1]/2 - (other.coord[1] + other.dimensions[1]/2)
+        if x**2 + y**2 < distance**2:
+            return True
+        else:
+            return False
+
+
     def apply_fear(self):
         for o in self.game_class.objects:
             if o == self.game_class.player1 and self.game_class.player1.possessing:
@@ -57,7 +66,9 @@ class GameObject(object):
                     if f in o.scared_of:
                         old_fear_level = o.fear
                         o.fear = fear_functions.harvest_fear(self, o)
-                        self.game_class.player1.fear += o.fear
+                        for p in self.game_class.players:
+                            if o.check_distance(p, FEAR_COLLECTION_RADIUS):
+                                p.fear += o.fear
 
                         if o.fear >= o.scream_thresh:
                             if o.scream_timer <= 0:

@@ -52,6 +52,7 @@ START_FEAR = 20000
 FEAR_PER_STEP = 15
 FEAR_PER_TICK = 30
 POSSESSION_RANGE = 50
+FEAR_COLLECTION_RADIUS = 300
 
 MUSIC_DIR = fallback_files("music dir", "music", os.path.join(sys.prefix, "gs-music"))
 SOUND_DIR = fallback_files("sound dir", "sound", os.path.join(sys.prefix, "gs-sound"))

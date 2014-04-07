@@ -140,11 +140,19 @@ class Graphics(object):
         if self.game.disp_object_stats:
             self.game.screen_objects_to_draw.append((self.game.object_stats[0], self.game.object_stats[1]))
 
+    def resize_fear_surface(self):
+        nplayers = len(self.game.players)
+        self.fear_surf = pygame.Surface((self.game.dimensions[0], nplayers*32)).convert_alpha()
+
     def draw_fear_bar(self):
+        nplayers = len(self.game.players)
+        if nplayers > 1:
+            self.resize_fear_surface()
         self.fear_surf.fill(black)
         self.fear_surf.blit(self.fear_txt, (0, 0))
-        pygame.draw.rect(self.fear_surf, (255, 0, 0), pygame.Rect((self.fear_size[0], 0), ((self.game.dimensions[0] - self.fear_size[0]) * (self.game.player1.fear/float(MAX_FEAR)), 32)))
-        self.game.screen_objects_to_draw.append((self.fear_surf, (0, self.game.dimensions[1] - 32)))
+        for i, p in enumerate(self.game.players):
+            pygame.draw.rect(self.fear_surf, (255, 0, 0), pygame.Rect((self.fear_size[0], 32 * i), ((self.game.dimensions[0] - self.fear_size[0]) * (self.game.players[i].fear/float(MAX_FEAR)), 32)))
+        self.game.screen_objects_to_draw.append((self.fear_surf, (0, self.game.dimensions[1] - nplayers * 32)))
 
     def draw_world_objects(self):  # stuff relative to camera
         for f in self.game.world_objects_to_draw:

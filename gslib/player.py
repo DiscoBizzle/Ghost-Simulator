@@ -19,6 +19,8 @@ class Player(GameObject):
 
         self.possessing = False
 
+        self.fear_collection_radius = FEAR_COLLECTION_RADIUS
+
 
     def get_fear(self):
         return self._fear

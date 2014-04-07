@@ -124,7 +124,7 @@ class Game(object):
         self.objects += self.map.objects
 
         self.show_fears = False
-
+        self.show_ranges = False
 
 
     def game_loop(self):
@@ -160,6 +160,8 @@ class Game(object):
         self.camera_coords = self.calc_camera_coord()
         if self.show_fears:
             self.say_fears()
+        if self.show_ranges:
+            self.show_fear_ranges()
 
         if self.GameState == MAIN_GAME:
             for obj in self.objects:
@@ -213,6 +215,23 @@ class Game(object):
             surf = fear_functions.speech_bubble(text, 300)
             pos = (o.coord[0] + o.dimensions[0], o.coord[1] - surf.get_height())
             self.world_objects_to_draw.append((surf, pos))
+
+    def show_fear_ranges(self):
+        for o in self.objects:
+            if isinstance(o, player.Player):
+                r = o.fear_collection_radius
+                surf = pygame.Surface((r*2, r*2))
+                surf.set_colorkey((0, 0, 0))
+                pygame.draw.circle(surf, (64, 224, 208), (r, r), r, 4)
+                pos = (o.coord[0] + o.dimensions[0]/2 - r, o.coord[1] + o.dimensions[0]/2 - r)
+                self.world_objects_to_draw.append((surf, pos))
+            else:
+                r = o.fear_radius
+                surf = pygame.Surface((r*2, r*2))
+                surf.set_colorkey((0, 0, 0))
+                pygame.draw.circle(surf, (75, 0, 130), (r, r), r, 4)
+                pos = (o.coord[0] + o.dimensions[0]/2 - r, o.coord[1] + o.dimensions[0]/2 - r)
+                self.world_objects_to_draw.append((surf, pos))
 
     def possess(self):
         self.toPossess.isPossessed = True
