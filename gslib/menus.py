@@ -205,8 +205,10 @@ class SkillsMenu(Menu):
             else:
                 skill_colour = UNLEARNABLE_COLOUR
             f = lambda skill2=skill: self.learn_skill(skill2)
-            self.buttons[skill] = button.Button(self, f, text = skill, border_colour = (120, 50, 80),
+            self.buttons[skill] = button.Button(self, f, text = skill + " cost:" + str(self.game_class.skills_dict[skill].cost), border_colour = (120, 50, 80),
                                                 border_width = 3, colour = skill_colour, order = (temp_order, 0))
+            self.buttons[skill + "_description"] = button.Button(self, None, text = self.game_class.skills_dict[skill].description,
+                                                                 border_colour = (120, 50, 80), border_width = 3, colour = (30, 120, 140), order = (temp_order, 1))
             temp_order += 1
         Menu.arrange_buttons(self)
 
@@ -215,7 +217,7 @@ class SkillsMenu(Menu):
         print self.game_class.player1.skills_learnt
 
         for skill in self.buttons:
-            if self.buttons[skill].order[0] != -1:
+            if self.buttons[skill].order[0] != -1 and self.buttons[skill].order[1] == 0:
                 if skill in self.game_class.player1.skills_learnt:
                     skill_colour = LEARNT_SKILL_COLOUR
                 elif self.game_class.skills_dict[skill].can_be_learnt(self.game_class.player1):

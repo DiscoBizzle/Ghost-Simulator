@@ -2,67 +2,16 @@
 "testskill":
   {
   "prereqs":[],
-  "effects":"test"
+  "effects":"test",
+  "cost":100,
+  "description":"A test skill"
   },
 "testskill2":
   {
   "prereqs":["testskill"],
-  "effects":"nothing"
-  },
-  "testskill3":
-  {
-  "prereqs":[],
-  "effects":"test"
-  },
-  "testskill4":
-  {
-  "prereqs":[],
-  "effects":"test"
-  },
-  "testskill5":
-  {
-  "prereqs":[],
-  "effects":"test"
-  },
-  "testskill6":
-  {
-  "prereqs":[],
-  "effects":"test"
-  },
-  "testskill7":
-  {
-  "prereqs":[],
-  "effects":"test"
-  },
-  "testskill8":
-  {
-  "prereqs":[],
-  "effects":"test"
-  },
-  "testskill9":
-  {
-  "prereqs":[],
-  "effects":"test"
-  },
-  "testskill10":
-  {
-  "prereqs":[],
-  "effects":"test"
-  },
-  "testskill11":
-  {
-  "prereqs":[],
-  "effects":"test"
-  },
-  "testskill12":
-  {
-  "prereqs":[],
-  "effects":"test"
-  },
-  "testskill13":
-  {
-  "prereqs":[],
-  "effects":"test"
+  "effects":"nothing",
+  "cost":100,
+  "description":"A different test skill"
   }
   }
   
