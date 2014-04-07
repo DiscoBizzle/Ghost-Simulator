@@ -93,8 +93,16 @@ class Map(object):
             self.objects.append(character.Character(game_class, 0, 0, 16, 16, character.gen_character()))
 
         for o_dict in loaded_objects:
-            if o_dict['object_type']=="hat":
-                self.objects.append(character.Character(game_class, o_dict['x'], o_dict['y'], 16, 16, character.gen_character()))
+            #if o_dict['object_type']=="hat":
+                #self.objects.append(character.Character(game_class, o_dict['x'], o_dict['y'], 16, 16, character.gen_character()))
+            self.create_object_from_dict(o_dict)
+
+    def create_object_from_dict(self, d):
+        if   d['object_type']=="character":
+            try:
+                self.objects.append(character.Character(game_class, d['x'], d['y'], d['sprite_w'], d['sprite_h'], character.gen_character(), sprite_sheet=d['sprite_sheet']))
+            except:
+                print "Couldn't create an object from map file"
 
 
 

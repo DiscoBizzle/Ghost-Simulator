@@ -114,8 +114,8 @@ def gen_name(gender):
 
 
 class Character(GameObject):
-    def __init__(self, game_class, x, y, w, h, stats):
-        GameObject.__init__(self, game_class, x, y, w, h, pygame.image.load(os.path.join(CHARACTER_DIR, 'DudeSheet.png')).convert())
+    def __init__(self, game_class, x, y, w, h, stats, sprite_sheet='DudeSheet.png'):
+        GameObject.__init__(self, game_class, x, y, w, h, pygame.image.load(os.path.join(CHARACTER_DIR, sprite_sheet)).convert())
         self.fears = stats['fears']
         self.scared_of = stats['scared_of']
         self.scared_of.append('player')
