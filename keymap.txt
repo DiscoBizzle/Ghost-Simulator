@@ -1,0 +1,12 @@
+Player 0 down;106
+Player 0 right;107
+Player 0 up;117
+Player 0 left;104
+Player 1 down;115
+Player 1 right;100
+Player 1 up;119
+Player 1 left;97
+#
+Show Fears;101
+Skill Screen;113
+Show Fear Ranges;114
