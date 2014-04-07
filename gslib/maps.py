@@ -37,8 +37,10 @@ def load_map(map_filename): # Load a map and objects from a map file
     width = data['tileswide']
     height = data['tileshigh']
 
-    
-    tile_map = data['layers'][0]['tiles']
+    # Use the last "tiles" layer to get the tile map -- in the future will need to get more layers
+    all_layers = [item for item in data['layers'] if "tiles" in item]
+    tile_map = all_layers[-1]['tiles']
+
     map_grid = [[0 for i in range(height)] for j in range(width)]
         
     for tile in tile_map:
