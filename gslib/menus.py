@@ -22,15 +22,27 @@ class Menu(object):
         self.vert_offset = 40 + button_size[1] + 10
         self.buttons_per_column = ((GAME_HEIGHT - self.vert_offset) / (self.button_size[1]+20)) - 1
 
-        self.buttons['menu_scale_display'] = button.Button(self, None, order = (-1, 0), visible=True,
+        self.buttons['menu_scale_display'] = button.Button(self, None, order = (-1, 0), visible=False,
                                             text=u'Menu Scale: 1.0', border_colour=(120, 50, 80), border_width=3,
-                                            colour=(120, 0, 0), size=button_size, pos=(60, 40))
-        self.sliders['menu_scale'] = slider.Slider(self, self.set_menu_scale, range=(1.0, 20.0), order=(-1, 1),
-                                                   value=1.0, size=button_size, pos=(60 + button_size[0] + 20, 40))
-        self.first_time = True
-
+                                            colour=(120, 0, 0), size=(200, 50), pos=(60, 40))
+        self.sliders['menu_scale'] = slider.Slider(self, self.set_menu_scale, range=(1.0, 5.0/frac), order=(-1, 1),
+                                                   value=1.0/frac, size=(200, 50), pos=(60 + 200 + 20, 40),
+                                                   visible=False, enabled=False)
+        # self.first_time = True
 
     def display(self):
+        if self.game_class.options['menu_scale']:
+            self.buttons['menu_scale_display'].visible = True
+            self.sliders['menu_scale'].visible = True
+            self.sliders['menu_scale'].enabled = True
+            self.set_menu_scale(self.sliders['menu_scale'].value)
+
+        else:
+            self.buttons['menu_scale_display'].visible = False
+            self.sliders['menu_scale'].visible = False
+            self.sliders['menu_scale'].enabled = False
+            self.set_menu_scale(1.0/self.frac)
+
         for button in self.buttons.itervalues():
             self.game_class.graphics.surface.blit(button.surface, button.pos)
         for slider in self.sliders.itervalues():
@@ -44,6 +56,9 @@ class Menu(object):
                 button.check_clicked(event.pos)
 
     def arrange_buttons(self):
+
+        self.vert_offset = 50 + self.game_class.options['menu_scale'] * self.buttons['menu_scale_display'].size[1]
+
         for button in self.buttons.itervalues():
             if button.order[0] == -1:
                 continue
@@ -55,17 +70,22 @@ class Menu(object):
                 continue
             slider.size = self.button_size
             slider.pos = (self.hori_offset + (slider.order[1] + int(slider.order[0]/self.buttons_per_column)*2)*(self.button_size[0]+20), self.vert_offset + (slider.order[0]%self.buttons_per_column)*(self.button_size[1]+10))
-        print self.buttons_per_column, int(self.buttons_per_column)
 
-        if self.first_time:
-            self.first_time = False
+        # if self.first_time:
+        #     self.first_time = False
 
     def set_menu_scale(self, value):
         self.button_size = (self.min_button_size[0] * value, self.min_button_size[1] * value)
+        if self.button_size[0] > GAME_WIDTH - self.hori_offset - 32:
+            self.button_size = (GAME_WIDTH - self.hori_offset - 32, self.button_size[1])
+        if self.button_size[1] > GAME_HEIGHT - self.vert_offset - 32:
+            self.button_size = (self.button_size[0], GAME_HEIGHT - self.vert_offset - 32)
+
         self.buttons_per_column = int(((GAME_HEIGHT - self.vert_offset) / (self.button_size[1]+20))) #- 1
         self.arrange_buttons()
         self.font_size = int(self.base_font_size * value * self.frac)
         self.buttons['menu_scale_display'].text = u"Menu scale: " + unicode(str(round(self.button_size[0]/self.original_button_size[0],2)))
+
 
 class MainMenu(Menu):
     def __init__(self, game_class, button_size):
@@ -116,6 +136,10 @@ class OptionsMenu(Menu):
 
         self.sliders['sound'] = slider.Slider(self, self.set_sound, range=(0, 0.3), order = (3, 1), value = game_class.sound_dict['scream'].get_volume())
         self.sliders['music'] = slider.Slider(self, self.set_music, range=(0, 0.3), order = (4, 1), value = pygame.mixer.music.get_volume())
+
+        self.buttons['menu_scale'] = button.Button(self, self.menu_scale_toggle, order = (5, 0), visible=True,
+                                            text=u'Menu Scaling: Off', border_colour=(120, 50, 80), border_width=3,
+                                            colour=(120, 0, 0))
         Menu.arrange_buttons(self)
 
     def FOV_toggle(self):
@@ -141,6 +165,18 @@ class OptionsMenu(Menu):
         else:
             self.game_class.options['torch'] = True
             self.buttons['torch'].text = u'Torch: Yes'
+
+    def menu_scale_toggle(self):
+        if self.game_class.options['menu_scale']:
+            self.game_class.options['menu_scale'] = False
+            self.buttons['menu_scale'].text = u'Menu Scaling: Off'
+            # self.set_menu_scale(1.0/self.frac)
+            self.arrange_buttons()
+        else:
+            self.game_class.options['menu_scale'] = True
+            self.buttons['menu_scale'].text = u'Menu Scaling: On'
+            # self.set_menu_scale(self.sliders['menu_scale'].value)
+            self.arrange_buttons()
 
     def set_sound(self, value):
         for sound in self.game_class.sound_dict.itervalues():

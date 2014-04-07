@@ -28,6 +28,9 @@ from gslib.constants import *
 
 class Game(object):
     def __init__(self):
+
+        self.options = {'FOV': True, 'VOF': False, 'torch': False, 'menu_scale': False}
+
         self.Menu = menus.MainMenu(self, (161,100))
         self.GameState = MAIN_MENU
         self.cutscene_started = False
@@ -70,7 +73,6 @@ class Game(object):
         self.disp_object_stats = False
         self.object_stats = None
 
-        self.options = {'FOV': True, 'VOF': False, 'torch': False}
 
         self.key_controller = key.KeyController(self)
         # HACK
