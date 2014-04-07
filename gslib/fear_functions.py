@@ -24,8 +24,9 @@ def speech_bubble(text, width, text_colour=(0, 0, 0)):
     surf = pygame.Surface(size)
     surf.fill((255, 0, 255))
     pygame.draw.ellipse(surf, (60, 60, 60), pygame.Rect((0, 0), size))
-    pygame.draw.ellipse(surf, (200, 200, 200), pygame.Rect((5, 5), (size[0] - 10, size[1] - 10)))
     pygame.draw.polygon(surf, (60, 60, 60), ((0, surf.get_height()), (5, surf.get_height() * 2 / 3), (surf.get_width() * 1 / 3, surf.get_height() - 5)))
+    pygame.draw.ellipse(surf, (200, 200, 200), pygame.Rect((5, 5), (size[0] - 10, size[1] - 10)))
+
 
     for i, l in enumerate(lines):
         t = font.render(l, True, text_colour)

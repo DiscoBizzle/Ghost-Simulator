@@ -199,7 +199,11 @@ class Game(object):
     def say_fears(self):
         for o in self.objects:
             if isinstance(o, player.Player):
+                surf = fear_functions.speech_bubble("Oonce oonce oonce oonce!", 200)
+                pos = (o.coord[0] + o.dimensions[0], o.coord[1] - surf.get_height())
+                self.world_objects_to_draw.append((surf, pos))
                 continue
+
             text = ''
             for f in o.scared_of:
                 if f != 'player':
