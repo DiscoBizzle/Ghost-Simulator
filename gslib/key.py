@@ -101,5 +101,7 @@ class KeyController(object):
                 player_n = int(name[7])
                 name = name[9:]
                 self.player_map[player_n][name] = val
+            if not val in self.keys:
+                self.keys[val] = False
 
         f.close()
