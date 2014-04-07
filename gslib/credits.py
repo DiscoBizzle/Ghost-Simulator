@@ -44,8 +44,8 @@ def get_credits_size(credits, font, indent, spacing):
     return (width, height)
 
 class Credits(object):
-    def __init__(self, game, indent=20, title_col=(255, 255, 255),
-            name_col=(255, 255, 255), bg_col=(0, 0, 0), spacing=20, size=14):
+    def __init__(self, game, indent=80, title_col=(255, 255, 255),
+            name_col=(255, 255, 255), bg_col=(0, 0, 0), spacing=20, size=80):
         """Display a credits screen for game.
 
         Arguments:
@@ -65,9 +65,11 @@ class Credits(object):
         self.bg_col = bg_col
         self.spacing = spacing
         self.font = pygame.font.SysFont(FONT, size)
-        self.surface = pygame.Surface(get_credits_size(self.credits, self.font, self.indent, self.spacing))
+        self.size = get_credits_size(self.credits, self.font, self.indent, self.spacing)
+        self.surface = pygame.Surface(self.size)
         self.v_offset = game.graphics.surface.get_height()
-        self.margin = (game.graphics.surface.get_width() - game.graphics.surface.get_width())/4
+        self.margin = (game.graphics.surface.get_width() - self.surface.get_width())/4
+
 
     def display(self):
         height = 0
@@ -94,7 +96,8 @@ class Credits(object):
 
     def update(self):
         self.GameClass.graphics.surface.fill(self.bg_col)
-        self.v_offset -= 1
-        if self.v_offset < -self.GameClass.graphics.surface.get_height():
+        self.v_offset -= 3
+        if self.v_offset < -(self.size[1]):
             self.GameClass.GameState = MAIN_MENU
+            self.v_offset = self.GameClass.graphics.surface.get_height()
         self.GameClass.graphics.surface.blit(self.surface, (self.margin, self.v_offset))
