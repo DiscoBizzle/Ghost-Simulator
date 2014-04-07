@@ -80,6 +80,8 @@ class Graphics(object):
             self.game.options_menu.display()
         elif self.game.GameState == TEXTBOX_TEST:
             self.draw_text_box()
+        elif self.game.GameState == KEYBIND_MENU or self.game.GameState == KEYBIND_CAPTURE:
+            self.game.keybind_menu.display()
 
         if self.game.options['FOV']:
             self.draw_world_objects()

@@ -44,6 +44,7 @@ class Game(object):
         self.credits = credits.Credits(self)
         self.options_menu = menus.OptionsMenu(self, (200, 50))
 
+
         self.clock = pygame.time.Clock()
         self.ms_passed = 0
 
@@ -77,6 +78,9 @@ class Game(object):
         self.key_controller = key.KeyController(self)
         # HACK
         self.keys = self.key_controller.keys
+
+        self.keybind_menu = menus.KeyBindMenu(self, (150, 40))
+        self.action_to_rebind = None
 
         self.mouse_controller = mouse.MouseController(self)
 
@@ -125,6 +129,7 @@ class Game(object):
 
         self.show_fears = False
         self.show_ranges = False
+
 
 
     def game_loop(self):

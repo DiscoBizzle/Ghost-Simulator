@@ -46,7 +46,7 @@ class GameObject(object):
         self.apply_fear()
         self.animate()
 
-    def check_distance(self, other, distance):
+    def check_distance(self, other, distance):  # centre to centre distance is checked
         x = self.coord[0] + self.dimensions[0]/2 - (other.coord[0] + other.dimensions[0]/2)
         y = self.coord[1] + self.dimensions[1]/2 - (other.coord[1] + other.dimensions[1]/2)
         if x**2 + y**2 < distance**2:

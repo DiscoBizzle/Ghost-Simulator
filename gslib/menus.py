@@ -140,6 +140,9 @@ class OptionsMenu(Menu):
         self.buttons['menu_scale'] = button.Button(self, self.menu_scale_toggle, order = (5, 0), visible=True,
                                             text=u'Menu Scaling: Off', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
+        self.buttons['key_bind'] = button.Button(self, self.keybind_toggle, order = (6, 0), visible=True,
+                                            text=u'Keybind Menu', border_colour=(120, 50, 80), border_width=3,
+                                            colour=(120, 0, 0))
         Menu.arrange_buttons(self)
 
     def FOV_toggle(self):
@@ -165,6 +168,9 @@ class OptionsMenu(Menu):
         else:
             self.game_class.options['torch'] = True
             self.buttons['torch'].text = u'Torch: Yes'
+
+    def keybind_toggle(self):
+        self.game_class.GameState = KEYBIND_MENU
 
     def menu_scale_toggle(self):
         if self.game_class.options['menu_scale']:
@@ -217,3 +223,45 @@ class SkillsMenu(Menu):
                 else:
                     skill_colour = UNLEARNABLE_COLOUR
                 self.buttons[skill].colour = skill_colour
+
+
+class KeyBindMenu(Menu):
+    def __init__(self, game_class, button_size):
+        Menu.__init__(self, game_class, button_size)
+        self.border_colour = (120, 50, 80)
+        self.colour = (120, 0, 0)
+
+        self.active_border_colour = (50, 120, 80)
+        self.active_colour = (0, 120, 0)
+
+        self.create_buttons()
+
+    def create_buttons(self):
+        ord = 0
+        for player, p_map in self.game_class.key_controller.player_map.iteritems():
+            for k, v in p_map.iteritems():
+                name = 'Player ' + str(player) + ' ' + k
+                self.buttons[name] = button.Button(self, None, order=(ord, 0), visible=True, text=unicode(name),
+                                                   border_colour=self.border_colour, border_width=3,
+                                                   colour=self.colour)
+                self.buttons[name + ' key'] = button.Button(self, self.rebind(name), order=(ord, 1), visible=True, text=unicode(pygame.key.name(p_map[k])),
+                                                            border_colour=self.border_colour, border_width=3,
+                                                            colour=self.colour)
+                ord += 1
+
+        for k, v in self.game_class.key_controller.key_map.iteritems():
+            self.buttons[k] = button.Button(self, None, order=(ord, 0), visible=True, text=unicode(k),
+                                            border_colour=self.border_colour, border_width=3,
+                                            colour=self.colour)
+            self.buttons[k + ' key'] = button.Button(self, self.rebind(k), order=(ord, 1), visible=True, text=unicode(pygame.key.name(v)),
+                                                     border_colour=self.border_colour, border_width=3,
+                                                     colour=self.colour)
+            ord += 1
+
+    def rebind(self, action_name):
+        def func():
+            self.game_class.action_to_rebind = action_name
+            self.game_class.GameState = KEYBIND_CAPTURE
+            self.buttons[action_name + ' key'].colour = self.active_colour
+            self.buttons[action_name + ' key'].border_colour = self.active_border_colour
+        return func

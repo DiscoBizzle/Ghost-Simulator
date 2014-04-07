@@ -17,6 +17,8 @@ class MouseController(object):
             self.game.SkillMenu.mouse_event(event)
         elif self.game.GameState == OPTIONS_MENU:
             self.game.options_menu.mouse_event(event)
+        elif self.game.GameState == KEYBIND_MENU:
+            self.game.keybind_menu.mouse_event(event)
 
     def mouse_up(self, event):
         if self.game.GameState == MAIN_MENU:
