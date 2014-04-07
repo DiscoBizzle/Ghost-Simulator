@@ -79,7 +79,7 @@ class Game(object):
         # HACK
         self.keys = self.key_controller.keys
 
-        self.keybind_menu = menus.KeyBindMenu(self, (150, 40))
+        self.keybind_menu = menus.KeyBindMenu(self, (190, 40))
         self.action_to_rebind = None
 
         self.mouse_controller = mouse.MouseController(self)
