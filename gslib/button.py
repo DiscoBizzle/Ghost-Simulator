@@ -30,7 +30,7 @@ def create_property(var):  # creates a member variable that redraws the button w
 # Calls the "end_turn()" function of the class that created the button.
 class Button(object):
     def __init__(self, owner, function, pos=(50, 50), size=(100, 100), visible=True, enabled=True, colour=(0, 0, 0),
-                 border_colour=(0, 0, 0), border_width=2, text=None, font_size=14, **kwargs):
+                 border_colour=(0, 0, 0), border_width=2, text=None, font_size=14, text_states=None, **kwargs):
         self._pos = (0, 0)
         self.pos_setter(pos)
 
@@ -42,6 +42,8 @@ class Button(object):
         self._border_width = border_width
         self._text = text
         self._font_size = font_size
+        self.text_states = text_states
+        self.text_states_toggle = True
         self.enabled = enabled  # whether button can be activated, visible or not
 
         for arg in kwargs:  # allows for additional arbitrary arguments to be passed in, useful for more complicated button functions
@@ -79,6 +81,9 @@ class Button(object):
         if not valid_colour(self.colour): raise Exception('Invalid button colour')
         if self.border_width < 0: raise Exception('Negative button border width')
 
+        if self.text_states:
+            self._text = self.text_states[self.text_states_toggle]
+
         self.surface = pygame.Surface(self.size)
 
         if not self.visible:
@@ -113,3 +118,6 @@ class Button(object):
     def perf_function(self):
         if self.function is not None:
             self.function()
+
+    def text_toggle(self):
+        self.text_states_toggle = not self.text_states_toggle

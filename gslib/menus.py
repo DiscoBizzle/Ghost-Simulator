@@ -56,7 +56,6 @@ class Menu(object):
                 button.check_clicked(event.pos)
 
     def arrange_buttons(self):
-
         self.vert_offset = 50 + self.game_class.options['menu_scale'] * self.buttons['menu_scale_display'].size[1]
 
         for button in self.buttons.itervalues():
@@ -65,6 +64,8 @@ class Menu(object):
             button.size = self.button_size
             button.font_size = self.font_size
             button.pos = (self.hori_offset + (button.order[1] + int(button.order[0]/self.buttons_per_column)*2)*(self.button_size[0]+20), self.vert_offset + (button.order[0]%self.buttons_per_column)*(self.button_size[1]+10))
+            if button.text_states:
+                button.text = button.text_states[button.text_states_toggle]
         for slider in self.sliders.itervalues():
             if slider.order[0] == -1:
                 continue
@@ -119,26 +120,26 @@ class OptionsMenu(Menu):
     def __init__(self, game_class, button_size):
         Menu.__init__(self, game_class, button_size)
         self.buttons['FOV'] = button.Button(self, self.FOV_toggle, order = (0, 0), visible=True,
-                                            text=u'Field of View: Yes', border_colour=(120, 50, 80), border_width=3,
+                                            text_states=[u'Field of View: No', u'Field of View: Yes'], border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
         self.buttons['VOF'] = button.Button(self, self.VOF_toggle, order = (1, 0), visible=True,
-                                            text=u'View of Field: No', border_colour=(120, 50, 80), border_width=3,
+                                            text_states=[u'View of Field: No', u'View of Field: Yes'], border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
         self.buttons['torch'] = button.Button(self, self.torch_toggle, order = (2, 0), visible=True,
-                                            text=u'Torch: Yes', border_colour=(120, 50, 80), border_width=3,
+                                            text_states=[u'Torch: No', u'Torch: Yes'], border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
         self.buttons['sound_display'] = button.Button(self, None , order = (3, 0), visible=True,
-                                            text=u'Sound volume: '+unicode(str(int(INITIAL_SOUND_VOLUME/0.003))), border_colour=(120, 50, 80), border_width=3,
+                                            text=u'Sound Volume: '+unicode(str(int(INITIAL_SOUND_VOLUME/0.003))), border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
         self.buttons['music_display'] = button.Button(self, None, order = (4, 0), visible=True,
-                                            text=u'Music volume: '+unicode(str(int(INITIAL_MUSIC_VOLUME/0.003))), border_colour=(120, 50, 80), border_width=3,
+                                            text=u'Music Volume: '+unicode(str(int(INITIAL_MUSIC_VOLUME/0.003))), border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
 
         self.sliders['sound'] = slider.Slider(self, self.set_sound, range=(0, 0.3), order = (3, 1), value = game_class.sound_dict['scream'].get_volume())
         self.sliders['music'] = slider.Slider(self, self.set_music, range=(0, 0.3), order = (4, 1), value = pygame.mixer.music.get_volume())
 
         self.buttons['menu_scale'] = button.Button(self, self.menu_scale_toggle, order = (5, 0), visible=True,
-                                            text=u'Menu Scaling: Off', border_colour=(120, 50, 80), border_width=3,
+                                            text_states=[u'Menu Scaling: Off', u'Menu Scaling: On'], border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
         self.buttons['key_bind'] = button.Button(self, self.keybind_toggle, order = (6, 0), visible=True,
                                             text=u'Keybind Menu', border_colour=(120, 50, 80), border_width=3,
@@ -152,43 +153,24 @@ class OptionsMenu(Menu):
         Menu.arrange_buttons(self)
 
     def FOV_toggle(self):
-        if self.game_class.options['FOV']:
-            self.game_class.options['FOV'] = False
-            self.buttons['FOV'].text = u'Field of View: No'
-        else:
-            self.game_class.options['FOV'] = True
-            self.buttons['FOV'].text = u'Field of View: Yes'
+        self.game_class.options['FOV'] = not self.game_class.options['FOV']
+        self.buttons['FOV'].text_states_toggle = not self.buttons['FOV'].text_states_toggle
 
     def VOF_toggle(self):
-        if self.game_class.options['VOF']:
-            self.game_class.options['VOF'] = False
-            self.buttons['VOF'].text = u'View of Field: No'
-        else:
-            self.game_class.options['VOF'] = True
-            self.buttons['VOF'].text = u'View of Field: Yes'
+        self.game_class.options['VOF'] = not self.game_class.options['VOF']
+        self.buttons['VOF'].text_states_toggle = not self.buttons['VOF'].text_states_toggle
 
     def torch_toggle(self):
-        if self.game_class.options['torch']:
-            self.game_class.options['torch'] = False
-            self.buttons['torch'].text = u'Torch: No'
-        else:
-            self.game_class.options['torch'] = True
-            self.buttons['torch'].text = u'Torch: Yes'
+        self.game_class.options['torch'] = not self.game_class.options['torch']
+        self.buttons['torch'].text_states_toggle = not self.buttons['torch'].text_states_toggle
 
     def keybind_toggle(self):
         self.game_class.GameState = KEYBIND_MENU
 
     def menu_scale_toggle(self):
-        if self.game_class.options['menu_scale']:
-            self.game_class.options['menu_scale'] = False
-            self.buttons['menu_scale'].text = u'Menu Scaling: Off'
-            # self.set_menu_scale(1.0/self.frac)
-            self.arrange_buttons()
-        else:
-            self.game_class.options['menu_scale'] = True
-            self.buttons['menu_scale'].text = u'Menu Scaling: On'
-            # self.set_menu_scale(self.sliders['menu_scale'].value)
-            self.arrange_buttons()
+        self.game_class.options['menu_scale'] = not self.game_class.options['menu_scale']
+        self.buttons['menu_scale'].text_states_toggle = not self.buttons['menu_scale'].text_states_toggle
+        self.arrange_buttons()
 
     def set_sound(self, value):
         self.game_class.options['sound_volume'] = value
@@ -200,6 +182,18 @@ class OptionsMenu(Menu):
         self.game_class.options['music_volume'] = value
         pygame.mixer.music.set_volume(value)
         self.buttons['music_display'].text = u'Music Volume: ' + unicode(str(int(value/0.003)))
+
+    def update_button_text_and_slider_values(self):
+        self.buttons['FOV'].text_states_toggle = self.game_class.options['FOV']
+        self.buttons['VOF'].text_states_toggle = self.game_class.options['VOF']
+        self.buttons['torch'].text_states_toggle = self.game_class.options['torch']
+        self.buttons['menu_scale'].text_states_toggle = self.game_class.options['menu_scale']
+
+        self.buttons['sound_display'].text = u'Sound Volume: ' + unicode(str(int(self.game_class.options['sound_volume']/0.003)))
+        self.buttons['music_display'].text = u'Music Volume: ' + unicode(str(int(self.game_class.options['music_volume']/0.003)))
+
+        self.sliders['sound'].value = self.game_class.options['sound_volume']
+        self.sliders['music'].value = self.game_class.options['music_volume']
 
     def load(self):
         self.game_class.load_options()

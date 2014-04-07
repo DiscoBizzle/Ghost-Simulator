@@ -1,6 +1,6 @@
 FOV;True~<type 'bool'>
-sound_volume;0.2025~<type 'float'>
+sound_volume;0.129~<type 'float'>
 torch;False~<type 'bool'>
-VOF;True~<type 'bool'>
-music_volume;0.1935~<type 'float'>
+VOF;False~<type 'bool'>
+music_volume;0.1215~<type 'float'>
 menu_scale;False~<type 'bool'>

@@ -289,3 +289,5 @@ class Game(object):
 
             self.options[option] = val
         f.close()
+
+        self.options_menu.update_button_text_and_slider_values()
