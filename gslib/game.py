@@ -293,3 +293,5 @@ class Game(object):
         f.close()
 
         self.options_menu.update_button_text_and_slider_values()
+        self.options_menu.set_sound(self.options['sound_volume'])
+        self.options_menu.set_music(self.options['music_volume'])
