@@ -66,3 +66,40 @@ class KeyController(object):
 
         self.keys[new_key] = False
         self.game.action_to_rebind = None
+
+    def save(self):
+        f = open(KEYMAP_FILE, 'w')
+        for player, p_map in self.player_map.iteritems():
+            for k, v in p_map.iteritems():
+                name = 'Player ' + str(player) + ' ' + k
+                f.write(name + ';' + str(v) + '\n')
+
+        f.write('#\n')
+        for k, v in self.key_map.iteritems():
+            f.write(k + ';' + str(v) + '\n')
+
+        f.close()
+
+    def load(self):
+        f = open(KEYMAP_FILE, 'r')
+        game_options = False
+        for l in f:
+            if '#' in l:
+                game_options = True
+                continue
+            if game_options:
+                semi = l.find(';')
+                name = l[:semi]
+                val = int(l[semi+1:])
+                self.key_map[name] = val
+                self.game.keybind_menu.buttons[name + ' key'].text = pygame.key.name(val)
+            else:
+                semi = l.find(';')
+                name = l[:semi]
+                val = int(l[semi+1:])
+                self.game.keybind_menu.buttons[name + ' key'].text = pygame.key.name(val)
+                player_n = int(name[7])
+                name = name[9:]
+                self.player_map[player_n][name] = val
+
+        f.close()

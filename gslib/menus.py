@@ -240,6 +240,13 @@ class KeyBindMenu(Menu):
 
     def create_buttons(self):
         ord = 0
+        self.buttons['load'] = button.Button(self, self.load, order=(ord, 0), visible=True, text=unicode('Load'),
+                                             border_colour=self.border_colour, border_width=3,
+                                             colour=self.colour)
+        self.buttons['save'] = button.Button(self, self.save, order=(ord, 1), visible=True, text=unicode('Save'),
+                                             border_colour=self.border_colour, border_width=3,
+                                             colour=self.colour)
+        ord += 1
         for player, p_map in self.game_class.key_controller.player_map.iteritems():
             for k, v in p_map.iteritems():
                 name = 'Player ' + str(player) + ' ' + k
@@ -267,3 +274,9 @@ class KeyBindMenu(Menu):
             self.buttons[action_name + ' key'].colour = self.active_colour
             self.buttons[action_name + ' key'].border_colour = self.active_border_colour
         return func
+
+    def save(self):
+        self.game_class.key_controller.save()
+
+    def load(self):
+        self.game_class.key_controller.load()
