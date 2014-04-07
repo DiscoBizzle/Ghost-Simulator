@@ -799,7 +799,7 @@
 ,{"flipX":false,"y":19,"tile":1046,"rot":0,"index":798,"x":38}
 ,{"flipX":false,"y":19,"tile":1046,"rot":0,"index":799,"x":39}
 ],"name":"Map","number":0},
-{"objects":[{"x":10,"y":10,"object_type":"cat"}
+{"objects":[{"x":10,"y":10,"object_type":"character","sprite_w":16,"sprite_h":16,"sprite_sheet":"GhostSheet.png"}
 ,{"x":10,"y":11,"object_type":"hat"}
 ],"name":"Objects","number":1}
 ],"tileheight":32,"tileshigh":20,"tilewidth":32}

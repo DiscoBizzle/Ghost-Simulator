@@ -95,9 +95,9 @@ class Map(object):
         for o_dict in loaded_objects:
             #if o_dict['object_type']=="hat":
                 #self.objects.append(character.Character(game_class, o_dict['x'], o_dict['y'], 16, 16, character.gen_character()))
-            self.create_object_from_dict(o_dict)
+            self.create_object_from_dict(o_dict, game_class)
 
-    def create_object_from_dict(self, d):
+    def create_object_from_dict(self, d, game_class):
         if   d['object_type']=="character":
             try:
                 self.objects.append(character.Character(game_class, d['x'], d['y'], d['sprite_w'], d['sprite_h'], character.gen_character(), sprite_sheet=d['sprite_sheet']))
