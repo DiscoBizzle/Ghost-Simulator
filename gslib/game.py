@@ -174,6 +174,8 @@ class Game(object):
                 obj.update()
         elif self.GameState == CREDITS:
             self.credits.update()
+        elif self.GameState == TEXTBOX_TEST:
+            self.text_box_test.update()
 
     def calc_camera_coord(self):
         avg_pos = [0, 0]

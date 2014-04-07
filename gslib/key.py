@@ -36,8 +36,13 @@ class KeyController(object):
                 self.game.set_state(CUTSCENE)
         if self.keys[self.key_map['Skill Screen']] and (self.game.GameState == MAIN_MENU or self.game.GameState == MAIN_GAME):
             self.game.set_state(SKILLS_SCREEN)
-        if self.keys[pygame.K_t] and (self.game.GameState == MAIN_MENU or self.game.GameState == MAIN_GAME):
+        if self.keys[pygame.K_t] and (self.game.GameState == MAIN_MENU or self.game.GameState == MAIN_GAME or self.game.GameState == TEXTBOX_TEST):
             self.game.set_state(TEXTBOX_TEST)
+            if self.game.text_box_test.state == TB_ACTIVE:
+                self.game.text_box_test.state = TB_CLOSING
+            elif self.game.text_box_test.state == TB_INACTIVE:
+                self.game.text_box_test.state = TB_STARTING
+            print(self.game.text_box_test.state)
 
         if self.game.GameState == MAIN_GAME:
             self.game.show_fears = self.keys[self.key_map['Show Fears']]

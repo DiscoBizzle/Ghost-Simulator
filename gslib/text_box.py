@@ -1,21 +1,14 @@
 import pygame
-
 from gslib.constants import *
 import text_functions
 
 #define a list of textbox states
-INACTIVE = 0
-STARTING = 1
-WRITING = 2
-ACTIVE = 3
-CLOSING = 4
-
 
 class TextBox:
     def __init__(self, text):
         self.bg_color = pygame.Color(125, 25, 32)
         self.text_frame_color = pygame.Color(0, 0, 0)
-        self.text_color = pygame.Color(150,255,150)
+        self.text_color = pygame.Color(150, 255, 150)
         self.font = pygame.font.SysFont(FONT, 16)
         self.text = text
 
@@ -34,13 +27,15 @@ class TextBox:
         self.h = 160
         self.w = GAME_WIDTH - 2*self.x_int_pad
 
+        self.draw_rect = pygame.Rect(0, 0, self.w, 0)
+
         self.portrait_surface = pygame.image.load("characters/portrait_test2.jpg").convert()
         self.background_surface = pygame.Surface((int(self.w), int(self.h)))  # create surface
 
-        self.state = INACTIVE
+        self.state = TB_INACTIVE
 
         self.coord = (self.x_ext_pad, GAME_HEIGHT - self.h - self.y_ext_pad)
-        self.base_rect = pygame.Rect(0, 0, self.w, self.h)
+        self.base_rect = pygame.Rect(self.x_ext_pad, self.y_ext_pad, self.w, self.h)
         self.portrait_rect = pygame.Rect(self.x_int_pad, (self.h/2 - self.portrait_surface.get_height()/2),
                                          self.portrait_surface.get_width(), self.portrait_surface.get_height())
 
@@ -48,7 +43,7 @@ class TextBox:
             2*self.x_int_pad + self.portrait_rect.w, self.y_int_pad,
             self.w - 3*self.x_int_pad - self.portrait_rect.w, self.h - 2*self.y_int_pad)
 
-        self.text_surface = pygame.Surface((self.text_frame_rect.w,self.text_frame_rect.h))
+        self.text_surface = pygame.Surface((self.text_frame_rect.w, self.text_frame_rect.h))
 
     def create_background_surface(self):  # creates a surface for the textbox (minus the text so we can make that scroll)
         self.background_surface.fill(self.bg_color)  # fill background
@@ -67,3 +62,30 @@ class TextBox:
             self.tick += 1
             if self.tick % TICKS_PER_CHAR == 0:
                 self.num_chars += self.char_increment
+
+    def update(self):
+        if self.state == TB_INACTIVE:
+            #wait for trigger
+            pass
+        elif self.state == TB_STARTING:
+            self.draw_rect.h += TB_OPEN_SPEED
+            if self.draw_rect.h >= self.h:
+                self.draw_rect.h = self.h
+                self.state = TB_WRITING
+        elif self.state == TB_WRITING:
+            self.create_text_surface()
+            if self.num_chars >= len(self.text):
+                self.num_chars = len(self.text)
+                self.state = TB_ACTIVE
+        elif self.state == TB_ACTIVE:
+            #wait for button input
+            self.state = TB_CLOSING
+            self.num_chars = 0
+            self.create_text_surface()
+            pass
+        elif self.state == TB_CLOSING:
+            self.draw_rect.h -= TB_OPEN_SPEED
+            if self.draw_rect.h <= 0:
+                self.draw_rect.h = 0
+                self.state = TB_INACTIVE
+

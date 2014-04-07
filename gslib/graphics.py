@@ -211,6 +211,10 @@ class Graphics(object):
         self.game.screen_objects_to_draw.append((self.light_surf, (0, 0)))
 
     def draw_text_box(self):
-        self.surface.blit(self.game.text_box_test.background_surface, (0, 0))
-        self.game.text_box_test.create_text_surface()
-        self.surface.blit(self.game.text_box_test.text_surface, (self.game.text_box_test.text_frame_rect.x, self.game.text_box_test.text_frame_rect.y))
+        self.surface.blit(self.game.text_box_test.background_surface,
+                          (self.game.text_box_test.base_rect.x, self.game.text_box_test.base_rect.y),
+                          self.game.text_box_test.draw_rect)
+        self.surface.blit(self.game.text_box_test.text_surface,
+                          (self.game.text_box_test.text_frame_rect.x + self.game.text_box_test.base_rect.x,
+                           self.game.text_box_test.text_frame_rect.y + self.game.text_box_test.base_rect.y),
+                          self.game.text_box_test.draw_rect)

@@ -49,6 +49,14 @@ ANIM_LEFTWALK = 7
 TICKS_PER_FRAME = 8  # number of game frames for each sprite animation frame
 TICKS_PER_CHAR = 1 #the rate at which characters are "typed" in textboxes
 
+#constants for the textbox
+TB_INACTIVE = 0
+TB_STARTING = 1
+TB_WRITING = 2
+TB_ACTIVE = 3
+TB_CLOSING = 4
+TB_OPEN_SPEED = 3
+
 MAX_FEAR = 25000
 START_FEAR = 20000
 FEAR_PER_STEP = 15
