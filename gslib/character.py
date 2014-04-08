@@ -133,7 +133,7 @@ class Character(GameObject):
         self.fainted = True
         surf = pygame.Surface((10, 10))
         surf.fill((120, 0, 0))
-        self.flair.append((surf, (-5, 0)))
+        self.flair.append((surf, (-5, -self.dimensions[1] - 5)))
 
     def get_stats(self, name):
         name = name

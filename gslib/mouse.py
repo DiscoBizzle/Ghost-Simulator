@@ -41,7 +41,7 @@ class MouseController(object):
             self.game.options_menu.mouse_event(event)
 
     def check_object_click(self, event):
-        if event.pos[0] > LEVEL_WIDTH or event.pos[1] > LEVEL_HEIGHT: # make track camera
+        if event.pos[0] > LEVEL_WIDTH or event.pos[1] > LEVEL_HEIGHT:  # don't check for object outside of level area
             return
         for o in self.game.objects:
             st = SELECTION_TOLERANCE

@@ -13,8 +13,17 @@ def create_property(var):  # creates a member variable that redraws the button w
 
 
 class Slider(object):
+    """
+    Basic example:
+        s = Slider(self, self.function)
+    self.function:
+    if slider.enabled == True:
+        Function passed in will be called with 1 argument (current value of slider).
+        Create function in class that creates the slider and pass it in as second argument.
+    """
     def __init__(self, owner, func, pos=(0, 0), range=(0, 100), value=50, size=(100, 20), back_colour=(120, 0, 0),
                  fore_colour=(0, 120, 0), order=(0, 0), enabled=True, visible=True):
+
         self.owner = owner
         self.min, self.max = range
         self._value = value

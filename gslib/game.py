@@ -27,6 +27,15 @@ from gslib.constants import *
 
 
 class Game(object):
+    """
+    To draw something relative to map: (accounts for camera)
+    game.world_objects_to_draw.append((surface, position))
+
+    To draw something relative to game screen:
+    game.screen_objects_to_draw.append((surface, position))
+
+    Objects will be drawn without having to add them to these lists.
+    """
     def __init__(self):
 
         self.options = {'FOV': True, 'VOF': False, 'torch': False, 'menu_scale': False}

@@ -21,6 +21,9 @@ def draw_circle(r, colour, thickness):
 
 
 class Graphics(object):
+    """
+    see Game class for how to add things to be drawn.
+    """
     def __init__(self, game):
         self.game = game
         self.surface = pygame.display.set_mode(self.game.dimensions, pygame.RESIZABLE)
@@ -149,10 +152,11 @@ class Graphics(object):
             surf.fill((255, 0, 255))
             surf.blit(o.sprite_sheet, (0, 0), o.frame_rect)
             surf.set_colorkey((255, 0, 255))
-            for s, p in o.flair:
-                surf.blit(s, (p[0] + surf.get_size()[0]/2, p[1] + surf.get_size()[1]/2))
+            blit_coord = (o.coord[0] + o.dimensions[0] - SPRITE_WIDTH, o.coord[1] + o.dimensions[1] - SPRITE_HEIGHT)
 
-            self.game.world_objects_to_draw.append((surf, (o.coord[0] + o.dimensions[0] - SPRITE_WIDTH, o.coord[1] + o.dimensions[1] - SPRITE_HEIGHT)))
+            self.game.world_objects_to_draw.append((surf, blit_coord))
+            for s, p in o.flair:
+                self.game.world_objects_to_draw.append((s, (blit_coord[0] + p[0] + surf.get_size()[0]/2, blit_coord[1] + p[1] + surf.get_size()[1]/2)))
 
             if o == self.game.selected_object:
                 r = o.highlight_radius

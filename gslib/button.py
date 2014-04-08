@@ -23,12 +23,15 @@ def create_property(var):  # creates a member variable that redraws the button w
     return property(_getter, _setter)
 
 
-# A button that can be defined with an arbitrary on-click function.
-# Saves the user from creating a new inherited class for every different usage.
-# Example:
-# self.buttons['end turn'] = button.Button(self, 'self.owner.end_turn()', pos=(60, 40), size=(100, 30), visible=True, text='End Turn')
-# Calls the "end_turn()" function of the class that created the button.
 class Button(object):
+    """
+    Basic example:
+        b = Button(self, self.function)
+    self.function:
+    if button.enabled == True:
+        Function passed in will be called with 0 arguments.
+        Create function in class that creates the button and pass it in as second argument.
+    """
     def __init__(self, owner, function, pos=(50, 50), size=(100, 100), visible=True, enabled=True, colour=(0, 0, 0),
                  border_colour=(0, 0, 0), border_width=2, text=None, font_size=14, text_states=None, **kwargs):
         self._pos = (0, 0)

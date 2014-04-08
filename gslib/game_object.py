@@ -8,11 +8,20 @@ from gslib import fear_functions
 
 class GameObject(object):
     def __init__(self, game_class, x, y, w, h, sprite_sheet):
+        """
+        Object states:
+        Each state has a name (consider using integers if you want to advance through them sequentially)
+        Each state is a dict of properties that the object will update to when state_index is changed to that state name
+        Ensure that these properties are spelt correctly!
+        To change state elsewhere, just set object.state_index = <state_name_here>, properties will automatically update
+
+        Flair:
+        Flair is a list of (surface, position (relative to object centre)) to additionally render attached to sprite
+        E.g. Hats.
+        """
         self.game_class = game_class
 
-        # each state has a name (consider using integers if you want to advance through them sequentially)
-        # each state is a dict of properties that the object will update to when state_index is changed to that state name
-        # ensure that these properties are spelt correctly!
+
         self.states = {}
         self.states['state1'] = {'max_speed': 1, 'fear_radius': 50}
         self.states['state2'] = {'max_speed': 5, 'fear_radius': 150}
@@ -53,7 +62,7 @@ class GameObject(object):
 
         self.possessed_by = None
 
-        # flair is a list of (surface, position (relative to object centre)) to additionally render attached to sprite
+
         self.flair = []
 
     def get_state_index(self):

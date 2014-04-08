@@ -23,7 +23,8 @@ class Player(GameObject):
 
         self.fear_collection_radius = FEAR_COLLECTION_RADIUS
 
-        self.states = {'state1': {'max_speed': 5, 'fear_radius': 50}, 'state2': {'max_speed': 10, 'fear_radius': 150}}
+        self.states = {'state1': {'max_speed': 5, 'fear_radius': 50},
+                       'state2': {'max_speed': 10, 'fear_radius': 150}}
         self.normal_speed = 5
 
 

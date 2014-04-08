@@ -6,6 +6,16 @@ import collections
 
 class KeyController(object):
     def __init__(self, game):
+        """ To add new key, add to either:
+         - key_map: for player-independent keys
+         - player_map: for player-dependent keys
+
+        Name used in dict will show up in keybind menu.
+
+        Add function to do what you want.
+        Add logic to handle_keys to direct to said function.
+        """
+
         self.game = game
 
         self.keys = collections.defaultdict(bool)  # returns False if key not seen before
