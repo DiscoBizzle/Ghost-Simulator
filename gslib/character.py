@@ -118,7 +118,7 @@ class Character(GameObject):
         GameObject.__init__(self, game_class, x, y, w, h, pygame.image.load(os.path.join(CHARACTER_DIR, sprite_sheet)).convert())
         self.fears = stats['fears']
         self.scared_of = stats['scared_of']
-        # self.scared_of.append('player')
+        self.scared_of.append('player')
         self.stats = stats
         self.info_sheet = self.draw_info_sheet()
         self.sprite = pygame.image.load(os.path.join(CHARACTER_DIR, 'Sprite_top.png'))
@@ -126,6 +126,14 @@ class Character(GameObject):
         self.sprite.set_colorkey((255, 0, 255))
         self.fear_function = None
         self.possess_function = fear_functions.im_possessed(self, game_class)
+        self.fainted = False
+
+    def fear_collected(self):  # get ooga booga'd
+        self.fear = 0
+        self.fainted = True
+        surf = pygame.Surface((10, 10))
+        surf.fill((120, 0, 0))
+        self.flair.append((surf, (-5, 0)))
 
     def get_stats(self, name):
         name = name

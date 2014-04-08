@@ -149,6 +149,9 @@ class Graphics(object):
             surf.fill((255, 0, 255))
             surf.blit(o.sprite_sheet, (0, 0), o.frame_rect)
             surf.set_colorkey((255, 0, 255))
+            for s, p in o.flair:
+                surf.blit(s, (p[0] + surf.get_size()[0]/2, p[1] + surf.get_size()[1]/2))
+
             self.game.world_objects_to_draw.append((surf, (o.coord[0] + o.dimensions[0] - SPRITE_WIDTH, o.coord[1] + o.dimensions[1] - SPRITE_HEIGHT)))
 
             if o == self.game.selected_object:

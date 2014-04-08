@@ -69,6 +69,13 @@ class Player(GameObject):
             self.coord = self.possessing.coord
             self.velocity = (0, 0)
 
+    def collect_fear(self):  # AKA OOGA BOOGA
+        for o in self.game_class.objects:
+            if not isinstance(o, Player):
+                if self.check_distance(o, FEAR_COLLECTION_RADIUS):
+                    self.fear += o.fear
+                    o.fear_collected()
+
     def toggle_possess(self):
         if self.possessing:
             self.unpossess()

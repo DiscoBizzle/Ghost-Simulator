@@ -23,7 +23,7 @@ class GameObject(object):
         self.velocity = (0, 0)
         self.current_speed = 1
         self.normal_speed = 2
-        self.fear_speed = 10
+        self.fear_speed = 0
         self.fear_radius = 50
         self.scared_of = []
         self.fears = []
@@ -52,6 +52,9 @@ class GameObject(object):
         self.highlight_radius = 20
 
         self.possessed_by = None
+
+        # flair is a list of (surface, position (relative to object centre)) to additionally render attached to sprite
+        self.flair = []
 
     def get_state_index(self):
         return self._state_index
@@ -90,27 +93,30 @@ class GameObject(object):
         else:
             return False
 
-
     def apply_fear(self):
         for o in self.game_class.objects:
-            if hasattr(o, 'possessing'):
+            if hasattr(o, 'possessing'):  # checks if object is a player as can't import player module
                 if o.possessing:
-                   continue
-            if o is not self:
-                for f in self.fears:
-                    if f in o.scared_of:
-                        old_fear_level = o.fear
-                        o.fear = fear_functions.harvest_fear(self, o)
-                        for p in self.game_class.players:
-                            if o.check_distance(p, FEAR_COLLECTION_RADIUS):
-                                p.fear += o.fear
+                    continue
+            elif not o.fainted:
+                o.get_feared_by(self)
 
-                        if o.fear >= o.scream_thresh:
-                            if o.scream_timer <= 0:
-                                self.game_class.sound_dict['scream'].play()
-                                o.scream_timer = 120
-                            else:
-                                o.scream_timer -= 1
+                if o.fear >= o.scream_thresh:
+                    if o.scream_timer <= 0:
+                        self.game_class.sound_dict['scream'].play()
+                        o.scream_timer = 120
+                    else:
+                        o.scream_timer -= 1
+
+    def get_feared_by(self, other):
+        fear_level = 0
+        if self.check_distance(other, self.fear_radius):
+            for fear in other.fears:
+                if fear in self.scared_of:
+                    fear_level += 50
+                    self.fear_timer = 5
+
+        self.fear = fear_level
 
     def move(self):
         x_ticks, y_ticks = abs(self.velocity[0]), abs(self.velocity[1])

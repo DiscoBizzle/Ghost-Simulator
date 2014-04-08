@@ -12,8 +12,8 @@ class KeyController(object):
 
         self.key_map = {'Skill Screen': pygame.K_q, 'Show Fear Ranges': pygame.K_r, 'Show Fears': pygame.K_e,
                         'Advance Character States': pygame.K_c}
-        self.player_map = {0: {'up': pygame.K_UP, 'down': pygame.K_DOWN, 'left': pygame.K_LEFT, 'right': pygame.K_RIGHT, 'possess': pygame.K_f},
-                           1: {'up': pygame.K_w, 'down': pygame.K_s, 'left': pygame.K_a, 'right': pygame.K_d, 'possess': pygame.K_g}}
+        self.player_map = {0: {'up': pygame.K_UP, 'down': pygame.K_DOWN, 'left': pygame.K_LEFT, 'right': pygame.K_RIGHT, 'possess': pygame.K_f, 'harvest fear': pygame.K_z},
+                           1: {'up': pygame.K_w, 'down': pygame.K_s, 'left': pygame.K_a, 'right': pygame.K_d, 'possess': pygame.K_g, 'harvest fear': pygame.K_x}}
 
     def handle_keys(self, event):
         if event.type == pygame.KEYDOWN:
@@ -59,6 +59,9 @@ class KeyController(object):
             p.move_up = self.keys[self.player_map[i]['up']]
             p.move_left = self.keys[self.player_map[i]['left']]
             p.move_right = self.keys[self.player_map[i]['right']]
+
+            if self.keys[self.player_map[i]['harvest fear']]:
+                p.collect_fear()
 
             if self.keys[self.player_map[i]['possess']]:
                 if p.possess_key_up:
