@@ -106,12 +106,9 @@ class Graphics(object):
             self.game.map_surf = pygame.Surface((nw * grid_size, nh * grid_size)).convert()
         surf = self.game.map_surf
 
-        if self.game.options['torch']:
-            clippy = self.clip_area.copy()# if hasattr(self.game, 'clip_area') else pygame.Rect((0, 0), (self.game.dimensions[0], self.game.dimensions[1]))
-            clippy.inflate_ip(64, 64)
-        else:
-            clippy = pygame.Rect(self.game.camera_coords, (self.game.dimensions[0], self.game.dimensions[1]))
-    
+        clippy = self.clip_area.copy()# if hasattr(self.game, 'clip_area') else pygame.Rect((0, 0), (self.game.dimensions[0], self.game.dimensions[1]))
+        clippy.inflate_ip(64, 64)
+
         for i in range(nw):
             for j in range(nh):
                 area = m.grid[i][j].tileset_area
