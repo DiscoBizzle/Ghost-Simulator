@@ -118,13 +118,12 @@ class Character(GameObject):
         GameObject.__init__(self, game_class, x, y, w, h, pygame.image.load(os.path.join(CHARACTER_DIR, sprite_sheet)).convert())
         self.fears = stats['fears']
         self.scared_of = stats['scared_of']
-        self.scared_of.append('player')
+        # self.scared_of.append('player')
         self.stats = stats
         self.info_sheet = self.draw_info_sheet()
         self.sprite = pygame.image.load(os.path.join(CHARACTER_DIR, 'Sprite_top.png'))
         self.sprite = pygame.transform.scale(self.sprite, self.dimensions).convert()
         self.sprite.set_colorkey((255, 0, 255))
-        self.isPossessed = False
         self.fear_function = None
         self.possess_function = fear_functions.im_possessed(self, game_class)
 
@@ -135,28 +134,42 @@ class Character(GameObject):
         return {'name': name, 'age': age, 'image_name': image, 'bio': bio}
 
     def update(self):
-        if not self.isPossessed:
+
+        if not self.possessed_by:
             self.update_timer += 1
-            if self.update_timer == 50:
+            #pick random direction (currently only one of 8 directions, but at a random speed)
+
+            if self.update_timer >= 50:
                 self.update_timer = 0
-                mv = self.max_speed
-                self.velocity = (random.randint(-mv, mv), random.randint(-mv, mv))
+                self.current_speed = random.randint(0, self.normal_speed)
+
+                self.move_down = False
+                self.move_up = False
+                self.move_left = False
+                self.move_right = False
+                if random.randint(0, 1):
+                    self.move_down = True
+                else:
+                    self.move_up = True
+
+                if random.randint(0, 1):
+                    self.move_right = True
+                else:
+                    self.move_left = True
 
             if self.fear_timer:
-                fv = 10
-                self.velocity = (random.randint(-fv, fv), random.randint(-fv, fv))
+                self.update_timer += 15
+                self.current_speed = random.randint(0, self.fear_speed)
                 self.fear_timer -= 1
         else:
             self.possess_function()
-            self.velocity = (0, 0)
-            if self.game_class.keys[pygame.K_DOWN]:
-                self.velocity = (self.velocity[0], self.max_speed)
-            if self.game_class.keys[pygame.K_UP]:
-                self.velocity = (self.velocity[0], -self.max_speed)
-            if self.game_class.keys[pygame.K_LEFT]:
-                self.velocity = (-self.max_speed, self.velocity[1])
-            if self.game_class.keys[pygame.K_RIGHT]:
-                self.velocity = (self.max_speed, self.velocity[1])
+            self.current_speed = self.normal_speed
+            # tie move to possessing player move
+            self.move_down = self.possessed_by.move_down
+            self.move_up = self.possessed_by.move_up
+            self.move_left = self.possessed_by.move_left
+            self.move_right = self.possessed_by.move_right
+
         GameObject.update(self)
 
     def draw_info_sheet(self):

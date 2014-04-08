@@ -6,10 +6,18 @@ except ImportError:
 import pygame
 
 from gslib.constants import *
+from gslib import player
 
 # screen = pygame.display.set_mode((800, 800))
 blue = pygame.Color(0, 255, 0)
 black = pygame.Color(0, 0, 0)
+
+
+def draw_circle(r, colour, thickness):
+    surf = pygame.Surface((r*2, r*2))
+    surf.set_colorkey((0, 0, 0))
+    pygame.draw.circle(surf, colour, (r, r), r, thickness)
+    return surf
 
 
 class Graphics(object):
@@ -134,7 +142,7 @@ class Graphics(object):
     def draw_objects(self):
         self.game.objects.sort((lambda x, y: cmp(x.coord[1], y.coord[1])))
         for o in self.game.objects:
-            if o == self.game.player1:
+            if isinstance(o, player.Player): #o == self.game.player1:
                 if o.possessing:
                     continue
             surf = pygame.Surface((SPRITE_WIDTH, SPRITE_HEIGHT))
@@ -142,6 +150,12 @@ class Graphics(object):
             surf.blit(o.sprite_sheet, (0, 0), o.frame_rect)
             surf.set_colorkey((255, 0, 255))
             self.game.world_objects_to_draw.append((surf, (o.coord[0] + o.dimensions[0] - SPRITE_WIDTH, o.coord[1] + o.dimensions[1] - SPRITE_HEIGHT)))
+
+            if o == self.game.selected_object:
+                r = o.highlight_radius
+                surf = draw_circle(r, (200, 200, 200), 2)
+                pos = (o.coord[0] + o.dimensions[0]/2 - r, o.coord[1] + o.dimensions[0]/2 - r)
+                self.game.world_objects_to_draw.append((surf, pos))
 
     def draw_character_stats(self):
         if self.game.disp_object_stats:
@@ -200,7 +214,7 @@ class Graphics(object):
                 self.game.set_state(MAIN_MENU)
 
     def draw_torch(self):
-        ppos = (self.game.player1.coord[0] + self.game.player1.dimensions[0] / 2, self.game.player1.coord[1] + self.game.player1.dimensions[1] / 2)
+        ppos = (self.game.players[0].coord[0] + self.game.players[0].dimensions[0] / 2, self.game.players[0].coord[1] + self.game.players[0].dimensions[1] / 2)
 
         self.light_surf.fill((0, 0, 0, 0))
     

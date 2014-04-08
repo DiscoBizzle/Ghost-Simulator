@@ -21,12 +21,14 @@ class GameObject(object):
         self.coord = (x, y)  # top left
         self.dimensions = (w, h)
         self.velocity = (0, 0)
-        self.max_speed = 1
+        self.current_speed = 1
+        self.normal_speed = 2
+        self.fear_speed = 10
         self.fear_radius = 50
         self.scared_of = []
         self.fears = []
         self.rect = pygame.Rect(self.coord, self.dimensions)
-        self.update_timer = 0
+        self.update_timer = 40
         self.fear_timer = 0
         self.scream_timer = 0
         self.fear = 0
@@ -47,15 +49,33 @@ class GameObject(object):
         self.move_left = False
         self.move_right = False
 
+        self.highlight_radius = 20
+
+        self.possessed_by = None
+
     def get_state_index(self):
         return self._state_index
     def set_state_index(self, index):
         self._state_index = index
         for k, v in self.states[index].iteritems():
-            self.__dict__[k] = v
+            setattr(self, k, v)
     state_index = property(get_state_index, set_state_index)
 
     def update(self):
+        v_x, v_y = 0, 0
+        if self.move_down:
+            v_y += self.current_speed
+            self.direction = DOWN
+        if self.move_up:
+            v_y -= self.current_speed
+            self.direction = UP
+        if self.move_left:
+            v_x -= self.current_speed
+            self.direction = LEFT
+        if self.move_right:
+            v_x += self.current_speed
+        self.velocity = (v_x, v_y)
+
         if not self.velocity == (0, 0):
             self.move()
         self.rect = pygame.Rect(self.coord, self.dimensions)
@@ -73,10 +93,9 @@ class GameObject(object):
 
     def apply_fear(self):
         for o in self.game_class.objects:
-            if o == self.game_class.player1 and self.game_class.player1.possessing:
-                continue
-            if o == self.game_class.toPossess:
-                continue
+            if hasattr(o, 'possessing'):
+                if o.possessing:
+                   continue
             if o is not self:
                 for f in self.fears:
                     if f in o.scared_of:

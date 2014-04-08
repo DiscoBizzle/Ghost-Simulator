@@ -57,7 +57,7 @@ class Game(object):
         self.players = []
         self.players.append(player.Player(self, 0, 0, 16, 16, 'GhostSheet.png'))
         self.players.append(player.Player(self, 0, 0, 16, 16, 'TutorialGhost2.png'))
-        self.player1 = self.players[0]
+        # self.player1 = self.players[0]
 
         self.objects += self.players
 
@@ -112,17 +112,12 @@ class Game(object):
         self.map = self.map_list[self.map_index]
 
         self.buttons = {
-            'Possess': button.Button(self, self.possess, pos=(LEVEL_WIDTH, 0), size=(200, 30), visible=False,
-                                     text=u'Possess', border_colour=(120, 50, 80), border_width=3,
-                                     colour=(120, 0, 0), enabled=False),
-            'unPossess': button.Button(self, self.unPossess, pos=(LEVEL_WIDTH, 0), size=(200, 30), visible=False,
-                                       text=u'Unpossess', border_colour=(120, 50, 80), border_width=3,
-                                       colour=(120, 0, 0), enabled=False),
             'change_map': button.Button(self, self.change_map, pos=(0, 0), size=(20, 20), visible=True,
                                         text=u'M', border_colour=(120, 50, 80), border_width=3,
                                         colour=(120, 0, 0), enabled=True)}
 
-        self.toPossess = None
+        # self.toPossess = None
+        self.selected_object = None
 
         self.world_objects_to_draw = []
         self.screen_objects_to_draw = []
@@ -229,28 +224,14 @@ class Game(object):
         for o in self.objects:
             if isinstance(o, player.Player):
                 r = o.fear_collection_radius
-                surf = pygame.Surface((r*2, r*2))
-                surf.set_colorkey((0, 0, 0))
-                pygame.draw.circle(surf, (64, 224, 208), (r, r), r, 4)
+                surf = graphics.draw_circle(r, (64, 224, 208), 4)
                 pos = (o.coord[0] + o.dimensions[0]/2 - r, o.coord[1] + o.dimensions[0]/2 - r)
                 self.world_objects_to_draw.append((surf, pos))
             else:
                 r = o.fear_radius
-                surf = pygame.Surface((r*2, r*2))
-                surf.set_colorkey((0, 0, 0))
-                pygame.draw.circle(surf, (75, 0, 130), (r, r), r, 4)
+                surf = graphics.draw_circle(r, (75, 0, 130), 4)
                 pos = (o.coord[0] + o.dimensions[0]/2 - r, o.coord[1] + o.dimensions[0]/2 - r)
                 self.world_objects_to_draw.append((surf, pos))
-
-    def possess(self):
-        self.toPossess.isPossessed = True
-        self.player1.possessing = True
-
-    def unPossess(self):
-        self.toPossess.isPossessed = False
-        self.player1.possessing = False
-        self.player1.coord = self.toPossess.coord
-        self.toPossess = None
 
     def change_map(self):
         self.map_index += 1

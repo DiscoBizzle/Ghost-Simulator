@@ -17,12 +17,14 @@ class Player(GameObject):
         self.fears = ['player']
         self.skills_learnt = []
 
-        self.possessing = False
+        self.possessing = None
+        self.possess_range = POSSESSION_RANGE
+        self.possess_key_up = True
 
         self.fear_collection_radius = FEAR_COLLECTION_RADIUS
 
         self.states = {'state1': {'max_speed': 5, 'fear_radius': 50}, 'state2': {'max_speed': 10, 'fear_radius': 150}}
-        self.max_speed = 5
+        self.normal_speed = 5
 
 
     def get_fear(self):
@@ -45,39 +47,14 @@ class Player(GameObject):
         return False
 
     def update(self):
-        # update velocity
-        v_x, v_y = 0, 0
+        # set current speed, then call parent update (handles movement and animation
+        self.current_speed = self.normal_speed
 
-        self.animation_state = self.direction
+        GameObject.update(self)
 
-        if self.move_down:
-            v_y += self.max_speed
-            self.direction = DOWN
-            self.animation_state = ANIM_DOWNWALK
-        if self.move_up:
-            v_y -= self.max_speed
-            self.direction = UP
-            self.animation_state = ANIM_UPWALK
-        if self.move_left:
-            v_x -= self.max_speed
-            self.direction = LEFT
-            self.animation_state = ANIM_LEFTWALK
-        if self.move_right:
-            v_x += self.max_speed
-            self.direction = RIGHT
-            self.animation_state = ANIM_RIGHTWALK
+        # velocity is set by parent update function
 
-        self.frame_count += 1
-        if (self.frame_count % 4) == 0:
-            self.current_frame += 1
-
-        if self.current_frame > self.max_frames:
-            self.current_frame = 0
-
-        self.frame_rect = pygame.Rect(self.current_frame * SPRITE_WIDTH, self.animation_state * SPRITE_HEIGHT,
-                                      SPRITE_WIDTH, SPRITE_HEIGHT)
-
-        self.velocity = (v_x, v_y)
+        v_x, v_y = self.velocity
 
         if v_x != 0 or v_y != 0:
             self.fear -= FEAR_PER_STEP * (v_x * v_x + v_y * v_y) ** .5
@@ -88,19 +65,27 @@ class Player(GameObject):
             self.game_class.GameState = GAME_OVER
             self.fear = START_FEAR
 
-        if self.possessing and self.game_class.toPossess:
-            self.coord = self.game_class.toPossess.coord
+        if self.possessing:
+            self.coord = self.possessing.coord
             self.velocity = (0, 0)
-        # move etc.
-        GameObject.update(self)
 
-        if self.game_class.toPossess and not self.possessing:
-            if (self.coord[0] - self.game_class.toPossess.coord[0])**2 + (self.coord[1] - self.game_class.toPossess.coord[1])**2 < POSSESSION_RANGE**2:
-                self.game_class.buttons['Possess'].enabled = True
-                self.game_class.buttons['Possess'].colour = (120, 0, 0)
-                self.game_class.buttons['Possess'].border_colour = (120, 50, 80)
-            else:
-                self.game_class.buttons['Possess'].enabled = False
-                self.game_class.buttons['Possess'].colour = (60, 60, 60)
-                self.game_class.buttons['Possess'].border_colour = (60, 25, 40)
+    def toggle_possess(self):
+        if self.possessing:
+            self.unpossess()
+        else:
+            self.possess_first_found()
+
+    def possess_first_found(self):
+        for o in self.game_class.objects:
+            if not isinstance(o, Player):
+                if self.check_distance(o, self.possess_range):
+                    self.possessing = o
+                    o.possessed_by = self
+                    self.try_possess = False
+                    return
+
+    def unpossess(self):
+        self.coord = self.possessing.coord
+        self.possessing.possessed_by = False
+        self.possessing = False
 
