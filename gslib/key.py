@@ -1,18 +1,17 @@
 import pygame
 
 from gslib.constants import *
+import collections
 
 
 class KeyController(object):
     def __init__(self, game):
         self.game = game
 
-        self.keys = {pygame.K_DOWN: False, pygame.K_UP: False, pygame.K_LEFT: False, pygame.K_RIGHT: False,
-                     pygame.K_ESCAPE: False, pygame.K_m: False, pygame.K_q: False, pygame.K_t: False,
-                     pygame.K_w: False, pygame.K_s: False, pygame.K_a: False, pygame.K_d: False, pygame.K_e: False,
-                     pygame.K_r: False}
+        self.keys = collections.defaultdict(bool)  # returns False if key not seen before
 
-        self.key_map = {'Skill Screen': pygame.K_q, 'Show Fear Ranges': pygame.K_r, 'Show Fears': pygame.K_e}
+        self.key_map = {'Skill Screen': pygame.K_q, 'Show Fear Ranges': pygame.K_r, 'Show Fears': pygame.K_e,
+                        'Advance Character States': pygame.K_c}
         self.player_map = {0: {'up': pygame.K_UP, 'down': pygame.K_DOWN, 'left': pygame.K_LEFT, 'right': pygame.K_RIGHT},
                            1: {'up': pygame.K_w, 'down': pygame.K_s, 'left': pygame.K_a, 'right': pygame.K_d}}
 
@@ -47,6 +46,13 @@ class KeyController(object):
         if self.game.GameState == MAIN_GAME:
             self.game.show_fears = self.keys[self.key_map['Show Fears']]
             self.game.show_ranges = self.keys[self.key_map['Show Fear Ranges']]
+
+            if self.keys[self.key_map['Advance Character States']]:
+                for o in self.game.objects:
+                    if o.state_index == 'state1':
+                        o.state_index = 'state2'
+                    else:
+                        o.state_index = 'state1'
 
         for i, p in enumerate(self.game.players):
             p.move_down = self.keys[self.player_map[i]['down']]

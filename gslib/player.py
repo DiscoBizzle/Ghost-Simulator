@@ -21,6 +21,9 @@ class Player(GameObject):
 
         self.fear_collection_radius = FEAR_COLLECTION_RADIUS
 
+        self.states = {'state1': {'max_speed': 5, 'fear_radius': 50}, 'state2': {'max_speed': 10, 'fear_radius': 150}}
+        self.max_speed = 5
+
 
     def get_fear(self):
         return self._fear
@@ -48,19 +51,19 @@ class Player(GameObject):
         self.animation_state = self.direction
 
         if self.move_down:
-            v_y += 10
+            v_y += self.max_speed
             self.direction = DOWN
             self.animation_state = ANIM_DOWNWALK
         if self.move_up:
-            v_y -= 10
+            v_y -= self.max_speed
             self.direction = UP
             self.animation_state = ANIM_UPWALK
         if self.move_left:
-            v_x -= 10
+            v_x -= self.max_speed
             self.direction = LEFT
             self.animation_state = ANIM_LEFTWALK
         if self.move_right:
-            v_x += 10
+            v_x += self.max_speed
             self.direction = RIGHT
             self.animation_state = ANIM_RIGHTWALK
 

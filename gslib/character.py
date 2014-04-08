@@ -139,7 +139,7 @@ class Character(GameObject):
             self.update_timer += 1
             if self.update_timer == 50:
                 self.update_timer = 0
-                mv = self.max_velocity
+                mv = self.max_speed
                 self.velocity = (random.randint(-mv, mv), random.randint(-mv, mv))
 
             if self.fear_timer:
@@ -150,13 +150,13 @@ class Character(GameObject):
             self.possess_function()
             self.velocity = (0, 0)
             if self.game_class.keys[pygame.K_DOWN]:
-                self.velocity = (self.velocity[0], self.max_velocity)
+                self.velocity = (self.velocity[0], self.max_speed)
             if self.game_class.keys[pygame.K_UP]:
-                self.velocity = (self.velocity[0], -self.max_velocity)
+                self.velocity = (self.velocity[0], -self.max_speed)
             if self.game_class.keys[pygame.K_LEFT]:
-                self.velocity = (-self.max_velocity, self.velocity[1])
+                self.velocity = (-self.max_speed, self.velocity[1])
             if self.game_class.keys[pygame.K_RIGHT]:
-                self.velocity = (self.max_velocity, self.velocity[1])
+                self.velocity = (self.max_speed, self.velocity[1])
         GameObject.update(self)
 
     def draw_info_sheet(self):

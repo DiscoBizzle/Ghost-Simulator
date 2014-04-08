@@ -10,10 +10,18 @@ class GameObject(object):
     def __init__(self, game_class, x, y, w, h, sprite_sheet):
         self.game_class = game_class
 
+        # each state has a name (consider using integers if you want to advance through them sequentially)
+        # each state is a dict of properties that the object will update to when state_index is changed to that state name
+        # ensure that these properties are spelt correctly!
+        self.states = {}
+        self.states['state1'] = {'max_speed': 1, 'fear_radius': 50}
+        self.states['state2'] = {'max_speed': 5, 'fear_radius': 150}
+        self._state_index = 'state1'
+
         self.coord = (x, y)  # top left
         self.dimensions = (w, h)
         self.velocity = (0, 0)
-        self.max_velocity = 1
+        self.max_speed = 1
         self.fear_radius = 50
         self.scared_of = []
         self.fears = []
@@ -38,6 +46,14 @@ class GameObject(object):
         self.move_down = False
         self.move_left = False
         self.move_right = False
+
+    def get_state_index(self):
+        return self._state_index
+    def set_state_index(self, index):
+        self._state_index = index
+        for k, v in self.states[index].iteritems():
+            self.__dict__[k] = v
+    state_index = property(get_state_index, set_state_index)
 
     def update(self):
         if not self.velocity == (0, 0):
