@@ -1,7 +1,7 @@
-Player 0 down;274
-Player 0 right;275
-Player 0 up;273
-Player 0 left;276
+Player 0 down;115
+Player 0 right;100
+Player 0 up;119
+Player 0 left;97
 Player 1 down;115
 Player 1 right;100
 Player 1 up;119

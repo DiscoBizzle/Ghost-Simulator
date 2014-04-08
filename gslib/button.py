@@ -43,7 +43,7 @@ class Button(object):
         self._text = text
         self._font_size = font_size
         self.text_states = text_states
-        self.text_states_toggle = True
+        self.text_states_toggle = False
         self.enabled = enabled  # whether button can be activated, visible or not
 
         for arg in kwargs:  # allows for additional arbitrary arguments to be passed in, useful for more complicated button functions
@@ -52,8 +52,7 @@ class Button(object):
         self.owner = owner  # container that created the button, allows for the button function to interact with its creator
         self.function = function
 
-        self.surface = pygame.Surface(
-            self._size)  # keep track of the button surface, takes more memory but is faster than redrawing every time
+        self.surface = pygame.Surface(self._size)  # keep track of the button surface, takes more memory but is faster than redrawing every time
         self.redraw()
 
     def pos_setter(self, pos):
@@ -93,7 +92,7 @@ class Button(object):
 
         # to create border: fill with border colour, then blit a smaller rectangle with main colour
         self.surface.fill(self.border_colour)
-        temp = pygame.Surface((self.size[0] - 2 * self.border_width, self.size[1] - 2 * self.border_width))
+        temp = pygame.Surface((self._size[0] - 2 * self._border_width, self.size[1] - 2 * self._border_width))
         temp.fill(self.colour)
         self.surface.blit(temp, (self.border_width, self.border_width))
 

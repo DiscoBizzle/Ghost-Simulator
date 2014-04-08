@@ -20,7 +20,7 @@ class Menu(object):
         self.font_size = self.base_font_size
         self.hori_offset = 60
         self.vert_offset = 40 + button_size[1] + 10
-        self.buttons_per_column = ((GAME_HEIGHT - self.vert_offset) / (self.button_size[1]+20)) - 1
+        self.buttons_per_column = ((self.game_class.dimensions[1] - self.vert_offset) / (self.button_size[1]+20)) - 1
 
         self.buttons['menu_scale_display'] = button.Button(self, None, order = (-1, 0), visible=False,
                                             text=u'Menu Scale: 1.0', border_colour=(120, 50, 80), border_width=3,
@@ -56,6 +56,8 @@ class Menu(object):
                 button.check_clicked(event.pos)
 
     def arrange_buttons(self):
+        self.buttons_per_column = int(((self.game_class.dimensions[1] - self.vert_offset) / (self.button_size[1]+20))) #- 1
+
         self.vert_offset = 50 + self.game_class.options['menu_scale'] * self.buttons['menu_scale_display'].size[1]
 
         for button in self.buttons.itervalues():
@@ -77,12 +79,12 @@ class Menu(object):
 
     def set_menu_scale(self, value):
         self.button_size = (self.min_button_size[0] * value, self.min_button_size[1] * value)
-        if self.button_size[0] > GAME_WIDTH - self.hori_offset - 32:
-            self.button_size = (GAME_WIDTH - self.hori_offset - 32, self.button_size[1])
-        if self.button_size[1] > GAME_HEIGHT - self.vert_offset - 32:
-            self.button_size = (self.button_size[0], GAME_HEIGHT - self.vert_offset - 32)
+        if self.button_size[0] > self.game_class.dimensions[0] - self.hori_offset - 32:
+            self.button_size = (self.game_class.dimensions[0] - self.hori_offset - 32, self.button_size[1])
+        if self.button_size[1] > self.game_class.dimensions[1] - self.vert_offset - 32:
+            self.button_size = (self.button_size[0], self.game_class.dimensions[1] - self.vert_offset - 32)
 
-        self.buttons_per_column = int(((GAME_HEIGHT - self.vert_offset) / (self.button_size[1]+20))) #- 1
+        # self.buttons_per_column = int(((self.game_class.dimensions[1] - self.vert_offset) / (self.button_size[1]+20))) #- 1
         self.arrange_buttons()
         self.font_size = int(self.base_font_size * value * self.frac)
         self.buttons['menu_scale_display'].text = u"Menu scale: " + unicode(str(round(self.button_size[0]/self.original_button_size[0],2)))
@@ -150,6 +152,12 @@ class OptionsMenu(Menu):
         self.buttons['save'] = button.Button(self, self.save, order = (7, 1), visible=True,
                                             text=u'Save Options', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
+        self.buttons['screen_size_display'] = button.Button(self, None, order = (8, 0), visible=True,
+                                            text=u'Screen Size', border_colour=(120, 50, 80), border_width=3,
+                                            colour=(120, 0, 0))
+        self.buttons['screen_size'] = button.Button(self, self.set_screen_size, order = (8, 1), visible=True,
+                                            text_states=[u'480 x 320', u'1024 x 768', u'1600 x 900', u'1920 x 1080'],
+                                            border_colour=(120, 50, 80), border_width=3, colour=(120, 0, 0))
         Menu.arrange_buttons(self)
 
     def FOV_toggle(self):
@@ -200,6 +208,16 @@ class OptionsMenu(Menu):
 
     def save(self):
         self.game_class.save_options()
+
+    def set_screen_size(self):
+        self.buttons['screen_size'].text_states_toggle += 1
+        self.buttons['screen_size'].text_states_toggle %= len(self.buttons['screen_size'].text_states)
+        new_size = self.buttons['screen_size'].text_states[self.buttons['screen_size'].text_states_toggle]
+        new_size = new_size.split(' x ')
+        new_size = (int(new_size[0]), int(new_size[1]))
+        # self.game_class.graphics.resize_window(new_size)
+        event = pygame.event.Event(pygame.VIDEORESIZE, size=new_size, w=new_size[0], h=new_size[1])
+        pygame.event.post(event)
 
 
 class SkillsMenu(Menu):

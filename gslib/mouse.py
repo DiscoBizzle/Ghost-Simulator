@@ -48,14 +48,14 @@ class MouseController(object):
             temp_rect = pygame.Rect((o.coord[0] - st, o.coord[1] - st), (o.dimensions[0] + 2*st, o.dimensions[1] + 2*st))
             if temp_rect.collidepoint((event.pos[0]+self.game.camera_coords[0],event.pos[1]+self.game.camera_coords[1])) and isinstance(o, character.Character):
                 self.game.disp_object_stats = True
-                self.game.object_stats = (o.info_sheet, (GAME_WIDTH - o.info_sheet.get_width(), 0))
+                self.game.object_stats = (o.info_sheet, (self.game.dimensions[0] - o.info_sheet.get_width(), 0))
                 if self.game.player1.possessing:
                     return
                 self.game.toPossess = o
                 self.game.buttons['Possess'].visible = True
                 # self.buttons['Possess'].enabled = True
-                self.game.buttons['Possess'].pos = (GAME_WIDTH - o.info_sheet.get_width(), o.info_sheet.get_height())
-                self.game.buttons['unPossess'].pos = (GAME_WIDTH - o.info_sheet.get_width(), o.info_sheet.get_height())
+                self.game.buttons['Possess'].pos = (self.game.dimensions[0] - o.info_sheet.get_width(), o.info_sheet.get_height())
+                self.game.buttons['unPossess'].pos = (self.game.dimensions[0] - o.info_sheet.get_width(), o.info_sheet.get_height())
                 return
         self.game.disp_object_stats = False
         self.game.object_stats = None

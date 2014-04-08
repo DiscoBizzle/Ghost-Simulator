@@ -30,13 +30,13 @@ class Game(object):
     def __init__(self):
 
         self.options = {'FOV': True, 'VOF': False, 'torch': False, 'menu_scale': False}
+        self.dimensions = (GAME_WIDTH, GAME_HEIGHT)
 
-        self.Menu = menus.MainMenu(self, (161,100))
+        self.Menu = menus.MainMenu(self, (161, 100))
         self.GameState = MAIN_MENU
         self.cutscene_started = False
         self.cutscene_next = os.path.join(VIDEO_DIR, "default.mpg")
         self.game_running = True
-        self.dimensions = (GAME_WIDTH, GAME_HEIGHT)
         self.graphics = graphics.Graphics(self)
         pygame.display.set_caption("Ghost Simulator v. 0.000000001a")
         self.music_list = sound.get_music_list()
@@ -98,6 +98,7 @@ class Game(object):
             pygame.JOYBUTTONUP: self.joy_controller.handle_buttonup,
             pygame.JOYAXISMOTION: self.joy_controller.handle_axis,
             pygame.JOYBALLMOTION: self.joy_controller.handle_ball,
+            pygame.VIDEORESIZE: self.graphics.resize_window,
         }
 
         sound.start_next_music(self.music_list)
@@ -186,25 +187,25 @@ class Game(object):
             avg_pos[1] += p.coord[1]
 
         avg_pos = (avg_pos[0] / c, avg_pos[1] / c)
-        # coord = (self.player1.coord[0] - (GAME_WIDTH/2), self.player1.coord[1] - (GAME_HEIGHT/2))
-        coord = (avg_pos[0] - (GAME_WIDTH/2), avg_pos[1] - (GAME_HEIGHT/2))
-        pad = -32
+        # coord = (self.player1.coord[0] - (self.dimensions[0]/2), self.player1.coord[1] - (self.dimensions[1]/2))
+        coord = (avg_pos[0] - (self.dimensions[0]/2), avg_pos[1] - (self.dimensions[1]/2))
+        pad = (32, 32, 32, 96)  # left right up down
 
         # bottom
-        if coord[1] > (LEVEL_HEIGHT - GAME_HEIGHT) / 2 + pad:
-            coord = (coord[0], (LEVEL_HEIGHT - GAME_HEIGHT) / 2 + pad)
+        if avg_pos[1] > LEVEL_HEIGHT - self.dimensions[1]/2 + pad[3]:
+            coord = (coord[0], LEVEL_HEIGHT - self.dimensions[1] + pad[3])
 
         # right
-        if coord[0] > (LEVEL_WIDTH - GAME_WIDTH)/2 - pad:
-            coord = ((LEVEL_WIDTH - GAME_WIDTH)/2 - pad, coord[1])
+        if avg_pos[0] > LEVEL_WIDTH - self.dimensions[0]/2 + pad[1]:
+            coord = (LEVEL_WIDTH - self.dimensions[0] + pad[1], coord[1])
 
         # left
-        if coord[0] < pad:
-            coord = (pad, coord[1])
+        if avg_pos[0] < self.dimensions[0]/2 - pad[0] or LEVEL_WIDTH < self.dimensions[0] - pad[0] - pad[1]:
+            coord = (-pad[0], coord[1])
 
         # top
-        if coord[1] < pad:
-            coord = (coord[0], pad)
+        if avg_pos[1] < self.dimensions[1]/2 - pad[2] or LEVEL_HEIGHT < self.dimensions[1] - pad[2] - pad[3]:
+            coord = (coord[0], -pad[2])
 
         return coord
 
@@ -256,7 +257,7 @@ class Game(object):
         self.map_index %= len(self.map_list)
         self.map = self.map_list[self.map_index]
         self.objects = self.players + self.map.objects
-        self.graphics.clip_area = pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
+        self.graphics.clip_area = pygame.Rect((0, 0), (self.dimensions[0], self.dimensions[1]))
 
     def set_state(self, state):
         self.GameState = state

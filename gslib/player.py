@@ -48,19 +48,19 @@ class Player(GameObject):
         self.animation_state = self.direction
 
         if self.move_down:
-            v_y += 5
+            v_y += 10
             self.direction = DOWN
             self.animation_state = ANIM_DOWNWALK
         if self.move_up:
-            v_y -= 5
+            v_y -= 10
             self.direction = UP
             self.animation_state = ANIM_UPWALK
         if self.move_left:
-            v_x -= 5
+            v_x -= 10
             self.direction = LEFT
             self.animation_state = ANIM_LEFTWALK
         if self.move_right:
-            v_x += 5
+            v_x += 10
             self.direction = RIGHT
             self.animation_state = ANIM_RIGHTWALK
 

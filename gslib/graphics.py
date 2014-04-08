@@ -15,17 +15,17 @@ black = pygame.Color(0, 0, 0)
 class Graphics(object):
     def __init__(self, game):
         self.game = game
-        self.surface = pygame.display.set_mode(self.game.dimensions)
+        self.surface = pygame.display.set_mode(self.game.dimensions, pygame.RESIZABLE)
 
         self.field = pygame.image.load(os.path.join(TILES_DIR, 'field.png'))
-        self.field = pygame.transform.scale(self.field, (GAME_WIDTH, GAME_HEIGHT))
+        self.field = pygame.transform.scale(self.field, (self.game.dimensions[0], self.game.dimensions[1]))
         self.field.set_alpha(100)
         self.field.convert_alpha()
 
         self.light = pygame.image.load(os.path.join(TILES_DIR, 'light.png'))
         self.light.convert_alpha()
         self.light = pygame.transform.scale(self.light, (200, 200))
-        self.light_surf = pygame.Surface((GAME_WIDTH, GAME_HEIGHT)).convert_alpha()
+        self.light_surf = pygame.Surface((self.game.dimensions[0], self.game.dimensions[1])).convert_alpha()
         self.light_size = self.light.get_size()
 
         font = pygame.font.SysFont(FONT, 20)
@@ -41,7 +41,12 @@ class Graphics(object):
         self.game_over_txt2_size = font.size(u"press esc scrub")
         self.game_over_txt2 = font.render(u"press esc scrub", True, (255, 255, 255))
 
-        self.clip_area = pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
+        self.clip_area = pygame.Rect((0, 0), (self.game.dimensions[0], self.game.dimensions[1]))
+
+    def resize_window(self, event):
+        self.game.dimensions = event.size
+        self.surface = pygame.display.set_mode(event.size, pygame.RESIZABLE)
+        self.clip_area = pygame.Rect((0, 0), (self.game.dimensions[0], self.game.dimensions[1]))
 
     def draw_game_over(self):
         margin = (self.game.dimensions[0] - self.game_over_txt1_size[0]) / 2
@@ -100,9 +105,12 @@ class Graphics(object):
         if not hasattr(self.game, 'map_surf'):
             self.game.map_surf = pygame.Surface((nw * grid_size, nh * grid_size)).convert()
         surf = self.game.map_surf
-    
-        clippy = self.clip_area.copy()# if hasattr(self.game, 'clip_area') else pygame.Rect((0, 0), (GAME_WIDTH, GAME_HEIGHT))
-        clippy.inflate_ip(64, 64)
+
+        if self.game.options['torch']:
+            clippy = self.clip_area.copy()# if hasattr(self.game, 'clip_area') else pygame.Rect((0, 0), (self.game.dimensions[0], self.game.dimensions[1]))
+            clippy.inflate_ip(64, 64)
+        else:
+            clippy = pygame.Rect(self.game.camera_coords, (self.game.dimensions[0], self.game.dimensions[1]))
     
         for i in range(nw):
             for j in range(nh):
@@ -203,10 +211,10 @@ class Graphics(object):
 
         self.clip_area = hole
     
-        pygame.draw.rect(self.light_surf, (0, 0, 0, 255), pygame.Rect((0, 0), (GAME_WIDTH, hole.top)))
-        pygame.draw.rect(self.light_surf, (0, 0, 0, 255), pygame.Rect((0, 0), (hole.left, GAME_HEIGHT)))
-        pygame.draw.rect(self.light_surf, (0, 0, 0, 255), pygame.Rect((hole.right, 0), (GAME_WIDTH, GAME_HEIGHT)))
-        pygame.draw.rect(self.light_surf, (0, 0, 0, 255), pygame.Rect((0, hole.bottom), (GAME_WIDTH, GAME_HEIGHT)))
+        pygame.draw.rect(self.light_surf, (0, 0, 0, 255), pygame.Rect((0, 0), (self.game.dimensions[0], hole.top)))
+        pygame.draw.rect(self.light_surf, (0, 0, 0, 255), pygame.Rect((0, 0), (hole.left, self.game.dimensions[1])))
+        pygame.draw.rect(self.light_surf, (0, 0, 0, 255), pygame.Rect((hole.right, 0), (self.game.dimensions[0], self.game.dimensions[1])))
+        pygame.draw.rect(self.light_surf, (0, 0, 0, 255), pygame.Rect((0, hole.bottom), (self.game.dimensions[0], self.game.dimensions[1])))
         self.light_surf.blit(self.light, (hole.left, hole.top))
         self.game.screen_objects_to_draw.append((self.light_surf, (0, 0)))
 
