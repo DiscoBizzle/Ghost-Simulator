@@ -19,8 +19,8 @@ class GameObject(object):
         To change state elsewhere, just set object.state_index = <state_name_here>, properties will automatically update
 
         Flair:
-        Flair is a list of (surface, position (relative to object centre)) to additionally render attached to sprite
-        E.g. Hats.
+        Flair is a dict of 'name': (surface, position (relative to object centre)) to additionally render attached to sprite
+        E.g. Hats, speech bubbles.
         """
         self.game_class = game_class
 
@@ -33,6 +33,7 @@ class GameObject(object):
         self.coord = (x, y)  # top left
         self.dimensions = (w, h)
         self.velocity = (0, 0)
+        self.min_speed = 0
         self.current_speed = 1
         self.normal_speed = 2
         self.fear_speed = 0
@@ -66,7 +67,7 @@ class GameObject(object):
         self.possessed_by = None
 
 
-        self.flair = []
+        self.flair = {}
 
     def get_state_index(self):
         return self._state_index
@@ -110,7 +111,7 @@ class GameObject(object):
             if hasattr(o, 'possessing'):  # checks if object is a player as can't import player module
                 if o.possessing:
                     continue
-            elif not o.fainted:
+            else:
                 o.get_feared_by(self)
 
                 if o.fear >= o.scream_thresh:
@@ -127,6 +128,8 @@ class GameObject(object):
                 if fear in self.scared_of:
                     fear_level += 50
                     self.fear_timer = 5
+                    self.feared_by_obj = other
+                    self.feared_from_pos = other.coord
 
         self.fear = fear_level
 

@@ -19,10 +19,14 @@ from gslib import text_box
 from gslib import key
 from gslib import mouse
 from gslib import fear_functions
+from gslib import text_functions
 from gslib.constants import *
+
+
 # doesn't seem to be needed any more
 #if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
 #    # On NT like Windows versions smpeg video needs windb. --
+#os.environ['SDL_VIDEODRIVER'] = ''
 #os.environ['SDL_VIDEODRIVER'] = ''
 
 
@@ -216,7 +220,7 @@ class Game(object):
     def say_fears(self):
         for o in self.objects:
             if isinstance(o, player.Player):
-                surf = fear_functions.speech_bubble("Oonce oonce oonce oonce!", 200)
+                surf = text_functions.speech_bubble("Oonce oonce oonce oonce!", 200)
                 pos = (o.coord[0] + o.dimensions[0], o.coord[1] - surf.get_height())
                 self.world_objects_to_draw.append((surf, pos))
                 continue
@@ -225,7 +229,7 @@ class Game(object):
             for f in o.scared_of:
                 if f != 'player':
                     text += f + '\n'
-            surf = fear_functions.speech_bubble(text, 300)
+            surf = text_functions.speech_bubble(text, 300)
             pos = (o.coord[0] + o.dimensions[0], o.coord[1] - surf.get_height())
             self.world_objects_to_draw.append((surf, pos))
 

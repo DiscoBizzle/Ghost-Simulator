@@ -75,7 +75,8 @@ class Player(GameObject):
             if not isinstance(o, Player):
                 if self.check_distance(o, FEAR_COLLECTION_RADIUS):
                     self.fear += o.fear
-                    o.fear_collected()
+                    # o.fear_collected()
+                    o.collected_function(o)
 
     def toggle_possess(self):
         if self.possessing:
@@ -94,6 +95,7 @@ class Player(GameObject):
 
     def unpossess(self):
         self.coord = self.possessing.coord
+        del self.possessing.flair['possessed']
         self.possessing.possessed_by = False
         self.possessing = False
 

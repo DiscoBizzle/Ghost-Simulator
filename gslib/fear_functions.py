@@ -1,45 +1,99 @@
 import pygame
+import random
+import math
 
-from gslib.text_functions import *
-
-def test():
-    pygame.init()
-    screen = pygame.display.set_mode((400, 400))
-    # surf = im_scared()
-    surf = speech_bubble("LONGsdfalksdfjaslkfj alksjdf lkajdf lkajfdlkajsf lkasjdf lkajs flkaj", 200)
-    screen.blit(surf, (0, 0))
-    pygame.display.update()
-    raw_input()
+from gslib import text_functions
 
 
-def speech_bubble(text, width, text_colour=(0, 0, 0)):
-    font = pygame.font.SysFont('helvetica', 14)
-
-    text_left = 20
-    text_top = 20
-    lines = text_wrap(text, font, width-text_left*2)
-    t = font.render(lines[0], True, text_colour)
-    size = (width, 2*text_top + len(lines) * t.get_height())
-
-    surf = pygame.Surface(size)
-    surf.fill((255, 0, 255))
-    pygame.draw.ellipse(surf, (60, 60, 60), pygame.Rect((0, 0), size))
-    pygame.draw.polygon(surf, (60, 60, 60), ((0, surf.get_height()), (5, surf.get_height() * 2 / 3), (surf.get_width() * 1 / 3, surf.get_height() - 5)))
-    pygame.draw.ellipse(surf, (200, 200, 200), pygame.Rect((5, 5), (size[0] - 10, size[1] - 10)))
+################################################################################
+### possesstion functions
+################################################################################
+def im_possessed(obj):
+    surf = text_functions.speech_bubble("I'm possessed!", 150)
+    pos = (obj.dimensions[0]/2,  - surf.get_height())
+    obj.flair['possessed'] = (surf, pos)
 
 
-    for i, l in enumerate(lines):
-        t = font.render(l, True, text_colour)
-        surf.blit(t, (surf.get_width()/2 - t.get_width()/2, text_top + i * t.get_height()))
+################################################################################
+### fear collected functions
+################################################################################
+def red_square(obj):  # get ooga booga'd
+    obj.fear = 0
+    obj.fainted = True
+    surf = pygame.Surface((10, 10))
+    surf.fill((120, 0, 0))
+    obj.flair['fear_collected'] = (surf, (-5, -obj.dimensions[1] - 5))
 
-    surf.set_colorkey((255, 0, 255))
-    return surf
+
+################################################################################
+### scared functions
+################################################################################
+def panic(obj):
+    obj.current_speed = 10
+
+    obj.move_down = False
+    obj.move_up = False
+    obj.move_left = False
+    obj.move_right = False
+    if random.randint(0, 1):
+        obj.move_down = True
+    else:
+        obj.move_up = True
+
+    if random.randint(0, 1):
+        obj.move_right = True
+    else:
+        obj.move_left = True
 
 
-def im_possessed(owner, game_class):
-    def func():
-        surf = speech_bubble("I'm possessed!", 150)
-        pos = (owner.coord[0] + owner.dimensions[0], owner.coord[1] - surf.get_height())
-        game_class.world_objects_to_draw.append((surf, pos))
-    return func
+def freeze(obj):
+    obj.current_speed = 0
 
+
+def run_away_straight(obj):
+    obj.current_speed = 10
+    vec = (obj.coord[0] - obj.feared_from_pos[0], obj.coord[1] - obj.feared_from_pos[1])
+    if vec[0] == 0:
+        if vec[1] >= 0:
+            ang = 90.0
+        else:
+            ang = -90.0
+    else:
+        ang = math.atan(vec[1]/float(vec[0])) * 180 / math.pi
+
+    if vec[0] < 0:
+        ang += 180.0
+
+    obj.move_down = False
+    obj.move_up = False
+    obj.move_left = False
+    obj.move_right = False
+
+    if -22.5 <= ang <= 22.5:
+        obj.move_right = True
+        return
+    if 22.5 <= ang <= 67.5:
+        obj.move_right = True
+        obj.move_down = True
+        return
+    if 67.5 <= ang <= 112.5:
+        obj.move_down = True
+        return
+    if 112.5 <= ang <= 157.5:
+        obj.move_down = True
+        obj.move_left = True
+        return
+    if 157.5 <= ang <= 202.5:
+        obj.move_left = True
+        return
+    if 202.5 <= ang <= 247.5:
+        obj.move_left = True
+        obj.move_up = True
+        return
+    if ang >= 247.5 or ang <= -67.5:
+        obj.move_up = True
+        return
+    if -67.5 <= ang <= -22.5:
+        obj.move_right = True
+        obj.move_up = True
+        return

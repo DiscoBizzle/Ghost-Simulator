@@ -5,8 +5,8 @@ import pygame
 
 from gslib import fear_functions
 from gslib.game_object import GameObject
+from gslib import text_functions
 from gslib.constants import *
-from gslib.fear_functions import text_wrap
 
 WHITE = (255, 255, 255)
 GREY = (60, 60, 60)
@@ -115,6 +115,14 @@ def gen_name(gender):
 
 class Character(GameObject):
     def __init__(self, game_class, x, y, w, h, stats, sprite_sheet='DudeSheet.png'):
+        """
+        Characters have various functions to determine their behaviour when things happen.
+        self.feared_function - when the character is scared
+        self.possessed_function - when the character is possessed
+        self.collected_function - when the character has had its fear collected (ooga booga'd)
+
+        Make these functions in fear_functions.py, taking only self as an argument.
+        """
         GameObject.__init__(self, game_class, x, y, w, h, pygame.image.load(os.path.join(CHARACTER_DIR, sprite_sheet)).convert())
         self.fears = stats['fears']
         self.scared_of = stats['scared_of']
@@ -124,16 +132,12 @@ class Character(GameObject):
         self.sprite = pygame.image.load(os.path.join(CHARACTER_DIR, 'Sprite_top.png'))
         self.sprite = pygame.transform.scale(self.sprite, self.dimensions).convert()
         self.sprite.set_colorkey((255, 0, 255))
-        self.fear_function = None
-        self.possess_function = fear_functions.im_possessed(self, game_class)
+        self.feared_function = fear_functions.run_away_straight
+        self.possessed_function = fear_functions.im_possessed
+        self.collected_function = fear_functions.red_square
         self.fainted = False
-
-    def fear_collected(self):  # get ooga booga'd
-        self.fear = 0
-        self.fainted = True
-        surf = pygame.Surface((10, 10))
-        surf.fill((120, 0, 0))
-        self.flair.append((surf, (-5, -self.dimensions[1] - 5)))
+        self.feared_by_obj = None
+        self.feared_from_pos = (0, 0)
 
     def get_stats(self, name):
         name = name
@@ -147,9 +151,9 @@ class Character(GameObject):
             self.update_timer += 1
             #pick random direction (currently only one of 8 directions, but at a random speed)
 
-            if self.update_timer >= 50:
+            if self.update_timer >= 50 and not self.fear_timer:
                 self.update_timer = 0
-                self.current_speed = random.randint(0, self.normal_speed)
+                self.current_speed = random.randint(self.min_speed, self.normal_speed)
 
                 self.move_down = False
                 self.move_up = False
@@ -166,11 +170,11 @@ class Character(GameObject):
                     self.move_left = True
 
             if self.fear_timer:
-                self.update_timer += 15
-                self.current_speed = random.randint(0, self.fear_speed)
+                self.feared_function(self)
                 self.fear_timer -= 1
+
         else:
-            self.possess_function()
+            self.possessed_function(self)
             self.current_speed = self.normal_speed
             # tie move to possessing player move
             self.move_down = self.possessed_by.move_down
@@ -221,7 +225,7 @@ class Character(GameObject):
         surf.blit(temp, (text_left, name_text.get_height() + age_text.get_height() + 2 * border))
 
         # draw bio
-        bio = text_wrap(self.stats['bio'], font, dim[0] - text_left - border)
+        bio = text_functions.text_wrap(self.stats['bio'], font, dim[0] - text_left - border)
         top = name_text.get_height() + age_text.get_height() + 2 * border
         t_height = name_text.get_height()
         for i, b in enumerate(bio):

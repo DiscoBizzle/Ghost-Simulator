@@ -155,7 +155,7 @@ class Graphics(object):
             blit_coord = (o.coord[0] + o.dimensions[0] - SPRITE_WIDTH, o.coord[1] + o.dimensions[1] - SPRITE_HEIGHT)
 
             self.game.world_objects_to_draw.append((surf, blit_coord))
-            for s, p in o.flair:
+            for s, p in o.flair.itervalues():
                 self.game.world_objects_to_draw.append((s, (blit_coord[0] + p[0] + surf.get_size()[0]/2, blit_coord[1] + p[1] + surf.get_size()[1]/2)))
 
             if o == self.game.selected_object:
