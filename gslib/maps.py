@@ -114,7 +114,7 @@ class Map(object):
             self.create_object_from_dict(o_dict, game_class)
 
     def create_object_from_dict(self, d, game_class):
-        if   d['object_type']=="character":
+        if d['object_type'] == "character":
             try:
                 self.objects.append(character.Character(game_class, d['x'], d['y'], d['sprite_w'], d['sprite_h'], character.gen_character(), sprite_sheet=d['sprite_sheet']))
             except:

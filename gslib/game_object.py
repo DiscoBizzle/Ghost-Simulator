@@ -9,6 +9,9 @@ from gslib import fear_functions
 class GameObject(object):
     def __init__(self, game_class, x, y, w, h, sprite_sheet):
         """
+        To add an object to a map:
+        map.objects.append(object)
+
         Object states:
         Each state has a name (consider using integers if you want to advance through them sequentially)
         Each state is a dict of properties that the object will update to when state_index is changed to that state name
