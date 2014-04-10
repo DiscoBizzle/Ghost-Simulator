@@ -66,6 +66,10 @@ class GameObject(object):
                                       self.sprite_width, self.sprite_height)
         self.sprite_sheet.set_colorkey((255, 0, 255))
 
+        #trigger functions
+        self.has_touched_function = None
+        self.is_touched_function = None
+
         self.move_up = False
         self.move_down = False
         self.move_left = False
@@ -228,6 +232,11 @@ class GameObject(object):
             if not o is self:
                 if o.collision_weight and self.collision_weight:  # check if obj collides at all
                     if pro_rect.colliderect(o.rect):
+                        if o.is_touched_function:
+                            o.is_touched_function()
+                        if self.has_touched_function:
+                            self.has_touched_function()
+
                         if self.collision_weight < o.collision_weight:  # check if obj can be pushed by self
                             collision = True
                         else:  # push object

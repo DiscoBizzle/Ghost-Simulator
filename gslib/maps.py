@@ -112,7 +112,7 @@ class Map(object):
 
         self.objects[0].normal_speed = 0
         self.objects[1].collision_weight = 5
-        self.objects[1].coord = (150, 100)
+        self.objects[1].coord = (TILE_SIZE*7, TILE_SIZE*18)
         self.objects[2].collision_weight = 2
         self.objects[2].normal_speed = 0
         self.objects[2].coord = (200, 100)
@@ -123,6 +123,7 @@ class Map(object):
         self.objects.append(character_objects.SmallDoor(game_class, TILE_SIZE*7, TILE_SIZE*7, character.gen_character()))
 
         fear_functions.trigger_flip_state_on_collection(self.objects[3], self.objects[-1])
+        fear_functions.trigger_flip_state_is_touched(self.objects[1], self.objects[-1])
 
         for o_dict in loaded_objects:
             #if o_dict['object_type']=="hat":

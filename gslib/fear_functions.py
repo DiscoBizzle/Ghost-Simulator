@@ -15,6 +15,11 @@ def trigger_flip_state_on_collection(obj, target):
     obj.collected_function = func
 
 
+def trigger_flip_state_is_touched(obj, target):
+    def func():
+        flip_state(target)()
+    obj.is_touched_function = func
+
 ################################################################################
 ### possession functions
 ### These happen when a character is possessed or unpossessed

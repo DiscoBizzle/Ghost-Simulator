@@ -68,7 +68,7 @@ class Game(object):
         self.objects = []
 
         self.players = []
-        self.players.append(player.Player(self, 50, 50, 16, 16, 'GhostSheet.png'))
+        self.players.append(player.Player(self, TILE_SIZE*6, TILE_SIZE*18, 16, 16, 'GhostSheet.png'))
         self.players.append(player.Player(self, 0, 0, 16, 16, 'TutorialGhost2.png'))
         # self.player1 = self.players[0]
 
