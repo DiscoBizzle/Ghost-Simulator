@@ -6,6 +6,16 @@ from gslib import text_functions
 
 
 ################################################################################
+### trigger functions
+################################################################################
+def trigger_flip_state_on_collection(obj, target):
+    def func():
+        red_square(obj)()
+        flip_state(target)()
+    obj.collected_function = func
+
+
+################################################################################
 ### possession functions
 ### These happen when a character is possessed or unpossessed
 ################################################################################

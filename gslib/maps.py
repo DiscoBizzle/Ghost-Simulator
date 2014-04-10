@@ -7,6 +7,7 @@ from gslib import graphics
 from gslib import character
 from gslib.constants import *
 import gslib.character_objects as character_objects
+import gslib.fear_functions as fear_functions
 
 def test():
     pygame.init()
@@ -120,6 +121,8 @@ class Map(object):
         self.objects[3].coord = (250, 100)
 
         self.objects.append(character_objects.SmallDoor(game_class, TILE_SIZE*7, TILE_SIZE*7, character.gen_character()))
+
+        fear_functions.trigger_flip_state_on_collection(self.objects[3], self.objects[-1])
 
         for o_dict in loaded_objects:
             #if o_dict['object_type']=="hat":
