@@ -1,0 +1,18 @@
+(This file assumes your machines & installed OSes are 64-bit. 
+ calpol: All of your machines except maybe popsi's are.)
+
+files in 'install this' are the ones that i'm fairly sure are right for each OS for calpol
+files in 'probably not this' are the other candidates
+
+Mac: lucky bugger, just double-click the .pkg
+
+Windows: Is your Python 32-bit or 64-bit? It's probably 32-bit.
+ So just run AVbin10-win32.exe and you *should* be golden. Report if not.
+
+Linux: Is your Python 64-bit or 32-bit? It's probably 64-bit, b/c having 32-bit
+ python on a 64-bit linux is a massive headache due entirely to the inadequacy
+ of linux package management tools.
+
+ So run 'sudo ./install-avbin-linux-x86-64-v10' and hope it doesn't rm -rf / ?
+ I haven't tried the script!
+
