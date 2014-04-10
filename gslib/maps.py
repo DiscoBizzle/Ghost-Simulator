@@ -117,6 +117,7 @@ class Map(object):
         self.objects[3].collision_weight = 10
         self.objects[3].normal_speed = 0
         self.objects[3].coord = (250, 100)
+
         for o_dict in loaded_objects:
             #if o_dict['object_type']=="hat":
                 #self.objects.append(character.Character(game_class, o_dict['x'], o_dict['y'], 16, 16, character.gen_character()))

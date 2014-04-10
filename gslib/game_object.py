@@ -27,6 +27,7 @@ class GameObject(object):
         Objects can only push objects with equal or less weight.
         Objects can only push a chain of objects up to their own weight.
         If an objects' collision weight is 0, it does not collide with objects.
+        Collision rectangle updates automatically if you change obj dimensions (or coord).
         """
         self.game_class = game_class
 
@@ -37,7 +38,7 @@ class GameObject(object):
         self._state_index = 'state1'
 
         self._coord = (x, y)  # top left
-        self.dimensions = (w, h)
+        self._dimensions = (w, h)
         self.velocity = (0, 0)
         self.min_speed = 0
         self.current_speed = 1
@@ -87,8 +88,15 @@ class GameObject(object):
         return self._coord
     def set_coord(self, new):
         self._coord = new
-        self.rect = pygame.Rect(self._coord, self.dimensions)
+        self.rect = pygame.Rect(self._coord, self._dimensions)
     coord = property(get_coord, set_coord)
+
+    def get_dimensions(self):
+        return self._dimensions
+    def set_dimensions(self, new):
+        self._dimensions = new
+        self.rect = pygame.Rect(self._coord, self._dimensions)
+    dimensions = property(get_dimensions, set_dimensions)
 
     def update(self):
         v_x, v_y = 0, 0
@@ -112,8 +120,6 @@ class GameObject(object):
         self.animate()
 
     def check_distance(self, other, distance):  # centre to centre distance is checked
-        # x = self.coord[0] + self.dimensions[0]/2 - (other.coord[0] + other.dimensions[0]/2)
-        # y = self.coord[1] + self.dimensions[1]/2 - (other.coord[1] + other.dimensions[1]/2)
         if self.get_distance_squared(other) < distance**2:
             return True
         else:
@@ -214,7 +220,6 @@ class GameObject(object):
 
         if not collision:
             self.coord = pro_pos
-            # self.rect = pygame.Rect(self.coord, self.dimensions)
         return collision
 
     def animate(self):
