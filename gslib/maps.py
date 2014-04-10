@@ -107,23 +107,24 @@ class Map(object):
         
         self.objects = []
 
-        for i in range(4):
+        for i in range(3):
             self.objects.append(character.Character(game_class, 100, 100, 16, 16, character.gen_character()))
 
-        self.objects[0].normal_speed = 0
-        self.objects[1].collision_weight = 5
-        self.objects[1].coord = (TILE_SIZE*7, TILE_SIZE*18)
-        self.objects[2].collision_weight = 2
-        self.objects[2].normal_speed = 0
-        self.objects[2].coord = (200, 100)
-        self.objects[3].collision_weight = 4
-        self.objects[3].normal_speed = 0
-        self.objects[3].coord = (250, 100)
+        self.objects[0].collision_weight = 5
+        self.objects[0].coord = (TILE_SIZE*7, TILE_SIZE*18)
+        self.objects[1].collision_weight = 4
+        self.objects[1].normal_speed = 0
+        self.objects[1].coord = (TILE_SIZE*8, TILE_SIZE*18)
+        self.objects[2].collision_weight = 10
+        self.objects[2].normal_speed = 1
+        self.objects[2].coord = (TILE_SIZE*8, TILE_SIZE*16)
 
         self.objects.append(character_objects.SmallDoor(game_class, TILE_SIZE*7, TILE_SIZE*7, character.gen_character()))
 
-        fear_functions.trigger_flip_state_on_collection(self.objects[3], self.objects[-1])
-        fear_functions.trigger_flip_state_is_touched(self.objects[1], self.objects[-1])
+        fear_functions.trigger_flip_state_on_collection(self.objects[1], self.objects[-1])
+        fear_functions.trigger_flip_state_is_touched_by(self.objects[0], self.objects[1], self.objects[-1])
+        fear_functions.trigger_flip_state_is_untouched_by(self.objects[0], self.objects[1], self.objects[-1])
+        # self.objects[3].is_touched_function = fear_functions.touched_flip_state(self.objects[-1])
 
         for o_dict in loaded_objects:
             #if o_dict['object_type']=="hat":

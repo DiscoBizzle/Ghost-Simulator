@@ -15,10 +15,30 @@ def trigger_flip_state_on_collection(obj, target):
     obj.collected_function = func
 
 
-def trigger_flip_state_is_touched(obj, target):
-    def func():
-        flip_state(target)()
-    obj.is_touched_function = func
+def trigger_flip_state_is_touched_by(toucher, touched, target):
+    def func(o):
+        if o == toucher:
+            flip_state(target)()
+    touched.is_touched_function = func
+
+
+def trigger_flip_state_is_untouched_by(untoucher, untouched, target):
+    def func(o):
+        if o == untoucher:
+            flip_state(target)()
+    untouched.is_untouched_function = func
+
+
+################################################################################
+### touch functions
+### These happen when a character is touched (or untouched, to be added later)
+################################################################################
+def touched_flip_state(obj):
+    def func(toucher):  # need to accept toucher, even if this function don't need it!
+        obj.state_index = not obj.state_index
+        # print obj.state_index
+    return func
+
 
 ################################################################################
 ### possession functions

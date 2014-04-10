@@ -69,6 +69,8 @@ class GameObject(object):
         #trigger functions
         self.has_touched_function = None
         self.is_touched_function = None
+        self.has_untouched_function = None
+        self.is_untouched_function = None
 
         self.move_up = False
         self.move_down = False
@@ -81,6 +83,7 @@ class GameObject(object):
 
         self.flair = {}
         self.collision_weight = 1  # set to 0 for no collision, can only push things that are lighter, or same weight
+
 
     def get_state_index(self):
         return self._state_index
@@ -179,7 +182,18 @@ class GameObject(object):
 
         self.fear = fear_level
 
+    def remove_self_from_touching_list(self):
+        to_remove = []
+        for t in self.game_class.touching:
+            if t[0] == self or t[1] == self:
+                to_remove.append(t)
+        for i in to_remove:
+            self.game_class.touching.remove(i)
+
+
     def move(self):
+        self.remove_self_from_touching_list()
+
         x_ticks, y_ticks = abs(self.velocity[0]), abs(self.velocity[1])
         move_x_per_tick, move_y_per_tick = 1 if self.velocity[0] > 0 else -1, 1 if self.velocity[1] > 0 else -1
 
@@ -192,7 +206,8 @@ class GameObject(object):
                 y_ticks -= 1
 
     def movePx(self, x_dir, y_dir):
-        # print '\n'
+        self.remove_self_from_touching_list()
+
         collision = False
 
         # collide againt map boundaries
@@ -232,10 +247,10 @@ class GameObject(object):
             if not o is self:
                 if o.collision_weight and self.collision_weight:  # check if obj collides at all
                     if pro_rect.colliderect(o.rect):
-                        if o.is_touched_function:
-                            o.is_touched_function()
-                        if self.has_touched_function:
-                            self.has_touched_function()
+                        # if o.is_touched_function:
+                        #     o.is_touched_function(o)
+                        # if self.has_touched_function:
+                        #     self.has_touched_function(o)
 
                         if self.collision_weight < o.collision_weight:  # check if obj can be pushed by self
                             collision = True
@@ -244,6 +259,9 @@ class GameObject(object):
                             o.collision_weight = self.collision_weight - o.collision_weight  # allows to push chain of objs
                             collision = o.movePx(x_dir, y_dir)  # collsion of self is dependent on whether obj collided
                             o.collision_weight = temp
+
+                        if not (self, o) in self.game_class.touching:
+                            self.game_class.touching.append((self, o))  # (toucher, touchee)
 
         if not collision:
             self.coord = pro_pos

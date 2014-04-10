@@ -142,6 +142,9 @@ class Game(object):
         self.load_options()
         self.key_controller.load()
 
+        self.touching = []
+        self.last_touching = []
+
     def game_loop(self):
         while self.game_running:
             # Update clock & pump event queue.
@@ -179,8 +182,24 @@ class Game(object):
             self.show_fear_ranges()
 
         if self.GameState == MAIN_GAME:
+            self.last_touching = [p for p in self.touching]  # creates a copy
             for obj in self.objects:
                 obj.update()
+
+            for i, p in enumerate(self.touching):
+                if not p in self.last_touching:  # detect on touch
+                    if p[0].has_touched_function:
+                        p[0].has_touched_function(p[1])
+                    if p[1].is_touched_function:
+                        p[1].is_touched_function(p[0])
+
+            for i, p in enumerate(self.last_touching):
+                if not p in self.touching:  # detect on un-touch
+                    if p[0].has_untouched_function:
+                        p[0].has_untouched_function(p[1])
+                    if p[1].is_untouched_function:
+                        p[1].is_untouched_function(p[0])
+
         elif self.GameState == CREDITS:
             self.credits.update()
         elif self.GameState == TEXTBOX_TEST:
