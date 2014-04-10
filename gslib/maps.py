@@ -6,6 +6,7 @@ import pygame
 from gslib import graphics
 from gslib import character
 from gslib.constants import *
+import gslib.character_objects as character_objects
 
 def test():
     pygame.init()
@@ -114,9 +115,11 @@ class Map(object):
         self.objects[2].collision_weight = 2
         self.objects[2].normal_speed = 0
         self.objects[2].coord = (200, 100)
-        self.objects[3].collision_weight = 10
+        self.objects[3].collision_weight = 4
         self.objects[3].normal_speed = 0
         self.objects[3].coord = (250, 100)
+
+        self.objects.append(character_objects.SmallDoor(game_class, TILE_SIZE*7, TILE_SIZE*7, character.gen_character()))
 
         for o_dict in loaded_objects:
             #if o_dict['object_type']=="hat":

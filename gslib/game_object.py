@@ -56,12 +56,14 @@ class GameObject(object):
 
         #variables for animation
         self.sprite_sheet = sprite_sheet
-        self.animation_state = ANIM_DOWNIDLE
+        self._animation_state = ANIM_DOWNIDLE
         self.frame_count = 0
-        self.current_frame = 0
+        self._current_frame = 0
         self.max_frames = 3
-        self.frame_rect = pygame.Rect(self.current_frame * SPRITE_WIDTH, self.animation_state * SPRITE_HEIGHT,
-                                      SPRITE_WIDTH, SPRITE_HEIGHT)
+        self.sprite_width = SPRITE_WIDTH
+        self.sprite_height = SPRITE_HEIGHT
+        self.frame_rect = pygame.Rect(self.current_frame * self.sprite_width, self.animation_state * self.sprite_height,
+                                      self.sprite_width, self.sprite_height)
         self.sprite_sheet.set_colorkey((255, 0, 255))
 
         self.move_up = False
@@ -97,6 +99,22 @@ class GameObject(object):
         self._dimensions = new
         self.rect = pygame.Rect(self._coord, self._dimensions)
     dimensions = property(get_dimensions, set_dimensions)
+
+    def get_current_frame(self):
+        return self._current_frame
+    def set_current_frame(self, val):
+        self._current_frame = val
+        self.frame_rect = pygame.Rect(self._current_frame * self.sprite_width, self._animation_state * self.sprite_height,
+                                      self.sprite_width, self.sprite_height)
+    current_frame = property(get_current_frame, set_current_frame)
+
+    def get_animation_state(self):
+        return self._animation_state
+    def set_animation_state(self, val):
+        self._animation_state = val
+        self.frame_rect = pygame.Rect(self._current_frame * self.sprite_width, self._animation_state * self.sprite_height,
+                                      self.sprite_width, self.sprite_height)
+    animation_state = property(get_animation_state, set_animation_state)
 
     def update(self):
         v_x, v_y = 0, 0
@@ -250,6 +268,6 @@ class GameObject(object):
             elif self.velocity[0] < 0:
                 self.animation_state = ANIM_LEFTWALK
 
-        self.frame_rect = pygame.Rect(self.current_frame * SPRITE_WIDTH, self.animation_state * SPRITE_HEIGHT,
-                                      SPRITE_WIDTH, SPRITE_HEIGHT)
+        # self.frame_rect = pygame.Rect(self.current_frame * SPRITE_WIDTH, self.animation_state * SPRITE_HEIGHT,
+        #                               SPRITE_WIDTH, SPRITE_HEIGHT)
 

@@ -78,7 +78,7 @@ class Player(GameObject):
                 if self.check_distance(o, FEAR_COLLECTION_RADIUS):
                     self.fear += o.fear
                     # o.fear_collected()
-                    o.collected_function(o)
+                    o.collected_function()
 
     def toggle_possess(self):
         if self.possessing:
@@ -95,13 +95,15 @@ class Player(GameObject):
                     if d < closest[0]:
                         closest = (d, o)
 
-        self.possessing = closest[1]
-        closest[1].possessed_by = self
-        self.try_possess = False
+        if closest[1]:
+            self.possessing = closest[1]
+            closest[1].possessed_by = self
+            self.possessing.possessed_function()
+            # self.try_possess = False
 
     def unpossess(self):
         self.coord = self.possessing.coord
-        del self.possessing.flair['possessed']
+        self.possessing.unpossessed_function()
         self.possessing.possessed_by = False
         self.possessing = False
 

@@ -148,11 +148,11 @@ class Graphics(object):
             if isinstance(o, player.Player): #o == self.game.player1:
                 if o.possessing:
                     continue
-            surf = pygame.Surface((SPRITE_WIDTH, SPRITE_HEIGHT))
+            surf = pygame.Surface((o.sprite_width, o.sprite_height))
             surf.fill((255, 0, 255))
             surf.blit(o.sprite_sheet, (0, 0), o.frame_rect)
             surf.set_colorkey((255, 0, 255))
-            blit_coord = (o.coord[0] + o.dimensions[0] - SPRITE_WIDTH, o.coord[1] + o.dimensions[1] - SPRITE_HEIGHT)
+            blit_coord = (o.coord[0] + o.dimensions[0] - o.sprite_width, o.coord[1] + o.dimensions[1] - o.sprite_height)
 
             self.game.world_objects_to_draw.append((surf, blit_coord))
             for s, p in o.flair.itervalues():
