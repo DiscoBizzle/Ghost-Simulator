@@ -27,6 +27,8 @@ class Player(GameObject):
                        'state2': {'max_speed': 10, 'fear_radius': 150}}
         self.normal_speed = 5
 
+        self.collision_weight = 0
+
 
     def get_fear(self):
         return self._fear
@@ -82,16 +84,20 @@ class Player(GameObject):
         if self.possessing:
             self.unpossess()
         else:
-            self.possess_first_found()
+            self.possess_closest()
 
-    def possess_first_found(self):
+    def possess_closest(self):
+        closest = (10000000000000, None)
         for o in self.game_class.objects:
             if not isinstance(o, Player):
                 if self.check_distance(o, self.possess_range):
-                    self.possessing = o
-                    o.possessed_by = self
-                    self.try_possess = False
-                    return
+                    d = self.get_distance_squared(o)
+                    if d < closest[0]:
+                        closest = (d, o)
+
+        self.possessing = closest[1]
+        closest[1].possessed_by = self
+        self.try_possess = False
 
     def unpossess(self):
         self.coord = self.possessing.coord

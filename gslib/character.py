@@ -132,7 +132,7 @@ class Character(GameObject):
         self.sprite = pygame.image.load(os.path.join(CHARACTER_DIR, 'Sprite_top.png'))
         self.sprite = pygame.transform.scale(self.sprite, self.dimensions).convert()
         self.sprite.set_colorkey((255, 0, 255))
-        self.feared_function = fear_functions.run_away_straight
+        self.feared_function = fear_functions.freeze
         self.possessed_function = fear_functions.im_possessed
         self.collected_function = fear_functions.red_square
         self.fainted = False

@@ -21,6 +21,12 @@ class GameObject(object):
         Flair:
         Flair is a dict of 'name': (surface, position (relative to object centre)) to additionally render attached to sprite
         E.g. Hats, speech bubbles.
+
+        Collision:
+        Each object has a collision_weight.
+        Objects can only push objects with equal or less weight.
+        Objects can only push a chain of objects up to their own weight.
+        If an objects' collision weight is 0, it does not collide with objects.
         """
         self.game_class = game_class
 
@@ -30,7 +36,7 @@ class GameObject(object):
         self.states['state2'] = {'max_speed': 5, 'fear_radius': 150}
         self._state_index = 'state1'
 
-        self.coord = (x, y)  # top left
+        self._coord = (x, y)  # top left
         self.dimensions = (w, h)
         self.velocity = (0, 0)
         self.min_speed = 0
@@ -66,8 +72,8 @@ class GameObject(object):
 
         self.possessed_by = None
 
-
         self.flair = {}
+        self.collision_weight = 1  # set to 0 for no collision, can only push things that are lighter, or same weight
 
     def get_state_index(self):
         return self._state_index
@@ -76,6 +82,13 @@ class GameObject(object):
         for k, v in self.states[index].iteritems():
             setattr(self, k, v)
     state_index = property(get_state_index, set_state_index)
+
+    def get_coord(self):
+        return self._coord
+    def set_coord(self, new):
+        self._coord = new
+        self.rect = pygame.Rect(self._coord, self.dimensions)
+    coord = property(get_coord, set_coord)
 
     def update(self):
         v_x, v_y = 0, 0
@@ -94,17 +107,22 @@ class GameObject(object):
 
         if not self.velocity == (0, 0):
             self.move()
-        self.rect = pygame.Rect(self.coord, self.dimensions)
+            # self.rect = pygame.Rect(self.coord, self.dimensions)
         self.apply_fear()
         self.animate()
 
     def check_distance(self, other, distance):  # centre to centre distance is checked
-        x = self.coord[0] + self.dimensions[0]/2 - (other.coord[0] + other.dimensions[0]/2)
-        y = self.coord[1] + self.dimensions[1]/2 - (other.coord[1] + other.dimensions[1]/2)
-        if x**2 + y**2 < distance**2:
+        # x = self.coord[0] + self.dimensions[0]/2 - (other.coord[0] + other.dimensions[0]/2)
+        # y = self.coord[1] + self.dimensions[1]/2 - (other.coord[1] + other.dimensions[1]/2)
+        if self.get_distance_squared(other) < distance**2:
             return True
         else:
             return False
+
+    def get_distance_squared(self, other):
+        x = self.coord[0] + self.dimensions[0]/2 - (other.coord[0] + other.dimensions[0]/2)
+        y = self.coord[1] + self.dimensions[1]/2 - (other.coord[1] + other.dimensions[1]/2)
+        return x**2 + y**2
 
     def apply_fear(self):
         for o in self.game_class.objects:
@@ -149,6 +167,7 @@ class GameObject(object):
         # print '\n'
         collision = False
 
+        # collide againt map boundaries
         pro_pos = (self.coord[0] + x_dir, self.coord[1] + y_dir)
         pro_rect = pygame.Rect(pro_pos, self.dimensions)
         if pro_pos[0] >= 0 and pro_pos[0] + self.dimensions[0] <= LEVEL_WIDTH and \
@@ -157,7 +176,8 @@ class GameObject(object):
         else:
             collision = True
 
-        # begin collision detection NOTE: assumes largest object w/ collision is 64x64 (i.e. 2x2 tiles)
+        # collision detection against map tiles
+        # NOTE: assumes largest object w/ collision is 64x64 (i.e. 2x2 tiles)
 
         if pro_pos[0] >= 0 and pro_pos[1] >= 0:
             i = pro_pos[0] / TILE_SIZE  # get the index of the upper left tile
@@ -179,8 +199,23 @@ class GameObject(object):
                             collision = True
                             # print('collision!')
 
+        # collision against other objects
+        for o in self.game_class.objects:
+            if not o is self:
+                if o.collision_weight and self.collision_weight:  # check if obj collides at all
+                    if pro_rect.colliderect(o.rect):
+                        if self.collision_weight < o.collision_weight:  # check if obj can be pushed by self
+                            collision = True
+                        else:  # push object
+                            temp = o.collision_weight
+                            o.collision_weight = self.collision_weight - o.collision_weight  # allows to push chain of objs
+                            collision = o.movePx(x_dir, y_dir)  # collsion of self is dependent on whether obj collided
+                            o.collision_weight = temp
+
         if not collision:
             self.coord = pro_pos
+            # self.rect = pygame.Rect(self.coord, self.dimensions)
+        return collision
 
     def animate(self):
         self.frame_count += 1
