@@ -187,16 +187,23 @@ class Game(object):
             for i, p in enumerate(self.touching):
                 if not p in self.last_touching:  # detect on touch
                     if p[0].has_touched_function:
-                        p[0].has_touched_function(p[1])
+                        for f in p[0].has_touched_function:
+                            f(p[1])
+                            #p[0].has_touched_function(p[1])
                     if p[1].is_touched_function:
-                        p[1].is_touched_function(p[0])
+                        for f in p[1].is_touched_function:
+                            f(p[0]) # p[1].is_touched_function(p[0])
 
             for i, p in enumerate(self.last_touching):
                 if not p in self.touching:  # detect on un-touch
                     if p[0].has_untouched_function:
-                        p[0].has_untouched_function(p[1])
+                        for f in p[0].has_untouched_function:
+                            f(p[1])
+                            # p[0].has_untouched_function(p[1])
                     if p[1].is_untouched_function:
-                        p[1].is_untouched_function(p[0])
+                        for f in p[1].is_untouched_function:
+                            f(p[0])
+                            # p[1].is_untouched_function(p[0])
 
         elif self.GameState == CREDITS:
             self.credits.update()

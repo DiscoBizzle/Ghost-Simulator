@@ -122,8 +122,12 @@ class Map(object):
         self.objects['door1'] = character_objects.SmallDoor(game_class, TILE_SIZE*7, TILE_SIZE*7, character.gen_character())
 
         fear_functions.trigger_flip_state_on_harvest(self.objects[1], self.objects['door1'])
+
         fear_functions.trigger_flip_state_is_touched_by(self.objects[0], self.objects[1], self.objects['door1'])
         fear_functions.trigger_flip_state_is_untouched_by(self.objects[0], self.objects[1], self.objects['door1'])
+
+        fear_functions.trigger_flip_state_is_touched_by(self.objects[0], self.objects[2], self.objects['door1'])
+        fear_functions.trigger_flip_state_is_untouched_by(self.objects[0], self.objects[2], self.objects['door1'])
         # self.objects[0].has_touched_function = fear_functions.touched_flip_state(self.objects[-1])
         # self.objects[0].has_untouched_function = fear_functions.touched_flip_state(self.objects[-1])
 
@@ -136,7 +140,7 @@ class Map(object):
     def create_object_from_dict(self, d, game_class):
         if d['object_type'] == "character":
             try:
-                self.objects.append(character.Character(game_class, d['x'], d['y'], d['sprite_w'], d['sprite_h'], character.gen_character(), sprite_sheet=d['sprite_sheet']))
+                self.objects[d['reference']] = character.Character(game_class, d['x'], d['y'], d['sprite_w'], d['sprite_h'], character.gen_character(), sprite_sheet=d['sprite_sheet'])
             except:
                 print "Couldn't create an object from map file"
 

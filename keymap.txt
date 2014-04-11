@@ -1,13 +1,16 @@
-Player 1 down;115
 Player 1 right;100
 Player 1 up;119
+Player 1 down;115
+Player 1 harvest fear;122
 Player 1 left;97
-Player 2 down;115
-Player 2 right;100
-Player 2 up;119
-Player 2 left;97
+Player 1 possess;102
+Player 2 right;275
+Player 2 up;273
+Player 2 down;274
+Player 2 harvest fear;120
+Player 2 left;276
+Player 2 possess;103
 #
-Advance Character States;99
 Show Fears;101
 Skill Screen;113
 Show Fear Ranges;114

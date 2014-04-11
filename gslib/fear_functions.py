@@ -26,21 +26,21 @@ def trigger_flip_state_on_harvest(obj, target):
     def func():
         red_square(obj)()
         flip_state(target)()
-    obj.collected_function = func
+    obj.harvested_function.append(func)
 
 
 def trigger_flip_state_is_touched_by(toucher, touched, target):
     def func(o):
         if o == toucher:
             flip_state(target)()
-    touched.is_touched_function = func
+    touched.is_touched_function.append(func)
 
 
 def trigger_flip_state_is_untouched_by(untoucher, untouched, target):
     def func(o):
         if o == untoucher:
             flip_state(target)()
-    untouched.is_untouched_function = func
+    untouched.is_untouched_function.append(func)
 
 
 ################################################################################
@@ -68,7 +68,8 @@ def im_possessed(obj):
 
 def undo_im_possessed(obj):
     def func():
-        del obj.flair['possessed']
+        if not obj.possessed_by:
+            del obj.flair['possessed']
     return func
 
 
@@ -79,7 +80,7 @@ def flip_state(obj):
 
 
 ################################################################################
-### fear collected functions
+### fear harvested functions
 ################################################################################
 def red_square(obj):  # get ooga booga'd
     def func():
@@ -87,7 +88,7 @@ def red_square(obj):  # get ooga booga'd
         obj.fainted = True
         surf = pygame.Surface((10, 10))
         surf.fill((120, 0, 0))
-        obj.flair['fear_collected'] = (surf, (-5, -obj.dimensions[1] - 5))
+        obj.flair['fear_harvested'] = (surf, (-5, -obj.dimensions[1] - 5))
     return func
 
 
