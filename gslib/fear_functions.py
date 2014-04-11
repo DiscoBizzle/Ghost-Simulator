@@ -4,11 +4,25 @@ import math
 
 from gslib import text_functions
 
+# No bitchin' about returning functions, it makes triggers easier to think about/create.
+
+# Game events that can call these functions:
+# - feared_function - executed every tick when the character is scared
+# - possessed_function - occurs when the character becomes possessed
+# - unpossessed_function - occurs when the character becomes unpossessed
+# - harvested_function - when the character has had its fear harvested (ooga booga'd)
+# - is_touched_function - when the charcter is touched; accepts input of object that touched it
+# - is_untouched_function - when the charcter is untouched; accepts input of object that untouched it
+# - has_touched_function - when the character touches an object; accepts input of of object that it touches
+# - has_untouched_function - when the character untouches an object; accepts input of of object that it untouches
+
 
 ################################################################################
-### trigger functions
+### trigger functions - links character objects
+### E.g. Do thing to B when A does x.
+### These are intended to be defined when the map is created.
 ################################################################################
-def trigger_flip_state_on_collection(obj, target):
+def trigger_flip_state_on_harvest(obj, target):
     def func():
         red_square(obj)()
         flip_state(target)()
@@ -31,7 +45,7 @@ def trigger_flip_state_is_untouched_by(untoucher, untouched, target):
 
 ################################################################################
 ### touch functions
-### These happen when a character is touched (or untouched, to be added later)
+### These happen when a character is touched or untouched
 ################################################################################
 def touched_flip_state(obj):
     def func(toucher):  # need to accept toucher, even if this function don't need it!

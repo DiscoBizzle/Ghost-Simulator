@@ -73,12 +73,12 @@ class Player(GameObject):
             self.velocity = (0, 0)
 
     def collect_fear(self):  # AKA OOGA BOOGA
-        for o in self.game_class.objects:
+        for o in self.game_class.objects.itervalues():
             if not isinstance(o, Player):
                 if self.check_distance(o, FEAR_COLLECTION_RADIUS):
                     self.fear += o.fear
                     # o.fear_collected()
-                    o.collected_function()
+                    o.harvested_function()
 
     def toggle_possess(self):
         if self.possessing:
@@ -88,8 +88,10 @@ class Player(GameObject):
 
     def possess_closest(self):
         closest = (10000000000000, None)
-        for o in self.game_class.objects:
+        for o in self.game_class.objects.itervalues():
             if not isinstance(o, Player):
+                if o.possessed_by:
+                    continue
                 if self.check_distance(o, self.possess_range):
                     d = self.get_distance_squared(o)
                     if d < closest[0]:

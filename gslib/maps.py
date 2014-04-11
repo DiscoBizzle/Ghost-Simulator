@@ -105,10 +105,10 @@ class Map(object):
 
         loaded_objects = load_objects(map_file) # gives a list of dicts, each dict associated with an object from the map
         
-        self.objects = []
+        self.objects = {}
 
         for i in range(3):
-            self.objects.append(character.Character(game_class, 100, 100, 16, 16, character.gen_character()))
+            self.objects[i] = character.Character(game_class, 100, 100, 16, 16, character.gen_character())
 
         self.objects[0].collision_weight = 5
         self.objects[0].coord = (TILE_SIZE*7, TILE_SIZE*18)
@@ -119,12 +119,14 @@ class Map(object):
         self.objects[2].normal_speed = 1
         self.objects[2].coord = (TILE_SIZE*8, TILE_SIZE*16)
 
-        self.objects.append(character_objects.SmallDoor(game_class, TILE_SIZE*7, TILE_SIZE*7, character.gen_character()))
+        self.objects['door1'] = character_objects.SmallDoor(game_class, TILE_SIZE*7, TILE_SIZE*7, character.gen_character())
 
-        fear_functions.trigger_flip_state_on_collection(self.objects[1], self.objects[-1])
-        fear_functions.trigger_flip_state_is_touched_by(self.objects[0], self.objects[1], self.objects[-1])
-        fear_functions.trigger_flip_state_is_untouched_by(self.objects[0], self.objects[1], self.objects[-1])
-        # self.objects[3].is_touched_function = fear_functions.touched_flip_state(self.objects[-1])
+        fear_functions.trigger_flip_state_on_harvest(self.objects[1], self.objects['door1'])
+        fear_functions.trigger_flip_state_is_touched_by(self.objects[0], self.objects[1], self.objects['door1'])
+        fear_functions.trigger_flip_state_is_untouched_by(self.objects[0], self.objects[1], self.objects['door1'])
+        # self.objects[0].has_touched_function = fear_functions.touched_flip_state(self.objects[-1])
+        # self.objects[0].has_untouched_function = fear_functions.touched_flip_state(self.objects[-1])
+
 
         for o_dict in loaded_objects:
             #if o_dict['object_type']=="hat":

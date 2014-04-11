@@ -120,7 +120,7 @@ class Character(GameObject):
         self.feared_function - when the character is scared
         self.possessed_function - occurs when the character becomes possessed
         self.unpossessed_function - occurs when the character becomes unpossessed
-        self.collected_function - when the character has had its fear collected (ooga booga'd)
+        self.harvested_function - when the character has had its fear harvested (ooga booga'd)
 
         Make these functions in fear_functions.py
          - Function should take in any parameters and return a function.
@@ -138,7 +138,7 @@ class Character(GameObject):
         self.feared_function = fear_functions.freeze(self)
         self.possessed_function = fear_functions.im_possessed(self)
         self.unpossessed_function = fear_functions.undo_im_possessed(self)
-        self.collected_function = fear_functions.red_square(self)
+        self.harvested_function = fear_functions.red_square(self)
         self.fainted = False
         self.feared_by_obj = None
         self.feared_from_pos = (0, 0)

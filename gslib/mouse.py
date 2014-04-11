@@ -43,7 +43,7 @@ class MouseController(object):
     def check_object_click(self, event):
         if event.pos[0] > LEVEL_WIDTH or event.pos[1] > LEVEL_HEIGHT:  # don't check for object outside of level area
             return
-        for o in self.game.objects:
+        for o in self.game.objects.itervalues():
             st = SELECTION_TOLERANCE
             temp_rect = pygame.Rect((o.coord[0] - st, o.coord[1] - st), (o.dimensions[0] + 2*st, o.dimensions[1] + 2*st))
             if temp_rect.collidepoint((event.pos[0]+self.game.camera_coords[0],event.pos[1]+self.game.camera_coords[1])) and isinstance(o, character.Character):

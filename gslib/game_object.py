@@ -10,7 +10,7 @@ class GameObject(object):
     def __init__(self, game_class, x, y, w, h, sprite_sheet):
         """
         To add an object to a map:
-        map.objects.append(object)
+        map.objects['object name'] = object
 
         Object states:
         Each state has a name (consider using integers if you want to advance through them sequentially)
@@ -156,7 +156,7 @@ class GameObject(object):
         return x**2 + y**2
 
     def apply_fear(self):
-        for o in self.game_class.objects:
+        for o in self.game_class.objects.itervalues():
             if hasattr(o, 'possessing'):  # checks if object is a player as can't import player module
                 if o.possessing:
                     continue
@@ -243,7 +243,7 @@ class GameObject(object):
                             # print('collision!')
 
         # collision against other objects
-        for o in self.game_class.objects:
+        for o in self.game_class.objects.itervalues():
             if not o is self:
                 if o.collision_weight and self.collision_weight:  # check if obj collides at all
                     if pro_rect.colliderect(o.rect):

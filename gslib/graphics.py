@@ -143,8 +143,9 @@ class Graphics(object):
             self.game.screen_objects_to_draw.append((button.surface, button.pos))
 
     def draw_objects(self):
-        self.game.objects.sort((lambda x, y: cmp(x.coord[1], y.coord[1])))
-        for o in self.game.objects:
+        sort_objs = self.game.objects.values()
+        sort_objs.sort((lambda x, y: cmp(x.coord[1], y.coord[1])))
+        for o in sort_objs:  # self.game.objects:
             if isinstance(o, player.Player): #o == self.game.player1:
                 if o.possessing:
                     continue
@@ -178,8 +179,8 @@ class Graphics(object):
             self.resize_fear_surface()
         self.fear_surf.fill(black)
         self.fear_surf.blit(self.fear_txt, (0, 0))
-        for i, p in enumerate(self.game.players):
-            pygame.draw.rect(self.fear_surf, (255, 0, 0), pygame.Rect((self.fear_size[0], 32 * i), ((self.game.dimensions[0] - self.fear_size[0]) * (self.game.players[i].fear/float(MAX_FEAR)), 32)))
+        for i, p in enumerate(self.game.players.itervalues()):
+            pygame.draw.rect(self.fear_surf, (255, 0, 0), pygame.Rect((self.fear_size[0], 32 * i), ((self.game.dimensions[0] - self.fear_size[0]) * (p.fear/float(MAX_FEAR)), 32)))
         self.game.screen_objects_to_draw.append((self.fear_surf, (0, self.game.dimensions[1] - nplayers * 32)))
 
     def draw_world_objects(self):  # stuff relative to camera
@@ -221,7 +222,7 @@ class Graphics(object):
                 self.game.set_state(MAIN_MENU)
 
     def draw_torch(self):
-        ppos = (self.game.players[0].coord[0] + self.game.players[0].dimensions[0] / 2, self.game.players[0].coord[1] + self.game.players[0].dimensions[1] / 2)
+        ppos = (self.game.players['player1'].coord[0] + self.game.players['player1'].dimensions[0] / 2, self.game.players['player1'].coord[1] + self.game.players['player1'].dimensions[1] / 2)
 
         self.light_surf.fill((0, 0, 0, 0))
     

@@ -225,9 +225,9 @@ class SkillsMenu(Menu):
         Menu.__init__(self, game_class, button_size)
         temp_order = 0
         for skill in self.game_class.skills_dict:
-            if skill in self.game_class.players[0].skills_learnt:
+            if skill in self.game_class.players['player1'].skills_learnt:
                 skill_colour = LEARNT_SKILL_COLOUR
-            elif self.game_class.skills_dict[skill].can_be_learnt(self.game_class.players[0]):
+            elif self.game_class.skills_dict[skill].can_be_learnt(self.game_class.players['player1']):
                 skill_colour = CAN_BE_LEARNT_COLOUR
             else:
                 skill_colour = UNLEARNABLE_COLOUR
@@ -240,14 +240,14 @@ class SkillsMenu(Menu):
         Menu.arrange_buttons(self)
 
     def learn_skill(self, skill):
-        self.game_class.players[0].learn_skill(skill)
-        print self.game_class.players[0].skills_learnt
+        self.game_class.players['player1'].learn_skill(skill)
+        print self.game_class.players['player1'].skills_learnt
 
         for skill in self.buttons:
             if self.buttons[skill].order[0] != -1 and self.buttons[skill].order[1] == 0:
-                if skill in self.game_class.players[0].skills_learnt:
+                if skill in self.game_class.players['player1'].skills_learnt:
                     skill_colour = LEARNT_SKILL_COLOUR
-                elif self.game_class.skills_dict[skill].can_be_learnt(self.game_class.players[0]):
+                elif self.game_class.skills_dict[skill].can_be_learnt(self.game_class.players['player1']):
                     skill_colour = CAN_BE_LEARNT_COLOUR
                 else:
                     skill_colour = UNLEARNABLE_COLOUR

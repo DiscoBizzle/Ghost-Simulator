@@ -1,11 +1,11 @@
-Player 0 down;115
-Player 0 right;100
-Player 0 up;119
-Player 0 left;97
 Player 1 down;115
 Player 1 right;100
 Player 1 up;119
 Player 1 left;97
+Player 2 down;115
+Player 2 right;100
+Player 2 up;119
+Player 2 left;97
 #
 Advance Character States;99
 Show Fears;101

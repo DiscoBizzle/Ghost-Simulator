@@ -65,14 +65,12 @@ class Game(object):
 
         self.camera_coords = (0, 0)
 
-        self.objects = []
-
-        self.players = []
-        self.players.append(player.Player(self, TILE_SIZE*6, TILE_SIZE*18, 16, 16, 'GhostSheet.png'))
-        self.players.append(player.Player(self, 0, 0, 16, 16, 'TutorialGhost2.png'))
+        self.players = {}
+        self.players['player1'] = player.Player(self, TILE_SIZE*6, TILE_SIZE*18, 16, 16, 'GhostSheet.png')
+        self.players['player2'] = player.Player(self, 0, 0, 16, 16, 'TutorialGhost2.png')
         # self.player1 = self.players[0]
 
-        self.objects += self.players
+        self.objects = dict(self.players.items())
 
         self.skills_dict = skills.load_skill_dict()
         self.SkillMenu = menus.SkillsMenu(self, (200,150))
@@ -134,7 +132,7 @@ class Game(object):
 
         self.world_objects_to_draw = []
         self.screen_objects_to_draw = []
-        self.objects += self.map.objects
+        self.objects = dict(self.objects.items() + self.map.objects.items())
 
         self.show_fears = False
         self.show_ranges = False
@@ -183,7 +181,7 @@ class Game(object):
 
         if self.GameState == MAIN_GAME:
             self.last_touching = [p for p in self.touching]  # creates a copy
-            for obj in self.objects:
+            for obj in self.objects.itervalues():
                 obj.update()
 
             for i, p in enumerate(self.touching):
@@ -208,7 +206,7 @@ class Game(object):
     def calc_camera_coord(self):
         avg_pos = [0, 0]
         c = 0
-        for p in self.players:
+        for p in self.players.itervalues():
             c += 1
             avg_pos[0] += p.coord[0]
             avg_pos[1] += p.coord[1]
@@ -237,7 +235,7 @@ class Game(object):
         return coord
 
     def say_fears(self):
-        for o in self.objects:
+        for o in self.objects.itervalues():
             if isinstance(o, player.Player):
                 surf = text_functions.speech_bubble("Oonce oonce oonce oonce!", 200)
                 pos = (o.coord[0] + o.dimensions[0], o.coord[1] - surf.get_height())
@@ -253,7 +251,7 @@ class Game(object):
             self.world_objects_to_draw.append((surf, pos))
 
     def show_fear_ranges(self):
-        for o in self.objects:
+        for o in self.objects.itervalues():
             if isinstance(o, player.Player):
                 r = o.fear_collection_radius
                 surf = graphics.draw_circle(r, (64, 224, 208), 4)
@@ -269,7 +267,7 @@ class Game(object):
         self.map_index += 1
         self.map_index %= len(self.map_list)
         self.map = self.map_list[self.map_index]
-        self.objects = self.players + self.map.objects
+        self.objects = dict(self.players.items() + self.map.objects.items())
         self.graphics.clip_area = pygame.Rect((0, 0), (self.dimensions[0], self.dimensions[1]))
 
     def set_state(self, state):

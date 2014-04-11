@@ -22,8 +22,8 @@ class KeyController(object):
 
         self.key_map = {'Skill Screen': pygame.K_q, 'Show Fear Ranges': pygame.K_r, 'Show Fears': pygame.K_e,
                         'Advance Character States': pygame.K_c}
-        self.player_map = {0: {'up': pygame.K_UP, 'down': pygame.K_DOWN, 'left': pygame.K_LEFT, 'right': pygame.K_RIGHT, 'possess': pygame.K_f, 'harvest fear': pygame.K_z},
-                           1: {'up': pygame.K_w, 'down': pygame.K_s, 'left': pygame.K_a, 'right': pygame.K_d, 'possess': pygame.K_g, 'harvest fear': pygame.K_x}}
+        self.player_map = {'1': {'up': pygame.K_UP, 'down': pygame.K_DOWN, 'left': pygame.K_LEFT, 'right': pygame.K_RIGHT, 'possess': pygame.K_f, 'harvest fear': pygame.K_z},
+                           '2': {'up': pygame.K_w, 'down': pygame.K_s, 'left': pygame.K_a, 'right': pygame.K_d, 'possess': pygame.K_g, 'harvest fear': pygame.K_x}}
 
     def handle_keys(self, event):
         if event.type == pygame.KEYDOWN:
@@ -57,23 +57,23 @@ class KeyController(object):
             self.game.show_fears = self.keys[self.key_map['Show Fears']]
             self.game.show_ranges = self.keys[self.key_map['Show Fear Ranges']]
 
-            if self.keys[self.key_map['Advance Character States']]:
-                for o in self.game.objects:
-                    if o.state_index == 'state1':
-                        o.state_index = 'state2'
-                    else:
-                        o.state_index = 'state1'
+            # if self.keys[self.key_map['Advance Character States']]:
+            #     for o in self.game.objects.itervalues():
+            #         if o.state_index == 'state1':
+            #             o.state_index = 'state2'
+            #         else:
+            #             o.state_index = 'state1'
 
-        for i, p in enumerate(self.game.players):
-            p.move_down = self.keys[self.player_map[i]['down']]
-            p.move_up = self.keys[self.player_map[i]['up']]
-            p.move_left = self.keys[self.player_map[i]['left']]
-            p.move_right = self.keys[self.player_map[i]['right']]
+        for k, p in self.game.players.iteritems():
+            p.move_down = self.keys[self.player_map[k[-1]]['down']]
+            p.move_up = self.keys[self.player_map[k[-1]]['up']]
+            p.move_left = self.keys[self.player_map[k[-1]]['left']]
+            p.move_right = self.keys[self.player_map[k[-1]]['right']]
 
-            if self.keys[self.player_map[i]['harvest fear']]:
+            if self.keys[self.player_map[k[-1]]['harvest fear']]:
                 p.collect_fear()
 
-            if self.keys[self.player_map[i]['possess']]:
+            if self.keys[self.player_map[k[-1]]['possess']]:
                 if p.possess_key_up:
                     p.toggle_possess()
                     p.possess_key_up = False  # not self.keys[self.player_map[i]['possess']]
@@ -132,7 +132,7 @@ class KeyController(object):
                 self.game.keybind_menu.buttons[name + ' key'].text = pygame.key.name(val)
                 player_n = int(name[7])
                 name = name[9:]
-                self.player_map[player_n][name] = val
+                self.player_map[str(player_n)][name] = val
             if not val in self.keys:
                 self.keys[val] = False
 
