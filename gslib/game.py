@@ -3,7 +3,9 @@ import os.path
 import sys
 import time
 
-import pygame
+import pyglet.clock
+import pyglet.window
+from pygame import Rect
 
 from gslib import button
 from gslib import character
@@ -30,7 +32,7 @@ from gslib.constants import *
 #os.environ['SDL_VIDEODRIVER'] = ''
 
 
-class Game(object):
+class Game(pyglet.window.Window):
     """
     To draw something relative to map: (accounts for camera)
     game.world_objects_to_draw.append((surface, position))
@@ -41,6 +43,7 @@ class Game(object):
     Objects will be drawn without having to add them to these lists.
     """
     def __init__(self):
+        super(Game, self).__init__()
 
         self.options = {'FOV': True, 'VOF': False, 'torch': False, 'menu_scale': False}
         self.dimensions = (GAME_WIDTH, GAME_HEIGHT)
@@ -51,17 +54,12 @@ class Game(object):
         self.cutscene_next = os.path.join(VIDEO_DIR, "default.mpg")
         self.game_running = True
         self.graphics = graphics.Graphics(self)
-        pygame.display.set_caption("Ghost Simulator v. 0.000000001a")
+        self.set_caption("Ghost Simulator v. 0.000000001a")
         self.music_list = sound.get_music_list()
         self.sound_dict = sound.load_all_sounds()
         self.credits = credits.Credits(self)
         self.options_menu = menus.OptionsMenu(self, (200, 50))
-
-
-        self.clock = pygame.time.Clock()
-        self.ms_passed = 0
-
-        self.fps_clock = pygame.time.Clock()
+        self.fps_clock = pyglet.clock.ClockDisplay()
 
         self.camera_coords = (0, 0)
 
@@ -143,31 +141,23 @@ class Game(object):
         self.touching = []
         self.last_touching = []
 
-    def game_loop(self):
-        while self.game_running:
-            # Update clock & pump event queue.
-            # We cannot do this at the same time as playing a cutscene on linux; pygame.movie is shite.
-            if not (self.GameState == CUTSCENE and (
-                        sys.platform == "linux2" or sys.platform == "linux" or sys.platform == "linux3")):
-                self.clock.tick()
-                self.ms_passed += self.clock.get_time()
+    # pyglet event
+    def on_key_press(self, symbol, modifiers):
+        #response = self.event_map.get(event.type)
+        #if response is not None:
+        #   response(event)
+        pass
 
-                for event in pygame.event.get():
-                    response = self.event_map.get(event.type)
-                    if response is not None:
-                        response(event)
-
+    # pyglet event
+    def on_draw(self):
+        if self.game_running:
             if self.GameState == CUTSCENE:
                 self.graphics.draw_cutscene()
-                time.sleep(0.001)
-            elif self.ms_passed > 33:
-                self.update()
-                self.ms_passed = 0
-
-                self.fps_clock.tick()
-                self.graphics.main_game_draw()
             else:
-                time.sleep(0.001)  # note: sleeping not only a good idea but necessary for pygame.movie os x
+                self.update()
+                self.graphics.main_game_draw()
+
+            self.fps_clock.draw()
 
     def update(self):
         # this is fixed timestep, 30 FPS. if game runs slower, we lag.
@@ -268,7 +258,7 @@ class Game(object):
         self.map_index %= len(self.map_list)
         self.map = self.map_list[self.map_index]
         self.objects = dict(self.players.items() + self.map.objects.items())
-        self.graphics.clip_area = pygame.Rect((0, 0), (self.dimensions[0], self.dimensions[1]))
+        self.graphics.clip_area = Rect((0, 0), (self.dimensions[0], self.dimensions[1]))
 
     def set_state(self, state):
         self.GameState = state
