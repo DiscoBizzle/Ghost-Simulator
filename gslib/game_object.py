@@ -109,6 +109,7 @@ class GameObject(object):
 
     def get_current_frame(self):
         return self._current_frame
+
     def set_current_frame(self, val):
         self._current_frame = val
         self.frame_rect = pygame.Rect(self._current_frame * self.sprite_width, self._animation_state * self.sprite_height,
