@@ -4,6 +4,7 @@ except ImportError:
     from io import BytesIO
 
 import pygame
+import pyglet
 
 from gslib.constants import *
 from gslib import player
@@ -12,6 +13,8 @@ from gslib import player
 blue = pygame.Color(0, 255, 0)
 black = pygame.Color(0, 0, 0)
 
+def draw_rect(w, h, colour):
+    return pyglet.sprite.Sprite(pyglet.image.SolidColorImagePattern(colour).create_image(w, h).get_texture())
 
 def draw_circle(r, colour, thickness):
     surf = pygame.Surface((r*2, r*2))
@@ -140,7 +143,9 @@ class Graphics(object):
 
     def draw_buttons(self):
         for button in self.game.buttons.itervalues():
-            self.game.screen_objects_to_draw.append((button.surface, button.pos))
+            self.game.screen_objects_to_draw.append(button.outer_sprite)
+            self.game.screen_objects_to_draw.append(button.inner_sprite)
+            self.game.screen_objects_to_draw.append(button.text_sprite)
 
     def draw_objects(self):
         sort_objs = self.game.objects.values()
@@ -190,7 +195,7 @@ class Graphics(object):
 
     def draw_screen_objects(self):  # stuff relative to screen
         for f in self.game.screen_objects_to_draw:
-            self.surface.blit(f[0], f[1])
+            f.draw()
         self.game.screen_objects_to_draw = []
 
     def blit_camera(self, surf, pos):

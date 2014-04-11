@@ -4,6 +4,7 @@ import sys
 import time
 
 import pyglet.clock
+import pyglet.gl
 import pyglet.window
 from pygame import Rect
 
@@ -44,6 +45,10 @@ class Game(pyglet.window.Window):
     """
     def __init__(self):
         super(Game, self).__init__()
+
+        # enable alpha-blending
+        pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
+        pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
 
         self.options = {'FOV': True, 'VOF': False, 'torch': False, 'menu_scale': False}
         self.dimensions = (GAME_WIDTH, GAME_HEIGHT)

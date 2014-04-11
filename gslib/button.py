@@ -1,6 +1,7 @@
-import pygame
+import pyglet
 
 from gslib.constants import *
+import graphics
 
 def valid_colour(colour):
     if len(colour) != 3:
@@ -44,6 +45,7 @@ class Button(object):
         self._border_colour = border_colour
         self._border_width = border_width
         self._text = text
+        self._last_text = text
         self._font_size = font_size
         self.text_states = text_states
         self.text_states_toggle = False
@@ -55,7 +57,11 @@ class Button(object):
         self.owner = owner  # container that created the button, allows for the button function to interact with its creator
         self.function = function
 
-        self.surface = pygame.Surface(self._size)  # keep track of the button surface, takes more memory but is faster than redrawing every time
+        (w, h) = self._size
+        white = (255, 255, 255, 255)
+        self.outer_sprite = graphics.draw_rect(w, h, white)
+        self.inner_sprite = graphics.draw_rect(w - self._border_width, h - self._border_width, white)
+        self.text_sprite = None
         self.redraw()
 
     def pos_setter(self, pos):
@@ -67,49 +73,45 @@ class Button(object):
     def pos_getter(self):
         return self._pos
 
+    def size(self):
+        return self._size
+
     pos = property(pos_getter, pos_setter)
     # all below variables affect the button surface, so make them properties to redraw on change
     visible = create_property('visible')
-    size = create_property('size')
+    #size = create_property('size')
     colour = create_property('colour')
     border_colour = create_property('border_colour')
-    border_width = create_property('border_width')
+    #border_width = create_property('border_width')
     text = create_property('text')
     font_size = create_property('font_size')
 
     def redraw(self):
-        if not (self.size[0] > 0 and self.size[1] > 0): raise Exception('Negative button size')
+        #if not (self.size[0] > 0 and self.size[1] > 0): raise Exception('Negative button size')
         if not valid_colour(self.border_colour): raise Exception('Invalid button border colour')
         if not valid_colour(self.colour): raise Exception('Invalid button colour')
-        if self.border_width < 0: raise Exception('Negative button border width')
+        #if self.border_width < 0: raise Exception('Negative button border width')
 
         if self.text_states:
             self._text = self.text_states[self.text_states_toggle]
 
-        self.surface = pygame.Surface(self.size)
-
         if not self.visible:
-            self.surface.fill((1, 1, 1))
-            self.surface.set_colorkey((1, 1, 1))
             return
 
-        # to create border: fill with border colour, then blit a smaller rectangle with main colour
-        self.surface.fill(self.border_colour)
-        temp = pygame.Surface((self._size[0] - 2 * self._border_width, self.size[1] - 2 * self._border_width))
-        temp.fill(self.colour)
-        self.surface.blit(temp, (self.border_width, self.border_width))
+        self.outer_sprite.color = self.border_colour
+        self.inner_sprite.color = self.colour
 
-        font = pygame.font.SysFont(FONT, self.font_size)
-        text = font.render(self.text, True, (200, 200, 200))
-        x = self.surface.get_width() / 2 - text.get_width() / 2
-        y = self.surface.get_height() / 2 - text.get_height() / 2
-        self.surface.blit(text, (x, y))
-
-        self.surface.set_colorkey((1, 1, 1))
+        self.outer_sprite.position = self.pos
+        self.inner_sprite.position = (self.pos[0] + self._border_width, self.pos[1] + self._border_width)
+        if self.text_sprite is None or self.text != self._last_text:
+            self.text_sprite = pyglet.text.Label(self.text, FONT, self.font_size, False, False, (200, 200, 200, 255))
+            self._last_text = self.text
+        self.text_sprite.x = self.pos[0] # + self.outer_sprite.width / 2 - self.text_sprite.width / 2
+        self.text_sprite.y = self.pos[1] # + self.outer_sprite.height / 2 - self.text_sprite.height / 2
 
     def check_clicked(self, click_pos):  # perform button function if a position is passed in that is within bounds
         pos = self.pos
-        w, h = self.size
+        w, h = self._size
         w /= 2
         h /= 2
 
