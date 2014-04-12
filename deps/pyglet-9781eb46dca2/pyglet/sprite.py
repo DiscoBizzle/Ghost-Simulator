@@ -217,6 +217,9 @@ class Sprite(event.EventDispatcher):
                 coordinates are restricted to integer values.
 
         '''
+        
+        raise Error("Use the Sprite class from gslib, not this one!")
+        
         if batch is not None:
             self._batch = batch
 
