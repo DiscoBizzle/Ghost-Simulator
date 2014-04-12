@@ -57,10 +57,8 @@ class Button(object):
         self.owner = owner  # container that created the button, allows for the button function to interact with its creator
         self.function = function
 
-        (w, h) = self._size
-        white = (255, 255, 255, 255)
-        self.outer_sprite = graphics.draw_rect(w, h, white)
-        self.inner_sprite = graphics.draw_rect(w - self._border_width, h - self._border_width, white)
+        self.outer_sprite = graphics.new_rect_sprite()
+        self.inner_sprite = graphics.new_rect_sprite() # draw_rect(w - self._border_width, h - self._border_width, white)
         self.text_sprite = None
         self.redraw()
 
@@ -79,18 +77,18 @@ class Button(object):
     pos = property(pos_getter, pos_setter)
     # all below variables affect the button surface, so make them properties to redraw on change
     visible = create_property('visible')
-    #size = create_property('size')
+    size = create_property('size')
     colour = create_property('colour')
     border_colour = create_property('border_colour')
-    #border_width = create_property('border_width')
+    border_width = create_property('border_width')
     text = create_property('text')
     font_size = create_property('font_size')
 
     def redraw(self):
-        #if not (self.size[0] > 0 and self.size[1] > 0): raise Exception('Negative button size')
+        if not (self.size[0] > 0 and self.size[1] > 0): raise Exception('Negative button size')
         if not valid_colour(self.border_colour): raise Exception('Invalid button border colour')
         if not valid_colour(self.colour): raise Exception('Invalid button colour')
-        #if self.border_width < 0: raise Exception('Negative button border width')
+        if self.border_width < 0: raise Exception('Negative button border width')
 
         if self.text_states:
             self._text = self.text_states[self.text_states_toggle]
@@ -100,6 +98,11 @@ class Button(object):
 
         self.outer_sprite.color = self.border_colour
         self.inner_sprite.color = self.colour
+
+        self.outer_sprite.scale_x = self.size[0]
+        self.outer_sprite.scale_y = self.size[1]
+        self.inner_sprite.scale_x = self.size[0] - self._border_width * 2
+        self.inner_sprite.scale_y = self.size[1] - self._border_width * 2
 
         self.outer_sprite.position = self.pos
         self.inner_sprite.position = (self.pos[0] + self._border_width, self.pos[1] + self._border_width)
