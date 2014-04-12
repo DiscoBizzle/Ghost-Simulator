@@ -183,6 +183,16 @@ def add_default_image_codecs():
     except ImportError:
         pass
 
+
+    # Fallback: PIL
+    try:
+        import pyglet.image.codecs.pil
+        add_encoders(pil)
+        add_decoders(pil)
+    except ImportError:
+        raise Exception("You need to install PIL.")
+        pass
+
     # Mac OS X default: Quicktime for Carbon, Quartz for Cocoa.
     # TODO: Make ctypes Quartz the default for both Carbon & Cocoa.
     if sys.platform == 'darwin':
@@ -217,13 +227,6 @@ def add_default_image_codecs():
         except ImportError:
             pass
 
-    # Fallback: PIL
-    try:
-        import pyglet.image.codecs.pil
-        add_encoders(pil)
-        add_decoders(pil)
-    except ImportError:
-        pass
 
     # Fallback: PNG loader (slow)
     try:
