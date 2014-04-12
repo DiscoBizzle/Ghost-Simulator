@@ -73,8 +73,6 @@ Creating a new Sprite every frame or calling graphics.new_rect_sprite() every
 
 3. TODO list
 
-- graphics.draw_objects
-- graphics.draw_map
 - graphics.draw_character_stats
 - graphics.draw_game_over
 - graphics.draw_fear_bar
