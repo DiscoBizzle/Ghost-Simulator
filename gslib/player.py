@@ -109,9 +109,9 @@ class Player(GameObject):
 
     def unpossess(self):
         self.coord = self.possessing.coord
+        self.possessing.possessed_by.remove(self)
         for f in self.possessing.unpossessed_function:
             f()
         # self.possessing.unpossessed_function()
-        self.possessing.possessed_by.remove(self)
         self.possessing = False
 

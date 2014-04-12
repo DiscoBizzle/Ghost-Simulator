@@ -20,6 +20,8 @@ from gslib import key
 from gslib import mouse
 from gslib import fear_functions
 from gslib import text_functions
+from gslib import drop_down_list
+from gslib import map_edit
 from gslib.constants import *
 
 
@@ -64,13 +66,14 @@ class Game(object):
         self.fps_clock = pygame.time.Clock()
 
         self.camera_coords = (0, 0)
+        self.camera_padding = (32, 32, 32, 96)  # left right up down
 
         self.players = {}
         self.players['player1'] = player.Player(self, TILE_SIZE*6, TILE_SIZE*18, 16, 16, 'GhostSheet.png')
         self.players['player2'] = player.Player(self, 0, 0, 16, 16, 'TutorialGhost2.png')
         # self.player1 = self.players[0]
 
-        self.objects = dict(self.players.items())
+        # self.objects = dict(self.players.items())
 
         self.skills_dict = skills.load_skill_dict()
         self.SkillMenu = menus.SkillsMenu(self, (200,150))
@@ -122,7 +125,7 @@ class Game(object):
         self.map_index = 0
         self.map = self.map_list[self.map_index]
 
-        self.buttons = {
+        self.game_buttons = {
             'change_map': button.Button(self, self.change_map, pos=(0, 0), size=(20, 20), visible=True,
                                         text=u'M', border_colour=(120, 50, 80), border_width=3,
                                         colour=(120, 0, 0), enabled=True)}
@@ -132,7 +135,7 @@ class Game(object):
 
         self.world_objects_to_draw = []
         self.screen_objects_to_draw = []
-        self.objects = dict(self.objects.items() + self.map.objects.items())
+        # self.objects = dict(self.objects.items() + self.map.objects.items())
 
         self.show_fears = False
         self.show_ranges = False
@@ -142,6 +145,18 @@ class Game(object):
 
         self.touching = []
         self.last_touching = []
+
+        self.editor = map_edit.Editor(self, (self.dimensions[0], 0))
+        self.editor_active = False
+        self.cursor = None
+        self.new_trigger_capture = False
+
+        self.game_drop_lists = {}
+
+        self.buttons = {}
+        self.drop_lists = {}
+        self.objects = {}
+        self.gather_buttons_and_drop_lists_and_objects()
 
     def game_loop(self):
         while self.game_running:
@@ -169,6 +184,19 @@ class Game(object):
             else:
                 time.sleep(0.001)  # note: sleeping not only a good idea but necessary for pygame.movie os x
 
+    def gather_buttons_and_drop_lists_and_objects(self):
+        self.buttons = dict(self.game_buttons.items())
+        self.drop_lists = dict(self.game_drop_lists.items())
+
+        if self.editor_active:
+            self.drop_lists = dict(self.drop_lists.items() + self.editor.drop_lists.items())
+            self.buttons = dict(self.buttons.items() + self.editor.buttons.items())
+
+
+        self.objects = dict(self.players.items() + self.map.objects.items())
+        if self.cursor:
+            self.objects['cursor'] = self.cursor
+
     def update(self):
         # this is fixed timestep, 30 FPS. if game runs slower, we lag.
         # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
@@ -189,21 +217,18 @@ class Game(object):
                     if p[0].has_touched_function:
                         for f in p[0].has_touched_function:
                             f(p[1])
-                            #p[0].has_touched_function(p[1])
                     if p[1].is_touched_function:
                         for f in p[1].is_touched_function:
-                            f(p[0]) # p[1].is_touched_function(p[0])
+                            f(p[0])
 
             for i, p in enumerate(self.last_touching):
                 if not p in self.touching:  # detect on un-touch
                     if p[0].has_untouched_function:
                         for f in p[0].has_untouched_function:
                             f(p[1])
-                            # p[0].has_untouched_function(p[1])
                     if p[1].is_untouched_function:
                         for f in p[1].is_untouched_function:
                             f(p[0])
-                            # p[1].is_untouched_function(p[0])
 
         elif self.GameState == CREDITS:
             self.credits.update()
@@ -221,7 +246,7 @@ class Game(object):
         avg_pos = (avg_pos[0] / c, avg_pos[1] / c)
         # coord = (self.player1.coord[0] - (self.dimensions[0]/2), self.player1.coord[1] - (self.dimensions[1]/2))
         coord = (avg_pos[0] - (self.dimensions[0]/2), avg_pos[1] - (self.dimensions[1]/2))
-        pad = (32, 32, 32, 96)  # left right up down
+        pad = self.camera_padding
 
         # bottom
         if avg_pos[1] > LEVEL_HEIGHT - self.dimensions[1]/2 + pad[3]:
@@ -274,7 +299,8 @@ class Game(object):
         self.map_index += 1
         self.map_index %= len(self.map_list)
         self.map = self.map_list[self.map_index]
-        self.objects = dict(self.players.items() + self.map.objects.items())
+        # self.objects = dict(self.players.items() + self.map.objects.items())
+        self.gather_buttons_and_drop_lists_and_objects()
         self.graphics.clip_area = pygame.Rect((0, 0), (self.dimensions[0], self.dimensions[1]))
 
     def set_state(self, state):

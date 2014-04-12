@@ -4,7 +4,6 @@ import pygame
 
 from gslib.constants import *
 
-from gslib import fear_functions
 
 class GameObject(object):
     def __init__(self, game_class, x, y, w, h, sprite_sheet):

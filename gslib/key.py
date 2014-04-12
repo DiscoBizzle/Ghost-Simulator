@@ -20,7 +20,8 @@ class KeyController(object):
 
         self.keys = collections.defaultdict(bool)  # returns False if key not seen before
 
-        self.key_map = {'Skill Screen': pygame.K_q, 'Show Fear Ranges': pygame.K_r, 'Show Fears': pygame.K_e}
+        self.key_map = {'Skill Screen': pygame.K_q, 'Show Fear Ranges': pygame.K_r, 'Show Fears': pygame.K_e,
+                        'Toggle Editor': pygame.K_b, 'Snap to Grid': pygame.K_LCTRL}
         self.player_map = {'1': {'up': pygame.K_UP, 'down': pygame.K_DOWN, 'left': pygame.K_LEFT, 'right': pygame.K_RIGHT, 'possess': pygame.K_f, 'harvest fear': pygame.K_z},
                            '2': {'up': pygame.K_w, 'down': pygame.K_s, 'left': pygame.K_a, 'right': pygame.K_d, 'possess': pygame.K_g, 'harvest fear': pygame.K_x}}
 
@@ -55,6 +56,9 @@ class KeyController(object):
         if self.game.GameState == MAIN_GAME:
             self.game.show_fears = self.keys[self.key_map['Show Fears']]
             self.game.show_ranges = self.keys[self.key_map['Show Fear Ranges']]
+            if self.keys[self.key_map['Toggle Editor']]:
+                self.game.editor_active = not self.game.editor_active
+                self.game.gather_buttons_and_drop_lists_and_objects()
 
         for k, p in self.game.players.iteritems():
             p.move_down = self.keys[self.player_map[k[-1]]['down']]
@@ -71,7 +75,6 @@ class KeyController(object):
                     p.possess_key_up = False  # not self.keys[self.player_map[i]['possess']]
             else:
                 p.possess_key_up = True
-
 
     def rebind(self, new_key):
         if new_key == pygame.K_ESCAPE:

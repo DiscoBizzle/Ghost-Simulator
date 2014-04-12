@@ -127,9 +127,13 @@ class Character(GameObject):
          - Returned function should take 0 parameters.
         """
         GameObject.__init__(self, game_class, x, y, w, h, pygame.image.load(os.path.join(CHARACTER_DIR, sprite_sheet)).convert())
-        self.fears = stats['fears']
-        self.scared_of = stats['scared_of']
-        self.scared_of.append('player')
+        if stats:
+            self.fears = stats['fears']
+            self.scared_of = stats['scared_of']
+            self.scared_of.append('player')
+        else:
+            self.fears = []
+            self.scared_of = []
         self.stats = stats
         self.info_sheet = self.draw_info_sheet()
         # self.sprite = pygame.image.load(os.path.join(CHARACTER_DIR, 'Sprite_top.png'))
@@ -193,6 +197,8 @@ class Character(GameObject):
         GameObject.update(self)
 
     def draw_info_sheet(self):
+        if not self.stats:
+            return pygame.Surface((1, 1))
         font_size = 20
         #dim = w, h = (GAME_WIDTH - LEVEL_WIDTH, int((GAME_WIDTH - LEVEL_WIDTH) / 1.6))
 
