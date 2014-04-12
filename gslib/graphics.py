@@ -8,13 +8,15 @@ import pyglet
 
 from gslib.constants import *
 from gslib import player
+from gslib import sprite
 
 # screen = pygame.display.set_mode((800, 800))
 blue = pygame.Color(0, 255, 0)
 black = pygame.Color(0, 0, 0)
 
-def draw_rect(w, h, colour):
-    return pyglet.sprite.Sprite(pyglet.image.SolidColorImagePattern(colour).create_image(w, h).get_texture())
+rect_tex = pyglet.image.SolidColorImagePattern((255, 255, 255, 255)).create_image(1, 1).get_texture()
+def new_rect_sprite():
+    return sprite.Sprite(rect_tex)
 
 def draw_circle(r, colour, thickness):
     surf = pygame.Surface((r*2, r*2))
@@ -72,7 +74,7 @@ class Graphics(object):
     def main_game_draw(self):
         # this runs faster than game update. animation can be done here with no problems.
         if self.game.GameState != CUTSCENE:
-            self.surface.fill(black)
+            self.game.clear()
 
         if self.game.GameState == STARTUP:
             pass
@@ -109,8 +111,6 @@ class Graphics(object):
         if self.game.options['VOF'] and self.game.GameState != CUTSCENE:
             self.surface.blit(self.field, (0, 0))
 
-        pygame.display.update()
-
     def draw_map(self):
         m = self.game.map
         grid_size = TILE_SIZE
@@ -135,11 +135,6 @@ class Graphics(object):
                 #    pygame.draw.rect(surf, 0x0000ff, temprect)
     
         self.game.world_objects_to_draw = [(surf, (0, 0))] + self.game.world_objects_to_draw
-
-    def draw_fps(self):
-        font = pygame.font.SysFont(FONT, 20)
-        surf = font.render(u'FPS: ' + unicode(int(self.game.fps_clock.get_fps())), True, (255, 255, 0))
-        self.game.screen_objects_to_draw.append((surf, (0, self.game.dimensions[1] - 100)))
 
     def draw_buttons(self):
         for button in self.game.buttons.itervalues():
