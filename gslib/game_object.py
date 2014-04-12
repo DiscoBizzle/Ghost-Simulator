@@ -64,7 +64,8 @@ class GameObject(object):
         self.sprite_height = SPRITE_HEIGHT
         self.frame_rect = pygame.Rect(self.current_frame * self.sprite_width, self.animation_state * self.sprite_height,
                                       self.sprite_width, self.sprite_height)
-        self.sprite_sheet.set_colorkey((255, 0, 255))
+        print('TODO: game_object.py set_colorkey pyglet port (use rgba spritesheet or write code to do magic)')
+        #self.sprite_sheet.set_colorkey((255, 0, 255))
 
         #trigger functions
         self.has_touched_function = None
