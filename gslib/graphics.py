@@ -121,18 +121,23 @@ class Graphics(object):
         clippy = self.clip_area.copy()# if hasattr(self.game, 'clip_area') else pygame.Rect((0, 0), (self.game.dimensions[0], self.game.dimensions[1]))
         clippy.inflate_ip(64, 64)
 
+        # TODO: create & blit megatiles (e.g. 128x128), rerendering only if necessary
+        map_sprites = []
+
         for i in range(nw):
             for j in range(nh):
-                area = m.grid[i][j].tileset_area
                 if clippy.colliderect(pygame.Rect((i * grid_size, j * grid_size), (grid_size, grid_size))):
-                    surf.blit(m.tileset, (i * grid_size, j * grid_size), area)
-    
+                    (_, _, k, l) = m.grid[i][j].tileset_area
+                    tile_sprite = sprite.Sprite(m.tileset.get_region(i * grid_size, j * grid_size, k, l))
+                    tile_sprite.set_position(i * grid_size, j * grid_size)
+                    map_sprites.append(tile_sprite)
+
                 ##TEMPORARY - DRAWS SOLID TILES FOR COLLISION DEBUG
                 #if not m.grid[i][j].walkable:
                 #    temprect = pygame.Rect(i * grid_size, j * grid_size, TILE_SIZE, TILE_SIZE)
                 #    pygame.draw.rect(surf, 0x0000ff, temprect)
-    
-        self.game.world_objects_to_draw = [(surf, (0, 0))] + self.game.world_objects_to_draw
+
+        self.game.world_objects_to_draw = map_sprites + self.game.world_objects_to_draw
 
     def draw_buttons(self):
         for button in self.game.buttons.itervalues():
@@ -143,25 +148,31 @@ class Graphics(object):
     def draw_objects(self):
         sort_objs = self.game.objects.values()
         sort_objs.sort((lambda x, y: cmp(x.coord[1], y.coord[1])))
+
         for o in sort_objs:  # self.game.objects:
             if isinstance(o, player.Player): #o == self.game.player1:
                 if o.possessing:
                     continue
-            surf = pygame.Surface((o.sprite_width, o.sprite_height))
-            surf.fill((255, 0, 255))
-            surf.blit(o.sprite_sheet, (0, 0), o.frame_rect)
-            surf.set_colorkey((255, 0, 255))
-            blit_coord = (o.coord[0] + o.dimensions[0] - o.sprite_width, o.coord[1] + o.dimensions[1] - o.sprite_height)
 
-            self.game.world_objects_to_draw.append((surf, blit_coord))
+            texture = o.sprite_sheet.get_region(o.frame_rect.x, o.frame_rect.y, o.sprite_width, o.sprite_height)
+            object_sprite = sprite.Sprite(texture)
+            x = o.coord[0] + o.dimensions[0] - o.sprite_width
+            y = o.coord[1] + o.dimensions[1] - o.sprite_height
+
+            object_sprite.set_position(x, y)
+            self.game.world_objects_to_draw.append(object_sprite)
+
             for s, p in o.flair.itervalues():
-                self.game.world_objects_to_draw.append((s, (blit_coord[0] + p[0] + surf.get_size()[0]/2, blit_coord[1] + p[1] + surf.get_size()[1]/2)))
+                flair_sprite = sprite.Sprite(s)
+                flair_sprite.set_position(x + p[0] + object_sprite.width / 2, y + p[1] + object_sprite.height / 2)
+                self.game.world_objects_to_draw.append(flair_sprite)
 
             if o == self.game.selected_object:
                 r = o.highlight_radius
-                surf = draw_circle(r, (200, 200, 200), 2)
-                pos = (o.coord[0] + o.dimensions[0]/2 - r, o.coord[1] + o.dimensions[0]/2 - r)
-                self.game.world_objects_to_draw.append((surf, pos))
+                print('TODO draw_objects selected object circle')
+                #surf = draw_circle(r, (200, 200, 200), 2)
+                #pos = (o.coord[0] + o.dimensions[0]/2 - r, o.coord[1] + o.dimensions[0]/2 - r)
+                #self.game.world_objects_to_draw.append((surf, pos))
 
     def draw_character_stats(self):
         return
