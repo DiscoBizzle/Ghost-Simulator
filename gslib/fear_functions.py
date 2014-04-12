@@ -1,7 +1,8 @@
-import pygame
 import random
 import math
 
+from gslib import graphics
+from gslib import sprite
 from gslib import text_functions
 
 # No bitchin' about returning functions, it makes triggers easier to think about/create.
@@ -85,9 +86,11 @@ def red_square(obj):  # get ooga booga'd
     def func():
         obj.fear = 0
         obj.fainted = True
-        surf = pygame.Surface((10, 10))
-        surf.fill((120, 0, 0))
-        obj.flair['fear_collected'] = (surf, (-5, -obj.dimensions[1] - 5))
+
+        sprite = graphics.new_rect_sprite()
+        sprite.color_rgb = (120, 0, 0)
+        sprite.set_position(-5, -obj.dimensions[1] - 5)
+        obj.flair['fear_collected'] = sprite
     return func
 
 
