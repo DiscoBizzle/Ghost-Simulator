@@ -397,10 +397,11 @@ class Sprite(event.EventDispatcher):
         if not self._visible:
             vertices = [0, 0, 0, 0, 0, 0, 0, 0]
         elif self._rotation:
+            print('TODO check sprite rotation draw path; probably buggy')
             x1 = -img.anchor_x * self._scale_x
-            y1 = -img.anchor_y * self._scale_y
+            y1 = +(img.height - img.anchor_y) * self._scale_y
             x2 = x1 + img.width * self._scale_x
-            y2 = y1 + img.height * self._scale_y
+            y2 = y1 + img.height * self._scale_y * -1
             x = self._x
             y = self._y
 
@@ -418,15 +419,15 @@ class Sprite(event.EventDispatcher):
             vertices = [ax, ay, bx, by, cx, cy, dx, dy]
         elif self._scale_x != 1.0 or self._scale_y != 1.0:
             x1 = self._x - img.anchor_x * self._scale_x
-            y1 = self._y - img.anchor_y * self._scale_y
+            y1 = self._y + (img.height - img.anchor_y) * self._scale_y
             x2 = x1 + img.width * self._scale_x
-            y2 = y1 + img.height * self._scale_y
+            y2 = y1 + img.height * self._scale_y * -1
             vertices = [x1, y1, x2, y1, x2, y2, x1, y2]
         else:
             x1 = self._x - img.anchor_x
-            y1 = self._y - img.anchor_y
+            y1 = self._y + (img.height - img.anchor_y)
             x2 = x1 + img.width
-            y2 = y1 + img.height
+            y2 = y1 + img.height * -1
             vertices = [x1, y1, x2, y1, x2, y2, x1, y2]
         if not self._subpixel:
             vertices = [int(v) for v in vertices]
@@ -589,7 +590,7 @@ class Sprite(event.EventDispatcher):
         self._opacity = int(a)
         self._update_color()
 
-    color_rgba = property(lambda self: self_rgba, _set_color_rgba)
+    color_rgba = property(lambda self: self.rgba, _set_color_rgba)
 
     def _set_visible(self, visible):
         self._visible = visible

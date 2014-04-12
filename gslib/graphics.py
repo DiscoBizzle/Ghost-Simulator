@@ -124,8 +124,8 @@ class Graphics(object):
         for i in range(nw):
             for j in range(nh):
                 if clippy.colliderect(pygame.Rect((i * grid_size, j * grid_size), (grid_size, grid_size))):
-                    (_, _, k, l) = m.grid[i][j].tileset_area
-                    tile_sprite = sprite.Sprite(m.tileset.get_region(i * grid_size, j * grid_size, k, l))
+                    (a, b, k, l) = m.grid[i][j].tileset_area
+                    tile_sprite = sprite.Sprite(m.tileset.get_region(a, m.tileset.height - b - grid_size, k, l))
                     tile_sprite.set_position(i * grid_size, j * grid_size)
                     map_sprites.append(tile_sprite)
 

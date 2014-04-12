@@ -3,6 +3,7 @@ import os.path
 
 import pygame
 import pyglet
+import pyglet.gl
 
 from gslib import graphics
 from gslib import character
@@ -10,20 +11,37 @@ from gslib.constants import *
 import gslib.character_objects as character_objects
 import gslib.fear_functions as fear_functions
 
-def test():
-    pygame.init()
-    pygame.font.init()
-    screen = pygame.display.set_mode((800, 800))
-    m = Map(os.path.join(TILE_DIR, 'martin.png'), os.path.join(TILE_DIR, 'martin.json'))
+class FakeGame(object):
+    def __init__(self, mmap):
+        self.dimensions = (800, 600)
+        self.world_objects_to_draw = []
+        self.map = mmap
 
-    surf = graphics.draw_map(m)
+def test():
+    #pygame.init()
+    #pygame.font.init()
+    #screen = pygame.display.set_mode((800, 800))
+    m = Map(os.path.join(TILES_DIR, 'level2.png'), os.path.join(TILES_DIR, 'level2.json'), None)
+    g = graphics.Graphics(FakeGame(m))
+
+    surf = g.draw_map()
 
     window = pyglet.window.Window()
 
+
     @window.event
     def on_draw():
-        screen.blit(surf, (0, 0))
-        
+        pyglet.gl.glMatrixMode(pyglet.gl.GL_PROJECTION)
+        pyglet.gl.glLoadIdentity()
+        pyglet.gl.glOrtho(0.0, 640.0, 480.0, 0.0, -1.0, 1.0)
+        pyglet.gl.glMatrixMode(pyglet.gl.GL_MODELVIEW)
+        pyglet.gl.glLoadIdentity()
+
+        print('surf len: ' + str(len(surf)))
+        for spr in surf:
+            spr.draw()
+        #for i in range(10):
+            #surf[i].draw()
 
     #pygame.display.update()
     pyglet.app.run()
