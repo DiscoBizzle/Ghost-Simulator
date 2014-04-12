@@ -177,7 +177,8 @@ class Sprite(event.EventDispatcher):
     _rotation = 0
     _opacity = 255
     _rgb = (255, 255, 255)
-    _scale = 1.0
+    _scale_x = 1.0
+    _scale_y = 1.0
     _visible = True
     _vertex_list = None
 
@@ -395,10 +396,10 @@ class Sprite(event.EventDispatcher):
         if not self._visible:
             vertices = [0, 0, 0, 0, 0, 0, 0, 0]
         elif self._rotation:
-            x1 = -img.anchor_x * self._scale
-            y1 = -img.anchor_y * self._scale
-            x2 = x1 + img.width * self._scale
-            y2 = y1 + img.height * self._scale
+            x1 = -img.anchor_x * self._scale_x
+            y1 = -img.anchor_y * self._scale_y
+            x2 = x1 + img.width * self._scale_x
+            y2 = y1 + img.height * self._scale_y
             x = self._x
             y = self._y
 
@@ -414,11 +415,11 @@ class Sprite(event.EventDispatcher):
             dx = x1 * cr - y2 * sr + x
             dy = x1 * sr + y2 * cr + y
             vertices = [ax, ay, bx, by, cx, cy, dx, dy]
-        elif self._scale != 1.0:
-            x1 = self._x - img.anchor_x * self._scale
-            y1 = self._y - img.anchor_y * self._scale
-            x2 = x1 + img.width * self._scale
-            y2 = y1 + img.height * self._scale
+        elif self._scale_x != 1.0 or self._scale_y != 1.0:
+            x1 = self._x - img.anchor_x * self._scale_x
+            y1 = self._y - img.anchor_y * self._scale_y
+            x2 = x1 + img.width * self._scale_x
+            y2 = y1 + img.height * self._scale_y
             vertices = [x1, y1, x2, y1, x2, y2, x1, y2]
         else:
             x1 = self._x - img.anchor_x
@@ -488,24 +489,39 @@ class Sprite(event.EventDispatcher):
     :type: float
     ''')
 
-    def _set_scale(self, scale):
-        self._scale = scale
+    def _set_scale_x(self, scale_x):
+        self._scale_x = scale_x
         self._update_position()
 
-    scale = property(lambda self: self._scale, _set_scale,
+    scale_x = property(lambda self: self._scale_x, _set_scale_x,
                      doc='''Scaling factor.
 
-    A scaling factor of 1 (the default) has no effect.  A scale of 2 will draw
-    the sprite at twice the native size of its image.
+    A horizontal scaling factor of 1 (the default) has no effect.  A scale of 2 will draw
+    the sprite at twice the native width of its image.
 
     :type: float
     ''')
 
+    def _set_scale_y(self, scale_y):
+        self._scale_y = scale_y
+        self._update_position()
+
+    scale_y = property(lambda self: self.scale_y, _set_scale_y,
+                     doc='''Scaling factor.
+
+    A vertical scaling factor of 1 (the default) has no effect.  A scale of 2 will draw
+    the sprite at twice the native height of its image.
+
+    :type: float
+    ''')
+
+
+
     def _get_width(self):
         if self._subpixel:
-            return self._texture.width * self._scale
+            return self._texture.width * self._scale_x
         else:
-            return int(self._texture.width * self._scale)
+            return int(self._texture.width * self._scale_x)
 
     width = property(_get_width,
                      doc='''Scaled width of the sprite.
@@ -517,9 +533,9 @@ class Sprite(event.EventDispatcher):
 
     def _get_height(self):
         if self._subpixel:
-            return self._texture.height * self._scale
+            return self._texture.height * self._scale_y
         else:
-            return int(self._texture.height * self._scale)
+            return int(self._texture.height * self._scale_y)
 
     height = property(_get_height,
                       doc='''Scaled height of the sprite.
