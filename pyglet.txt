@@ -2,6 +2,10 @@
 2. Text rendering cheatsheet
 3. TODO list
 
+
+http://pyglet.org/doc-current/index.html
+
+
 Sprite cheatsheet:
 
 from gslib import sprite
