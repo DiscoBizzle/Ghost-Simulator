@@ -1,5 +1,7 @@
 import pygame
 
+from gslib import graphics
+from gslib import sprite
 
 def create_property(var):  # creates a member variable that redraws the button when changed.
     def _setter(self, val):
@@ -32,8 +34,8 @@ class Slider(object):
         self._size = size
         self._visible = visible
         self.enabled = enabled
-        self.pos = pos
-        self.surface = None
+        self._pos = pos
+        self.sprites = [graphics.new_rect_sprite(), graphics.new_rect_sprite()]
         self.order = order
 
         self.isClicked = False
@@ -57,20 +59,27 @@ class Slider(object):
     back_colour = create_property('back_colour')
     size = create_property('size')
     visible = create_property('visible')
-
+    pos = create_property('pos')
 
     def redraw(self):
-        surf = pygame.Surface(self.size)
         if not self.visible:
-            surf.fill((1, 1, 1))
-            surf.set_colorkey((1, 1, 1))
-            self.surface = surf
+            self.sprites[0].opacity = 0
+            self.sprites[1].opacity = 0
             return
 
-        surf = pygame.Surface(self.size)
-        surf.fill(self.back_colour)
-        pygame.draw.rect(surf, self.fore_colour, pygame.Rect((0, 0), (self.size[0] * (self.value - self.min) / float(self.max - self.min), self.size[1])))
-        self.surface = surf
+        # background sprite
+        self.sprites[0].color_rgb = self.back_colour
+        self.sprites[0].opacity = 255
+        self.sprites[0].set_position(self.pos[0], self.pos[1])
+        self.sprites[0].scale_x = self.size[0]
+        self.sprites[0].scale_y = self.size[1]
+
+        # foreground sprite
+        self.sprites[1].color_rgb = self.fore_colour
+        self.sprites[1].opacity = 255
+        self.sprites[1].set_position(self.pos[0], self.pos[1])
+        self.sprites[1].scale_x = self.size[0] * (self.value - self.min) / float(self.max - self.min)
+        self.sprites[1].scale_y = self.size[1]
 
     def check_clicked(self, event):
         if not self.enabled:
