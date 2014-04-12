@@ -177,6 +177,7 @@ class Sprite(event.EventDispatcher):
     _rotation = 0
     _opacity = 255
     _rgb = (255, 255, 255)
+    _rgba = _rgb + (_opacity,)
     _scale_x = 1.0
     _scale_y = 1.0
     _visible = True
@@ -547,6 +548,7 @@ class Sprite(event.EventDispatcher):
 
     def _set_opacity(self, opacity):
         self._opacity = opacity
+        self._rgba = self._rgb + (opacity,)
         self._update_color()
 
     opacity = property(lambda self: self._opacity, _set_opacity,
@@ -563,21 +565,31 @@ class Sprite(event.EventDispatcher):
     :type: int
     ''')
 
-    def _set_color(self, rgb):
+    def _set_color_rgb(self, rgb):
         self._rgb = map(int, rgb)
+        self._rgba = self._rgb + (int(self._opacity),)
         self._update_color()
 
-    color = property(lambda self: self._rgb, _set_color,
+    color_rgb = property(lambda self: self._rgb, _set_color_rgb,
                        doc='''Blend color.
 
     This property sets the color of the sprite's vertices. This allows the
     sprite to be drawn with a color tint.
     
-    The color is specified as an RGB tuple of integers ``(red, green, blue)``.
+    The color is specified as an RGB tuple of integers ``(red, green, blue)``,
     Each color component must be in the range 0 (dark) to 255 (saturated).
     
     :type: (int, int, int)
     ''')
+
+    def _set_color_rgba(self, rgba):
+        (r, g, b, a) = rgba
+        self._rgb = map(int, (r, g, b))
+        self._rgba = map(int, rgba)
+        self._opacity = int(a)
+        self._update_color()
+
+    color_rgba = property(lambda self: self_rgba, _set_color_rgba)
 
     def _set_visible(self, visible):
         self._visible = visible
