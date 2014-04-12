@@ -58,7 +58,7 @@ class Button(object):
         self.function = function
 
         self.outer_sprite = graphics.new_rect_sprite()
-        self.inner_sprite = graphics.new_rect_sprite() # draw_rect(w - self._border_width, h - self._border_width, white)
+        self.inner_sprite = graphics.new_rect_sprite()
         self.text_sprite = None
         self.redraw()
 
@@ -96,8 +96,8 @@ class Button(object):
         if not self.visible:
             return
 
-        self.outer_sprite.color = self.border_colour
-        self.inner_sprite.color = self.colour
+        self.outer_sprite.color_rgb = self.border_colour
+        self.inner_sprite.color_rgb = self.colour
 
         self.outer_sprite.scale_x = self.size[0]
         self.outer_sprite.scale_y = self.size[1]
