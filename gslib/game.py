@@ -6,7 +6,8 @@ import time
 import pyglet.clock
 import pyglet.gl
 import pyglet.window
-from pygame import Rect
+#from pygame import Rect
+import pygame
 
 from gslib import button
 from gslib import character
@@ -44,7 +45,9 @@ class Game(pyglet.window.Window):
     Objects will be drawn without having to add them to these lists.
     """
     def __init__(self):
-        super(Game, self).__init__()
+        super(Game, self).__init__(width=GAME_WIDTH, height=GAME_HEIGHT)
+
+        pyglet.clock.set_fps_limit(None)
 
         # enable alpha-blending
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
@@ -54,16 +57,20 @@ class Game(pyglet.window.Window):
         self.dimensions = (GAME_WIDTH, GAME_HEIGHT)
 
         self.Menu = menus.MainMenu(self, (161, 100))
-        self.GameState = MAIN_MENU
+        #self.GameState = MAIN_MENU
+        self.GameState = MAIN_GAME
         self.cutscene_started = False
         self.cutscene_next = os.path.join(VIDEO_DIR, "default.mpg")
         self.game_running = True
         self.graphics = graphics.Graphics(self)
         self.set_caption("Ghost Simulator v. 0.000000001a")
-        self.music_list = sound.get_music_list()
-        self.sound_dict = sound.load_all_sounds()
-        self.credits = credits.Credits(self)
-        self.options_menu = menus.OptionsMenu(self, (200, 50))
+        # TODO PYGLET
+        #self.music_list = sound.get_music_list()
+        self.music_list = []
+        #self.sound_dict = sound.load_all_sounds()
+        self.sound_dict = []
+        #self.credits = credits.Credits(self)
+        #self.options_menu = menus.OptionsMenu(self, (200, 50))
         self.fps_clock = pyglet.clock.ClockDisplay()
 
         self.camera_coords = (0, 0)
@@ -81,9 +88,9 @@ class Game(pyglet.window.Window):
         # for i in range(5):
         #     self.objects.append(character.Character(self, 0, 0, 16, 16, character.gen_character()))
 
-        self.text_box_test = text_box.TextBox("Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go. Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go. Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go.")
+        #self.text_box_test = text_box.TextBox("Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go. Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go. Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go.")
 
-        self.text_box_test.create_background_surface()
+        #self.text_box_test.create_background_surface()
 
         self.disp_object_stats = False
         self.object_stats = None
@@ -115,7 +122,7 @@ class Game(pyglet.window.Window):
             pygame.VIDEORESIZE: self.graphics.resize_window,
         }
 
-        sound.start_next_music(self.music_list)
+        #sound.start_next_music(self.music_list)
 
         self.map_list = []
         self.map_list.append(maps.Map(os.path.join(TILES_DIR, 'level2.png'), os.path.join(TILES_DIR, 'level3.json'), self))
@@ -140,11 +147,14 @@ class Game(pyglet.window.Window):
         self.show_fears = False
         self.show_ranges = False
 
-        self.load_options()
+        # TODO PYGLET
+        #self.load_options()
         self.key_controller.load()
 
         self.touching = []
         self.last_touching = []
+
+        #self.graphics.draw_map()
 
     # pyglet event
     def on_key_press(self, symbol, modifiers):

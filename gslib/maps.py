@@ -18,9 +18,6 @@ class FakeGame(object):
         self.map = mmap
 
 def test():
-    #pygame.init()
-    #pygame.font.init()
-    #screen = pygame.display.set_mode((800, 800))
     m = Map(os.path.join(TILES_DIR, 'level2.png'), os.path.join(TILES_DIR, 'level2.json'), None)
     g = graphics.Graphics(FakeGame(m))
 
@@ -31,12 +28,6 @@ def test():
 
     @window.event
     def on_draw():
-        pyglet.gl.glMatrixMode(pyglet.gl.GL_PROJECTION)
-        pyglet.gl.glLoadIdentity()
-        pyglet.gl.glOrtho(0.0, 640.0, 480.0, 0.0, -1.0, 1.0)
-        pyglet.gl.glMatrixMode(pyglet.gl.GL_MODELVIEW)
-        pyglet.gl.glLoadIdentity()
-
         print('surf len: ' + str(len(surf)))
         for spr in surf:
             spr.draw()
@@ -121,7 +112,8 @@ class Tile(object):
 
 class Map(object):
     def __init__(self, tileset, map_file, game_class):
-        self.tileset = pyglet.image.load(tileset).get_texture()
+        # Note: We need the PIL decoder for this to be anything like fast. (GDI+ etc import bitmaps upside-down...)
+        self.tileset = pyglet.image.load(tileset)
         self.tileset_cols = self.tileset.width / TILE_SIZE
 
         tile_type_grid, coll_grid = load_map(map_file)

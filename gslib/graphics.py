@@ -10,6 +10,8 @@ from gslib.constants import *
 from gslib import player
 from gslib import sprite
 
+import time
+
 # screen = pygame.display.set_mode((800, 800))
 blue = pygame.Color(0, 255, 0)
 black = pygame.Color(0, 0, 0)
@@ -55,6 +57,10 @@ class Graphics(object):
         #self.game_over_txt2 = font.render(u"press esc scrub", True, (255, 255, 255))
 
         self.clip_area = pygame.Rect((0, 0), (self.game.dimensions[0], self.game.dimensions[1]))
+
+        self.last_map = None
+        self.map_texture = None
+        self.tile_sprite = None
 
     def resize_window(self, event):
         print('TODO: graphics.resize_window() pyglet')
@@ -111,31 +117,38 @@ class Graphics(object):
 
     def draw_map(self):
         m = self.game.map
-        grid_size = TILE_SIZE
-        nw = len(m.grid)
-        nh = len(m.grid[0])
 
-        clippy = self.clip_area.copy()# if hasattr(self.game, 'clip_area') else pygame.Rect((0, 0), (self.game.dimensions[0], self.game.dimensions[1]))
-        clippy.inflate_ip(64, 64)
+        if self.last_map is None or self.last_map != m:
+            print('Redrawing map...')
+            start_time = time.clock()
+            if self.map_texture is not None:
+                self.map_texture.delete()
 
-        # TODO: create & blit megatiles (e.g. 128x128), rerendering only if necessary
-        map_sprites = []
+            grid_size = TILE_SIZE
 
-        for i in range(nw):
-            for j in range(nh):
-                if clippy.colliderect(pygame.Rect((i * grid_size, j * grid_size), (grid_size, grid_size))):
+            self.map_texture = pyglet.image.Texture.create(grid_size * len(m.grid), grid_size * len(m.grid[0]))
+            self.tile_sprite = sprite.Sprite(self.map_texture)
+
+            nw = len(m.grid)
+            nh = len(m.grid[0])
+
+            for i in range(nw):
+                for j in range(nh):
                     (a, b, k, l) = m.grid[i][j].tileset_area
-                    tile_sprite = sprite.Sprite(m.tileset.get_region(a, m.tileset.height - b - grid_size, k, l))
-                    tile_sprite.set_position(i * grid_size, j * grid_size)
-                    map_sprites.append(tile_sprite)
+                    tile_region = m.tileset.get_region(a, m.tileset.height - b - grid_size, k, l)
+                    self.map_texture.blit_into(tile_region, i * grid_size, self.map_texture.height - j * grid_size, 0)
 
                 ##TEMPORARY - DRAWS SOLID TILES FOR COLLISION DEBUG
                 #if not m.grid[i][j].walkable:
                 #    temprect = pygame.Rect(i * grid_size, j * grid_size, TILE_SIZE, TILE_SIZE)
                 #    pygame.draw.rect(surf, 0x0000ff, temprect)
 
-        self.game.world_objects_to_draw = map_sprites + self.game.world_objects_to_draw
-        return map_sprites
+            self.last_map = m
+
+            print('Map redraw complete (took ' + str(time.clock() - start_time) + 's)')
+
+        self.game.world_objects_to_draw.insert(0, self.tile_sprite)
+        return self.tile_sprite
 
     def draw_buttons(self):
         for button in self.game.buttons.itervalues():
