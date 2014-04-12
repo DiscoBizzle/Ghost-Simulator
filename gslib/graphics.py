@@ -4,7 +4,7 @@ except ImportError:
     from io import BytesIO
 
 import pygame
-import pyglet
+import pyglet.image
 
 from gslib.constants import *
 from gslib import player
@@ -31,35 +31,34 @@ class Graphics(object):
     """
     def __init__(self, game):
         self.game = game
-        self.surface = pygame.display.set_mode(self.game.dimensions, pygame.RESIZABLE)
+        #self.surface = pygame.display.set_mode(self.game.dimensions, pygame.RESIZABLE)
 
-        self.field = pygame.image.load(os.path.join(TILES_DIR, 'field.png'))
-        self.field = pygame.transform.scale(self.field, (self.game.dimensions[0], self.game.dimensions[1]))
-        self.field.set_alpha(100)
-        self.field.convert_alpha()
+        self.field = sprite.Sprite(pyglet.image.load(os.path.join(TILES_DIR, 'field.png')).get_texture())
+        self.field.scale_x = self.game.dimensions[0] / self.field.texture.width
+        self.field.scale_y = self.game.dimensions[1] / self.field.texture.height
 
-        self.light = pygame.image.load(os.path.join(TILES_DIR, 'light.png'))
-        self.light.convert_alpha()
-        self.light = pygame.transform.scale(self.light, (200, 200))
-        self.light_surf = pygame.Surface((self.game.dimensions[0], self.game.dimensions[1])).convert_alpha()
-        self.light_size = self.light.get_size()
+        self.light = sprite.Sprite(pyglet.image.load(os.path.join(TILES_DIR, 'light.png')).get_texture())
+        self.light.scale_x = self.light.scale_y = (200.0 / self.light.texture.height)
+        self.light_size = (self.light.width, self.light.height)
 
-        font = pygame.font.SysFont(FONT, 20)
-        self.fear_size = font.size(u"FEAR")
-        self.fear_txt = font.render(u"FEAR", True, (200, 200, 200)).convert_alpha()
-        self.fear_surf = pygame.Surface((self.game.dimensions[0], 32)).convert_alpha()
+        #font = pygame.font.SysFont(FONT, 20)
+        #self.fear_size = font.size(u"FEAR")
+        #self.fear_txt = font.render(u"FEAR", True, (200, 200, 200)).convert_alpha()
+        #self.fear_surf = pygame.Surface((self.game.dimensions[0], 32)).convert_alpha()
 
-        font = pygame.font.SysFont(FONT, 80)
-        self.game_over_txt1_size = font.size(u"GAME OVER")
-        self.game_over_txt1 = font.render(u"GAME OVER", True, (255, 255, 255))
+        #font = pygame.font.SysFont(FONT, 80)
+        #self.game_over_txt1_size = font.size(u"GAME OVER")
+        #self.game_over_txt1 = font.render(u"GAME OVER", True, (255, 255, 255))
 
-        font = pygame.font.SysFont(FONT, 20)
-        self.game_over_txt2_size = font.size(u"press esc scrub")
-        self.game_over_txt2 = font.render(u"press esc scrub", True, (255, 255, 255))
+        #font = pygame.font.SysFont(FONT, 20)
+        #self.game_over_txt2_size = font.size(u"press esc scrub")
+        #self.game_over_txt2 = font.render(u"press esc scrub", True, (255, 255, 255))
 
         self.clip_area = pygame.Rect((0, 0), (self.game.dimensions[0], self.game.dimensions[1]))
 
     def resize_window(self, event):
+        print('TODO: graphics.resize_window() pyglet')
+        return
         self.game.dimensions = event.size
         self.surface = pygame.display.set_mode(event.size, pygame.RESIZABLE)
         self.clip_area = pygame.Rect((0, 0), (self.game.dimensions[0], self.game.dimensions[1]))
@@ -89,7 +88,6 @@ class Graphics(object):
             self.draw_buttons()
 
             self.draw_fear_bar()
-            self.draw_fps()
             self.draw_character_stats()
         elif self.game.GameState == GAME_OVER:
             self.draw_game_over()
@@ -166,6 +164,7 @@ class Graphics(object):
                 self.game.world_objects_to_draw.append((surf, pos))
 
     def draw_character_stats(self):
+        return
         if self.game.disp_object_stats:
             self.game.screen_objects_to_draw.append((self.game.object_stats[0], self.game.object_stats[1]))
 
@@ -174,6 +173,7 @@ class Graphics(object):
         self.fear_surf = pygame.Surface((self.game.dimensions[0], nplayers*32)).convert_alpha()
 
     def draw_fear_bar(self):
+        return
         nplayers = len(self.game.players)
         if nplayers > 1:
             self.resize_fear_surface()
@@ -185,7 +185,7 @@ class Graphics(object):
 
     def draw_world_objects(self):  # stuff relative to camera
         for f in self.game.world_objects_to_draw:
-            self.blit_camera(f[0], f[1])
+            self.blit_camera(f)
         self.game.world_objects_to_draw = []
 
     def draw_screen_objects(self):  # stuff relative to screen
@@ -193,9 +193,13 @@ class Graphics(object):
             f.draw()
         self.game.screen_objects_to_draw = []
 
-    def blit_camera(self, surf, pos):
-        cpos = (pos[0] - self.game.camera_coords[0], pos[1] - self.game.camera_coords[1])
-        self.surface.blit(surf, cpos)
+    def blit_camera(self, sprite):
+        # TODO: use built-in pyglet camera stuff
+        old_x = sprite.x
+        old_y = sprite.y
+        sprite.set_position(old_x - self.game.camera_coords[0], old_y - self.game.camera_coords[1])
+        sprite.draw()
+        sprite.set_position(old_x, old_y)
 
     def draw_cutscene(self):
         #print game.cutscene_started

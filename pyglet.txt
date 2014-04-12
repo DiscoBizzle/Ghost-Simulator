@@ -69,11 +69,20 @@ Creating a new Sprite every frame or calling graphics.new_rect_sprite() every
 
 3. TODO list
 
-- graphics.py port
+- graphics.draw_objects
+- graphics.draw_map
+- graphics.draw_character_stats
+- graphics.draw_game_over
+- graphics.draw_fear_bar
+- graphics draw_circle (or drop it)
+- graphics.draw_torch (drop draw_circle, use image of circle?)
+- graphics 'view of field' option
+- graphics.draw_text_box
 - text rendering (a Sprite derivative would be ideal. watch texture garbage 
                    collection!!)
 - port all input code (joy.py, key.py, mouse.py, menus.py, ???)
 - port all sound code
+- port cutscene stuff inc. graphics.draw_cutscene
 - port maps.py test()
 - character.py: info sheet
 - credits.py port
