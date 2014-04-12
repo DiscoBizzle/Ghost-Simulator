@@ -34,11 +34,11 @@ class Graphics(object):
         #self.surface = pygame.display.set_mode(self.game.dimensions, pygame.RESIZABLE)
 
         self.field = sprite.Sprite(pyglet.image.load(os.path.join(TILES_DIR, 'field.png')).get_texture())
-        self.field.scale_x = self.game.dimensions[0] / self.field.texture.width
-        self.field.scale_y = self.game.dimensions[1] / self.field.texture.height
+        self.field.scale_x = self.game.dimensions[0] / self.field.image.width
+        self.field.scale_y = self.game.dimensions[1] / self.field.image.height
 
         self.light = sprite.Sprite(pyglet.image.load(os.path.join(TILES_DIR, 'light.png')).get_texture())
-        self.light.scale_x = self.light.scale_y = (200.0 / self.light.texture.height)
+        self.light.scale_x = self.light.scale_y = (200.0 / self.light.image.height)
         self.light_size = (self.light.width, self.light.height)
 
         #font = pygame.font.SysFont(FONT, 20)
@@ -114,9 +114,6 @@ class Graphics(object):
         grid_size = TILE_SIZE
         nw = len(m.grid)
         nh = len(m.grid[0])
-        if not hasattr(self.game, 'map_surf'):
-            self.game.map_surf = pygame.Surface((nw * grid_size, nh * grid_size)).convert()
-        surf = self.game.map_surf
 
         clippy = self.clip_area.copy()# if hasattr(self.game, 'clip_area') else pygame.Rect((0, 0), (self.game.dimensions[0], self.game.dimensions[1]))
         clippy.inflate_ip(64, 64)
@@ -138,6 +135,7 @@ class Graphics(object):
                 #    pygame.draw.rect(surf, 0x0000ff, temprect)
 
         self.game.world_objects_to_draw = map_sprites + self.game.world_objects_to_draw
+        return map_sprites
 
     def draw_buttons(self):
         for button in self.game.buttons.itervalues():

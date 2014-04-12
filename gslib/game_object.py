@@ -1,10 +1,6 @@
-import time
-
 import pygame
 
 from gslib.constants import *
-
-from gslib import fear_functions
 
 class GameObject(object):
     def __init__(self, game_class, x, y, w, h, sprite_sheet):
@@ -167,7 +163,8 @@ class GameObject(object):
 
                 if o.fear >= o.scream_thresh:
                     if o.scream_timer <= 0:
-                        self.game_class.sound_dict['scream'].play()
+                        # TODO PYGLET
+                        #self.game_class.sound_dict['scream'].play()
                         o.scream_timer = 120
                     else:
                         o.scream_timer -= 1

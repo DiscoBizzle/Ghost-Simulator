@@ -1,7 +1,7 @@
 import pyglet
 
 from gslib.constants import *
-import graphics
+from gslib import graphics
 
 def valid_colour(colour):
     if len(colour) != 3:
@@ -70,9 +70,6 @@ class Button(object):
 
     def pos_getter(self):
         return self._pos
-
-    def size(self):
-        return self._size
 
     pos = property(pos_getter, pos_setter)
     # all below variables affect the button surface, so make them properties to redraw on change

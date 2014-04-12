@@ -2,6 +2,7 @@ import random
 import os.path
 
 import pygame
+import pyglet
 
 from gslib import fear_functions
 from gslib.game_object import GameObject
@@ -126,7 +127,7 @@ class Character(GameObject):
          - Function should take in any parameters and return a function.
          - Returned function should take 0 parameters.
         """
-        GameObject.__init__(self, game_class, x, y, w, h, pygame.image.load(os.path.join(CHARACTER_DIR, sprite_sheet)).convert())
+        GameObject.__init__(self, game_class, x, y, w, h, pyglet.image.load(os.path.join(CHARACTER_DIR, sprite_sheet)).get_texture())
         self.fears = stats['fears']
         self.scared_of = stats['scared_of']
         self.scared_of.append('player')
@@ -189,6 +190,8 @@ class Character(GameObject):
         GameObject.update(self)
 
     def draw_info_sheet(self):
+        print('TODO character.draw_info_sheet -> pyglet')
+        return
         font_size = 20
         #dim = w, h = (GAME_WIDTH - LEVEL_WIDTH, int((GAME_WIDTH - LEVEL_WIDTH) / 1.6))
 

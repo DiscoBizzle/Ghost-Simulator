@@ -43,6 +43,8 @@ class Menu(object):
             self.sliders['menu_scale'].enabled = False
             self.set_menu_scale(1.0/self.frac)
 
+        print('TODO PYGLET menus.display')
+        return
         for button in self.buttons.itervalues():
             self.game_class.graphics.surface.blit(button.surface, button.pos)
         for slider in self.sliders.itervalues():
@@ -58,7 +60,7 @@ class Menu(object):
     def arrange_buttons(self):
         self.buttons_per_column = int(((self.game_class.dimensions[1] - self.vert_offset) / (self.button_size[1]+20))) #- 1
 
-        self.vert_offset = 50 + self.game_class.options['menu_scale'] * self.buttons['menu_scale_display'].size()[1]
+        self.vert_offset = 50 + self.game_class.options['menu_scale'] * self.buttons['menu_scale_display'].size[1]
 
         for button in self.buttons.itervalues():
             if button.order[0] == -1:

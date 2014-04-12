@@ -18,11 +18,16 @@ def test():
 
     surf = graphics.draw_map(m)
 
-    screen.blit(surf, (0, 0))
+    window = pyglet.window.Window()
 
-    pygame.display.update()
+    @window.event
+    def on_draw():
+        screen.blit(surf, (0, 0))
+        
+
+    #pygame.display.update()
+    pyglet.app.run()
     raw_input()
-    pygame.quit()
 
 def open_map_json(map_filename):
     try:
@@ -99,7 +104,7 @@ class Tile(object):
 class Map(object):
     def __init__(self, tileset, map_file, game_class):
         self.tileset = pyglet.image.load(tileset).get_texture()
-        self.tileset_cols = self.tileset.widtht / TILE_SIZE
+        self.tileset_cols = self.tileset.width / TILE_SIZE
 
         tile_type_grid, coll_grid = load_map(map_file)
         self.grid = [[Tile(tile_type_grid, coll_grid, self, (i, j)) for j in range(len(tile_type_grid[0]))] for i in range(len(tile_type_grid))]

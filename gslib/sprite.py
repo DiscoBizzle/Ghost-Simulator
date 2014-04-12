@@ -567,7 +567,7 @@ class Sprite(event.EventDispatcher):
 
     def _set_color_rgb(self, rgb):
         self._rgb = map(int, rgb)
-        self._rgba = self._rgb + (int(self._opacity),)
+        self._rgba = self._rgb + [int(self._opacity)]
         self._update_color()
 
     color_rgb = property(lambda self: self._rgb, _set_color_rgb,
