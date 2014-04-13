@@ -7,7 +7,7 @@ from gslib.constants import *
 
 def new(font=FONT, font_size=36, text='no text', centered=False, width=None, height=None):
     wrapped = (width is not None)
-    return pyglet.text.Label(text, font.split(', '), font_size, width=width, height=height,
+    return pyglet.text.Label(text, font, font_size, width=width, height=height,
               anchor_x='left', anchor_y='bottom', align=('center' if centered else 'left'),
               multiline=wrapped)
 
