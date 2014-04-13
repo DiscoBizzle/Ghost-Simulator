@@ -3,6 +3,7 @@
 import pyglet
 #pyglet.options['debug_gl'] = False
 pyglet.options['vsync'] = False
+pyglet.options['shadow_window'] = False
 
 from gslib import game
 
@@ -25,7 +26,6 @@ def main():
             w.on_draw()
             w.flip()
         #print(str(time.clock() - lasttime) + "seconds passed")
-        lframes += 1
         if accumulator > 1.0:
             print(str(lframes) + " FPS")
             lframes = 0
