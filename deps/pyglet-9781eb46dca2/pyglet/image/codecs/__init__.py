@@ -190,8 +190,7 @@ def add_default_image_codecs():
         add_encoders(pil)
         add_decoders(pil)
     except ImportError:
-        raise Exception("You need to install PIL.")
-        pass
+        raise Exception("You need to install PIL or Pillow. (cmd line: pip install pillow)")
 
     # Mac OS X default: Quicktime for Carbon, Quartz for Cocoa.
     # TODO: Make ctypes Quartz the default for both Carbon & Cocoa.
