@@ -62,6 +62,8 @@ class Slider(object):
     pos = create_property('pos')
 
     def redraw(self):
+        self.sprites[0].color_rgb = self.back_colour
+        self.sprites[1].color_rgb = self.fore_colour
         if not self.visible:
             self.sprites[0].opacity = 0
             self.sprites[1].opacity = 0

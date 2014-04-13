@@ -83,7 +83,7 @@ class KeyController(object):
             return
         action = self.game.action_to_rebind
         if "Player" in action:  # action = "Player n action"
-            n = int(action[7])
+            n = action[7]
             self.player_map[n][action[9:]] = new_key
         else:
             self.key_map[action] = new_key

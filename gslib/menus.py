@@ -1,4 +1,5 @@
-import pygame
+# import pygame
+import pyglet
 
 from gslib import button
 from gslib import slider
@@ -22,7 +23,7 @@ class Menu(object):
         self.vert_offset = 40 + button_size[1] + 10
         self.buttons_per_column = ((self.game_class.dimensions[1] - self.vert_offset) / (self.button_size[1]+20)) - 1
 
-        self.buttons['menu_scale_display'] = button.Button(self, None, order = (-1, 0), visible=False,
+        self.buttons['menu_scale_display'] = button.Button(self, None, order=(-1, 0), visible=False,
                                             text=u'Menu Scale: 1.0', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0), size=(200, 50), pos=(60, 40))
         self.sliders['menu_scale'] = slider.Slider(self, self.set_menu_scale, range=(1.0, 5.0/frac), order=(-1, 1),
@@ -140,8 +141,8 @@ class OptionsMenu(Menu):
                                             text=u'Music Volume: '+unicode(str(int(INITIAL_MUSIC_VOLUME/0.003))), border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
 
-        self.sliders['sound'] = slider.Slider(self, self.set_sound, range=(0, 0.3), order = (3, 1), value = game_class.sound_dict['scream'].get_volume())
-        self.sliders['music'] = slider.Slider(self, self.set_music, range=(0, 0.3), order = (4, 1), value = pygame.mixer.music.get_volume())
+        self.sliders['sound'] = slider.Slider(self, self.set_sound, range=(0.0, 2.0), order = (3, 1), value = game_class.sound_handler.sound_volume)
+        self.sliders['music'] = slider.Slider(self, self.set_music, range=(0.0, 2.0), order = (4, 1), value = game_class.sound_handler.music_volume)
 
         self.buttons['menu_scale'] = button.Button(self, self.menu_scale_toggle, order = (5, 0), visible=True,
                                             text_states=[u'Menu Scaling: Off', u'Menu Scaling: On'], border_colour=(120, 50, 80), border_width=3,
@@ -184,14 +185,11 @@ class OptionsMenu(Menu):
         self.arrange_buttons()
 
     def set_sound(self, value):
-        self.game_class.options['sound_volume'] = value
-        for sound in self.game_class.sound_dict.itervalues():
-            sound.set_volume(value)
+        self.game_class.sound_handler.sound_volume = value
         self.buttons['sound_display'].text = u'Sound Volume: ' + unicode(str(int(value/0.003)))
 
     def set_music(self, value):
-        self.game_class.options['music_volume'] = value
-        pygame.mixer.music.set_volume(value)
+        self.game_class.sound_handler.music_volume = value
         self.buttons['music_display'].text = u'Music Volume: ' + unicode(str(int(value/0.003)))
 
     def update_button_text_and_slider_values(self):
@@ -283,7 +281,7 @@ class KeyBindMenu(Menu):
                 self.buttons[name] = button.Button(self, None, order=(ord, 0), visible=True, text=unicode(name),
                                                    border_colour=self.border_colour, border_width=3,
                                                    colour=self.colour)
-                self.buttons[name + ' key'] = button.Button(self, self.rebind(name), order=(ord, 1), visible=True, text=unicode(pygame.key.name(p_map[k])),
+                self.buttons[name + ' key'] = button.Button(self, self.rebind(name), order=(ord, 1), visible=True, text=unicode(pyglet.window.key.symbol_string(p_map[k])),
                                                             border_colour=self.border_colour, border_width=3,
                                                             colour=self.colour)
                 ord += 1
@@ -292,7 +290,7 @@ class KeyBindMenu(Menu):
             self.buttons[k] = button.Button(self, None, order=(ord, 0), visible=True, text=unicode(k),
                                             border_colour=self.border_colour, border_width=3,
                                             colour=self.colour)
-            self.buttons[k + ' key'] = button.Button(self, self.rebind(k), order=(ord, 1), visible=True, text=unicode(pygame.key.name(v)),
+            self.buttons[k + ' key'] = button.Button(self, self.rebind(k), order=(ord, 1), visible=True, text=unicode(pyglet.window.key.symbol_string(v)),
                                                      border_colour=self.border_colour, border_width=3,
                                                      colour=self.colour)
             ord += 1

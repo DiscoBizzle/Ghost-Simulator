@@ -65,13 +65,18 @@ class Game(pyglet.window.Window):
         self.game_running = True
         self.graphics = graphics.Graphics(self)
         self.set_caption("Ghost Simulator v. 0.000000001a")
+
         # TODO PYGLET
+
+        self.sound_handler = sound.Sound()
+        self.sound_handler.music_volume = 0.0
+        self.sound_handler.start_next_music()
         #self.music_list = sound.get_music_list()
-        self.music_list = []
+        # self.music_list = []
         #self.sound_dict = sound.load_all_sounds()
-        self.sound_dict = []
+        # self.sound_dict = {}
         #self.credits = credits.Credits(self)
-        # self.options_menu = menus.OptionsMenu(self, (200, 50))
+        self.options_menu = menus.OptionsMenu(self, (200, 50))
         self.fps_clock = pyglet.clock.ClockDisplay()
 
         self.camera_coords = (0, 0)
@@ -170,6 +175,9 @@ class Game(pyglet.window.Window):
         self.key_controller.handle_keys(symbol, modifiers)
 
     def on_mouse_motion(self, x, y, dx, dy):
+        self.mouse_controller.mouse_move((x, y))
+
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.mouse_controller.mouse_move((x, y))
 
     def on_mouse_press(self, x, y, button, modifiers):

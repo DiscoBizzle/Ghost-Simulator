@@ -163,8 +163,7 @@ class GameObject(object):
 
                 if o.fear >= o.scream_thresh:
                     if o.scream_timer <= 0:
-                        # TODO PYGLET
-                        #self.game_class.sound_dict['scream'].play()
+                        self.game_class.sound_handler.play_sound('scream')
                         o.scream_timer = 120
                     else:
                         o.scream_timer -= 1

@@ -73,7 +73,7 @@ Creating a new Sprite every frame or calling graphics.new_rect_sprite() every
 
 3. TODO list
 
-- port all input code (joy.py, key.py, mouse.py, menus.py, ???)
+- port some input code (joy.py)
 
 - fix game_object drawing (coordinates, spritesheet (use built-in pyglet stuff?), alpha)
 - graphics.draw_character_stats
@@ -85,7 +85,6 @@ Creating a new Sprite every frame or calling graphics.new_rect_sprite() every
                   ^ note pyglet has no problem with multiple lines of text/auto word wrapping.
 - graphics 'view of field' option
 - graphics.draw_text_box (Is this actually used anywhere? pyglet also already has a text box)
-- port all sound code
 - port cutscene stuff inc. graphics.draw_cutscene
 
 - eventually get rid of pygame.Rect. but it's pretty much harmless.
