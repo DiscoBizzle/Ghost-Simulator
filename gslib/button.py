@@ -46,7 +46,7 @@ class Button(object):
         self._border_colour = border_colour
         self._border_width = border_width
         self._text = text
-        self._last_text = text
+        self._text_dirty = None
         self._font_size = font_size
         self.text_states = text_states
         self.text_states_toggle = False
@@ -105,11 +105,14 @@ class Button(object):
 
         self.outer_sprite.position = self.pos
         self.inner_sprite.position = (self.pos[0] + self._border_width, self.pos[1] + self._border_width)
-        if self.text_sprite is None or self.text != self._last_text:
+
+        # do we need to rerender text? rendering text is SLOW. (< 30 fps)
+        text_dirty_new = [self.text, self.font_size, self.size[0], self.size[1]]
+        if self._text_dirty is None or self._text_dirty != text_dirty_new:
             self.text_sprite = text.new(text=self.text, font_size=self.font_size, centered=True,
-                width=self.size[0], height=self.size[1])
+                                         width=self.size[0], height=self.size[1])
             self.text_sprite.color = (200, 200, 200, 255)
-            self._last_text = self.text
+            self._text_dirty = text_dirty_new
 
         self.text_sprite.x = self.pos[0] # + self.outer_sprite.width / 2 - self.text_sprite.width / 2
         self.text_sprite.y = self.pos[1] # + self.outer_sprite.height / 2 - self.text_sprite.height / 2

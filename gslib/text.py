@@ -7,9 +7,11 @@ from gslib.constants import *
 
 def new(font=FONT, font_size=36, text='no text', centered=False, width=None, height=None):
     wrapped = (width is not None)
-    return pyglet.text.Label(text, font, font_size, width=width, height=height,
-              anchor_x='left', anchor_y='bottom', align=('center' if centered else 'left'),
+    label = pyglet.text.Label(text, font, font_size, width=width, height=height,
+              anchor_x='left', anchor_y='baseline', align=('center' if centered else 'left'),
               multiline=wrapped)
+    label.content_valign = 'center'
+    return label
 
 def speech_bubble(text, width, text_colour=(0, 0, 0)):
     font = pygame.font.SysFont('helvetica', 14)
