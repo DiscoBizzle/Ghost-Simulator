@@ -139,7 +139,7 @@ class Graphics(object):
                 for j in range(nh):
                     (a, b, k, l) = m.grid[i][j].tileset_area
                     tile_region = m.tileset.get_region(a, m.tileset.height - b - grid_size, k, l)
-                    self.map_texture.blit_into(tile_region, i * grid_size, self.map_texture.height - j * grid_size, 0)
+                    self.map_texture.blit_into(tile_region, i * grid_size, j * grid_size, 0)
 
                 ##TEMPORARY - DRAWS SOLID TILES FOR COLLISION DEBUG
                 #if not m.grid[i][j].walkable:
@@ -161,7 +161,7 @@ class Graphics(object):
 
     def draw_objects(self):
         sort_objs = self.game.objects.values()
-        sort_objs.sort((lambda x, y: cmp(x.coord[1], y.coord[1])))
+        sort_objs.sort((lambda x, y: cmp(-x.coord[1], -y.coord[1])))
 
         for o in sort_objs:  # self.game.objects:
             if isinstance(o, player.Player): #o == self.game.player1:

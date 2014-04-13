@@ -68,12 +68,12 @@ def load_map(map_filename): # Load a map and objects from a map file
 
     for tile in tile_map:
         x = tile['x']
-        y = tile['y']
+        y = height - tile['y'] - 1
         map_grid[x][y] = tile['tile']
 
     for tile in coll_map:
         x = tile['x']
-        y = tile['y']
+        y = height - tile['y'] - 1
         coll_grid[x][y] = tile['tile']
 
     return map_grid, coll_grid
