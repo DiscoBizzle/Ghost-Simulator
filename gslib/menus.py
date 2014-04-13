@@ -66,7 +66,7 @@ class Menu(object):
         for button in self.buttons.itervalues():
             if button.order[0] == -1:
                 continue
-            #button.size = self.button_size # wtf
+            button.size = self.button_size
             button.font_size = self.font_size
             button.pos = (self.hori_offset + (button.order[1] + int(button.order[0]/self.buttons_per_column)*2)*(self.button_size[0]+20), self.vert_offset + (button.order[0]%self.buttons_per_column)*(self.button_size[1]+10))
             if button.text_states:
