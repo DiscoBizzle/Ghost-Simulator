@@ -188,10 +188,13 @@ class Game(pyglet.window.Window):
 
     # pyglet event
     def on_draw(self):
+        #print "got to stupid fucking drawing"
         if self.game_running:
             if self.GameState == CUTSCENE:
+                #print "cutscene"
                 self.graphics.draw_cutscene()
             else:
+                #print "not cutscene"
                 self.update()
                 self.graphics.main_game_draw()
 

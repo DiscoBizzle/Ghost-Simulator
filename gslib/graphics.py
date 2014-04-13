@@ -227,24 +227,36 @@ class Graphics(object):
         sprite.set_position(old_x, old_y)
 
     def draw_cutscene(self):
-        #print game.cutscene_started
-        #print hasattr(game, 'movie')
-        #print game.GameState
+        #print self.game.cutscene_started
+        #print hasattr(self, 'movie_player')
+        #print self.game.GameState
     
-        if self.game.cutscene_started and hasattr(self, 'movie'):
-            if not self.movie.get_busy():
+        #print "main draw_cut"
+        if self.game.cutscene_started and hasattr(self, 'movie_player'):
+            if not self.movie_player.playing:
+                #print "1"
                 self.game.GameState = MAIN_GAME
                 self.game.cutscene_started = False
-                self.game.clock.get_time()  # hack required for pygame.game.movie linux
-                del self.movie  # hack required for pygame.movie mac os x
+                #self.game.clock.get_time()  # hack required for pygame.game.movie_player linux
+                #del self.movie_player  # hack required for pygame.movie_player mac os x
+            else:
+                #print "2"
+                #print self.movie_player.playing
+                self.movie_player.get_texture().blit(0, 0)
+                #print self.movie_player.playing
+                #print "got stupid fucking texture"
+            #self.surface.fill(black)
+            #pygame.display.update()
         else:
-            self.surface.fill(black)
-            pygame.display.update()
             try:
-                f = BytesIO(open(self.game.cutscene_next, "rb").read())
-                self.movie = pygame.movie.Movie(f)
-                w, h = self.movie.get_size()
-                self.movie.play()
+                print "3"
+                #f = BytesIO(open(self.game.cutscene_next, "rb").read())
+                video_source = pyglet.media.load(self.game.cutscene_next)
+                self.movie_player = pyglet.media.Player()
+                #w, h = self.movie_player.get_size()
+                #self.movie_player.eos_action = self.movie_player.EOS_LOOP
+                self.movie_player.queue(video_source)
+                self.movie_player.play()
                 self.game.cutscene_started = True
             except IOError:
                 print u"Video not found: " + self.game.cutscene_next
