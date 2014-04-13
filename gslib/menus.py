@@ -51,12 +51,12 @@ class Menu(object):
             for spr in slider.sprites:
                 spr.draw()
 
-    def mouse_event(self, event):
+    def mouse_event(self, pos, typ, button=None):
         for slider in self.sliders.itervalues():
-            slider.check_clicked(event)
-        if event.type == pygame.MOUSEBUTTONDOWN:
+            slider.check_clicked(pos, typ)
+        if typ == 'down':
             for button in self.buttons.itervalues():
-                button.check_clicked(event.pos)
+                button.check_clicked(pos)
 
     def arrange_buttons(self):
         self.buttons_per_column = int(((self.game_class.dimensions[1] - self.vert_offset) / (self.button_size[1]+20))) #- 1

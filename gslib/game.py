@@ -71,7 +71,7 @@ class Game(pyglet.window.Window):
         #self.sound_dict = sound.load_all_sounds()
         self.sound_dict = []
         #self.credits = credits.Credits(self)
-        #self.options_menu = menus.OptionsMenu(self, (200, 50))
+        # self.options_menu = menus.OptionsMenu(self, (200, 50))
         self.fps_clock = pyglet.clock.ClockDisplay()
 
         self.camera_coords = (0, 0)
@@ -113,7 +113,7 @@ class Game(pyglet.window.Window):
             pygame.KEYUP: self.key_controller.handle_keys,
             pygame.QUIT: (lambda _: self.quit_game()),
             pygame.MOUSEBUTTONDOWN: self.mouse_controller.mouse_click,
-            pygame.MOUSEBUTTONUP: self.mouse_controller.mouse_up,
+            # pygame.MOUSEBUTTONUP: self.mouse_controller.mouse_up,
             pygame.MOUSEMOTION: self.mouse_controller.mouse_move,
             pygame.JOYHATMOTION: self.joy_controller.handle_hat,
             pygame.JOYBUTTONDOWN: self.joy_controller.handle_buttondown,
@@ -159,10 +159,20 @@ class Game(pyglet.window.Window):
 
     # pyglet event
     def on_key_press(self, symbol, modifiers):
+        self.push_handlers(self.key_controller.keys)
+        self.key_controller.handle_keys(symbol, modifiers)
         #response = self.event_map.get(event.type)
         #if response is not None:
         #   response(event)
-        pass
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        self.mouse_controller.mouse_move((x, y))
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        self.mouse_controller.mouse_click((x, y), 'down', button)
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        self.mouse_controller.mouse_click((x, y), 'up', button)
 
     # pyglet event
     def on_draw(self):

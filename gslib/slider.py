@@ -81,19 +81,19 @@ class Slider(object):
         self.sprites[1].scale_x = self.size[0] * (self.value - self.min) / float(self.max - self.min)
         self.sprites[1].scale_y = self.size[1]
 
-    def check_clicked(self, event):
+    def check_clicked(self, pos, typ):
         if not self.enabled:
             return
-        click_pos = event.pos
+        click_pos = pos
         w, h = self.size
         w /= 2
         h /= 2
 
-        if event.type == pygame.MOUSEBUTTONUP:
+        if typ == 'up':
             self.isClicked = False
             return
 
-        if event.type == pygame.MOUSEBUTTONDOWN and abs(click_pos[0] - (self.pos[0] + w)) < w and abs(click_pos[1] - (self.pos[1] + h)) < h:
+        if typ == 'down' and abs(click_pos[0] - (self.pos[0] + w)) < w and abs(click_pos[1] - (self.pos[1] + h)) < h:
             self.isClicked = True
 
         if self.isClicked:
