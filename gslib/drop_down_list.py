@@ -77,7 +77,7 @@ class DropDownList(object):
     font_size = create_property('font_size')
     selected_name = create_property('selected_name')
 
-    def refresh(self):
+    def refresh(self):  # call if the list changes
         self.drop_buttons = []
         self.drop_buttons.append(button.Button(self, list_func(self, None), size=self.size, font_size=self.font_size,
                                                visible=False, enabled=False, text=unicode("<None>"),

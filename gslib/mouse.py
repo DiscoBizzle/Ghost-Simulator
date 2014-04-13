@@ -61,8 +61,8 @@ class MouseController(object):
 
     def calc_cursor_coord(self, event):
         if self.game.key_controller.keys[self.game.key_controller.key_map['Snap to Grid']]:
-            grid_x = (event.pos[0] + self.game.camera_coords[0] + self.game.camera_padding[0]) / TILE_SIZE
-            grid_y = (event.pos[1] + self.game.camera_coords[1] + self.game.camera_padding[2]) / TILE_SIZE
+            grid_x = (event.pos[0] + self.game.camera_coords[0]) / TILE_SIZE
+            grid_y = (event.pos[1] + self.game.camera_coords[1]) / TILE_SIZE
             self.game.cursor.coord = (grid_x * TILE_SIZE, grid_y * TILE_SIZE)
 
         else:

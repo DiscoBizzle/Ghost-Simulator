@@ -64,14 +64,14 @@ class Editor(object):
         # Create new Trigger
         ###################################################################
 
-        self.possible_triggers = {0: triggers.FlipStateOnHarvest,
-                                  1: triggers.FlipStateWhenTouchedConditional,
-                                  2: triggers.FlipStateWhenUnTouchedConditional}
+        self.possible_triggers = {'Flip State On Harvest': triggers.FlipStateOnHarvest,
+                                  'Flip State When Touched (Conditional)': triggers.FlipStateWhenTouchedConditional,
+                                  'Flip State When UnTouched (Conditional)': triggers.FlipStateWhenUnTouchedConditional}
         self.buttons['new_trigger_label'] = button.DefaultButton(self, None, pos=(100, 20), size=(100, 20),
                                                                  text="New trigger")
-        self.drop_lists['new_triggers'] = drop_down_list.DropDownList(self, self.game.map.triggers,
+        self.drop_lists['new_triggers'] = drop_down_list.DropDownList(self, self.possible_triggers,
                                                                       self.new_trigger, pos=(200, 20),
-                                                                      labels='classname', size=(300, 20))
+                                                                      size=(300, 20))
         # self.new_trigger_objects = []
         self.trigger_prototype = None
 
@@ -115,8 +115,7 @@ class Editor(object):
 
     def new_trigger(self):
         if self.drop_lists['new_triggers'].selected:
-            self.trigger_prototype = triggers.Trigger(None, [])  # self.drop_lists['new_triggers'].selected
-            self.trigger_prototype.legend = self.drop_lists['new_triggers'].selected.legend
+            self.trigger_prototype = self.drop_lists['new_triggers'].selected()
             self.game.new_trigger_capture = True
             self.create_trigger_cursor(self.trigger_prototype.legend[0])
 
@@ -128,17 +127,24 @@ class Editor(object):
         else:
             l.append(o)
 
-        target_number = len(self.drop_lists['new_triggers'].selected.legend)
+        target_number = len(self.trigger_prototype.legend)
         if len(l) == target_number:
             name = 0
             for n in self.game.map.triggers.keys():
                 if isinstance(n, int):
                     if n >= name:
                         name = n + 1
-            self.game.map.triggers[name] = type(self.drop_lists['new_triggers'].selected)(tuple(l))
+            self.game.map.triggers[name] = self.drop_lists['new_triggers'].selected(*l)
             self.draw_trigger(None)
             self.game.cursor = None
             self.game.gather_buttons_and_drop_lists_and_objects()
+
+            self.drop_lists['new_triggers'].selected = None
+            self.drop_lists['new_triggers'].drop_buttons[0].perf_function()  # call the <None> function
+            self.game.new_trigger_capture = False
+            self.trigger_prototype = None
+
+            self.drop_lists['view_triggers'].refresh()
         else:
             self.create_trigger_cursor(self.trigger_prototype.legend[len(l)])
 
