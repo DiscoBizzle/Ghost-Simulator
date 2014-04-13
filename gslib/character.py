@@ -6,7 +6,7 @@ import pyglet
 
 from gslib import fear_functions
 from gslib.game_object import GameObject
-from gslib import text_functions
+from gslib import text
 from gslib.constants import *
 
 WHITE = (255, 255, 255)
@@ -232,7 +232,7 @@ class Character(GameObject):
         surf.blit(temp, (text_left, name_text.get_height() + age_text.get_height() + 2 * border))
 
         # draw bio
-        bio = text_functions.text_wrap(self.stats['bio'], font, dim[0] - text_left - border)
+        bio = text.text_wrap(self.stats['bio'], font, dim[0] - text_left - border)
         top = name_text.get_height() + age_text.get_height() + 2 * border
         t_height = name_text.get_height()
         for i, b in enumerate(bio):

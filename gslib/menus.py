@@ -43,12 +43,13 @@ class Menu(object):
             self.sliders['menu_scale'].enabled = False
             self.set_menu_scale(1.0/self.frac)
 
-        print('TODO PYGLET menus.display')
-        return
         for button in self.buttons.itervalues():
-            self.game_class.graphics.surface.blit(button.surface, button.pos)
+            for spr in button.sprites:
+                if spr is not None:
+                    spr.draw()
         for slider in self.sliders.itervalues():
-            self.game_class.graphics.surface.blit(slider.surface, slider.pos)
+            for spr in slider.sprites:
+                spr.draw()
 
     def mouse_event(self, event):
         for slider in self.sliders.itervalues():

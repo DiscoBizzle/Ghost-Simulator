@@ -1,45 +1,15 @@
-import pygame
+import pyglet.text
 
-def truncline(text, font, maxwidth):
-    real = len(text)
-    stext = text
-    l = font.size(text)[0]
-    cut = 0
-    a = 0
-    done = 1
-    while l > maxwidth:
-        a += 1
-        n = text.rsplit(None, a)[0]
-        if stext == n:
-            cut += 1
-            stext = n[:-cut]
-        else:
-            stext = n
-        l = font.size(stext)[0]
-        real = len(stext)
-        done = 0
-    return real, done, stext
+from gslib.constants import *
 
+# TODO: if text rendering is too slow, make a func that uses pyglet.font.* instead.
+# pyglet.text looks like it's the slower but more complete option.
 
-def wrapline(text, font, maxwidth):
-    done = 0
-    wrapped = []
-
-    while not done:
-        nl, done, stext = truncline(text, font, maxwidth)
-        wrapped.append(stext.strip())
-        text = text[nl:]
-    return wrapped
-
-
-def text_wrap(text, font, maxwidth):
-    t = text.split('\n')
-    wrapped = []
-    for l in t:
-        wrapped += wrapline(l, font, maxwidth)
-
-    return wrapped
-
+def new(font=FONT, font_size=36, text='no text', centered=False, width=None, height=None):
+    wrapped = (width is not None)
+    return pyglet.text.Label(text, font.split(', '), font_size, width=width, height=height,
+              anchor_x='left', anchor_y='bottom', align=('center' if centered else 'left'),
+              multiline=wrapped)
 
 def speech_bubble(text, width, text_colour=(0, 0, 0)):
     font = pygame.font.SysFont('helvetica', 14)

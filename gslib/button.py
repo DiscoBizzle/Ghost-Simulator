@@ -2,6 +2,7 @@ import pyglet
 
 from gslib.constants import *
 from gslib import graphics
+from gslib import text
 
 def valid_colour(colour):
     if len(colour) != 3:
@@ -60,6 +61,7 @@ class Button(object):
         self.outer_sprite = graphics.new_rect_sprite()
         self.inner_sprite = graphics.new_rect_sprite()
         self.text_sprite = None
+        self.sprites = [self.outer_sprite, self.inner_sprite, self.text_sprite]
         self.redraw()
 
     def pos_setter(self, pos):
@@ -104,10 +106,15 @@ class Button(object):
         self.outer_sprite.position = self.pos
         self.inner_sprite.position = (self.pos[0] + self._border_width, self.pos[1] + self._border_width)
         if self.text_sprite is None or self.text != self._last_text:
-            self.text_sprite = pyglet.text.Label(self.text, FONT, self.font_size, False, False, (200, 200, 200, 255))
+            self.text_sprite = text.new(text=self.text, font_size=self.font_size, centered=True,
+                width=self.size[0], height=self.size[1])
+            self.text_sprite.color = (200, 200, 200, 255)
             self._last_text = self.text
+
         self.text_sprite.x = self.pos[0] # + self.outer_sprite.width / 2 - self.text_sprite.width / 2
         self.text_sprite.y = self.pos[1] # + self.outer_sprite.height / 2 - self.text_sprite.height / 2
+
+        self.sprites = [self.outer_sprite, self.inner_sprite, self.text_sprite]
 
     def check_clicked(self, click_pos):  # perform button function if a position is passed in that is within bounds
         pos = self.pos

@@ -3,7 +3,7 @@ import math
 
 from gslib import graphics
 from gslib import sprite
-from gslib import text_functions
+from gslib import text
 
 # No bitchin' about returning functions, it makes triggers easier to think about/create.
 
@@ -61,7 +61,7 @@ def touched_flip_state(obj):
 ################################################################################
 def im_possessed(obj):
     def func():
-        surf = text_functions.speech_bubble("I'm possessed!", 150)
+        surf = text.speech_bubble("I'm possessed!", 150)
         pos = (obj.dimensions[0]/2,  - surf.get_height())
         obj.flair['possessed'] = (surf, pos)
     return func

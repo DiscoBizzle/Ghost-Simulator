@@ -1,6 +1,6 @@
 import pygame
 from gslib.constants import *
-import text_functions
+from gslib import text
 
 #define a list of textbox states
 
@@ -53,7 +53,7 @@ class TextBox:
     def create_text_surface(self):
         current_text = self.text[:self.num_chars]
         self.text_surface.fill(self.text_frame_color)
-        lines = text_functions.text_wrap(current_text, self.font, self.text_frame_rect.w - self.x_text_pad*2)
+        lines = text.text_wrap(current_text, self.font, self.text_frame_rect.w - self.x_text_pad*2)
         t = self.font.render(lines[0], True, self.text_color)
         for i, l in enumerate(lines):
             t = self.font.render(l, True, self.text_color)

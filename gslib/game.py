@@ -3,9 +3,10 @@ import os.path
 import sys
 import time
 
-import pyglet.clock
-import pyglet.gl
-import pyglet.window
+import pyglet
+#import pyglet.clock
+#import pyglet.gl
+#import pyglet.window
 #from pygame import Rect
 import pygame
 
@@ -23,7 +24,7 @@ from gslib import text_box
 from gslib import key
 from gslib import mouse
 from gslib import fear_functions
-from gslib import text_functions
+from gslib import text
 from gslib.constants import *
 
 
@@ -242,16 +243,16 @@ class Game(pyglet.window.Window):
     def say_fears(self):
         for o in self.objects.itervalues():
             if isinstance(o, player.Player):
-                surf = text_functions.speech_bubble("Oonce oonce oonce oonce!", 200)
+                surf = text.speech_bubble("Oonce oonce oonce oonce!", 200)
                 pos = (o.coord[0] + o.dimensions[0], o.coord[1] - surf.get_height())
                 self.world_objects_to_draw.append((surf, pos))
                 continue
 
-            text = ''
+            message = ''
             for f in o.scared_of:
                 if f != 'player':
-                    text += f + '\n'
-            surf = text_functions.speech_bubble(text, 300)
+                    message += f + '\n'
+            surf = text.speech_bubble(message, 300)
             pos = (o.coord[0] + o.dimensions[0], o.coord[1] - surf.get_height())
             self.world_objects_to_draw.append((surf, pos))
 
