@@ -16,8 +16,11 @@ import time
 blue = pygame.Color(0, 255, 0)
 black = pygame.Color(0, 0, 0)
 
-rect_tex = pyglet.image.SolidColorImagePattern((255, 255, 255, 255)).create_image(1, 1).get_texture()
+rect_tex = None
 def new_rect_sprite():
+    global rect_tex
+    if rect_tex is None:
+        rect_tex = pyglet.image.SolidColorImagePattern((255, 255, 255, 255)).create_image(1, 1).get_texture()
     return sprite.Sprite(rect_tex)
 
 def draw_circle(r, colour, thickness):
