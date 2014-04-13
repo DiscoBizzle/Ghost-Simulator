@@ -165,6 +165,10 @@ class Game(pyglet.window.Window):
         #if response is not None:
         #   response(event)
 
+    def on_key_release(self, symbol, modifiers):
+        self.push_handlers(self.key_controller.keys)
+        self.key_controller.handle_keys(symbol, modifiers)
+
     def on_mouse_motion(self, x, y, dx, dy):
         self.mouse_controller.mouse_move((x, y))
 
