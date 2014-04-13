@@ -17,7 +17,7 @@ class Menu(object):
         frac = 8.0/mi
         self.frac = frac
         self.min_button_size = (button_size[0] * frac, button_size[1] * frac)
-        self.base_font_size = 20
+        self.base_font_size = 14
         self.font_size = self.base_font_size
         self.hori_offset = 60
         self.vert_offset = 40 + button_size[1] + 10

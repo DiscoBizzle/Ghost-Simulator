@@ -71,10 +71,7 @@ class Game(pyglet.window.Window):
         self.sound_handler = sound.Sound()
         self.sound_handler.music_volume = 0.0
         self.sound_handler.start_next_music()
-        #self.music_list = sound.get_music_list()
-        # self.music_list = []
-        #self.sound_dict = sound.load_all_sounds()
-        # self.sound_dict = {}
+
         #self.credits = credits.Credits(self)
         self.options_menu = menus.OptionsMenu(self, (200, 50))
         self.fps_clock = pyglet.clock.ClockDisplay()
@@ -84,15 +81,11 @@ class Game(pyglet.window.Window):
         self.players = {}
         self.players['player1'] = player.Player(self, TILE_SIZE*6, TILE_SIZE*18, 16, 16, 'GhostSheet.png')
         self.players['player2'] = player.Player(self, 0, 0, 16, 16, 'TutorialGhost2.png')
-        # self.player1 = self.players[0]
 
         self.objects = dict(self.players.items())
 
         self.skills_dict = skills.load_skill_dict()
         self.SkillMenu = menus.SkillsMenu(self, (200,150))
-
-        # for i in range(5):
-        #     self.objects.append(character.Character(self, 0, 0, 16, 16, character.gen_character()))
 
         #self.text_box_test = text_box.TextBox("Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go. Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go. Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go.")
 
@@ -103,8 +96,8 @@ class Game(pyglet.window.Window):
 
 
         self.key_controller = key.KeyController(self)
-        # HACK
-        self.keys = self.key_controller.keys
+        # # HACK
+        # self.keys = self.key_controller.keys
 
         self.keybind_menu = menus.KeyBindMenu(self, (190, 40))
         self.action_to_rebind = None

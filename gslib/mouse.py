@@ -20,16 +20,6 @@ class MouseController(object):
         elif self.game.GameState == KEYBIND_MENU:
             self.game.keybind_menu.mouse_event(pos, typ, button)
 
-    # def mouse_up(self, event):
-    #     if self.game.GameState == MAIN_MENU:
-    #         self.game.Menu.mouse_event(event)
-    #     elif self.game.GameState == MAIN_GAME:
-    #         pass
-    #     elif self.game.GameState == SKILLS_SCREEN:
-    #         self.game.SkillMenu.mouse_event(event)
-    #     elif self.game.GameState == OPTIONS_MENU:
-    #         self.game.options_menu.mouse_event(event)
-
     def mouse_move(self, pos):
         if self.game.GameState == MAIN_MENU:
             self.game.Menu.mouse_event(pos, 'move')
@@ -48,7 +38,7 @@ class MouseController(object):
             temp_rect = pygame.Rect((o.coord[0] - st, o.coord[1] - st), (o.dimensions[0] + 2*st, o.dimensions[1] + 2*st))
             if temp_rect.collidepoint((pos[0]+self.game.camera_coords[0], pos[1]+self.game.camera_coords[1])) and isinstance(o, character.Character):
                 self.game.disp_object_stats = True
-                self.game.object_stats = (o.info_sheet, (self.game.dimensions[0] - o.info_sheet[1].width, 0))
+                self.game.object_stats = (o.info_sheet, (self.game.dimensions[0] - o.info_sheet[0].width, 0))
                 self.game.selected_object = o
 
                 return

@@ -35,7 +35,7 @@ class Button(object):
         Create function in class that creates the button and pass it in as second argument.
     """
     def __init__(self, owner, function, pos=(50, 50), size=(100, 100), visible=True, enabled=True, colour=(0, 0, 0),
-                 border_colour=(0, 0, 0), border_width=2, text=None, font_size=14, text_states=None, **kwargs):
+                 border_colour=(0, 0, 0), border_width=2, text=None, font_size=10, text_states=None, **kwargs):
         self._pos = (0, 0)
         self.pos_setter(pos)
 

@@ -9,6 +9,7 @@ import pyglet.image
 from gslib.constants import *
 from gslib import player
 from gslib import sprite
+from gslib import textures
 
 import time
 
@@ -23,11 +24,16 @@ def new_rect_sprite():
         rect_tex = pyglet.image.SolidColorImagePattern((255, 255, 255, 255)).create_image(1, 1).get_texture()
     return sprite.Sprite(rect_tex)
 
-def draw_circle(r, colour, thickness):
-    surf = pygame.Surface((r*2, r*2))
-    surf.set_colorkey((0, 0, 0))
-    pygame.draw.circle(surf, colour, (r, r), r, thickness)
-    return surf
+circle_tex = None
+def draw_circle(r, colour):
+    global circle_tex
+    if circle_tex is None:
+        circle_tex = textures.get(os.path.join(CHARACTER_DIR, 'circle_solid.png'))
+    sprit = sprite.Sprite(circle_tex)
+    sprit.scale_x = 2*r / 1024.0
+    sprit.scale_y = 2*r / 1024.0
+    sprit.color_rgba = colour + (120,)
+    return sprit
 
 
 class Graphics(object):
@@ -64,6 +70,8 @@ class Graphics(object):
         self.last_map = None
         self.map_texture = None
         self.tile_sprite = None
+
+
 
     def resize_window(self, event):
         print('TODO: graphics.resize_window() pyglet')
@@ -183,10 +191,10 @@ class Graphics(object):
 
             if o == self.game.selected_object:
                 r = o.highlight_radius
-                print('TODO draw_objects selected object circle')
-                #surf = draw_circle(r, (200, 200, 200), 2)
-                #pos = (o.coord[0] + o.dimensions[0]/2 - r, o.coord[1] + o.dimensions[0]/2 - r)
-                #self.game.world_objects_to_draw.append((surf, pos))
+                sprit = draw_circle(r, (200, 0, 0))
+                sprit.x = o.coord[0] + o.sprite_width/2 - r
+                sprit.y = o.coord[1] -r#+ o.sprite_height/2 - r # TODO fix this coord
+                self.game.world_objects_to_draw.append(sprit)
 
     def draw_character_stats(self):
         return
