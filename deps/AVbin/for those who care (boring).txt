@@ -7,7 +7,9 @@ files in 'probably not this' are the other candidates
 Mac: lucky bugger, just double-click the .pkg
 
 Windows: Is your Python 32-bit or 64-bit? It's probably 32-bit.
- So just run AVbin10-win32.exe and you *should* be golden. Report if not.
+ If your Python is 32-bit and your system is 64-bit, go to install this/ and copy avbin.dll to C:\Windows\SysWOW64\.
+ If Python 32-bit and system 32-bit, go to install this/ and copy avbin.dll to C:\Windows\System32\.
+ If Python 64-bit and system 64-bit, go to probably not this/ and run the installer.
 
 Linux: Is your Python 64-bit or 32-bit? It's probably 64-bit, b/c having 32-bit
  python on a 64-bit linux is a massive headache due entirely to the inadequacy

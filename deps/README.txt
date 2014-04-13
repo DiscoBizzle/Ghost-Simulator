@@ -1,4 +1,13 @@
-go into avbin/install this/  and install the avbin for your operating system
+## THIS FILE ASSUMES:
+### - You use Python 2.7
+### - If Windows, you have 64-bit Windows and 32-bit Python
+### - If Mac, you have an up-to-date installation
+### - If Linux, you have a modern 64-bit distro (which means 64-bit python)
+# If that is not true, go into each folder and pay attention to exactly what is going on.
+
+go into avbin/install this/ and:
+ Windows: copy avbin.dll to C:\Windows\SysWOW64
+ Mac/Linux: run appropriate setup
 
 go into pyglet-9781eb46dca2/, and from a shell run 'python setup.py install'
 you may need to sudo to root to do that
