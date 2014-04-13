@@ -58,8 +58,8 @@ class Game(pyglet.window.Window):
         self.dimensions = (GAME_WIDTH, GAME_HEIGHT)
 
         self.Menu = menus.MainMenu(self, (161, 100))
-        #self.GameState = MAIN_MENU
-        self.GameState = MAIN_GAME
+        self.GameState = MAIN_MENU
+        #self.GameState = MAIN_GAME
         self.cutscene_started = False
         self.cutscene_next = os.path.join(VIDEO_DIR, "default.mpg")
         self.game_running = True
