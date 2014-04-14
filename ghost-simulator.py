@@ -33,7 +33,7 @@ def main():
         pyglet.clock.tick(False)
         lframes += 1
 
-        return 0.001
+        return 0.01
 
     pyglet.app.event_loop.idle = idle_fun
     g = game.Game()
