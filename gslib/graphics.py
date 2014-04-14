@@ -285,34 +285,22 @@ class Graphics(object):
         sprite.y = old_y
 
     def draw_cutscene(self):
-        #print self.game.cutscene_started
-        #print hasattr(self, 'movie_player')
-        #print self.game.GameState
-    
-        #print "main draw_cut"
         if self.game.cutscene_started and hasattr(self, 'movie_player'):
             if not self.movie_player.playing:
-                #print "1"
                 self.game.GameState = MAIN_GAME
                 self.game.cutscene_started = False
-                #self.game.clock.get_time()  # hack required for pygame.game.movie_player linux
-                #del self.movie_player  # hack required for pygame.movie_player mac os x
             else:
-                #print "2"
-                #print self.movie_player.playing
-                self.movie_player.get_texture().blit(0, 0)
-                #print self.movie_player.playing
-                #print "got stupid fucking texture"
-            #self.surface.fill(black)
-            #pygame.display.update()
+                self.movie_player.get_texture().blit(0, 0, width=self.game.dimensions[0], height=self.game.dimensions[1])
+                print self.game.dimensions[0]
+                print self.game.dimensions[1]
         else:
             try:
-                print("3")
-                #f = BytesIO(open(self.game.cutscene_next, "rb").read())
                 video_source = pyglet.media.load(self.game.cutscene_next)
                 self.movie_player = pyglet.media.Player()
                 #w, h = self.movie_player.get_size()
                 #self.movie_player.eos_action = self.movie_player.EOS_LOOP
+                #video_source.video_format.width = video_source.video_format.width * 2
+                #video_source.video_format.height = video_source.video_format.height * 2
                 self.movie_player.queue(video_source)
                 self.movie_player.play()
                 self.game.cutscene_started = True

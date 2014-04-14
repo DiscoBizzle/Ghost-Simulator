@@ -63,7 +63,7 @@ class Game(pyglet.window.Window):
         self.GameState = MAIN_MENU
         #self.GameState = MAIN_GAME
         self.cutscene_started = False
-        self.cutscene_next = os.path.join(VIDEO_DIR, "default.mpg")
+        self.cutscene_next = os.path.join(VIDEO_DIR, "default_sound.mpg")
         self.game_running = True
         self.graphics = graphics.Graphics(self)
         self.set_caption("Ghost Simulator v. 0.000000001a")
