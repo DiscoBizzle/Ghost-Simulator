@@ -194,15 +194,15 @@ class Character(GameObject):
 
     def draw_info_sheet(self):
         font_size = 20
-        #dim = w, h = (GAME_WIDTH - LEVEL_WIDTH, int((GAME_WIDTH - LEVEL_WIDTH) / 1.6))
+        # dim = w, h = (GAME_WIDTH - LEVEL_WIDTH, int((GAME_WIDTH - LEVEL_WIDTH) / 1.6))
 
         x = 0
         y = 0
 
         sprites = []
 
-        h = 200
-        w = int(h * 1.6)
+        h = 200.0
+        w = h / 1.6
         dim = (w, h)
 
         border = 8
@@ -211,30 +211,26 @@ class Character(GameObject):
         # draw character image
         im = textures.get(self.stats['image_name'])
         im_sprite = sprite.Sprite(im)
-        im_sprite.x = x + border
-        im_sprite.y = y - border
-        sprites.append(sprite.Sprite(im))
+        im_sprite.scale_x = w / im_sprite.width
+        im_sprite.scale_y = h / im_sprite.height
+
 
         # draw name/age and text boxes
         name_text = text.new('comic sans', font_size, u'Name: ' + self.stats['name'])
         age_text = text.new('comic sans', font_size, u'Age: ' + str(self.stats['age']))
 
-        text_left = im.width + border * 2
 
-        name_text.x = x + text_left
-        name_text.y = y - border
-        age_text.x = name_text.x
-        age_text.y = name_text.y - name_text.content_height
+        # age_text.x = name_text.x
+        # age_text.y = name_text.y - name_text.content_height
 
         # draw background
         background_sprite = graphics.new_rect_sprite()
         background_sprite.color_rgb = GREY
-        background_sprite.x = x + text_left
-        background_sprite.y = y - name_text.content_height - age_text.content_height - 2 * border
-        background_sprite.scale_x = dim[0] - text_left - border
-        background_sprite.scale_y = dim[1] - name_text.content_height - age_text.content_height - 3 * border
+        background_sprite.scale_x = w + name_text.content_width + border * 2
+        background_sprite.scale_y = h + 2 * border  # - name_text.content_height - age_text.content_height - 3 * border
 
         sprites.append(background_sprite)
+        sprites.append(im_sprite)
         sprites.append(name_text)
         sprites.append(age_text)
 

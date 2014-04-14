@@ -76,7 +76,6 @@ class KeyController(object):
             else:
                 p.possess_key_up = True
 
-
     def rebind(self, new_key):
         if new_key == Pkey.ESCAPE:
             self.game.action_to_rebind = None

@@ -127,15 +127,15 @@ class Map(object):
             self.objects[i] = character.Character(game_class, 100, 100, 16, 16, character.gen_character())
 
         self.objects[0].collision_weight = 5
-        self.objects[0].coord = (TILE_SIZE*7, TILE_SIZE*18)
+        self.objects[0].coord = (TILE_SIZE*7, TILE_SIZE*3)
         self.objects[1].collision_weight = 4
         self.objects[1].normal_speed = 0
-        self.objects[1].coord = (TILE_SIZE*8, TILE_SIZE*18)
+        self.objects[1].coord = (TILE_SIZE*8, TILE_SIZE*3)
         self.objects[2].collision_weight = 10
         self.objects[2].normal_speed = 1
-        self.objects[2].coord = (TILE_SIZE*8, TILE_SIZE*16)
+        self.objects[2].coord = (TILE_SIZE*8, TILE_SIZE*1)
 
-        self.objects['door1'] = character_objects.SmallDoor(game_class, TILE_SIZE*7, TILE_SIZE*7, character.gen_character())
+        self.objects['door1'] = character_objects.SmallDoor(game_class, TILE_SIZE*7, TILE_SIZE*12, character.gen_character())
 
         fear_functions.trigger_flip_state_on_harvest(self.objects[1], self.objects['door1'])
         fear_functions.trigger_flip_state_is_touched_by(self.objects[0], self.objects[1], self.objects['door1'])

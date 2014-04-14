@@ -61,6 +61,7 @@ def touched_flip_state(obj):
 ################################################################################
 def im_possessed(obj):
     def func():
+        return
         surf = text.speech_bubble("I'm possessed!", 150)
         pos = (obj.dimensions[0]/2,  - surf.get_height())
         obj.flair['possessed'] = (surf, pos)
@@ -69,6 +70,7 @@ def im_possessed(obj):
 
 def undo_im_possessed(obj):
     def func():
+        return
         del obj.flair['possessed']
     return func
 
@@ -88,9 +90,10 @@ def red_square(obj):  # get ooga booga'd
         obj.fainted = True
 
         sprite = graphics.new_rect_sprite()
+        sprite.scale_x = 10
+        sprite.scale_y = 10
         sprite.color_rgb = (120, 0, 0)
-        sprite.set_position(-5, -obj.dimensions[1] - 5)
-        obj.flair['fear_collected'] = sprite
+        obj.flair['fear_collected'] = (sprite, (-5, obj.dimensions[1] + 5))
     return func
 
 

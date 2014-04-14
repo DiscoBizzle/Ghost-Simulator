@@ -76,9 +76,7 @@ Creating a new Sprite every frame or calling graphics.new_rect_sprite() every
 - port some input code (joy.py)
 
 - fix game_object drawing (coordinates, spritesheet (use built-in pyglet stuff?), alpha)
-- graphics.draw_character_stats
 - graphics.draw_game_over
-- graphics.draw_fear_bar
 - game.py 'fear radius' drawing (drop draw_circle/rewrite it?)
 - graphics.draw_torch (drop draw_circle, use image of circle?)
 - credits.py port (render all the text to one big texture once, then just scroll that)

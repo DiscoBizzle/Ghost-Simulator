@@ -124,10 +124,10 @@ class GameObject(object):
     def update(self):
         v_x, v_y = 0, 0
         if self.move_down:
-            v_y += self.current_speed
+            v_y -= self.current_speed
             self.direction = DOWN
         if self.move_up:
-            v_y -= self.current_speed
+            v_y += self.current_speed
             self.direction = UP
         if self.move_left:
             v_x -= self.current_speed

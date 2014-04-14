@@ -10,6 +10,7 @@ from gslib.constants import *
 from gslib import player
 from gslib import sprite
 from gslib import textures
+from gslib import text
 
 import time
 
@@ -56,6 +57,7 @@ class Graphics(object):
         #self.fear_size = font.size(u"FEAR")
         #self.fear_txt = font.render(u"FEAR", True, (200, 200, 200)).convert_alpha()
         #self.fear_surf = pygame.Surface((self.game.dimensions[0], 32)).convert_alpha()
+        self.fear_text = text.new('comic sans', 20, u'FEAR')
 
         #font = pygame.font.SysFont(FONT, 80)
         #self.game_over_txt1_size = font.size(u"GAME OVER")
@@ -178,43 +180,53 @@ class Graphics(object):
 
             texture = o.sprite_sheet.get_region(o.frame_rect.x, o.frame_rect.y, o.sprite_width, o.sprite_height)
             object_sprite = sprite.Sprite(texture)
-            x = o.coord[0] + o.dimensions[0] - o.sprite_width
-            y = o.coord[1] + o.dimensions[1] - o.sprite_height
+            x = o.coord[0]
+            y = o.coord[1]
 
             object_sprite.set_position(x, y)
             self.game.world_objects_to_draw.append(object_sprite)
 
             for s, p in o.flair.itervalues():
-                flair_sprite = sprite.Sprite(s)
-                flair_sprite.set_position(x + p[0] + object_sprite.width / 2, y + p[1] + object_sprite.height / 2)
-                self.game.world_objects_to_draw.append(flair_sprite)
+                s.set_position(x + p[0] + object_sprite.width / 2, y + p[1] + object_sprite.height / 2)
+                self.game.world_objects_to_draw.append(s)
 
             if o == self.game.selected_object:
                 r = o.highlight_radius
                 sprit = draw_circle(r, (200, 0, 0))
                 sprit.x = o.coord[0] + o.sprite_width/2 - r
-                sprit.y = o.coord[1] -r#+ o.sprite_height/2 - r # TODO fix this coord
+                sprit.y = o.coord[1] + o.sprite_height/2 - r
                 self.game.world_objects_to_draw.append(sprit)
 
     def draw_character_stats(self):
-        return
         if self.game.disp_object_stats:
-            self.game.screen_objects_to_draw.append((self.game.object_stats[0], self.game.object_stats[1]))
+            border = 4
+            o = self.game.object_stats  # background, image, name, age
+            o[1].x = GAME_WIDTH - o[1].width - o[2].content_width - border
+            o[1].y = GAME_HEIGHT - o[1].height - border
+            o[0].x, o[0].y = o[1].x - border, o[1].y - border
+            o[2].x = o[1].x + o[1].width
+            o[2].y = GAME_HEIGHT - o[2].content_height
+            o[3].x = o[2].x
+            o[3].y = o[2].y - o[2].content_height
+            self.game.screen_objects_to_draw += o  # self.game.object_stats
 
     def resize_fear_surface(self):
         nplayers = len(self.game.players)
         self.fear_surf = pygame.Surface((self.game.dimensions[0], nplayers*32)).convert_alpha()
 
     def draw_fear_bar(self):
-        return
         nplayers = len(self.game.players)
-        if nplayers > 1:
-            self.resize_fear_surface()
-        self.fear_surf.fill(black)
-        self.fear_surf.blit(self.fear_txt, (0, 0))
+        self.game.screen_objects_to_draw.append(self.fear_text)
+        w = GAME_WIDTH - self.fear_text.content_width
+        h = 32
         for i, p in enumerate(self.game.players.itervalues()):
-            pygame.draw.rect(self.fear_surf, (255, 0, 0), pygame.Rect((self.fear_size[0], 32 * i), ((self.game.dimensions[0] - self.fear_size[0]) * (p.fear/float(MAX_FEAR)), 32)))
-        self.game.screen_objects_to_draw.append((self.fear_surf, (0, self.game.dimensions[1] - nplayers * 32)))
+            sp = new_rect_sprite()
+            sp.scale_x = w * p.fear/float(MAX_FEAR)
+            sp.scale_y = h
+            sp.x = self.fear_text.content_width
+            sp.y = h*i
+            sp.color_rgb = (255, 0, 0)
+            self.game.screen_objects_to_draw.append(sp)
 
     def draw_world_objects(self):  # stuff relative to camera
         for f in self.game.world_objects_to_draw:

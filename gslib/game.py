@@ -79,7 +79,7 @@ class Game(pyglet.window.Window):
         self.camera_coords = (0, 0)
 
         self.players = {}
-        self.players['player1'] = player.Player(self, TILE_SIZE*6, TILE_SIZE*18, 16, 16, 'GhostSheet.png')
+        self.players['player1'] = player.Player(self, TILE_SIZE*6, TILE_SIZE*2, 16, 16, 'GhostSheet.png')
         self.players['player2'] = player.Player(self, 0, 0, 16, 16, 'TutorialGhost2.png')
 
         self.objects = dict(self.players.items())
@@ -238,7 +238,7 @@ class Game(pyglet.window.Window):
         avg_pos = (avg_pos[0] / c, avg_pos[1] / c)
         # coord = (self.player1.coord[0] - (self.dimensions[0]/2), self.player1.coord[1] - (self.dimensions[1]/2))
         coord = (avg_pos[0] - (self.dimensions[0]/2), avg_pos[1] - (self.dimensions[1]/2))
-        pad = (32, 32, 32, 96)  # left right up down
+        pad = (32, 32, 96, 32)  # left right up down
 
         # bottom
         if avg_pos[1] > LEVEL_HEIGHT - self.dimensions[1]/2 + pad[3]:
