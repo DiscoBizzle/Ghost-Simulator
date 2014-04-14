@@ -5,6 +5,7 @@ from gslib import character_objects
 from gslib import game_object
 from gslib import graphics
 from gslib import triggers
+from gslib import text
 from gslib.constants import *
 
 
@@ -13,28 +14,31 @@ def none():
 
 
 class Cursor(game_object.GameObject):
-    def __init__(self, game, surface):
-        game_object.GameObject.__init__(self, game, 0, 0, 0, 0, surface)
-        self.frame_rect = pygame.Rect((0, 0), surface.get_size())
+    def __init__(self, game, sprite):
+        game_object.GameObject.__init__(self, game, 0, 0, 0, 0, None)
+        # self.frame_rect = pygame.Rect((0, 0), surface.get_size())
         self.max_frames = 0
-        self.sprite_height = surface.get_height()
-        self.sprite_width = surface.get_width()
+        # self.sprite_height = surface.get_height()
+        # self.sprite_width = surface.get_width()
         self.current_speed = 0
         self.normal_speed = 0
 
         self.update = none
 
-
+        self.sprite = sprite
+        self.isCursor = True
 
 
 class Editor(object):
     def __init__(self, game, pos=(0, 0)):
         self.game = game
-        self.pos = pos
+        # self.pos = pos
+
+        self.text_sprites = {}
+        self.font_size = 20
 
         self.buttons = {}
         self.drop_lists = {}
-        return
 
         ###################################################################
         # Place new object
@@ -43,19 +47,19 @@ class Editor(object):
         self.possible_characters = {'Small Door': character_objects.SmallDoor,
                                     'Dude': character_objects.Dude}
 
-        self.buttons['pick_object_label'] = button.DefaultButton(self, None, pos=(100, 0), text="Place Object")
+        self.buttons['pick_object_label'] = button.DefaultButton(self, None, pos=(100, GAME_HEIGHT - 20), text="Place Object")
         self.drop_lists['pick_object'] = drop_down_list.DropDownList(self, self.possible_characters,
-                                                                     self.update_object_prototype, pos=(200, 0))
+                                                                     self.update_object_prototype, pos=(200, GAME_HEIGHT - 20))
         self.object_prototype = None
 
         ###################################################################
         # View existing Trigger
         ###################################################################
 
-        self.buttons['view_triggers_label'] = button.DefaultButton(self, None, pos=(320, 0), size=(120, 20),
+        self.buttons['view_triggers_label'] = button.DefaultButton(self, None, pos=(320, GAME_HEIGHT - 20), size=(120, 20),
                                                                    text="Current Triggers")
         self.drop_lists['view_triggers'] = drop_down_list.DropDownList(self, self.game.map.triggers,
-                                                                       self.display_trigger, pos=(440, 0),
+                                                                       self.display_trigger, pos=(440, GAME_HEIGHT - 20),
                                                                        labels='classname', size=(300, 20))
         self.trigger_display_colours = ((120, 0, 0), (0, 120, 0), (0, 0, 120), (120, 120, 0), (120, 0, 120), (0, 120, 120), (120, 120, 120))
         self.trigger_display_circles = []
@@ -68,10 +72,10 @@ class Editor(object):
         self.possible_triggers = {'Flip State On Harvest': triggers.FlipStateOnHarvest,
                                   'Flip State When Touched (Conditional)': triggers.FlipStateWhenTouchedConditional,
                                   'Flip State When UnTouched (Conditional)': triggers.FlipStateWhenUnTouchedConditional}
-        self.buttons['new_trigger_label'] = button.DefaultButton(self, None, pos=(100, 20), size=(100, 20),
+        self.buttons['new_trigger_label'] = button.DefaultButton(self, None, pos=(760, GAME_HEIGHT - 20), size=(100, 20),
                                                                  text="New trigger")
         self.drop_lists['new_triggers'] = drop_down_list.DropDownList(self, self.possible_triggers,
-                                                                      self.new_trigger, pos=(200, 20),
+                                                                      self.new_trigger, pos=(860, GAME_HEIGHT - 20),
                                                                       size=(300, 20))
         # self.new_trigger_objects = []
         self.trigger_prototype = None
@@ -92,26 +96,27 @@ class Editor(object):
         self.trigger_display_text = []
         # t = self.drop_lists['view_triggers'].selected
         if t:
-            font = pygame.font.SysFont(FONT, 20)
+            # font = pygame.font.SysFont(FONT, 20)
             for i, o in enumerate(t.objects):
-                circ = graphics.draw_circle(25, self.trigger_display_colours[i], 2)
-                text = font.render(t.legend[i], True, (255, 255, 255))
+                circ = graphics.draw_circle(25, self.trigger_display_colours[i])
+                # circ.set_position(o.coord[0], o.coord[1])
+                te = self.create_text_sprite(t.legend[i])  # font.render(t.legend[i], True, (255, 255, 255))
+                # t.set_position(o.coord[0, o.coord[1]])
                 self.trigger_display_circles.append((circ, o))
-                self.trigger_display_text.append((text, o))
+                self.trigger_display_text.append((te, o))
+
+    def create_text_sprite(self, tex):
+        if not tex in self.text_sprites.keys():
+            self.text_sprites[tex] = text.new(text=tex, font_size=self.font_size, centered=True)
+            self.text_sprites[tex].color = (200, 200, 200, 255)
+        return self.text_sprites[tex]
 
     def display_trigger(self):
         self.draw_trigger(self.drop_lists['view_triggers'].selected)
 
     def create_trigger_cursor(self, tex):
-        font = pygame.font.SysFont(FONT, 20)
-        text = font.render(tex, True, (255, 255, 255))
-        w = text.get_width()
-        h = text.get_height()
-
-        surf = pygame.Surface((w, h))
-        surf.fill((255, 0, 255))
-        surf.blit(text, (w/2 - text.get_width()/2, 0))
-        self.game.cursor = Cursor(self.game, surf)
+        t = self.create_text_sprite(tex)
+        self.game.cursor = Cursor(self.game, t)
         self.game.gather_buttons_and_drop_lists_and_objects()
 
     def new_trigger(self):

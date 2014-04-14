@@ -67,13 +67,13 @@ class MouseController(object):
             st = SELECTION_TOLERANCE
             temp_rect = pygame.Rect((o.coord[0] - st, o.coord[1] - st), (o.dimensions[0] + 2*st, o.dimensions[1] + 2*st))
             if temp_rect.collidepoint((pos[0]+self.game.camera_coords[0], pos[1]+self.game.camera_coords[1])) and isinstance(o, character.Character):
-                self.game.disp_object_stats = True
-                self.game.object_stats = o.info_sheet
-                self.game.selected_object = o
 
-                if self.game.new_trigger_capture:
+                if self.game.new_trigger_capture and typ == 'down':
                     self.game.editor.update_new_trigger(o)
-                    # self.new_trigger_object_capture(o)
+                elif typ == 'down':
+                    self.game.disp_object_stats = True
+                    self.game.object_stats = o.info_sheet
+                    self.game.selected_object = o
 
                 self.interaction_this_click = True
                 return
@@ -82,15 +82,10 @@ class MouseController(object):
         self.game.object_stats = None
 
     def check_button_click(self, pos, typ, button=None):
+        if typ == 'up':
+            return
         for button in self.game.buttons.itervalues():
             self.interaction_this_click = button.check_clicked(pos)
-
-    # def new_trigger_object_capture(self, o):
-    #     l = self.game.editor.new_trigger_objects
-    #     if o in l:
-    #         l.remove(o)
-    #     else:
-    #         l.append(o)
 
     def editor_click(self, pos, typ, button=None):
         if typ == 'up':

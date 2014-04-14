@@ -36,8 +36,7 @@ class Button(object):
     """
     def __init__(self, owner, function, pos=(50, 50), size=(100, 100), visible=True, enabled=True, colour=(0, 0, 0),
                  border_colour=(0, 0, 0), border_width=2, text=None, font_size=10, text_states=None, **kwargs):
-        self._pos = (0, 0)
-        self.pos_setter(pos)
+        self._pos = pos
 
         # Other properties' validity are checked in redraw(), this is called whenever they are changed, so exceptions will lead back to the incorrect assignment
         self._size = size  # underscore is "hidden" variable, not for direct access
@@ -67,6 +66,7 @@ class Button(object):
     def pos_setter(self, pos):
         if pos[0] >= 0 and pos[1] >= 0:
             self._pos = pos
+            self.update_position()
         else:
             raise Exception('Negative button position')
 
@@ -118,6 +118,13 @@ class Button(object):
         self.text_sprite.y = self.pos[1] # + self.outer_sprite.height / 2 - self.text_sprite.height / 2
 
         self.sprites = [self.outer_sprite, self.inner_sprite, self.text_sprite]
+
+    def update_position(self):
+        self.outer_sprite.position = self.pos
+        self.inner_sprite.position = (self.pos[0] + self._border_width, self.pos[1] + self._border_width)
+        self.text_sprite.x = self.pos[0]
+        self.text_sprite.y = self.pos[1]
+
 
     def check_clicked(self, click_pos):  # perform button function if a position is passed in that is within bounds
         pos = self.pos

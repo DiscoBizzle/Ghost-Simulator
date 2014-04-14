@@ -7,7 +7,7 @@ def create_property(var):  # creates a member variable that redraws the button w
     def _setter(self, val):
         setattr(self, '_' + var, val)
         self.update_buttons()
-        self.redraw()
+        # self.redraw()
 
     def _getter(self):
         return getattr(self, '_' + var)
@@ -29,8 +29,8 @@ def list_func(owner, val):
 
 class DropDownList(object):
     def __init__(self, owner, items, function=None, pos=(50, 50), size=(100, 20), visible=True, enabled=True, colour=(120, 0, 0),
-                 border_colour=(120, 50, 80), border_width=2, text=None, font_size=14, labels='dictkey', **kwargs):
-        self.pos = pos
+                 border_colour=(120, 50, 80), border_width=2, text=None, font_size=10, labels='dictkey', **kwargs):
+        self._pos = pos
 
         self._size = size
         self._colour = colour
@@ -65,7 +65,7 @@ class DropDownList(object):
 
         self.surface = pygame.Surface(self._size)
         self.update_buttons()
-        self.redraw()
+        # self.redraw()
 
     # all below variables affect the button surface, so make them properties to redraw on change
     visible = create_property('visible')
@@ -76,6 +76,7 @@ class DropDownList(object):
     text = create_property('text')
     font_size = create_property('font_size')
     selected_name = create_property('selected_name')
+    pos = create_property('pos')
 
     def refresh(self):  # call if the list changes
         self.drop_buttons = []
@@ -103,31 +104,14 @@ class DropDownList(object):
         self.main_button.size = self.size
         self.main_button.visible = self.visible
         self.main_button.font_size = self.font_size
-        for b in self.drop_buttons:
+        self.main_button.pos = self.pos
+        for i, b in enumerate(self.drop_buttons):
             b.colour = self.colour
             b.border_colour = self.border_colour
             b.size = self.size
             b.visible = self.visible
             b.font_size = self.font_size
-
-    def redraw(self):
-        if not self.visible:
-            self.surface.fill((1, 1, 1))
-            self.surface.set_colorkey((1, 1, 1))
-            return
-
-        if len(self.items) != len(self.drop_buttons) - 1:  # -1 to account for None button
-            self.refresh()
-
-        if not self.open:
-            self.surface = pygame.Surface(self.size)
-        else:
-            self.surface = pygame.Surface((self.size[0], self.size[1] * (1 + len(self.drop_buttons))))
-
-        self.surface.blit(self.main_button.surface, (0, 0))
-        if self.open:
-            for i, b in enumerate(self.drop_buttons):
-                self.surface.blit(b.surface, (0, (1 + i) * self.size[1]))
+            b.pos = (self.pos[0], self.pos[1] - (1 + i) * self.size[1])
 
     def handle_event(self, pos, typ, button=None):
         if not self.enabled:
@@ -149,26 +133,21 @@ class DropDownList(object):
                 b.visible = not b.visible
                 b.enabled = not b.enabled
             self.update_buttons()
-            self.redraw()
+            # self.redraw()
             return True
 
         if not self.open:
             return
 
-        eh = click_pos[1] - pos[1]
-        h_ind = eh / self.size[1]
-
-        if abs(click_pos[0] - (pos[0] + w)) < w and 0 <= h_ind <= len(self.drop_buttons):  # and h_ind >= 0:
-            self.drop_buttons[h_ind - 1].perf_function()
-            return True
+        for b in self.drop_buttons:
+            b.check_clicked(click_pos)
 
     def handle_mouse_motion(self, event_pos):
-        return  # lags too much on scroll :(
         pos = self.pos
         w, h = self.size
         w /= 2
 
-        eh = event_pos[1] - pos[1]
+        eh = pos[1] + h - event_pos[1]
         h_ind = eh / h
 
         # if move off edge, close list
@@ -178,13 +157,18 @@ class DropDownList(object):
             for b in self.drop_buttons:
                 b.visible = not b.visible
                 b.enabled = not b.enabled
-            self.redraw()
             return
 
         # highlight the moused-over button
 
-        self.update_buttons()
+        for b in self.drop_buttons:
+            if b.colour != self.colour:
+                b.colour = self.colour
+            if b.border_colour != self.border_colour:
+                b.border_colour = self.border_colour
         if h_ind > 0:
-            self.drop_buttons[h_ind - 1].border_colour = self.high_border_colour
-            self.drop_buttons[h_ind - 1].colour = self.high_colour
-        self.redraw()
+            b = self.drop_buttons[h_ind - 1]
+            if b.border_colour != self.high_border_colour:
+                b.border_colour = self.high_border_colour
+            if b.colour != self.high_colour:
+                b.colour = self.high_colour

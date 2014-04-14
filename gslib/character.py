@@ -202,7 +202,7 @@ class Character(GameObject):
 
     def draw_info_sheet(self):
         if not self.stats:
-            pass
+            return
         font_size = 20
         #dim = w, h = (GAME_WIDTH - LEVEL_WIDTH, int((GAME_WIDTH - LEVEL_WIDTH) / 1.6))
 

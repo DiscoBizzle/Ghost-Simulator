@@ -76,8 +76,7 @@ Creating a new Sprite every frame or calling graphics.new_rect_sprite() every
 - port some input code (joy.py)
 
 - graphics.draw_game_over
-- game.py 'fear radius' drawing (use new draw_circle)
-- graphics.draw_torch (use new draw_circle?)
+- graphics.draw_torch (drop draw_circle, use image of circle?)
 - credits.py port (render all the text to one big texture once, then just scroll that)
                   ^ note pyglet has no problem with multiple lines of text/auto word wrapping.
 - graphics 'view of field' option

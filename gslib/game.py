@@ -127,7 +127,7 @@ class Game(pyglet.window.Window):
         #sound.start_next_music(self.music_list)
 
         self.map_list = []
-        self.map_list.append(maps.Map(os.path.join(TILES_DIR, 'level2.png'), os.path.join(TILES_DIR, 'level3.json'), self))
+        self.map_list.append(maps.Map(os.path.join(TILES_DIR, 'level3.png'), os.path.join(TILES_DIR, 'level3.json'), self))
         self.map_list.append(maps.Map(os.path.join(TILES_DIR, 'level2.png'), os.path.join(TILES_DIR, 'level2.json'), self))
         self.map_list.append(maps.Map(os.path.join(TILES_DIR, 'martin.png'), os.path.join(TILES_DIR, 'martin.json'), self))
 
@@ -309,14 +309,14 @@ class Game(pyglet.window.Window):
         for o in self.objects.itervalues():
             if isinstance(o, player.Player):
                 r = o.fear_collection_radius
-                surf = graphics.draw_circle(r, (64, 224, 208), 4)
-                pos = (o.coord[0] + o.dimensions[0]/2 - r, o.coord[1] + o.dimensions[0]/2 - r)
-                self.world_objects_to_draw.append((surf, pos))
+                sprit = graphics.draw_circle(r, (64, 224, 208))
+                sprit.set_position(o.coord[0] + o.sprite_width/2 - r, o.coord[1] + o.sprite_height/2 - r)
+                self.world_objects_to_draw.append(sprit)
             else:
                 r = o.fear_radius
-                surf = graphics.draw_circle(r, (75, 0, 130), 4)
-                pos = (o.coord[0] + o.dimensions[0]/2 - r, o.coord[1] + o.dimensions[0]/2 - r)
-                self.world_objects_to_draw.append((surf, pos))
+                sprit = graphics.draw_circle(r, (75, 0, 130))
+                sprit.set_position(o.coord[0] + o.dimensions[0]/2 - r, o.coord[1] + o.dimensions[0]/2 - r)
+                self.world_objects_to_draw.append(sprit)
 
     def change_map(self):
         self.map_index += 1

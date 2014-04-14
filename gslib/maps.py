@@ -140,14 +140,6 @@ class Map(object):
 
         self.triggers = {}
 
-        # self.triggers[0] = fear_functions.trigger_flip_state_on_harvest(self.objects[1], self.objects['door1'])
-
-        # self.triggers[1] = fear_functions.trigger_flip_state_is_touched_by(self.objects[0], self.objects[1], self.objects['door1'])
-        # self.triggers[2] = fear_functions.trigger_flip_state_is_untouched_by(self.objects[0], self.objects[1], self.objects['door1'])
-        #
-        # self.triggers[3] = fear_functions.trigger_flip_state_is_touched_by(self.objects[0], self.objects[2], self.objects['door1'])
-        # self.triggers[4] = fear_functions.trigger_flip_state_is_untouched_by(self.objects[0], self.objects[2], self.objects['door1'])
-
         self.triggers[0] = triggers.FlipStateOnHarvest(self.objects[1], self.objects['door1'])
         self.triggers[1] = triggers.FlipStateWhenTouchedConditional(self.objects[0], self.objects[1], self.objects['door1'])
         self.triggers[2] = triggers.FlipStateWhenUnTouchedConditional(self.objects[0], self.objects[1], self.objects['door1'])

@@ -138,8 +138,8 @@ class Graphics(object):
             print('Redrawing map...')
             start_time = time.clock()
             if self.map_texture is not None:
-                self.map_texture.delete()
-
+                # self.map_texture.delete()  # TODO check actual deletion: depreciated in pyglet, causes crash on map change
+                pass
             grid_size = TILE_SIZE
 
             self.map_texture = pyglet.image.Texture.create(grid_size * len(m.grid), grid_size * len(m.grid[0]))
@@ -167,22 +167,35 @@ class Graphics(object):
 
     def draw_editor(self):
         for c, o in self.game.editor.trigger_display_circles:
-            self.game.world_objects_to_draw.append((c, (o.coord[0] + o.dimensions[0]/2 - c.get_width()/2,
-                                                        o.coord[1] + o.dimensions[1]/2 - c.get_height()/2)))
+            c.set_position(o.coord[0] + o.sprite_width/2 - c.width/2,
+                           o.coord[1] + o.sprite_height/2 - c.height/2)
+            self.game.world_objects_to_draw.append(c)
         for t, o in self.game.editor.trigger_display_text:
-            self.game.world_objects_to_draw.append((t, (o.coord[0] + o.dimensions[0]/2 - t.get_width()/2,
-                                                        o.coord[1] - c.get_height()/2 - t.get_height()/2)))
-
+            # t.x, t.y = o.coord[0] + o.sprite_width/2 - t.width/2, o.coord[1] + c.height/2 - t.height/2
+            t.x, t.y = o.coord[0], o.coord[1] + c.height
+            self.game.world_objects_to_draw.append(t)
 
     def draw_buttons(self):
         for button in self.game.buttons.itervalues():
+            if not button.visible:
+                continue
             self.game.screen_objects_to_draw.append(button.outer_sprite)
             self.game.screen_objects_to_draw.append(button.inner_sprite)
             self.game.screen_objects_to_draw.append(button.text_sprite)
             
     def draw_drop_lists(self):
         for l in self.game.drop_lists.itervalues():
-            self.game.screen_objects_to_draw.append((l.surface, l.pos))
+            if not l.visible:
+                continue
+            self.game.screen_objects_to_draw.append(l.main_button.outer_sprite)
+            self.game.screen_objects_to_draw.append(l.main_button.inner_sprite)
+            self.game.screen_objects_to_draw.append(l.main_button.text_sprite)
+            if not l.open:
+                continue
+            for b in l.drop_buttons:
+                self.game.screen_objects_to_draw.append(b.outer_sprite)
+                self.game.screen_objects_to_draw.append(b.inner_sprite)
+                self.game.screen_objects_to_draw.append(b.text_sprite)
 
     def draw_objects(self):
         sort_objs = self.game.objects.values()
@@ -193,13 +206,16 @@ class Graphics(object):
                 if o.possessing:
                     continue
 
-            vo = o.sprite_sheet.height
-            texture = o.sprite_sheet.get_region(o.frame_rect.x, o.frame_rect.y, o.sprite_width, o.sprite_height)
-            object_sprite = sprite.Sprite(texture)
+            if hasattr(o, 'isCursor'):
+                object_sprite = o.sprite
+            else:
+                texture = o.sprite_sheet.get_region(o.frame_rect.x, o.frame_rect.y, o.sprite_width, o.sprite_height)
+                object_sprite = sprite.Sprite(texture)
             x = o.coord[0]
             y = o.coord[1]
 
-            object_sprite.set_position(x, y)
+            # object_sprite.set_position(x, y)
+            object_sprite.x, object_sprite.y = x, y
             self.game.world_objects_to_draw.append(object_sprite)
 
             for s, p in o.flair.itervalues():
@@ -258,9 +274,16 @@ class Graphics(object):
         # TODO: use built-in pyglet camera stuff
         old_x = sprite.x
         old_y = sprite.y
-        sprite.set_position(old_x - self.game.camera_coords[0], old_y - self.game.camera_coords[1])
+        # if hasattr(sprite, 'set_position'):
+        #     sprite.set_position(old_x - self.game.camera_coords[0], old_y - self.game.camera_coords[1])
+        #     sprite.draw()
+        #     sprite.set_position(old_x, old_y)
+        # else:
+        sprite.x -= self.game.camera_coords[0]
+        sprite.y -= self.game.camera_coords[1]
         sprite.draw()
-        sprite.set_position(old_x, old_y)
+        sprite.x = old_x
+        sprite.y = old_y
 
     def draw_cutscene(self):
         #print self.game.cutscene_started
