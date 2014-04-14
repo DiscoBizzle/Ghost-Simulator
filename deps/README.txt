@@ -15,11 +15,6 @@
 you may need to sudo to root to do that
 you MUST use our copy of pyglet, not one you already have! [1]
 
-3. now you need either PIL or Pillow. [2]
- on Windows: install PIL/PIL-1.1.7.win32-py2.7.exe (for 64bit do Pillow & deps)
- on Mac do: 'sudo easy_install pip' and then 'sudo pip install Pillow'
- on Linux, apparently you probably already have Pillow installed anyway!
- 
  
 === BONUS MATERIAL FOR 64-BIT PYTHON ON 64-BIT WINDOWS / ANY LINUX ===
 (you probably have 32-bit python on 64-bit windows)
@@ -36,17 +31,7 @@ B. On 64-bit Windows with 64-bit Python, you're going to run into the bug:
 Basically you're going to get intermittent crashes on load in the font code.
 Rerun, go 32-bit, or somehow fix the problem.
 
-[1] ...for ours is patched to use the PIL image loader as #1 priority, which takes
- map load times from 30 seconds to 0.2 seconds. (this is because Windows loaders load
-images upside down, and pyglet's conversion code to fix this is pathologically slow)
-
-we also took the liberty of hacking pyglet.media to not hang when videos end.
+[1] we took the liberty of hacking pyglet.media to not hang when videos end.
 we have destroyed the functionality that allows you to queue files to be played
  one after the other, though... though this should be easy to re-implement from the
  outside. (just start a new file in a new Player once the existing one is used)
-
-[2] the issue is that Pillow is better but doesn't tend to ship a bunch of useful stuff
- that you're going to need to, you know, actually load images.
-(for example, we need zlib to load PNGs. on Linux and Mac you probably already have zlib,
-  but not so much on Windows...)
-for release we can sort this out & ship a good static Pillow fairly easily.
