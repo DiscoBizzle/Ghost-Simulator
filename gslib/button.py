@@ -128,6 +128,7 @@ class Button(object):
         if abs(click_pos[0] - (pos[0] + w)) < w and abs(click_pos[1] - (pos[1] + h)) < h:
             if self.enabled:
                 self.perf_function()
+                return True
 
     def perf_function(self):
         if self.function is not None:
@@ -135,3 +136,9 @@ class Button(object):
 
     def text_toggle(self):
         self.text_states_toggle = not self.text_states_toggle
+
+
+class DefaultButton(Button):
+    def __init__(self, owner, function, pos, text="", size=(100, 20), **kwargs):
+        Button.__init__(self, owner, function, size=size, pos=pos, border_colour=(120, 50, 80), border_width=3,
+                        colour=(120, 0, 0), text=text, **kwargs)

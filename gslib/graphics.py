@@ -105,6 +105,9 @@ class Graphics(object):
                 self.draw_torch()
 
             self.draw_buttons()
+            self.draw_drop_lists()
+            if self.game.editor_active:
+                self.draw_editor()
 
             self.draw_fear_bar()
             self.draw_character_stats()
@@ -155,7 +158,6 @@ class Graphics(object):
                 #if not m.grid[i][j].walkable:
                 #    temprect = pygame.Rect(i * grid_size, j * grid_size, TILE_SIZE, TILE_SIZE)
                 #    pygame.draw.rect(surf, 0x0000ff, temprect)
-
             self.last_map = m
 
             print('Map redraw complete (took ' + str(time.clock() - start_time) + 's)')
@@ -163,11 +165,24 @@ class Graphics(object):
         self.game.world_objects_to_draw.insert(0, self.tile_sprite)
         return self.tile_sprite
 
+    def draw_editor(self):
+        for c, o in self.game.editor.trigger_display_circles:
+            self.game.world_objects_to_draw.append((c, (o.coord[0] + o.dimensions[0]/2 - c.get_width()/2,
+                                                        o.coord[1] + o.dimensions[1]/2 - c.get_height()/2)))
+        for t, o in self.game.editor.trigger_display_text:
+            self.game.world_objects_to_draw.append((t, (o.coord[0] + o.dimensions[0]/2 - t.get_width()/2,
+                                                        o.coord[1] - c.get_height()/2 - t.get_height()/2)))
+
+
     def draw_buttons(self):
         for button in self.game.buttons.itervalues():
             self.game.screen_objects_to_draw.append(button.outer_sprite)
             self.game.screen_objects_to_draw.append(button.inner_sprite)
             self.game.screen_objects_to_draw.append(button.text_sprite)
+            
+    def draw_drop_lists(self):
+        for l in self.game.drop_lists.itervalues():
+            self.game.screen_objects_to_draw.append((l.surface, l.pos))
 
     def draw_objects(self):
         sort_objs = self.game.objects.values()

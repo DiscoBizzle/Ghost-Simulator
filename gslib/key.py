@@ -23,7 +23,7 @@ class KeyController(object):
         self.keys = Pkey.KeyStateHandler()
 
         self.key_map = {'Skill Screen': Pkey.Q, 'Show Fear Ranges': Pkey.R, 'Show Fears': Pkey.E,
-                        'Advance Character States': Pkey.C}
+                        'Toggle Editor': Pkey.B}
         self.player_map = {'1': {'up': Pkey.UP, 'down': Pkey.DOWN, 'left': Pkey.LEFT, 'right': Pkey.RIGHT, 'possess': Pkey.F, 'harvest fear': Pkey.Z},
                            '2': {'up': Pkey.W, 'down': Pkey.S, 'left': Pkey.A, 'right': Pkey.D, 'possess': Pkey.Q, 'harvest fear': Pkey.X}}
 
@@ -52,13 +52,9 @@ class KeyController(object):
         if self.game.GameState == MAIN_GAME:
             self.game.show_fears = self.keys[self.key_map['Show Fears']]
             self.game.show_ranges = self.keys[self.key_map['Show Fear Ranges']]
-
-            # if self.keys[self.key_map['Advance Character States']]:
-            #     for o in self.game.objects.itervalues():
-            #         if o.state_index == 'state1':
-            #             o.state_index = 'state2'
-            #         else:
-            #             o.state_index = 'state1'
+            if self.keys[self.key_map['Toggle Editor']]:
+                self.game.editor_active = not self.game.editor_active
+                self.game.gather_buttons_and_drop_lists_and_objects()
 
         for k, p in self.game.players.iteritems():
             p.move_down = self.keys[self.player_map[k[-1]]['down']]
@@ -67,7 +63,7 @@ class KeyController(object):
             p.move_right = self.keys[self.player_map[k[-1]]['right']]
 
             if self.keys[self.player_map[k[-1]]['harvest fear']]:
-                p.collect_fear()
+                p.harvest_fear()
 
             if self.keys[self.player_map[k[-1]]['possess']]:
                 if p.possess_key_up:

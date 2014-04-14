@@ -1,6 +1,9 @@
+import time
+
 import pygame
 
 from gslib.constants import *
+
 
 class GameObject(object):
     def __init__(self, game_class, x, y, w, h, sprite_sheet):
@@ -64,10 +67,10 @@ class GameObject(object):
         #self.sprite_sheet.set_colorkey((255, 0, 255))
 
         #trigger functions
-        self.has_touched_function = None
-        self.is_touched_function = None
-        self.has_untouched_function = None
-        self.is_untouched_function = None
+        self.has_touched_function = []
+        self.is_touched_function = []
+        self.has_untouched_function = []
+        self.is_untouched_function = []
 
         self.move_up = False
         self.move_down = False
@@ -75,8 +78,6 @@ class GameObject(object):
         self.move_right = False
 
         self.highlight_radius = 20
-
-        self.possessed_by = None
 
         self.flair = {}
         self.collision_weight = 1  # set to 0 for no collision, can only push things that are lighter, or same weight
@@ -154,6 +155,8 @@ class GameObject(object):
         return x**2 + y**2
 
     def apply_fear(self):
+        if not hasattr(self, 'possessing'):  # checks if object is not a player as can't import player module
+            self.fear = 0
         for o in self.game_class.objects.itervalues():
             if hasattr(o, 'possessing'):  # checks if object is a player as can't import player module
                 if o.possessing:
@@ -169,16 +172,17 @@ class GameObject(object):
                         o.scream_timer -= 1
 
     def get_feared_by(self, other):
-        fear_level = 0
+        # fear_level = 0
         if self.check_distance(other, self.fear_radius):
             for fear in other.fears:
                 if fear in self.scared_of:
-                    fear_level += 50
+                    # fear_level += 50
+                    self.fear += 50
                     self.fear_timer = 5
                     self.feared_by_obj = other
                     self.feared_from_pos = other.coord
 
-        self.fear = fear_level
+        # self.fear = fear_level
 
     def remove_self_from_touching_list(self):
         to_remove = []
@@ -245,10 +249,6 @@ class GameObject(object):
             if not o is self:
                 if o.collision_weight and self.collision_weight:  # check if obj collides at all
                     if pro_rect.colliderect(o.rect):
-                        # if o.is_touched_function:
-                        #     o.is_touched_function(o)
-                        # if self.has_touched_function:
-                        #     self.has_touched_function(o)
 
                         if self.collision_weight < o.collision_weight:  # check if obj can be pushed by self
                             collision = True

@@ -1,3 +1,4 @@
+import pygame
 import random
 import math
 
@@ -16,32 +17,6 @@ from gslib import text
 # - is_untouched_function - when the charcter is untouched; accepts input of object that untouched it
 # - has_touched_function - when the character touches an object; accepts input of of object that it touches
 # - has_untouched_function - when the character untouches an object; accepts input of of object that it untouches
-
-
-################################################################################
-### trigger functions - links character objects
-### E.g. Do thing to B when A does x.
-### These are intended to be defined when the map is created.
-################################################################################
-def trigger_flip_state_on_harvest(obj, target):
-    def func():
-        red_square(obj)()
-        flip_state(target)()
-    obj.collected_function = func
-
-
-def trigger_flip_state_is_touched_by(toucher, touched, target):
-    def func(o):
-        if o == toucher:
-            flip_state(target)()
-    touched.is_touched_function = func
-
-
-def trigger_flip_state_is_untouched_by(untoucher, untouched, target):
-    def func(o):
-        if o == untoucher:
-            flip_state(target)()
-    untouched.is_untouched_function = func
 
 
 ################################################################################
@@ -71,7 +46,8 @@ def im_possessed(obj):
 def undo_im_possessed(obj):
     def func():
         return
-        del obj.flair['possessed']
+        if not obj.possessed_by:
+            del obj.flair['possessed']
     return func
 
 
@@ -82,7 +58,7 @@ def flip_state(obj):
 
 
 ################################################################################
-### fear collected functions
+### fear harvested functions
 ################################################################################
 def red_square(obj):  # get ooga booga'd
     def func():
@@ -93,7 +69,7 @@ def red_square(obj):  # get ooga booga'd
         sprite.scale_x = 10
         sprite.scale_y = 10
         sprite.color_rgb = (120, 0, 0)
-        obj.flair['fear_collected'] = (sprite, (-5, obj.dimensions[1] + 5))
+        obj.flair['fear_harvested'] = (sprite, (-5, obj.dimensions[1] + 5))
     return func
 
 

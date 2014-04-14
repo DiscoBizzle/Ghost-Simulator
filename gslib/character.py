@@ -131,21 +131,27 @@ class Character(GameObject):
          - Returned function should take 0 parameters.
         """
         GameObject.__init__(self, game_class, x, y, w, h, pyglet.image.load(os.path.join(CHARACTER_DIR, sprite_sheet)).get_texture())
-        self.fears = stats['fears']
-        self.scared_of = stats['scared_of']
-        self.scared_of.append('player')
+        if stats:
+            self.fears = stats['fears']
+            self.scared_of = stats['scared_of']
+            self.scared_of.append('player')
+        else:
+            self.fears = []
+            self.scared_of = []
         self.stats = stats
         self.info_sheet = self.draw_info_sheet()
         # self.sprite = pygame.image.load(os.path.join(CHARACTER_DIR, 'Sprite_top.png'))
         # self.sprite = pygame.transform.scale(self.sprite, self.dimensions).convert()
         # self.sprite.set_colorkey((255, 0, 255))
-        self.feared_function = fear_functions.freeze(self)
-        self.possessed_function = fear_functions.im_possessed(self)
-        self.unpossessed_function = fear_functions.undo_im_possessed(self)
-        self.harvested_function = fear_functions.red_square(self)
+        self.feared_function = [fear_functions.freeze(self)]
+        self.possessed_function = [fear_functions.im_possessed(self)]
+        self.unpossessed_function = [fear_functions.undo_im_possessed(self)]
+        self.harvested_function = [fear_functions.red_square(self)]
         self.fainted = False
         self.feared_by_obj = None
         self.feared_from_pos = (0, 0)
+
+        self.possessed_by = []
 
     def get_stats(self, name):
         name = name
@@ -178,23 +184,27 @@ class Character(GameObject):
                     self.move_left = True
 
             if self.fear_timer:
-                self.feared_function()
+                for f in self.feared_function:
+                    f()
+                # self.feared_function()
                 self.fear_timer -= 1
 
         else:
             # self.possessed_function(self)
             self.current_speed = self.normal_speed
             # tie move to possessing player move
-            self.move_down = self.possessed_by.move_down
-            self.move_up = self.possessed_by.move_up
-            self.move_left = self.possessed_by.move_left
-            self.move_right = self.possessed_by.move_right
+            self.move_down = self.possessed_by[-1].move_down  # last player to possess get control
+            self.move_up = self.possessed_by[-1].move_up
+            self.move_left = self.possessed_by[-1].move_left
+            self.move_right = self.possessed_by[-1].move_right
 
         GameObject.update(self)
 
     def draw_info_sheet(self):
+        if not self.stats:
+            pass
         font_size = 20
-        # dim = w, h = (GAME_WIDTH - LEVEL_WIDTH, int((GAME_WIDTH - LEVEL_WIDTH) / 1.6))
+        #dim = w, h = (GAME_WIDTH - LEVEL_WIDTH, int((GAME_WIDTH - LEVEL_WIDTH) / 1.6))
 
         x = 0
         y = 0
