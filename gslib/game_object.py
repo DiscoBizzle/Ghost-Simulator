@@ -63,7 +63,8 @@ class GameObject(object):
         self.sprite_height = SPRITE_HEIGHT
         self.frame_rect = pygame.Rect(self.current_frame * self.sprite_width, self.animation_state * self.sprite_height,
                                       self.sprite_width, self.sprite_height)
-        self.sprite_sheet.set_colorkey((255, 0, 255))
+        print('TODO: game_object.py set_colorkey pyglet port (use rgba spritesheet or write code to do magic)')
+        #self.sprite_sheet.set_colorkey((255, 0, 255))
 
         #trigger functions
         self.has_touched_function = []
@@ -77,7 +78,6 @@ class GameObject(object):
         self.move_right = False
 
         self.highlight_radius = 20
-
 
         self.flair = {}
         self.collision_weight = 1  # set to 0 for no collision, can only push things that are lighter, or same weight
@@ -125,10 +125,10 @@ class GameObject(object):
     def update(self):
         v_x, v_y = 0, 0
         if self.move_down:
-            v_y += self.current_speed
+            v_y -= self.current_speed
             self.direction = DOWN
         if self.move_up:
-            v_y -= self.current_speed
+            v_y += self.current_speed
             self.direction = UP
         if self.move_left:
             v_x -= self.current_speed
@@ -166,7 +166,7 @@ class GameObject(object):
 
                 if o.fear >= o.scream_thresh:
                     if o.scream_timer <= 0:
-                        self.game_class.sound_dict['scream'].play()
+                        self.game_class.sound_handler.play_sound('scream')
                         o.scream_timer = 120
                     else:
                         o.scream_timer -= 1
@@ -283,9 +283,9 @@ class GameObject(object):
             if self.animation_state == ANIM_LEFTWALK:
                 self.animation_state = ANIM_LEFTIDLE
         else:
-            if self.velocity[1] > 0:
+            if self.velocity[1] < 0:
                 self.animation_state = ANIM_DOWNWALK
-            elif self.velocity[1] < 0:
+            elif self.velocity[1] > 0:
                 self.animation_state = ANIM_UPWALK
 
             if self.velocity[0] > 0:

@@ -1,0 +1,88 @@
+1. Sprite cheatsheet
+2. Text rendering cheatsheet
+3. TODO list
+
+
+http://pyglet.org/doc-current/index.html
+
+
+Sprite cheatsheet:
+
+from gslib import sprite
+
+Instead of pygame Surfaces, you want to use gslib Sprites.
+Instead of composing images onto a surface then blitting that surface,
+ the idea is to load textures ahead of time and make use of the numerous
+ Sprite* properties to achieve what you want to render.
+
+Sprites are much much much faster than Surfaces, as (almost) everything you
+ can do becomes an OpenGL instruction somewhere and mighty hardware does it.
+
+gslib Sprites are almost the same as pyglet.sprite.Sprite, with two changes
+ to make life easier for us.*
+
+'Drawing' rectangles
+====================
+If you want to draw a rectangle, call graphics.new_rect_sprite() and stash
+ the result somewhere. This returns a new Sprite with a 1x1 white rectangle
+ texture set, from which you can make any rectangle as follows:
+
+You can colour the sprite by changing sprite.color_rgb or
+ sprite.color_rgba. (sprite.color_rgba just sets sprite.color and sprite.opacity
+ at the same time in one go.)
+
+You can resize the sprite by setting sprite.scale_x and sprite.scale_y.
+By default we resize from the top-left corner, but you can change this using
+ sprite.anchor settings (see pyglet docs).
+
+You can move where the sprite will appear by changing sprite.x and sprite.y,
+ or if both then sprite.set_position().
+
+You draw the sprite by calling sprite.draw(). Adding it to one of the game
+ *_objects_to_draw() lists will also result in it being drawn.
+
+Do not worry about sprite batching for now.
+
+Sprites from images
+===================
+You can make a sprite of a given image by doing:
+ sprite = sprite.Sprite(pyglet.image.load('image.png').get_texture())
+
+The above may be replaced by a function in graphics for efficiency reasons
+ (cache textures).
+
+*** DO NOT *** create a new texture every frame! This will leak video memory.
+(Textures are NOT automatically cleaned up just because your python code
+ stops caring about them. Manual deletion is possible.)
+
+Creating a new Sprite every frame or calling graphics.new_rect_sprite() every
+ frame is OK if unnecessary. graphics.new_rect_sprite() caches its texture
+ and Sprites are lightweight. It is the .get_texture() call that would leak.
+
+(* changes: color_rgba and color_rgb instead of just color (rest of pyglet
+    used rgba except for Sprite), and scale_x and scale_y instead of just scale
+    which makes it possible for us to render arbitrary rectangles from a 1px
+    texture.)
+
+
+2. Text rendering cheatsheet
+
+*** TODO *** (see todo list. we have text rendering, but it's not very
+ convenient right now & no easy way to get rendered width & height)
+
+
+3. TODO list
+
+- port some input code (joy.py)
+
+- graphics.draw_game_over
+- game.py 'fear radius' drawing (drop draw_circle/rewrite it?)
+- graphics.draw_torch (drop draw_circle, use image of circle?)
+- credits.py port (render all the text to one big texture once, then just scroll that)
+                  ^ note pyglet has no problem with multiple lines of text/auto word wrapping.
+- graphics 'view of field' option
+- graphics.draw_text_box (Is this actually used anywhere? pyglet also already has a text box)
+- port cutscene stuff inc. graphics.draw_cutscene
+
+- eventually get rid of pygame.Rect. but it's pretty much harmless.
+

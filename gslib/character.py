@@ -2,10 +2,14 @@ import random
 import os.path
 
 import pygame
+import pyglet
 
 from gslib import fear_functions
 from gslib.game_object import GameObject
-from gslib import text_functions
+from gslib import graphics
+from gslib import sprite
+from gslib import text
+from gslib import textures
 from gslib.constants import *
 
 WHITE = (255, 255, 255)
@@ -126,7 +130,7 @@ class Character(GameObject):
          - Function should take in any parameters and return a function.
          - Returned function should take 0 parameters.
         """
-        GameObject.__init__(self, game_class, x, y, w, h, pygame.image.load(os.path.join(CHARACTER_DIR, sprite_sheet)).convert())
+        GameObject.__init__(self, game_class, x, y, w, h, pyglet.image.load(os.path.join(CHARACTER_DIR, sprite_sheet)).get_texture())
         if stats:
             self.fears = stats['fears']
             self.scared_of = stats['scared_of']
@@ -198,55 +202,49 @@ class Character(GameObject):
 
     def draw_info_sheet(self):
         if not self.stats:
-            return pygame.Surface((1, 1))
+            pass
         font_size = 20
         #dim = w, h = (GAME_WIDTH - LEVEL_WIDTH, int((GAME_WIDTH - LEVEL_WIDTH) / 1.6))
 
-        h = 200
-        w = int(h * 1.6)
-        dim = (w,h)
+        x = 0
+        y = 0
+
+        sprites = []
+
+        h = 200.0
+        w = h / 1.6
+        dim = (w, h)
 
         border = 8
-        surf = pygame.Surface(dim)
-        fill_background(surf, border)
+        #fill_background(surf, border) # TODO PYGLET
 
         # draw character image
-        im = pygame.image.load(self.stats['image_name']).convert()
-        oldw = im.get_width()
-        oldh = im.get_height()
-        frac = (h - border * 2) / float(oldh)
-        neww = int(oldw * frac)
-        im = pygame.transform.scale(im, (neww, h - border * 2))
-        surf.blit(im, (border, border))
+        im = textures.get(self.stats['image_name'])
+        im_sprite = sprite.Sprite(im)
+        im_sprite.scale_x = w / im_sprite.width
+        im_sprite.scale_y = h / im_sprite.height
+
 
         # draw name/age and text boxes
-        font = pygame.font.SysFont('comic sans', font_size)
-        name_text = font.render(u'Name: ' + self.stats['name'], True, WHITE)
-        age_text = font.render(u'Age: ' + str(self.stats['age']), True, WHITE)
+        name_text = text.new('comic sans', font_size, u'Name: ' + self.stats['name'])
+        age_text = text.new('comic sans', font_size, u'Age: ' + str(self.stats['age']))
 
-        text_left = neww + border * 2
 
-        temp = pygame.Surface((dim[0] - text_left - border, name_text.get_height() + age_text.get_height()))
-        temp.fill(GREY)
-        surf.blit(temp, (text_left, border))
+        # age_text.x = name_text.x
+        # age_text.y = name_text.y - name_text.content_height
 
-        surf.blit(name_text, (text_left, border))
-        surf.blit(age_text, (text_left, border + name_text.get_height()))
+        # draw background
+        background_sprite = graphics.new_rect_sprite()
+        background_sprite.color_rgb = GREY
+        background_sprite.scale_x = w + name_text.content_width + border * 2
+        background_sprite.scale_y = h + 2 * border  # - name_text.content_height - age_text.content_height - 3 * border
 
-        temp = pygame.Surface(
-            (dim[0] - text_left - border, dim[1] - (name_text.get_height() + age_text.get_height() + 3 * border)))
-        temp.fill(GREY)
-        surf.blit(temp, (text_left, name_text.get_height() + age_text.get_height() + 2 * border))
+        sprites.append(background_sprite)
+        sprites.append(im_sprite)
+        sprites.append(name_text)
+        sprites.append(age_text)
 
-        # draw bio
-        bio = text_functions.text_wrap(self.stats['bio'], font, dim[0] - text_left - border)
-        top = name_text.get_height() + age_text.get_height() + 2 * border
-        t_height = name_text.get_height()
-        for i, b in enumerate(bio):
-            t = font.render(b, True, WHITE)
-            surf.blit(t, (text_left, top + i * t_height))
-
-        return surf
+        return sprites
 
 
 if __name__ == "__main__":

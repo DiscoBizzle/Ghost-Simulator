@@ -2,6 +2,8 @@ import json
 import os.path
 
 import pygame
+import pyglet
+import pyglet.gl
 
 from gslib import graphics
 from gslib import character
@@ -10,19 +12,32 @@ from gslib import character_objects
 from gslib import fear_functions
 from gslib.constants import *
 
+class FakeGame(object):
+    def __init__(self, mmap):
+        self.dimensions = (800, 600)
+        self.world_objects_to_draw = []
+        self.map = mmap
+
 def test():
-    pygame.init()
-    pygame.font.init()
-    screen = pygame.display.set_mode((800, 800))
-    m = Map(os.path.join(TILE_DIR, 'martin.png'), os.path.join(TILE_DIR, 'martin.json'))
+    m = Map(os.path.join(TILES_DIR, 'level2.png'), os.path.join(TILES_DIR, 'level2.json'), None)
+    g = graphics.Graphics(FakeGame(m))
 
-    surf = graphics.draw_map(m)
+    surf = g.draw_map()
 
-    screen.blit(surf, (0, 0))
+    window = pyglet.window.Window()
 
-    pygame.display.update()
+
+    @window.event
+    def on_draw():
+        print('surf len: ' + str(len(surf)))
+        for spr in surf:
+            spr.draw()
+        #for i in range(10):
+            #surf[i].draw()
+
+    #pygame.display.update()
+    pyglet.app.run()
     raw_input()
-    pygame.quit()
 
 def open_map_json(map_filename):
     try:
@@ -54,12 +69,12 @@ def load_map(map_filename): # Load a map and objects from a map file
 
     for tile in tile_map:
         x = tile['x']
-        y = tile['y']
+        y = height - tile['y'] - 1
         map_grid[x][y] = tile['tile']
 
     for tile in coll_map:
         x = tile['x']
-        y = tile['y']
+        y = height - tile['y'] - 1
         coll_grid[x][y] = tile['tile']
 
     return map_grid, coll_grid
@@ -98,8 +113,9 @@ class Tile(object):
 
 class Map(object):
     def __init__(self, tileset, map_file, game_class):
-        self.tileset = pygame.image.load(tileset).convert()
-        self.tileset_cols = self.tileset.get_width() / TILE_SIZE
+        # Note: We need the PIL decoder for this to be anything like fast. (GDI+ etc import bitmaps upside-down...)
+        self.tileset = pyglet.image.load(tileset)
+        self.tileset_cols = self.tileset.width / TILE_SIZE
 
         tile_type_grid, coll_grid = load_map(map_file)
         self.grid = [[Tile(tile_type_grid, coll_grid, self, (i, j)) for j in range(len(tile_type_grid[0]))] for i in range(len(tile_type_grid))]
@@ -112,15 +128,15 @@ class Map(object):
             self.objects[i] = character.Character(game_class, 100, 100, 16, 16, character.gen_character())
 
         self.objects[0].collision_weight = 5
-        self.objects[0].coord = (TILE_SIZE*7, TILE_SIZE*18)
+        self.objects[0].coord = (TILE_SIZE*7, TILE_SIZE*3)
         self.objects[1].collision_weight = 4
         self.objects[1].normal_speed = 0
-        self.objects[1].coord = (TILE_SIZE*8, TILE_SIZE*18)
+        self.objects[1].coord = (TILE_SIZE*8, TILE_SIZE*3)
         self.objects[2].collision_weight = 10
         self.objects[2].normal_speed = 1
-        self.objects[2].coord = (TILE_SIZE*8, TILE_SIZE*16)
+        self.objects[2].coord = (TILE_SIZE*8, TILE_SIZE*1)
 
-        self.objects['door1'] = character_objects.SmallDoor(game_class, TILE_SIZE*7, TILE_SIZE*7, character.gen_character())
+        self.objects['door1'] = character_objects.SmallDoor(game_class, TILE_SIZE*7, TILE_SIZE*12, character.gen_character())
 
         self.triggers = {}
 

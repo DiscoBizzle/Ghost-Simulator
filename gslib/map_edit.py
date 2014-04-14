@@ -34,6 +34,7 @@ class Editor(object):
 
         self.buttons = {}
         self.drop_lists = {}
+        return
 
         ###################################################################
         # Place new object

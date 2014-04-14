@@ -1,4 +1,6 @@
-import pygame
+# import pygame
+import pyglet
+import pyglet.window.key as Pkey
 
 from gslib.constants import *
 import collections
@@ -18,34 +20,28 @@ class KeyController(object):
 
         self.game = game
 
-        self.keys = collections.defaultdict(bool)  # returns False if key not seen before
+        self.keys = Pkey.KeyStateHandler()
 
-        self.key_map = {'Skill Screen': pygame.K_q, 'Show Fear Ranges': pygame.K_r, 'Show Fears': pygame.K_e,
-                        'Toggle Editor': pygame.K_b, 'Snap to Grid': pygame.K_LCTRL}
-        self.player_map = {'1': {'up': pygame.K_UP, 'down': pygame.K_DOWN, 'left': pygame.K_LEFT, 'right': pygame.K_RIGHT, 'possess': pygame.K_f, 'harvest fear': pygame.K_z},
-                           '2': {'up': pygame.K_w, 'down': pygame.K_s, 'left': pygame.K_a, 'right': pygame.K_d, 'possess': pygame.K_g, 'harvest fear': pygame.K_x}}
+        self.key_map = {'Skill Screen': Pkey.Q, 'Show Fear Ranges': Pkey.R, 'Show Fears': Pkey.E,
+                        'Toggle Editor': Pkey.B}
+        self.player_map = {'1': {'up': Pkey.UP, 'down': Pkey.DOWN, 'left': Pkey.LEFT, 'right': Pkey.RIGHT, 'possess': Pkey.F, 'harvest fear': Pkey.Z},
+                           '2': {'up': Pkey.W, 'down': Pkey.S, 'left': Pkey.A, 'right': Pkey.D, 'possess': Pkey.Q, 'harvest fear': Pkey.X}}
 
-    def handle_keys(self, event):
-        if event.type == pygame.KEYDOWN:
-            if event.key in self.keys:
-                self.keys[event.key] = True
-        if event.type == pygame.KEYUP:
-            if event.key in self.keys:
-                self.keys[event.key] = False
+    def handle_keys(self, symbol, modifiers):
 
         if self.game.GameState == KEYBIND_CAPTURE:
-            self.rebind(event.key)
+            self.rebind(symbol)
             self.game.set_state(KEYBIND_MENU)
             return
 
-        if self.keys[pygame.K_ESCAPE] and self.game.GameState != CUTSCENE:
+        if self.keys[Pkey.ESCAPE] and self.game.GameState != CUTSCENE:
             self.game.set_state(MAIN_MENU)
-        if self.keys[pygame.K_m]:
+        if self.keys[Pkey.M]:
             if self.game.GameState == MAIN_MENU or self.game.GameState == MAIN_GAME:
                 self.game.set_state(CUTSCENE)
         if self.keys[self.key_map['Skill Screen']] and (self.game.GameState == MAIN_MENU or self.game.GameState == MAIN_GAME):
             self.game.set_state(SKILLS_SCREEN)
-        if self.keys[pygame.K_t] and (self.game.GameState == MAIN_MENU or self.game.GameState == MAIN_GAME or self.game.GameState == TEXTBOX_TEST):
+        if self.keys[Pkey.T] and (self.game.GameState == MAIN_MENU or self.game.GameState == MAIN_GAME or self.game.GameState == TEXTBOX_TEST):
             self.game.set_state(TEXTBOX_TEST)
             if self.game.text_box_test.state == TB_ACTIVE:
                 self.game.text_box_test.state = TB_CLOSING
@@ -77,19 +73,19 @@ class KeyController(object):
                 p.possess_key_up = True
 
     def rebind(self, new_key):
-        if new_key == pygame.K_ESCAPE:
+        if new_key == Pkey.ESCAPE:
             self.game.action_to_rebind = None
             return
         action = self.game.action_to_rebind
         if "Player" in action:  # action = "Player n action"
-            n = int(action[7])
-            self.player_map[str(n)][action[9:]] = new_key
+            n = action[7]
+            self.player_map[n][action[9:]] = new_key
         else:
             self.key_map[action] = new_key
 
         self.game.keybind_menu.buttons[action + ' key'].colour = self.game.keybind_menu.colour
         self.game.keybind_menu.buttons[action + ' key'].border_colour = self.game.keybind_menu.border_colour
-        self.game.keybind_menu.buttons[action + ' key'].text = pygame.key.name(new_key)
+        self.game.keybind_menu.buttons[action + ' key'].text = Pkey.symbol_string(new_key)
 
         self.keys[new_key] = False
         self.game.action_to_rebind = None
@@ -119,12 +115,12 @@ class KeyController(object):
                 name = l[:semi]
                 val = int(l[semi+1:])
                 self.key_map[name] = val
-                self.game.keybind_menu.buttons[name + ' key'].text = pygame.key.name(val)
+                self.game.keybind_menu.buttons[name + ' key'].text = Pkey.symbol_string(val)
             else:
                 semi = l.find(';')
                 name = l[:semi]
                 val = int(l[semi+1:])
-                self.game.keybind_menu.buttons[name + ' key'].text = pygame.key.name(val)
+                self.game.keybind_menu.buttons[name + ' key'].text = Pkey.symbol_string(val)
                 player_n = int(name[7])
                 name = name[9:]
                 self.player_map[str(player_n)][name] = val

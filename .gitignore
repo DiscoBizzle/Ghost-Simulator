@@ -5,4 +5,5 @@ MANIFEST
 *.pyc
 Thumbs.db
 *.swp
+deps/pyglet-9781eb46dca2/_build/
 

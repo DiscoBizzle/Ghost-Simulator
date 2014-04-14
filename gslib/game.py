@@ -3,6 +3,11 @@ import os.path
 import sys
 import time
 
+import pyglet
+#import pyglet.clock
+#import pyglet.gl
+#import pyglet.window
+#from pygame import Rect
 import pygame
 
 from gslib import button
@@ -19,7 +24,7 @@ from gslib import text_box
 from gslib import key
 from gslib import mouse
 from gslib import fear_functions
-from gslib import text_functions
+from gslib import text
 from gslib import drop_down_list
 from gslib import map_edit
 from gslib.constants import *
@@ -32,7 +37,7 @@ from gslib.constants import *
 #os.environ['SDL_VIDEODRIVER'] = ''
 
 
-class Game(object):
+class Game(pyglet.window.Window):
     """
     To draw something relative to map: (accounts for camera)
     game.world_objects_to_draw.append((surface, position))
@@ -43,55 +48,59 @@ class Game(object):
     Objects will be drawn without having to add them to these lists.
     """
     def __init__(self):
+        super(Game, self).__init__(width=GAME_WIDTH, height=GAME_HEIGHT)
+
+        pyglet.clock.set_fps_limit(None)
+
+        # enable alpha-blending
+        pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
+        pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
 
         self.options = {'FOV': True, 'VOF': False, 'torch': False, 'menu_scale': False}
         self.dimensions = (GAME_WIDTH, GAME_HEIGHT)
 
         self.Menu = menus.MainMenu(self, (161, 100))
         self.GameState = MAIN_MENU
+        #self.GameState = MAIN_GAME
         self.cutscene_started = False
         self.cutscene_next = os.path.join(VIDEO_DIR, "default.mpg")
         self.game_running = True
         self.graphics = graphics.Graphics(self)
-        pygame.display.set_caption("Ghost Simulator v. 0.000000001a")
-        self.music_list = sound.get_music_list()
-        self.sound_dict = sound.load_all_sounds()
-        self.credits = credits.Credits(self)
+        self.set_caption("Ghost Simulator v. 0.000000001a")
+
+        # TODO PYGLET
+
+        self.sound_handler = sound.Sound()
+        self.sound_handler.music_volume = 0.0
+        self.sound_handler.start_next_music()
+
+        #self.credits = credits.Credits(self)
         self.options_menu = menus.OptionsMenu(self, (200, 50))
-
-
-        self.clock = pygame.time.Clock()
-        self.ms_passed = 0
-
-        self.fps_clock = pygame.time.Clock()
+        self.fps_clock = pyglet.clock.ClockDisplay()
 
         self.camera_coords = (0, 0)
-        self.camera_padding = (32, 32, 32, 96)  # left right up down
+        self.camera_padding = (32, 32, 96, 32)  # left right up down
 
         self.players = {}
-        self.players['player1'] = player.Player(self, TILE_SIZE*6, TILE_SIZE*18, 16, 16, 'GhostSheet.png')
+        self.players['player1'] = player.Player(self, TILE_SIZE*6, TILE_SIZE*2, 16, 16, 'GhostSheet.png')
         self.players['player2'] = player.Player(self, 0, 0, 16, 16, 'TutorialGhost2.png')
-        # self.player1 = self.players[0]
 
         # self.objects = dict(self.players.items())
 
         self.skills_dict = skills.load_skill_dict()
         self.SkillMenu = menus.SkillsMenu(self, (200,150))
 
-        # for i in range(5):
-        #     self.objects.append(character.Character(self, 0, 0, 16, 16, character.gen_character()))
+        #self.text_box_test = text_box.TextBox("Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go. Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go. Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go.")
 
-        self.text_box_test = text_box.TextBox("Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go. Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go. Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go.")
-
-        self.text_box_test.create_background_surface()
+        #self.text_box_test.create_background_surface()
 
         self.disp_object_stats = False
         self.object_stats = None
 
 
         self.key_controller = key.KeyController(self)
-        # HACK
-        self.keys = self.key_controller.keys
+        # # HACK
+        # self.keys = self.key_controller.keys
 
         self.keybind_menu = menus.KeyBindMenu(self, (190, 40))
         self.action_to_rebind = None
@@ -105,7 +114,7 @@ class Game(object):
             pygame.KEYUP: self.key_controller.handle_keys,
             pygame.QUIT: (lambda _: self.quit_game()),
             pygame.MOUSEBUTTONDOWN: self.mouse_controller.mouse_click,
-            pygame.MOUSEBUTTONUP: self.mouse_controller.mouse_up,
+            # pygame.MOUSEBUTTONUP: self.mouse_controller.mouse_up,
             pygame.MOUSEMOTION: self.mouse_controller.mouse_move,
             pygame.JOYHATMOTION: self.joy_controller.handle_hat,
             pygame.JOYBUTTONDOWN: self.joy_controller.handle_buttondown,
@@ -115,7 +124,7 @@ class Game(object):
             pygame.VIDEORESIZE: self.graphics.resize_window,
         }
 
-        sound.start_next_music(self.music_list)
+        #sound.start_next_music(self.music_list)
 
         self.map_list = []
         self.map_list.append(maps.Map(os.path.join(TILES_DIR, 'level2.png'), os.path.join(TILES_DIR, 'level3.json'), self))
@@ -140,12 +149,13 @@ class Game(object):
         self.show_fears = False
         self.show_ranges = False
 
-        self.load_options()
+        # TODO PYGLET
+        #self.load_options()
         self.key_controller.load()
 
         self.touching = []
         self.last_touching = []
-
+        
         self.editor = map_edit.Editor(self, (self.dimensions[0], 0))
         self.editor_active = False
         self.cursor = None
@@ -158,32 +168,44 @@ class Game(object):
         self.objects = {}
         self.gather_buttons_and_drop_lists_and_objects()
 
-    def game_loop(self):
-        while self.game_running:
-            # Update clock & pump event queue.
-            # We cannot do this at the same time as playing a cutscene on linux; pygame.movie is shite.
-            if not (self.GameState == CUTSCENE and (
-                        sys.platform == "linux2" or sys.platform == "linux" or sys.platform == "linux3")):
-                self.clock.tick()
-                self.ms_passed += self.clock.get_time()
+    # pyglet event
+    def on_key_press(self, symbol, modifiers):
+        self.push_handlers(self.key_controller.keys)
+        self.key_controller.handle_keys(symbol, modifiers)
+        #response = self.event_map.get(event.type)
+        #if response is not None:
+        #   response(event)
 
-                for event in pygame.event.get():
-                    response = self.event_map.get(event.type)
-                    if response is not None:
-                        response(event)
+    def on_key_release(self, symbol, modifiers):
+        self.push_handlers(self.key_controller.keys)
+        self.key_controller.handle_keys(symbol, modifiers)
 
+    def on_mouse_motion(self, x, y, dx, dy):
+        self.mouse_controller.mouse_move((x, y))
+
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        self.mouse_controller.mouse_move((x, y))
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        self.mouse_controller.mouse_click((x, y), 'down', button)
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        self.mouse_controller.mouse_click((x, y), 'up', button)
+
+    # pyglet event
+    def on_draw(self):
+        #print "got to stupid fucking drawing"
+        if self.game_running:
             if self.GameState == CUTSCENE:
+                #print "cutscene"
                 self.graphics.draw_cutscene()
-                time.sleep(0.001)
-            elif self.ms_passed > 33:
-                self.update()
-                self.ms_passed = 0
-
-                self.fps_clock.tick()
-                self.graphics.main_game_draw()
             else:
-                time.sleep(0.001)  # note: sleeping not only a good idea but necessary for pygame.movie os x
+                #print "not cutscene"
+                self.update()
+                self.graphics.main_game_draw()
 
+            self.fps_clock.draw()
+            
     def gather_buttons_and_drop_lists_and_objects(self):
         self.buttons = dict(self.game_buttons.items())
         self.drop_lists = dict(self.game_drop_lists.items())
@@ -246,6 +268,7 @@ class Game(object):
         avg_pos = (avg_pos[0] / c, avg_pos[1] / c)
         # coord = (self.player1.coord[0] - (self.dimensions[0]/2), self.player1.coord[1] - (self.dimensions[1]/2))
         coord = (avg_pos[0] - (self.dimensions[0]/2), avg_pos[1] - (self.dimensions[1]/2))
+
         pad = self.camera_padding
 
         # bottom
@@ -269,16 +292,16 @@ class Game(object):
     def say_fears(self):
         for o in self.objects.itervalues():
             if isinstance(o, player.Player):
-                surf = text_functions.speech_bubble("Oonce oonce oonce oonce!", 200)
+                surf = text.speech_bubble("Oonce oonce oonce oonce!", 200)
                 pos = (o.coord[0] + o.dimensions[0], o.coord[1] - surf.get_height())
                 self.world_objects_to_draw.append((surf, pos))
                 continue
 
-            text = ''
+            message = ''
             for f in o.scared_of:
                 if f != 'player':
-                    text += f + '\n'
-            surf = text_functions.speech_bubble(text, 300)
+                    message += f + '\n'
+            surf = text.speech_bubble(message, 300)
             pos = (o.coord[0] + o.dimensions[0], o.coord[1] - surf.get_height())
             self.world_objects_to_draw.append((surf, pos))
 

@@ -1,6 +1,8 @@
-import pygame
+import pyglet
 
 from gslib.constants import *
+from gslib import graphics
+from gslib import text
 
 def valid_colour(colour):
     if len(colour) != 3:
@@ -33,7 +35,7 @@ class Button(object):
         Create function in class that creates the button and pass it in as second argument.
     """
     def __init__(self, owner, function, pos=(50, 50), size=(100, 100), visible=True, enabled=True, colour=(0, 0, 0),
-                 border_colour=(0, 0, 0), border_width=2, text=None, font_size=14, text_states=None, **kwargs):
+                 border_colour=(0, 0, 0), border_width=2, text=None, font_size=10, text_states=None, **kwargs):
         self._pos = (0, 0)
         self.pos_setter(pos)
 
@@ -44,6 +46,7 @@ class Button(object):
         self._border_colour = border_colour
         self._border_width = border_width
         self._text = text
+        self._text_dirty = None
         self._font_size = font_size
         self.text_states = text_states
         self.text_states_toggle = False
@@ -55,7 +58,10 @@ class Button(object):
         self.owner = owner  # container that created the button, allows for the button function to interact with its creator
         self.function = function
 
-        self.surface = pygame.Surface(self._size)  # keep track of the button surface, takes more memory but is faster than redrawing every time
+        self.outer_sprite = graphics.new_rect_sprite()
+        self.inner_sprite = graphics.new_rect_sprite()
+        self.text_sprite = None
+        self.sprites = [self.outer_sprite, self.inner_sprite, self.text_sprite]
         self.redraw()
 
     def pos_setter(self, pos):
@@ -86,30 +92,36 @@ class Button(object):
         if self.text_states:
             self._text = self.text_states[self.text_states_toggle]
 
-        self.surface = pygame.Surface(self.size)
-
         if not self.visible:
-            self.surface.fill((1, 1, 1))
-            self.surface.set_colorkey((1, 1, 1))
             return
 
-        # to create border: fill with border colour, then blit a smaller rectangle with main colour
-        self.surface.fill(self.border_colour)
-        temp = pygame.Surface((self._size[0] - 2 * self._border_width, self.size[1] - 2 * self._border_width))
-        temp.fill(self.colour)
-        self.surface.blit(temp, (self.border_width, self.border_width))
+        self.outer_sprite.color_rgb = self.border_colour
+        self.inner_sprite.color_rgb = self.colour
 
-        font = pygame.font.SysFont(FONT, self.font_size)
-        text = font.render(self.text, True, (200, 200, 200))
-        x = self.surface.get_width() / 2 - text.get_width() / 2
-        y = self.surface.get_height() / 2 - text.get_height() / 2
-        self.surface.blit(text, (x, y))
+        self.outer_sprite.scale_x = self.size[0]
+        self.outer_sprite.scale_y = self.size[1]
+        self.inner_sprite.scale_x = self.size[0] - self._border_width * 2
+        self.inner_sprite.scale_y = self.size[1] - self._border_width * 2
 
-        self.surface.set_colorkey((1, 1, 1))
+        self.outer_sprite.position = self.pos
+        self.inner_sprite.position = (self.pos[0] + self._border_width, self.pos[1] + self._border_width)
+
+        # do we need to rerender text? rendering text is SLOW. (< 30 fps)
+        text_dirty_new = [self.text, self.font_size, self.size[0], self.size[1]]
+        if self._text_dirty is None or self._text_dirty != text_dirty_new:
+            self.text_sprite = text.new(text=self.text, font_size=self.font_size, centered=True,
+                                         width=self.size[0], height=self.size[1])
+            self.text_sprite.color = (200, 200, 200, 255)
+            self._text_dirty = text_dirty_new
+
+        self.text_sprite.x = self.pos[0] # + self.outer_sprite.width / 2 - self.text_sprite.width / 2
+        self.text_sprite.y = self.pos[1] # + self.outer_sprite.height / 2 - self.text_sprite.height / 2
+
+        self.sprites = [self.outer_sprite, self.inner_sprite, self.text_sprite]
 
     def check_clicked(self, click_pos):  # perform button function if a position is passed in that is within bounds
         pos = self.pos
-        w, h = self.size
+        w, h = self._size
         w /= 2
         h /= 2
 

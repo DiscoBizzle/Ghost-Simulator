@@ -2,7 +2,9 @@ import pygame
 import random
 import math
 
-from gslib import text_functions
+from gslib import graphics
+from gslib import sprite
+from gslib import text
 
 # No bitchin' about returning functions, it makes triggers easier to think about/create.
 
@@ -34,7 +36,8 @@ def touched_flip_state(obj):
 ################################################################################
 def im_possessed(obj):
     def func():
-        surf = text_functions.speech_bubble("I'm possessed!", 150)
+        return
+        surf = text.speech_bubble("I'm possessed!", 150)
         pos = (obj.dimensions[0]/2,  - surf.get_height())
         obj.flair['possessed'] = (surf, pos)
     return func
@@ -42,6 +45,7 @@ def im_possessed(obj):
 
 def undo_im_possessed(obj):
     def func():
+        return
         if not obj.possessed_by:
             del obj.flair['possessed']
     return func
@@ -60,9 +64,12 @@ def red_square(obj):  # get ooga booga'd
     def func():
         obj.fear = 0
         obj.fainted = True
-        surf = pygame.Surface((10, 10))
-        surf.fill((120, 0, 0))
-        obj.flair['fear_harvested'] = (surf, (-5, -obj.dimensions[1] - 5))
+
+        sprite = graphics.new_rect_sprite()
+        sprite.scale_x = 10
+        sprite.scale_y = 10
+        sprite.color_rgb = (120, 0, 0)
+        obj.flair['fear_harvested'] = (sprite, (-5, obj.dimensions[1] + 5))
     return func
 
 

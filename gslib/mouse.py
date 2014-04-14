@@ -9,55 +9,45 @@ class MouseController(object):
         self.game = game
         self.interaction_this_click = False
 
-    def mouse_click(self, event):
+    def mouse_click(self, pos, typ, button):
         self.interaction_this_click = False
         if self.game.GameState == MAIN_MENU:
-            self.game.Menu.mouse_event(event)
+            self.game.Menu.mouse_event(pos, typ, button)
         elif self.game.GameState == MAIN_GAME:
             if not self.interaction_this_click:
-                self.check_button_click(event)
+                self.check_button_click(pos, typ, button)
 
             if not self.interaction_this_click:
-                self.check_object_click(event)
+                self.check_object_click(pos, typ, button)
 
             for k, v in self.game.drop_lists.iteritems():
                 if not self.interaction_this_click:
-                    self.interaction_this_click = v.handle_event(event)
+                    self.interaction_this_click = v.handle_event(pos, typ, button)
 
             if not self.interaction_this_click:
                 if self.game.editor_active:
-                    self.editor_click(event)
+                    self.editor_click(pos, typ, button)
 
         elif self.game.GameState == SKILLS_SCREEN:
-            self.game.SkillMenu.mouse_event(event)
+            self.game.SkillMenu.mouse_event(pos, typ, button)
         elif self.game.GameState == OPTIONS_MENU:
-            self.game.options_menu.mouse_event(event)
+            self.game.options_menu.mouse_event(pos, typ, button)
         elif self.game.GameState == KEYBIND_MENU:
-            self.game.keybind_menu.mouse_event(event)
+            self.game.keybind_menu.mouse_event(pos, typ, button)
 
-    def mouse_up(self, event):
+    def mouse_move(self, pos):
         if self.game.GameState == MAIN_MENU:
-            self.game.Menu.mouse_event(event)
-        elif self.game.GameState == MAIN_GAME:
-            pass
-        elif self.game.GameState == SKILLS_SCREEN:
-            self.game.SkillMenu.mouse_event(event)
-        elif self.game.GameState == OPTIONS_MENU:
-            self.game.options_menu.mouse_event(event)
-
-    def mouse_move(self, event):
-        if self.game.GameState == MAIN_MENU:
-            self.game.Menu.mouse_event(event)
+            self.game.Menu.mouse_event(pos, 'move')
         elif self.game.GameState == MAIN_GAME:
             for k, v in self.game.drop_lists.iteritems():
-                v.handle_event(event)
+                v.handle_event(pos, 'move')
             if self.game.cursor:
-                self.calc_cursor_coord(event)
+                self.calc_cursor_coord(pos, 'move')
 
         elif self.game.GameState == SKILLS_SCREEN:
-            self.game.SkillMenu.mouse_event(event)
+            self.game.SkillMenu.mouse_event(pos, 'move')
         elif self.game.GameState == OPTIONS_MENU:
-            self.game.options_menu.mouse_event(event)
+            self.game.options_menu.mouse_event(pos, 'move')
 
     def calc_cursor_coord(self, event):
         if self.game.key_controller.keys[self.game.key_controller.key_map['Snap to Grid']]:
@@ -68,17 +58,17 @@ class MouseController(object):
         else:
             self.game.cursor.coord = (event.pos[0] + self.game.camera_coords[0], event.pos[1] + self.game.camera_coords[1])
 
-    def check_object_click(self, event):
-        if event.pos[0] > LEVEL_WIDTH or event.pos[1] > LEVEL_HEIGHT:  # don't check for object outside of level area
+    def check_object_click(self, pos, typ, button=None):
+        if pos[0] > LEVEL_WIDTH or pos[1] > LEVEL_HEIGHT:  # don't check for object outside of level area
             return
         for o in self.game.objects.itervalues():
             if o == self.game.cursor:
                 continue
             st = SELECTION_TOLERANCE
             temp_rect = pygame.Rect((o.coord[0] - st, o.coord[1] - st), (o.dimensions[0] + 2*st, o.dimensions[1] + 2*st))
-            if temp_rect.collidepoint((event.pos[0]+self.game.camera_coords[0],event.pos[1]+self.game.camera_coords[1])) and isinstance(o, character.Character):
+            if temp_rect.collidepoint((pos[0]+self.game.camera_coords[0], pos[1]+self.game.camera_coords[1])) and isinstance(o, character.Character):
                 self.game.disp_object_stats = True
-                self.game.object_stats = (o.info_sheet, (self.game.dimensions[0] - o.info_sheet.get_width(), 0))
+                self.game.object_stats = o.info_sheet
                 self.game.selected_object = o
 
                 if self.game.new_trigger_capture:
@@ -91,9 +81,9 @@ class MouseController(object):
         self.game.disp_object_stats = False
         self.game.object_stats = None
 
-    def check_button_click(self, event):
+    def check_button_click(self, pos, typ, button=None):
         for button in self.game.buttons.itervalues():
-            self.interaction_this_click = button.check_clicked(event.pos)
+            self.interaction_this_click = button.check_clicked(pos)
 
     # def new_trigger_object_capture(self, o):
     #     l = self.game.editor.new_trigger_objects
