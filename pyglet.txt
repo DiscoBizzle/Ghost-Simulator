@@ -67,9 +67,21 @@ Creating a new Sprite every frame or calling graphics.new_rect_sprite() every
 
 2. Text rendering cheatsheet
 
-*** TODO *** (see todo list. we have text rendering, but it's not very
- convenient right now & no easy way to get rendered width & height)
+text.new(...)  (text from gslib)
 
+look at the options; you can optionally provide width & height to fit into,
+ optionally center, and some other stuff too
+
+the resulting object's .width and .height are set from what you set
+if you didn't set them, they're None
+
+in this case, to find out actual width and height, use .content_width and .content_height
+
+these objects can be added to the draw lists with no problems.
+
+(if you need faster (e.g. per-frame) text rendering, we need to hook up pyglet.font.
+ the pyglet.text stuff we use is slower (so only do on load/occasional changes) but
+ much more feature complete.)
 
 3. TODO list
 
@@ -82,7 +94,6 @@ Creating a new Sprite every frame or calling graphics.new_rect_sprite() every
                   ^ note pyglet has no problem with multiple lines of text/auto word wrapping.
 - graphics 'view of field' option
 - graphics.draw_text_box (Is this actually used anywhere? pyglet also already has a text box)
-- port cutscene stuff inc. graphics.draw_cutscene
 
 - eventually get rid of pygame.Rect. but it's pretty much harmless.
 
