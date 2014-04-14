@@ -79,10 +79,10 @@ format_map = {
 
 class OpenALWorker(MediaThread):
     # Minimum size to bother refilling (bytes)
-    _min_write_size = 512
+    _min_write_size = 8192
 
     # Time to wait if there are players, but they're all full.
-    _nap_time = 0.05
+    _nap_time = 0.02
 
     # Time to wait if there are no players.
     _sleep_time = None
