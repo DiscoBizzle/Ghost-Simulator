@@ -45,9 +45,9 @@ class Graphics(object):
         self.game = game
         #self.surface = pygame.display.set_mode(self.game.dimensions, pygame.RESIZABLE)
 
-        self.field = sprite.Sprite(pyglet.image.load(os.path.join(TILES_DIR, 'field.png')).get_texture())
-        self.field.scale_x = self.game.dimensions[0] / self.field.image.width
-        self.field.scale_y = self.game.dimensions[1] / self.field.image.height
+        self.field = pyglet.image.load(os.path.join(TILES_DIR, 'field.png')).get_texture()
+        #self.field.scale_x = self.game.dimensions[0] / self.field.image.width
+        #self.field.scale_y = self.game.dimensions[1] / self.field.image.height
 
         self.light = sprite.Sprite(pyglet.image.load(os.path.join(TILES_DIR, 'light.png')).get_texture())
         self.light.scale_x = self.light.scale_y = (200.0 / self.light.image.height)
@@ -129,7 +129,7 @@ class Graphics(object):
             self.draw_screen_objects()
 
         if self.game.options['VOF'] and self.game.GameState != CUTSCENE:
-            self.surface.blit(self.field, (0, 0))
+            self.field.blit(0, 0, width=self.game.dimensions[0], height=self.game.dimensions[1])
 
     def draw_map(self):
         m = self.game.map
