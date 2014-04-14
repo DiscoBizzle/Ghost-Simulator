@@ -24,7 +24,7 @@ def test():
     screen.blit(char.info_sheet, (0, 0))
     screen.blit(char.sprite, (char.info_sheet.get_width() + 10, 0))
     pygame.display.update()
-    print char.fears
+    print(char.fears)
     raw_input()
     pygame.quit()
 
@@ -59,7 +59,7 @@ def load_stats(fname):
             else:
                 fears.append(l.strip().decode('utf-8'))
 
-    print fears
+    print(fears)
     return age, bio, fears
 
 

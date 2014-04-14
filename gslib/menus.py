@@ -91,7 +91,7 @@ class Menu(object):
         # self.buttons_per_column = int(((self.game_class.dimensions[1] - self.vert_offset) / (self.button_size[1]+20))) #- 1
         self.arrange_buttons()
         self.font_size = int(self.base_font_size * value * self.frac)
-        self.buttons['menu_scale_display'].text = u"Menu scale: " + unicode(str(round(self.button_size[0]/self.original_button_size[0],2)))
+        self.buttons['menu_scale_display'].text = u"Menu scale: {}".format(round(self.button_size[0] / self.original_button_size[0], 2))
 
 
 class MainMenu(Menu):
@@ -135,10 +135,10 @@ class OptionsMenu(Menu):
                                             text_states=[u'Torch: No', u'Torch: Yes'], border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
         self.buttons['sound_display'] = button.Button(self, None , order = (3, 0), visible=True,
-                                            text=u'Sound Volume: '+unicode(str(int(INITIAL_SOUND_VOLUME/0.003))), border_colour=(120, 50, 80), border_width=3,
+                                            text=u'Sound Volume: {}'.format(int(INITIAL_SOUND_VOLUME/0.003)), border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
         self.buttons['music_display'] = button.Button(self, None, order = (4, 0), visible=True,
-                                            text=u'Music Volume: '+unicode(str(int(INITIAL_MUSIC_VOLUME/0.003))), border_colour=(120, 50, 80), border_width=3,
+                                            text=u'Music Volume: {}'.format(int(INITIAL_MUSIC_VOLUME/0.003)), border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
 
         self.sliders['sound'] = slider.Slider(self, self.set_sound, range=(0.0, 2.0), order = (3, 1), value = game_class.sound_handler.sound_volume)
@@ -186,11 +186,11 @@ class OptionsMenu(Menu):
 
     def set_sound(self, value):
         self.game_class.sound_handler.sound_volume = value
-        self.buttons['sound_display'].text = u'Sound Volume: ' + unicode(str(int(value/0.003)))
+        self.buttons['sound_display'].text = u'Sound Volume: {}'.format(int(value / 0.003))
 
     def set_music(self, value):
         self.game_class.sound_handler.music_volume = value
-        self.buttons['music_display'].text = u'Music Volume: ' + unicode(str(int(value/0.003)))
+        self.buttons['music_display'].text = u'Music Volume: {}'.format(int(value / 0.003))
 
     def update_button_text_and_slider_values(self):
         self.buttons['FOV'].text_states_toggle = self.game_class.options['FOV']
@@ -198,8 +198,8 @@ class OptionsMenu(Menu):
         self.buttons['torch'].text_states_toggle = self.game_class.options['torch']
         self.buttons['menu_scale'].text_states_toggle = self.game_class.options['menu_scale']
 
-        self.buttons['sound_display'].text = u'Sound Volume: ' + unicode(str(int(self.game_class.options['sound_volume']/0.003)))
-        self.buttons['music_display'].text = u'Music Volume: ' + unicode(str(int(self.game_class.options['music_volume']/0.003)))
+        self.buttons['sound_display'].text = u'Sound Volume: {}'.format(int(self.game_class.options['sound_volume']/0.003))
+        self.buttons['music_display'].text = u'Music Volume: {}'.format(int(self.game_class.options['music_volume']/0.003))
 
         self.sliders['sound'].value = self.game_class.options['sound_volume']
         self.sliders['music'].value = self.game_class.options['music_volume']
@@ -242,7 +242,7 @@ class SkillsMenu(Menu):
 
     def learn_skill(self, skill):
         self.game_class.players['player1'].learn_skill(skill)
-        print self.game_class.players['player1'].skills_learnt
+        print(self.game_class.players['player1'].skills_learnt)
 
         for skill in self.buttons:
             if self.buttons[skill].order[0] != -1 and self.buttons[skill].order[1] == 0:
@@ -268,10 +268,10 @@ class KeyBindMenu(Menu):
 
     def create_buttons(self):
         ord = 0
-        self.buttons['load'] = button.Button(self, self.load, order=(ord, 0), visible=True, text=unicode('Load'),
+        self.buttons['load'] = button.Button(self, self.load, order=(ord, 0), visible=True, text=u'Load',
                                              border_colour=self.border_colour, border_width=3,
                                              colour=self.colour)
-        self.buttons['save'] = button.Button(self, self.save, order=(ord, 1), visible=True, text=unicode('Save'),
+        self.buttons['save'] = button.Button(self, self.save, order=(ord, 1), visible=True, text=u'Save',
                                              border_colour=self.border_colour, border_width=3,
                                              colour=self.colour)
         ord += 1

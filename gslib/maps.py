@@ -45,7 +45,7 @@ def open_map_json(map_filename):
         data = json.load(f)
         f.close()
     except IOError:
-        print "Couldn't open map file \"" + map_filename + "\"."
+        print("Couldn't open map file \"" + map_filename + "\".")
 
     return data
 
@@ -86,7 +86,7 @@ def load_objects(map_filename):
         obj_list = data['layers'][1]['objects']
     except:
         obj_list = []
-        print "Couldn't load any objects from map file \"" + map_filename + "\"."
+        print("Couldn't load any objects from map file \"" + map_filename + "\".")
     return obj_list
 
 
@@ -121,7 +121,7 @@ class Map(object):
         self.grid = [[Tile(tile_type_grid, coll_grid, self, (i, j)) for j in range(len(tile_type_grid[0]))] for i in range(len(tile_type_grid))]
 
         loaded_objects = load_objects(map_file) # gives a list of dicts, each dict associated with an object from the map
-        
+
         self.objects = {}
 
         for i in range(3):
@@ -158,7 +158,7 @@ class Map(object):
             try:
                 self.objects[d['reference']] = character.Character(game_class, d['x'], d['y'], d['sprite_w'], d['sprite_h'], character.gen_character(), sprite_sheet=d['sprite_sheet'])
             except:
-                print "Couldn't create an object from map file"
+                print("Couldn't create an object from map file")
 
 
 

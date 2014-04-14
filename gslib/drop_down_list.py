@@ -51,7 +51,7 @@ class DropDownList(object):
         self._selected_name = "<None>"
         self.selected = None
         self.main_button = button.Button(self, None, pos=pos, size=size, font_size=font_size, visible=visible,
-                                         text=unicode("<None>"),
+                                         text=u"<None>",
                                          border_colour=self._border_colour, border_width=self.border_width,
                                          colour=self.colour)
         self.drop_buttons = []
@@ -81,7 +81,7 @@ class DropDownList(object):
     def refresh(self):  # call if the list changes
         self.drop_buttons = []
         self.drop_buttons.append(button.Button(self, list_func(self, None), size=self.size, font_size=self.font_size,
-                                               visible=False, enabled=False, text=unicode("<None>"),
+                                               visible=False, enabled=False, text=u"<None>",
                                                border_colour=self._border_colour, border_width=self.border_width,
                                                colour=self.colour))
 

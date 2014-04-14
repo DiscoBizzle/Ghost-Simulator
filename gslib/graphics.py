@@ -198,8 +198,7 @@ class Graphics(object):
                 self.game.screen_objects_to_draw.append(b.text_sprite)
 
     def draw_objects(self):
-        sort_objs = self.game.objects.values()
-        sort_objs.sort((lambda x, y: cmp(-x.coord[1], -y.coord[1])))
+        sort_objs = sorted(self.game.objects.values(), key=(lambda obj: -obj.coord[1]))
 
         for o in sort_objs:  # self.game.objects:
             if isinstance(o, player.Player): #o == self.game.player1:
@@ -308,7 +307,7 @@ class Graphics(object):
             #pygame.display.update()
         else:
             try:
-                print "3"
+                print("3")
                 #f = BytesIO(open(self.game.cutscene_next, "rb").read())
                 video_source = pyglet.media.load(self.game.cutscene_next)
                 self.movie_player = pyglet.media.Player()
@@ -318,7 +317,7 @@ class Graphics(object):
                 self.movie_player.play()
                 self.game.cutscene_started = True
             except IOError:
-                print u"Video not found: " + self.game.cutscene_next
+                print(u"Video not found: " + self.game.cutscene_next)
                 self.game.set_state(MAIN_MENU)
 
     def draw_torch(self):
