@@ -114,7 +114,7 @@ class Tile(object):
 class Map(object):
     def __init__(self, tileset, map_file, game_class):
         # Note: We need the PIL decoder for this to be anything like fast. (GDI+ etc import bitmaps upside-down...)
-        self.tileset = pyglet.image.load(tileset)
+        self.tileset = pyglet.image.load(tileset).get_texture().get_image_data()
         self.tileset_cols = self.tileset.width / TILE_SIZE
 
         tile_type_grid, coll_grid = load_map(map_file)
