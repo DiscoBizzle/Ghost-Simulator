@@ -16,8 +16,8 @@ class SmallDoor(Character):
         self.max_frames = 0
         self.sprite_height = 32
         self.sprite_width = 32
-        self.states = {0: {'animation_state': 2, 'collision_weight': 0},
-                       1: {'animation_state': 0, 'collision_weight': 100}}
+        self.states = {0: {'animation_state': 0, 'collision_weight': 0},
+                       1: {'animation_state': 2, 'collision_weight': 100}}
         self.state_index = 1  # make sure you set this after the states are defined, so the properties get updated
 
         self.possessed_function = fear_functions.flip_state(self)

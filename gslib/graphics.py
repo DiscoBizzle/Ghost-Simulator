@@ -178,6 +178,7 @@ class Graphics(object):
                 if o.possessing:
                     continue
 
+            vo = o.sprite_sheet.height
             texture = o.sprite_sheet.get_region(o.frame_rect.x, o.frame_rect.y, o.sprite_width, o.sprite_height)
             object_sprite = sprite.Sprite(texture)
             x = o.coord[0]

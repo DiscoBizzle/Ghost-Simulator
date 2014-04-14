@@ -283,9 +283,9 @@ class GameObject(object):
             if self.animation_state == ANIM_LEFTWALK:
                 self.animation_state = ANIM_LEFTIDLE
         else:
-            if self.velocity[1] > 0:
+            if self.velocity[1] < 0:
                 self.animation_state = ANIM_DOWNWALK
-            elif self.velocity[1] < 0:
+            elif self.velocity[1] > 0:
                 self.animation_state = ANIM_UPWALK
 
             if self.velocity[0] > 0:
