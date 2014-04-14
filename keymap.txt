@@ -4,13 +4,14 @@ Player 1 down;115
 Player 1 harvest fear;122
 Player 1 left;97
 Player 1 possess;102
-Player 2 right;275
-Player 2 up;273
-Player 2 down;274
+Player 2 right;65363
+Player 2 up;65362
+Player 2 down;65364
 Player 2 harvest fear;120
-Player 2 left;276
+Player 2 left;65361
 Player 2 possess;103
 #
+Toggle Editor;98
 Show Fears;101
 Skill Screen;113
 Show Fear Ranges;114

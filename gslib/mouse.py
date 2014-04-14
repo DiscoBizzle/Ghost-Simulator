@@ -49,14 +49,14 @@ class MouseController(object):
         elif self.game.GameState == OPTIONS_MENU:
             self.game.options_menu.mouse_event(pos, 'move')
 
-    def calc_cursor_coord(self, event):
+    def calc_cursor_coord(self, pos, typ, button=None):
         if self.game.key_controller.keys[self.game.key_controller.key_map['Snap to Grid']]:
-            grid_x = (event.pos[0] + self.game.camera_coords[0]) / TILE_SIZE
-            grid_y = (event.pos[1] + self.game.camera_coords[1]) / TILE_SIZE
+            grid_x = (pos[0] + self.game.camera_coords[0]) / TILE_SIZE
+            grid_y = (pos[1] + self.game.camera_coords[1]) / TILE_SIZE
             self.game.cursor.coord = (grid_x * TILE_SIZE, grid_y * TILE_SIZE)
 
         else:
-            self.game.cursor.coord = (event.pos[0] + self.game.camera_coords[0], event.pos[1] + self.game.camera_coords[1])
+            self.game.cursor.coord = (pos[0] + self.game.camera_coords[0], pos[1] + self.game.camera_coords[1])
 
     def check_object_click(self, pos, typ, button=None):
         if pos[0] > LEVEL_WIDTH or pos[1] > LEVEL_HEIGHT:  # don't check for object outside of level area
@@ -92,11 +92,13 @@ class MouseController(object):
     #     else:
     #         l.append(o)
 
-    def editor_click(self, event):
-        if event.pos[0] > self.game.dimensions[0] - self.game.camera_padding[1] or \
-           event.pos[0] < self.game.camera_padding[0] or \
-           event.pos[1] > self.game.dimensions[1] - self.game.camera_padding[3] or \
-           event.pos[1] < self.game.camera_padding[2]:  # don't check outside of level area
+    def editor_click(self, pos, typ, button=None):
+        if typ == 'up':
+            return
+        if pos[0] > self.game.dimensions[0] - self.game.camera_padding[1] or \
+           pos[0] < self.game.camera_padding[0] or \
+           pos[1] > self.game.dimensions[1] - self.game.camera_padding[3] or \
+           pos[1] < self.game.camera_padding[2]:  # don't check outside of level area
             return
         if self.game.editor.object_prototype and self.game.cursor == self.game.editor.object_prototype:
             obj_type = type(self.game.cursor)

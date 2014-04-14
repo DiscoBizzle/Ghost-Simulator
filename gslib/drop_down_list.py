@@ -129,13 +129,13 @@ class DropDownList(object):
             for i, b in enumerate(self.drop_buttons):
                 self.surface.blit(b.surface, (0, (1 + i) * self.size[1]))
 
-    def handle_event(self, event):
+    def handle_event(self, pos, typ, button=None):
         if not self.enabled:
             return
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            return self.check_clicked(event.pos)
-        elif event.type == pygame.MOUSEMOTION and self.open:
-            self.handle_mouse_motion(event.pos)
+        if typ == 'down':
+            return self.check_clicked(pos)
+        elif typ == 'move' and self.open:
+            self.handle_mouse_motion(pos)
 
     def check_clicked(self, click_pos):  # show/hide list on click
         pos = self.pos
