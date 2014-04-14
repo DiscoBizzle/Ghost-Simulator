@@ -116,11 +116,6 @@ class Game(pyglet.window.Window):
             pygame.MOUSEBUTTONDOWN: self.mouse_controller.mouse_click,
             # pygame.MOUSEBUTTONUP: self.mouse_controller.mouse_up,
             pygame.MOUSEMOTION: self.mouse_controller.mouse_move,
-            pygame.JOYHATMOTION: self.joy_controller.handle_hat,
-            pygame.JOYBUTTONDOWN: self.joy_controller.handle_buttondown,
-            pygame.JOYBUTTONUP: self.joy_controller.handle_buttonup,
-            pygame.JOYAXISMOTION: self.joy_controller.handle_axis,
-            pygame.JOYBALLMOTION: self.joy_controller.handle_ball,
             pygame.VIDEORESIZE: self.graphics.resize_window,
         }
 
