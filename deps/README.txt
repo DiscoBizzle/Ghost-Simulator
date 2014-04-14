@@ -15,7 +15,7 @@ you MUST use our copy of pyglet, not one you already have! [1]
 
 3. now you need either PIL or Pillow. [2]
  on Windows: install PIL/PIL-1.1.7.win32-py2.7.exe (for 64bit do Pillow & deps)
- on Mac do: 'pip install Pillow'
+ on Mac do: 'sudo easy_install pip' and then 'sudo pip install Pillow'
  on Linux, apparently you probably already have Pillow installed anyway!
 
 A. Only on Linux, you should go ahead and install openal-soft from your Linux distro
