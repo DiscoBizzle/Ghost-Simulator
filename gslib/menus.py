@@ -69,14 +69,14 @@ class Menu(object):
                 continue
             button.size = self.button_size
             button.font_size = self.font_size
-            button.pos = (self.hori_offset + (button.order[1] + int(button.order[0]/self.buttons_per_column)*2)*(self.button_size[0]+20), self.vert_offset + (button.order[0]%self.buttons_per_column)*(self.button_size[1]+10))
+            button.pos = (self.hori_offset + (button.order[1] + int(button.order[0]/self.buttons_per_column)*2)*(self.button_size[0]+20), self.game_class.dimensions[1] - (self.button_size[1] + self.vert_offset + (button.order[0]%self.buttons_per_column)*(self.button_size[1]+10)))
             if button.text_states:
                 button.text = button.text_states[button.text_states_toggle]
         for slider in self.sliders.itervalues():
             if slider.order[0] == -1:
                 continue
             slider.size = self.button_size
-            slider.pos = (self.hori_offset + (slider.order[1] + int(slider.order[0]/self.buttons_per_column)*2)*(self.button_size[0]+20), self.vert_offset + (slider.order[0]%self.buttons_per_column)*(self.button_size[1]+10))
+            slider.pos = (self.hori_offset + (slider.order[1] + int(slider.order[0]/self.buttons_per_column)*2)*(self.button_size[0]+20), self.game_class.dimensions[1] - (self.button_size[1] + self.vert_offset + (slider.order[0]%self.buttons_per_column)*(self.button_size[1]+10)))
 
         # if self.first_time:
         #     self.first_time = False
