@@ -520,10 +520,12 @@ class AVbinSource(StreamingSource):
             if _debug:
                 print 'No video packets...'
             # Read ahead until we have another video packet
-            self._get_packet()
+            if not self._get_packet():
+                return False
             packet_type, _ = self._process_packet()
             while packet_type and packet_type != 'video':
-                self._get_packet()
+                if not self._get_packet():
+                    return False
                 packet_type, _ = self._process_packet()
             if not packet_type:
                 return False
@@ -540,6 +542,8 @@ class AVbinSource(StreamingSource):
             if _debug:
                 print 'Next video timestamp is', self._video_packets[0].timestamp
             return self._video_packets[0].timestamp
+        else:
+            return None
 
     def get_next_video_frame(self):
         if not self.video_format:
@@ -559,6 +563,8 @@ class AVbinSource(StreamingSource):
             if _debug:
                 print 'Returning', packet
             return packet.image
+        else:
+            return None
 
 av.avbin_init()
 if pyglet.options['debug_media']:

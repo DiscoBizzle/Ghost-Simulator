@@ -1142,6 +1142,8 @@ class Player(pyglet.event.EventDispatcher):
 
         if ts is None:
             self._last_video_timestamp = None
+            pyglet.clock.unschedule(self.update_texture)
+            self._set_playing(False)
             return
 
         image = self._groups[0].get_next_video_frame()
