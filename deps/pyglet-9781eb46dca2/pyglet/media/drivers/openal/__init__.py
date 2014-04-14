@@ -204,9 +204,10 @@ class OpenALBufferPool(object):
         """A buffer has finished playing, free it."""
         assert context._lock.locked()
         sourceBuffs = self._sources[alSource.value]
-        if buffer in sourceBuffs:
-            sourceBuffs.remove(buffer)
-            self._buffers.append(buffer)
+        if buffer in map(lambda x: x.value, sourceBuffs):
+            #sourceBuffs.remove(buffer)
+            self._sources[alSource.value] = [b for b in sourceBuffs if b.value != buffer]
+            self._buffers.append(al.ALuint(buffer))
         elif _debug_buffers:
             # This seems to be the problem with Mac OS X - The buffers are
             # dequeued, but they're not _actually_ buffers.  In other words,
