@@ -4,7 +4,7 @@ import pyglet
 from gslib import button
 from gslib import slider
 from gslib.constants import *
-
+import text
 
 class Menu(object):
     def __init__(self, game_class, button_size):
@@ -111,6 +111,16 @@ class MainMenu(Menu):
                                              colour=(120, 0, 0))
 
         Menu.arrange_buttons(self)
+
+        self.todo_sprites = []
+        for i, t in enumerate(self.game_class.TODO):
+            self.todo_sprites.append(text.new(text=t, font_size=10))
+            self.todo_sprites[-1].x, self.todo_sprites[-1].y = (400, self.game_class.dimensions[1] - 50 - i * 30)
+
+    def display(self):
+        Menu.display(self)
+        for s in self.todo_sprites:
+            s.draw()
 
     def go_to_main_game(self):
         self.game_class.GameState = MAIN_GAME

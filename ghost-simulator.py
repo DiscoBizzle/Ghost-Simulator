@@ -27,7 +27,7 @@ def main():
             w.flip()
         #print(str(time.clock() - lasttime) + "seconds passed")
         if accumulator > 1.0:
-            print(str(lframes) + " FPS")
+            # print(str(lframes) + " FPS")
             lframes = 0
             accumulator = 0.0
         pyglet.clock.tick(False)

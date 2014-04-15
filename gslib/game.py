@@ -50,6 +50,25 @@ class Game(pyglet.window.Window):
     def __init__(self):
         super(Game, self).__init__(width=GAME_WIDTH, height=GAME_HEIGHT)
 
+        TODO = []
+        TODO.append("character pathe-ing")
+        TODO.append("triggers/functions to handle move-to-position (after pathing)")
+        TODO.append("click-to-edit text box - perhaps attached as a button function")
+        TODO.append("then add character renaming/re-aging to map_edit (and able to edit speed by clicking the value")
+        TODO.append("game_object.py set_colorkey pyglet port (use rgba spritesheet or write code to do magic)")
+        TODO.append("create own Rect class for complete removal of pygame")
+        TODO.append("implement pyglet camera")
+        TODO.append("implement field of view slider (after pyglet camera implemented)")
+        TODO.append("keybind menu in alphabetical order")
+        TODO.append("add sound/music volume to options saving")
+        TODO.append("credits screen port to pyglet")
+        TODO.append("design more sprites and make default characters (in character_objects)")
+        TODO.append("add foreground layer to maps - then make characters appear *through* the foreground")
+        TODO.append("add character save/load on a per-map basis")
+        TODO.append("add more TODO's in __init__ of Game")
+
+        self.TODO = TODO
+
         pyglet.clock.set_fps_limit(None)
 
         # enable alpha-blending
