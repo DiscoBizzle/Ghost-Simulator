@@ -83,7 +83,6 @@ def gen_character(stats=None):
     stats.setdefault('gender', random.choice(('m', 'f')))
     stats.setdefault('name', gen_name(stats['gender']))
     stats.setdefault('image_name', os.path.join(CHARACTER_DIR, 'Sprite_front.png'))
-
     return stats
 
 
@@ -102,8 +101,12 @@ def gen_bio():
 
 
 def gen_fears():
-    return choose_n_lines(random.randrange(1, 4), os.path.join(CHARACTER_DIR, "fear_description.txt"))
-
+    f = choose_n_lines(random.randrange(1, 4), os.path.join(CHARACTER_DIR, "fear_description.txt"))
+    fears = []
+    for i in f:
+        name = i[:i.find(':')]
+        fears.append(name)
+    return fears
 
 def gen_name(gender):
     fname = os.path.join(CHARACTER_DIR, "first_names_{}.txt".format(gender))
@@ -134,7 +137,7 @@ class Character(GameObject):
         if stats:
             self.fears = stats['fears']
             self.scared_of = stats['scared_of']
-            self.scared_of.append('player')
+            self.scared_of.append(u'player')
         else:
             self.fears = []
             self.scared_of = []

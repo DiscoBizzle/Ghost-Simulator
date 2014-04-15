@@ -46,6 +46,7 @@ class Graphics(object):
         #self.surface = pygame.display.set_mode(self.game.dimensions, pygame.RESIZABLE)
 
         self.field = sprite.Sprite(pyglet.image.load(os.path.join(TILES_DIR, 'field.png')).get_texture())
+        self.field.opacity = 128
         #self.field.scale_x = self.game.dimensions[0] / self.field.image.width
         #self.field.scale_y = self.game.dimensions[1] / self.field.image.height
 
@@ -129,7 +130,7 @@ class Graphics(object):
             self.draw_screen_objects()
 
         if self.game.options['VOF'] and self.game.GameState != CUTSCENE:
-            self.field.opacity = 128
+            # self.field.opacity = 128
             self.field.draw()
 
     def draw_map(self):
@@ -200,7 +201,6 @@ class Graphics(object):
 
     def draw_objects(self):
         sort_objs = sorted(self.game.objects.values(), key=(lambda obj: -obj.coord[1]))
-
         for o in sort_objs:  # self.game.objects:
             if isinstance(o, player.Player): #o == self.game.player1:
                 if o.possessing:
@@ -292,8 +292,8 @@ class Graphics(object):
                 self.game.cutscene_started = False
             else:
                 self.movie_player.get_texture().blit(0, 0, width=self.game.dimensions[0], height=self.game.dimensions[1])
-                print self.game.dimensions[0]
-                print self.game.dimensions[1]
+                # print self.game.dimensions[0]
+                # print self.game.dimensions[1]
         else:
             try:
                 video_source = pyglet.media.load(self.game.cutscene_next)

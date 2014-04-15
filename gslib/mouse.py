@@ -59,42 +59,48 @@ class MouseController(object):
             self.game.cursor.coord = (pos[0] + self.game.camera_coords[0], pos[1] + self.game.camera_coords[1])
 
     def check_object_click(self, pos, typ, button=None):
-        if pos[0] > LEVEL_WIDTH or pos[1] > LEVEL_HEIGHT:  # don't check for object outside of level area
-            return
-        for o in self.game.objects.itervalues():
-            if o == self.game.cursor:
-                continue
-            st = SELECTION_TOLERANCE
-            temp_rect = pygame.Rect((o.coord[0] - st, o.coord[1] - st), (o.dimensions[0] + 2*st, o.dimensions[1] + 2*st))
-            if temp_rect.collidepoint((pos[0]+self.game.camera_coords[0], pos[1]+self.game.camera_coords[1])) and isinstance(o, character.Character):
-
-                if self.game.new_trigger_capture and typ == 'down':
-                    self.game.editor.update_new_trigger(o)
-                elif typ == 'down':
-                    self.game.disp_object_stats = True
-                    self.game.object_stats = o.info_sheet
-                    self.game.selected_object = o
-
-                self.interaction_this_click = True
+        if typ == 'down':
+            if pos[0] > LEVEL_WIDTH or pos[1] > LEVEL_HEIGHT:  # don't check for object outside of level area
                 return
-        self.game.selected_object = None
-        self.game.disp_object_stats = False
-        self.game.object_stats = None
+            for o in self.game.objects.itervalues():
+                if o == self.game.cursor:
+                    continue
+                st = SELECTION_TOLERANCE
+                temp_rect = pygame.Rect((o.coord[0] - st, o.coord[1] - st), (o.dimensions[0] + 2*st, o.dimensions[1] + 2*st))
+                if temp_rect.collidepoint((pos[0]+self.game.camera_coords[0], pos[1]+self.game.camera_coords[1])) and isinstance(o, character.Character):
+
+                    if self.game.new_trigger_capture:
+                        self.game.editor.update_new_trigger(o)
+                    else:
+                        self.game.disp_object_stats = True
+                        self.game.object_stats = o.info_sheet
+                        self.game.selected_object = o
+                        if self.game.editor_active:
+                            self.game.editor.object_to_edit_selected(o)
+
+                    self.interaction_this_click = True
+                    return
+            self.game.selected_object = None
+            self.game.disp_object_stats = False
+            self.game.object_stats = None
+            self.game.editor.object_to_edit_selected(None)
 
     def check_button_click(self, pos, typ, button=None):
         if typ == 'up':
             return
         for button in self.game.buttons.itervalues():
-            self.interaction_this_click = button.check_clicked(pos)
+            if button.check_clicked(pos):
+                self.interaction_this_click = True
 
     def editor_click(self, pos, typ, button=None):
-        if typ == 'up':
+        if typ == 'up':  # only detect mouse down
             return
         if pos[0] > self.game.dimensions[0] - self.game.camera_padding[1] or \
            pos[0] < self.game.camera_padding[0] or \
            pos[1] > self.game.dimensions[1] - self.game.camera_padding[3] or \
            pos[1] < self.game.camera_padding[2]:  # don't check outside of level area
             return
+        # if cursor exists, and is an object prototype, create new object
         if self.game.editor.object_prototype and self.game.cursor == self.game.editor.object_prototype:
             obj_type = type(self.game.cursor)
             pos = self.game.cursor.coord

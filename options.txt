@@ -1,4 +1,4 @@
 FOV;True~<type 'bool'>
 torch;False~<type 'bool'>
 menu_scale;False~<type 'bool'>
-VOF;False~<type 'bool'>
+VOF;True~<type 'bool'>

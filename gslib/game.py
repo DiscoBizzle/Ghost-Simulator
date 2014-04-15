@@ -63,7 +63,7 @@ class Game(pyglet.window.Window):
         self.GameState = MAIN_MENU
         #self.GameState = MAIN_GAME
         self.cutscene_started = False
-        self.cutscene_next = os.path.join(VIDEO_DIR, "default_sound.mpg")
+        self.cutscene_next = os.path.join(VIDEO_DIR, "default.mpg")
         self.game_running = True
         self.graphics = graphics.Graphics(self)
         self.set_caption("Ghost Simulator v. 0.000000001a")
@@ -109,15 +109,15 @@ class Game(pyglet.window.Window):
 
         self.joy_controller = joy.JoyController(self)
 
-        self.event_map = {
-            pygame.KEYDOWN: self.key_controller.handle_keys,
-            pygame.KEYUP: self.key_controller.handle_keys,
-            pygame.QUIT: (lambda _: self.quit_game()),
-            pygame.MOUSEBUTTONDOWN: self.mouse_controller.mouse_click,
-            # pygame.MOUSEBUTTONUP: self.mouse_controller.mouse_up,
-            pygame.MOUSEMOTION: self.mouse_controller.mouse_move,
-            pygame.VIDEORESIZE: self.graphics.resize_window,
-        }
+        # self.event_map = {
+        #     pygame.KEYDOWN: self.key_controller.handle_keys,
+        #     pygame.KEYUP: self.key_controller.handle_keys,
+        #     pygame.QUIT: (lambda _: self.quit_game()),
+        #     # pygame.MOUSEBUTTONDOWN: self.mouse_controller.mouse_click,
+        #     # pygame.MOUSEBUTTONUP: self.mouse_controller.mouse_up,
+        #     # pygame.MOUSEMOTION: self.mouse_controller.mouse_move,
+        #     pygame.VIDEORESIZE: self.graphics.resize_window,
+        # }
 
         #sound.start_next_music(self.music_list)
 
@@ -200,7 +200,7 @@ class Game(pyglet.window.Window):
                 self.graphics.main_game_draw()
 
             self.fps_clock.draw()
-            
+
     def gather_buttons_and_drop_lists_and_objects(self):
         self.buttons = dict(self.game_buttons.items())
         self.drop_lists = dict(self.game_drop_lists.items())
@@ -356,5 +356,5 @@ class Game(pyglet.window.Window):
         f.close()
 
         self.options_menu.update_button_text_and_slider_values()
-        self.options_menu.set_sound(self.options['sound_volume'])
-        self.options_menu.set_music(self.options['music_volume'])
+        # self.options_menu.set_sound(self.options['sound_volume'])
+        # self.options_menu.set_music(self.options['music_volume'])

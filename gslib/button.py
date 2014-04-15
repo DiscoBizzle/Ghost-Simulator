@@ -136,6 +136,7 @@ class Button(object):
             if self.enabled:
                 self.perf_function()
                 return True
+        return False
 
     def perf_function(self):
         if self.function is not None:

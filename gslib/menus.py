@@ -131,6 +131,8 @@ class OptionsMenu(Menu):
         self.buttons['VOF'] = button.Button(self, self.VOF_toggle, order = (1, 0), visible=True,
                                             text_states=[u'View of Field: No', u'View of Field: Yes'], border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
+        self.sliders['VOF'] = slider.Slider(self, self.VOF_value, range=(0, 255), order = (1, 1), value=128, visible=False)
+
         self.buttons['torch'] = button.Button(self, self.torch_toggle, order = (2, 0), visible=True,
                                             text_states=[u'Torch: No', u'Torch: Yes'], border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
@@ -169,8 +171,12 @@ class OptionsMenu(Menu):
         self.buttons['FOV'].text_states_toggle = not self.buttons['FOV'].text_states_toggle
 
     def VOF_toggle(self):
+        self.sliders['VOF'].visible = not self.sliders['VOF'].visible
         self.game_class.options['VOF'] = not self.game_class.options['VOF']
         self.buttons['VOF'].text_states_toggle = not self.buttons['VOF'].text_states_toggle
+
+    def VOF_value(self, val):
+        self.game_class.graphics.field.opacity = val
 
     def torch_toggle(self):
         self.game_class.options['torch'] = not self.game_class.options['torch']
@@ -198,11 +204,11 @@ class OptionsMenu(Menu):
         self.buttons['torch'].text_states_toggle = self.game_class.options['torch']
         self.buttons['menu_scale'].text_states_toggle = self.game_class.options['menu_scale']
 
-        self.buttons['sound_display'].text = u'Sound Volume: {}'.format(int(self.game_class.options['sound_volume']/0.003))
-        self.buttons['music_display'].text = u'Music Volume: {}'.format(int(self.game_class.options['music_volume']/0.003))
+        self.buttons['sound_display'].text = u'Sound Volume: {}'.format(int(self.game_class.sound_handler.sound_volume/0.003))
+        self.buttons['music_display'].text = u'Music Volume: {}'.format(int(self.game_class.sound_handler.music_volume/0.003))
 
-        self.sliders['sound'].value = self.game_class.options['sound_volume']
-        self.sliders['music'].value = self.game_class.options['music_volume']
+        self.sliders['sound'].value = self.game_class.sound_handler.sound_volume
+        self.sliders['music'].value = self.game_class.sound_handler.music_volume
 
     def load(self):
         self.game_class.load_options()

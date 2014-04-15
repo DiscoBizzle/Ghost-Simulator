@@ -13,6 +13,12 @@ def none():
     pass
 
 
+def set_fear_button(editor, fear):
+    def func():
+        editor.set_fear(fear)
+    return func
+
+
 class Cursor(game_object.GameObject):
     def __init__(self, game, sprite):
         game_object.GameObject.__init__(self, game, 0, 0, 0, 0, None)
@@ -47,19 +53,19 @@ class Editor(object):
         self.possible_characters = {'Small Door': character_objects.SmallDoor,
                                     'Dude': character_objects.Dude}
 
-        self.buttons['pick_object_label'] = button.DefaultButton(self, None, pos=(100, GAME_HEIGHT - 20), text="Place Object")
+        self.buttons['pick_object_label'] = button.DefaultButton(self, None, pos=(100, self.game.dimensions[1] - 20), text="Place Object")
         self.drop_lists['pick_object'] = drop_down_list.DropDownList(self, self.possible_characters,
-                                                                     self.update_object_prototype, pos=(200, GAME_HEIGHT - 20))
+                                                                     self.update_object_prototype, pos=(200, self.game.dimensions[1] - 20))
         self.object_prototype = None
 
         ###################################################################
         # View existing Trigger
         ###################################################################
 
-        self.buttons['view_triggers_label'] = button.DefaultButton(self, None, pos=(320, GAME_HEIGHT - 20), size=(120, 20),
+        self.buttons['view_triggers_label'] = button.DefaultButton(self, None, pos=(320, self.game.dimensions[1] - 20), size=(120, 20),
                                                                    text="Current Triggers")
         self.drop_lists['view_triggers'] = drop_down_list.DropDownList(self, self.game.map.triggers,
-                                                                       self.display_trigger, pos=(440, GAME_HEIGHT - 20),
+                                                                       self.display_trigger, pos=(440, self.game.dimensions[1] - 20),
                                                                        labels='classname', size=(300, 20))
         self.trigger_display_colours = ((120, 0, 0), (0, 120, 0), (0, 0, 120), (120, 120, 0), (120, 0, 120), (0, 120, 120), (120, 120, 120))
         self.trigger_display_circles = []
@@ -72,13 +78,131 @@ class Editor(object):
         self.possible_triggers = {'Flip State On Harvest': triggers.FlipStateOnHarvest,
                                   'Flip State When Touched (Conditional)': triggers.FlipStateWhenTouchedConditional,
                                   'Flip State When UnTouched (Conditional)': triggers.FlipStateWhenUnTouchedConditional}
-        self.buttons['new_trigger_label'] = button.DefaultButton(self, None, pos=(760, GAME_HEIGHT - 20), size=(100, 20),
+        self.buttons['new_trigger_label'] = button.DefaultButton(self, None, pos=(760, self.game.dimensions[1] - 20), size=(100, 20),
                                                                  text="New trigger")
         self.drop_lists['new_triggers'] = drop_down_list.DropDownList(self, self.possible_triggers,
-                                                                      self.new_trigger, pos=(860, GAME_HEIGHT - 20),
+                                                                      self.new_trigger, pos=(860, self.game.dimensions[1] - 20),
                                                                       size=(300, 20))
         # self.new_trigger_objects = []
         self.trigger_prototype = None
+
+        ###################################################################
+        # Edit object
+        ###################################################################
+        self.object_to_edit = None
+        self.show_fears_checklist = False
+        self.show_scared_of_checklist = False
+
+        self.colour = (120, 0, 0)
+        self.border_colour = (120, 50, 80)
+        self.high_colour = (0, 120, 0)
+        self.high_border_colour = (0, 200, 0)
+
+        self.possible_fears = [u'player']
+        self.get_fears_from_file()
+
+        self.create_checklist_buttons()
+        self.buttons['fears_checklist_toggle'] = button.DefaultButton(self, self.display_fears_checklist,
+                                                                      pos=(self.game.dimensions[0] - 100, self.game.dimensions[1] - 400),
+                                                                      size=(100, 20), text="Fears", visible=False, enabled=False)
+        self.buttons['scared_of_checklist_toggle'] = button.DefaultButton(self, self.display_scared_of_checklist,
+                                                                      pos=(self.game.dimensions[0] - 210, self.game.dimensions[1] - 400),
+                                                                      size=(100, 20), text="Scared Of", visible=False, enabled=False)
+        # normal speed
+        # feared speed
+        # name edit
+        # age edit
+
+    def display_fears_checklist(self):  # flip between checklists, or just show/hide one
+        self.show_fears_checklist = not self.show_fears_checklist
+        self.show_scared_of_checklist = False
+        self.toggle_button_colour(self.buttons['scared_of_checklist_toggle'], self.show_scared_of_checklist)
+        self.toggle_button_colour(self.buttons['fears_checklist_toggle'], self.show_fears_checklist)
+        self.toggle_fears_checklist()
+
+    def display_scared_of_checklist(self):  # flip between checklists, or just show/hide one
+        self.show_scared_of_checklist = not self.show_scared_of_checklist
+        self.show_fears_checklist = False
+        self.toggle_button_colour(self.buttons['scared_of_checklist_toggle'], self.show_scared_of_checklist)
+        self.toggle_button_colour(self.buttons['fears_checklist_toggle'], self.show_fears_checklist)
+        self.toggle_fears_checklist()
+
+    def toggle_fears_checklist(self):
+        for f in self.possible_fears:
+            if self.show_scared_of_checklist or self.show_fears_checklist:  # only show the checklist if either checklist is active
+                self.buttons[f].visible = True
+                self.buttons[f].enabled = True
+            else:
+                self.buttons[f].visible = False
+                self.buttons[f].enabled = False
+            if self.show_fears_checklist:  # highlight those that are in o.fears
+                if f in self.object_to_edit.fears:
+                    self.toggle_button_colour(self.buttons[f], 1)
+                else:
+                    self.toggle_button_colour(self.buttons[f], 0)
+            elif self.show_scared_of_checklist:  # highlight those that are in o.scared_of
+                if f in self.object_to_edit.scared_of:
+                    self.toggle_button_colour(self.buttons[f], 1)
+                else:
+                    self.toggle_button_colour(self.buttons[f], 0)
+
+    def toggle_button_colour(self, b, setting=None):
+        if setting is None:  # flip colour
+            if b.colour == self.colour:
+                b.colour = self.high_colour
+                b.border_colour = self.high_border_colour
+            else:
+                b.colour = self.colour
+                b.border_colour = self.border_colour
+        else:  # set to high colour if setting is not False or 0
+            if setting and b.colour != self.high_colour:  # only update colour if needed, more efficient
+                b.colour = self.high_colour
+                b.border_colour = self.high_border_colour
+            elif not setting and b.colour != self.colour:
+                b.colour = self.colour
+                b.border_colour = self.border_colour
+
+    def object_to_edit_selected(self, o):  # show object editing options when an object is selected
+        self.object_to_edit = o
+        if self.object_to_edit:
+            self.buttons['fears_checklist_toggle'].visible = True
+            self.buttons['fears_checklist_toggle'].enabled = True
+            self.buttons['scared_of_checklist_toggle'].visible = True
+            self.buttons['scared_of_checklist_toggle'].enabled = True
+        else:
+            self.buttons['fears_checklist_toggle'].visible = False
+            self.buttons['fears_checklist_toggle'].enabled = False
+            self.buttons['scared_of_checklist_toggle'].visible = False
+            self.buttons['scared_of_checklist_toggle'].enabled = False
+        self.toggle_fears_checklist()  # update on change selection
+
+    def create_checklist_buttons(self):  # puts a button for each fear into the buttons dict
+        ndown = 6
+        for i, f in enumerate(self.possible_fears):
+            pos = ((i / ndown) * 105, self.game.dimensions[1] - 200 - (i % ndown) * 25)
+            self.buttons[f] = button.DefaultButton(self, set_fear_button(self, f), pos=pos,
+                                                   size=(100, 20), text=f, visible=False, enabled=False)
+
+    def set_fear(self, fear):  # adds/removes either fears or scared_ofs on button click
+        self.toggle_button_colour(self.buttons[fear])
+        if self.show_fears_checklist:
+            if fear in self.object_to_edit.fears:
+                self.object_to_edit.fears.remove(fear)
+            else:
+                self.object_to_edit.fears.append(fear)
+
+        elif self.show_scared_of_checklist:
+            if fear in self.object_to_edit.scared_of:
+                self.object_to_edit.scared_of.remove(fear)
+            else:
+                self.object_to_edit.scared_of.append(fear)
+
+    def get_fears_from_file(self):  # load all possible fears from file, without descriptions
+        f = open(os.path.join(CHARACTER_DIR, "fear_description.txt"), 'r')
+        for l in f:
+            fear = l[:l.find(':')].decode('utf-8')
+            if not fear in self.possible_fears:
+                self.possible_fears.append(fear)
 
     def update_object_prototype(self):
         if self.drop_lists['pick_object'].selected:
