@@ -48,7 +48,7 @@ class Game(pyglet.window.Window):
     Objects will be drawn without having to add them to these lists.
     """
     def __init__(self):
-        super(Game, self).__init__(width=GAME_WIDTH, height=GAME_HEIGHT)
+        super(Game, self).__init__(width=GAME_WIDTH, height=GAME_HEIGHT, resizable=True)
 
         TODO = []
         TODO.append("character pathe-ing")
@@ -219,6 +219,10 @@ class Game(pyglet.window.Window):
                 self.graphics.main_game_draw()
 
             self.fps_clock.draw()
+
+    def on_resize(self, width, height):
+        self.dimensions = (width, height)
+        pyglet.window.Window.on_resize(self, width, height)
 
     def gather_buttons_and_drop_lists_and_objects(self):
         self.buttons = dict(self.game_buttons.items())

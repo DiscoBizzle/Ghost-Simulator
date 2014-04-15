@@ -74,15 +74,6 @@ class Graphics(object):
         self.map_texture = None
         self.tile_sprite = None
 
-
-
-    def resize_window(self, event):
-        print('TODO: graphics.resize_window() pyglet')
-        return
-        self.game.dimensions = event.size
-        self.surface = pygame.display.set_mode(event.size, pygame.RESIZABLE)
-        self.clip_area = pygame.Rect((0, 0), (self.game.dimensions[0], self.game.dimensions[1]))
-
     def draw_game_over(self):
         margin = (self.game.dimensions[0] - self.game_over_txt1_size[0]) / 2
         self.game.screen_objects_to_draw.append((self.game_over_txt1, (margin, 100)))
