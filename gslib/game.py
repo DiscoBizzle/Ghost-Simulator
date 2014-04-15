@@ -184,14 +184,11 @@ class Game(pyglet.window.Window):
 
     # pyglet event
     def on_key_press(self, symbol, modifiers):
-        self.push_handlers(self.key_controller.keys)
+        self.key_controller.keys.on_key_press(symbol, modifiers)
         self.key_controller.handle_keys(symbol, modifiers)
-        #response = self.event_map.get(event.type)
-        #if response is not None:
-        #   response(event)
 
     def on_key_release(self, symbol, modifiers):
-        self.push_handlers(self.key_controller.keys)
+        self.key_controller.keys.on_key_release(symbol, modifiers)
         self.key_controller.handle_keys(symbol, modifiers)
 
     def on_mouse_motion(self, x, y, dx, dy):
