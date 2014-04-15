@@ -151,7 +151,7 @@ class Game(pyglet.window.Window):
         self.touching = []
         self.last_touching = []
         
-        self.editor = map_edit.Editor(self, (self.dimensions[0], 0))
+        self.editor = map_edit.Editor(self)
         self.editor_active = False
         self.cursor = None
         self.new_trigger_capture = False

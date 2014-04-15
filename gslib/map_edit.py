@@ -19,24 +19,47 @@ def set_fear_button(editor, fear):
     return func
 
 
+def change_object_value(editor, which, increment):
+    func = None
+    if which == 'feared_speed':
+        def func():
+            editor.object_to_edit.feared_speed += increment
+            if editor.object_to_edit.feared_speed < 0:
+                editor.object_to_edit.feared_speed = 0
+            editor.buttons['feared_speed_value'].text = str(editor.object_to_edit.feared_speed)
+
+    elif which == 'normal_speed':
+        def func():
+            editor.object_to_edit.normal_speed += increment
+            if editor.object_to_edit.normal_speed < 0:
+                editor.object_to_edit.normal_speed = 0
+            editor.buttons['normal_speed_value'].text = str(editor.object_to_edit.normal_speed)
+
+    elif which == 'collision_weight':
+        def func():
+            editor.object_to_edit.collision_weight += increment
+            if editor.object_to_edit.collision_weight < 0:
+                editor.object_to_edit.collision_weight = 0
+            editor.buttons['collision_weight_value'].text = str(editor.object_to_edit.collision_weight)
+
+    return func
+
+
 class Cursor(game_object.GameObject):
     def __init__(self, game, sprite):
         game_object.GameObject.__init__(self, game, 0, 0, 0, 0, None)
-        # self.frame_rect = pygame.Rect((0, 0), surface.get_size())
         self.max_frames = 0
-        # self.sprite_height = surface.get_height()
-        # self.sprite_width = surface.get_width()
         self.current_speed = 0
         self.normal_speed = 0
 
         self.update = none
 
         self.sprite = sprite
-        self.isCursor = True
+        self.is_cursor = True
 
 
 class Editor(object):
-    def __init__(self, game, pos=(0, 0)):
+    def __init__(self, game):
         self.game = game
         # self.pos = pos
 
@@ -101,33 +124,85 @@ class Editor(object):
         self.possible_fears = [u'player']
         self.get_fears_from_file()
 
+        h_off = 10
+        v_off = 250
+
         self.create_checklist_buttons()
-        self.buttons['fears_checklist_toggle'] = button.DefaultButton(self, self.display_fears_checklist,
-                                                                      pos=(self.game.dimensions[0] - 100, self.game.dimensions[1] - 400),
-                                                                      size=(100, 20), text="Fears", visible=False, enabled=False)
-        self.buttons['scared_of_checklist_toggle'] = button.DefaultButton(self, self.display_scared_of_checklist,
-                                                                      pos=(self.game.dimensions[0] - 210, self.game.dimensions[1] - 400),
-                                                                      size=(100, 20), text="Scared Of", visible=False, enabled=False)
+        #fears/scared_by checklist show/hide
+        self.buttons['fears_checklist_toggle'] = button.DefaultButton(self, self.toggle_fears_checklist,
+                                                                      pos=(self.game.dimensions[0] - 100 - h_off, self.game.dimensions[1] - v_off - 70),
+                                                                      size=(100, 20), text="Fears")
+        self.buttons['scared_of_checklist_toggle'] = button.DefaultButton(self, self.toggle_scared_of_checklist,
+                                                                      pos=(self.game.dimensions[0] - 210 - h_off, self.game.dimensions[1] - v_off - 70),
+                                                                      size=(100, 20), text="Scared Of")
         # normal speed
+        self.buttons['normal_speed_label'] = button.DefaultButton(self, None,
+                                                                      pos=(self.game.dimensions[0] - 210 - h_off, self.game.dimensions[1] - v_off),
+                                                                      size=(100, 20), text="Normal Speed")
+        self.buttons['normal_speed_increment'] = button.DefaultButton(self, change_object_value(self, 'normal_speed', 1),
+                                                                      pos=(self.game.dimensions[0] - 140 - h_off, self.game.dimensions[1] - v_off - 35),
+                                                                      size=(30, 30), text="+")
+        self.buttons['normal_speed_decrement'] = button.DefaultButton(self, change_object_value(self, 'normal_speed', -1),
+                                                                      pos=(self.game.dimensions[0] - 210 - h_off, self.game.dimensions[1] - v_off - 35),
+                                                                      size=(30, 30), text="-")
+        self.buttons['normal_speed_value'] = button.DefaultButton(self, None,
+                                                                      pos=(self.game.dimensions[0] - 175 - h_off, self.game.dimensions[1] - v_off - 35),
+                                                                      size=(30, 30), text="0")
+
         # feared speed
+        self.buttons['feared_speed_label'] = button.DefaultButton(self, None,
+                                                                      pos=(self.game.dimensions[0] - 100 - h_off, self.game.dimensions[1] - v_off),
+                                                                      size=(100, 20), text="Feared Speed")
+        self.buttons['feared_speed_increment'] = button.DefaultButton(self, change_object_value(self, 'feared_speed', 1),
+                                                                      pos=(self.game.dimensions[0] - 30 - h_off, self.game.dimensions[1] - v_off - 35),
+                                                                      size=(30, 30), text="+")
+        self.buttons['feared_speed_decrement'] = button.DefaultButton(self, change_object_value(self, 'feared_speed', -1),
+                                                                      pos=(self.game.dimensions[0] - 100 - h_off, self.game.dimensions[1] - v_off - 35),
+                                                                      size=(30, 30), text="-")
+        self.buttons['feared_speed_value'] = button.DefaultButton(self, None,
+                                                                      pos=(self.game.dimensions[0] - 65 - h_off, self.game.dimensions[1] - v_off - 35),
+                                                                      size=(30, 30), text="0")
+
+        # collision weight
+        self.buttons['collision_weight_label'] = button.DefaultButton(self, None,
+                                                                      pos=(self.game.dimensions[0] - 320 - h_off, self.game.dimensions[1] - v_off),
+                                                                      size=(100, 20), text="Collision Weight")
+        self.buttons['collision_weight_increment'] = button.DefaultButton(self, change_object_value(self, 'collision_weight', 1),
+                                                                      pos=(self.game.dimensions[0] - 250 - h_off, self.game.dimensions[1] - v_off - 35),
+                                                                      size=(30, 30), text="+")
+        self.buttons['collision_weight_decrement'] = button.DefaultButton(self, change_object_value(self, 'collision_weight', -1),
+                                                                      pos=(self.game.dimensions[0] - 320 - h_off, self.game.dimensions[1] - v_off - 35),
+                                                                      size=(30, 30), text="-")
+        self.buttons['collision_weight_value'] = button.DefaultButton(self, None,
+                                                                      pos=(self.game.dimensions[0] - 285 - h_off, self.game.dimensions[1] - v_off - 35),
+                                                                      size=(30, 30), text="0")
+
         # name edit
         # age edit
 
-    def display_fears_checklist(self):  # flip between checklists, or just show/hide one
+        self.object_edit_buttons = ['fears_checklist_toggle', 'scared_of_checklist_toggle',
+                                    'normal_speed_label', 'normal_speed_increment', 'normal_speed_decrement', 'normal_speed_value',
+                                    'feared_speed_label', 'feared_speed_increment', 'feared_speed_decrement', 'feared_speed_value',
+                                    'collision_weight_label', 'collision_weight_increment', 'collision_weight_decrement', 'collision_weight_value']
+        for v in self.object_edit_buttons:
+            self.buttons[v].visible = False
+            self.buttons[v].enabled = False
+
+    def toggle_fears_checklist(self):  # flip between checklists, or just show/hide one
         self.show_fears_checklist = not self.show_fears_checklist
         self.show_scared_of_checklist = False
         self.toggle_button_colour(self.buttons['scared_of_checklist_toggle'], self.show_scared_of_checklist)
         self.toggle_button_colour(self.buttons['fears_checklist_toggle'], self.show_fears_checklist)
-        self.toggle_fears_checklist()
+        self.display_fears_checklist()
 
-    def display_scared_of_checklist(self):  # flip between checklists, or just show/hide one
+    def toggle_scared_of_checklist(self):  # flip between checklists, or just show/hide one
         self.show_scared_of_checklist = not self.show_scared_of_checklist
         self.show_fears_checklist = False
         self.toggle_button_colour(self.buttons['scared_of_checklist_toggle'], self.show_scared_of_checklist)
         self.toggle_button_colour(self.buttons['fears_checklist_toggle'], self.show_fears_checklist)
-        self.toggle_fears_checklist()
+        self.display_fears_checklist()
 
-    def toggle_fears_checklist(self):
+    def display_fears_checklist(self):
         for f in self.possible_fears:
             if self.show_scared_of_checklist or self.show_fears_checklist:  # only show the checklist if either checklist is active
                 self.buttons[f].visible = True
@@ -165,16 +240,21 @@ class Editor(object):
     def object_to_edit_selected(self, o):  # show object editing options when an object is selected
         self.object_to_edit = o
         if self.object_to_edit:
-            self.buttons['fears_checklist_toggle'].visible = True
-            self.buttons['fears_checklist_toggle'].enabled = True
-            self.buttons['scared_of_checklist_toggle'].visible = True
-            self.buttons['scared_of_checklist_toggle'].enabled = True
+            self.buttons['feared_speed_value'].text = str(self.object_to_edit.feared_speed)
+            self.buttons['normal_speed_value'].text = str(self.object_to_edit.normal_speed)
+            self.buttons['collision_weight_value'].text = str(self.object_to_edit.collision_weight)
+            for v in self.object_edit_buttons:
+                self.buttons[v].visible = True
+                self.buttons[v].enabled = True
         else:
-            self.buttons['fears_checklist_toggle'].visible = False
-            self.buttons['fears_checklist_toggle'].enabled = False
-            self.buttons['scared_of_checklist_toggle'].visible = False
-            self.buttons['scared_of_checklist_toggle'].enabled = False
-        self.toggle_fears_checklist()  # update on change selection
+            self.show_fears_checklist = False
+            self.show_scared_of_checklist = False
+            self.toggle_button_colour(self.buttons['scared_of_checklist_toggle'], 0)
+            self.toggle_button_colour(self.buttons['fears_checklist_toggle'], 0)
+            for v in self.object_edit_buttons:
+                self.buttons[v].visible = False
+                self.buttons[v].enabled = False
+        self.display_fears_checklist()  # update on change selection
 
     def create_checklist_buttons(self):  # puts a button for each fear into the buttons dict
         ndown = 6

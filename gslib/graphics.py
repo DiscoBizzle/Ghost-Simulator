@@ -206,7 +206,7 @@ class Graphics(object):
                 if o.possessing:
                     continue
 
-            if hasattr(o, 'isCursor'):
+            if hasattr(o, 'is_cursor'):
                 object_sprite = o.sprite
             else:
                 texture = o.sprite_sheet.get_region(o.frame_rect.x, o.frame_rect.y, o.sprite_width, o.sprite_height)
@@ -233,11 +233,11 @@ class Graphics(object):
         if self.game.disp_object_stats:
             border = 4
             o = self.game.object_stats  # background, image, name, age
-            o[1].x = GAME_WIDTH - o[1].width - o[2].content_width - border
-            o[1].y = GAME_HEIGHT - o[1].height - border
+            o[1].x = self.game.dimensions[0] - o[1].width - o[2].content_width - border
+            o[1].y = self.game.dimensions[1] - o[1].height - border
             o[0].x, o[0].y = o[1].x - border, o[1].y - border
             o[2].x = o[1].x + o[1].width
-            o[2].y = GAME_HEIGHT - o[2].content_height
+            o[2].y = self.game.dimensions[1] - o[2].content_height
             o[3].x = o[2].x
             o[3].y = o[2].y - o[2].content_height
             self.game.screen_objects_to_draw += o  # self.game.object_stats

@@ -42,7 +42,7 @@ class GameObject(object):
         self.min_speed = 0
         self.current_speed = 1
         self.normal_speed = 2
-        self.fear_speed = 0
+        self.feared_speed = 0
         self.fear_radius = 50
         self.scared_of = []
         self.fears = []

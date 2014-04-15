@@ -2,6 +2,7 @@ import gslib.fear_functions as fear_functions
 import gslib.character as character
 from gslib.character import Character
 from gslib.constants import *
+import random
 
 
 # Please make these only require game_class by default (for purposes of editor)
@@ -25,6 +26,9 @@ class SmallDoor(Character):
 
         self.possessed_function = [fear_functions.flip_state(self)]
         self.unpossessed_function = [fear_functions.flip_state(self)]
+
+        self.stats = {'image_name': os.path.join(CHARACTER_DIR, 'small_door_sheet.png'), 'name': u'Small Door', 'age': random.randint(0, 500)}
+        self.info_sheet = self.draw_info_sheet()
 
 
 class Dude(Character):

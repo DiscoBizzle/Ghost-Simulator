@@ -15,6 +15,10 @@ class MouseController(object):
             self.game.Menu.mouse_event(pos, typ, button)
         elif self.game.GameState == MAIN_GAME:
             if not self.interaction_this_click:
+                if self.game.editor_active:
+                    self.editor_click(pos, typ, button)
+
+            if not self.interaction_this_click:
                 self.check_button_click(pos, typ, button)
 
             if not self.interaction_this_click:
@@ -24,9 +28,6 @@ class MouseController(object):
                 if not self.interaction_this_click:
                     self.interaction_this_click = v.handle_event(pos, typ, button)
 
-            if not self.interaction_this_click:
-                if self.game.editor_active:
-                    self.editor_click(pos, typ, button)
 
         elif self.game.GameState == SKILLS_SCREEN:
             self.game.SkillMenu.mouse_event(pos, typ, button)
