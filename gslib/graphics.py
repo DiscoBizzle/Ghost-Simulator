@@ -152,9 +152,7 @@ class Graphics(object):
 
             for i in range(nw):
                 for j in range(nh):
-                    (a, b, k, l) = m.grid[i][j].tileset_area
-                    tile_region = m.tileset.get_region(a, m.tileset.height - b - grid_size, k, l)
-                    self.map_texture.blit_into(tile_region, i * grid_size, j * grid_size, 0)
+                    self.map_texture.blit_into(m.tileset_seq[m.grid[i][j].tileset_coord], i * grid_size, j * grid_size, 0)
 
                 ##TEMPORARY - DRAWS SOLID TILES FOR COLLISION DEBUG
                 #if not m.grid[i][j].walkable:

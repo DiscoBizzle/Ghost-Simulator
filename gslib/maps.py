@@ -91,23 +91,23 @@ def load_objects(map_filename):
 
 
 class Tile(object):
-    def __init__(self, tile_type_grid, coll_grid, map, pos):
-        tile_ref = tile_type_grid[pos[0]][pos[1]]
+    def __init__(self, tile_type_grid, coll_grid, m, (x, y)):
+        tile_ref = tile_type_grid[x][y]
         if tile_ref != -1:
-            self.tileset_coord = (tile_ref % map.tileset_cols, tile_ref / map.tileset_cols)
+            self.tileset_coord = ((m.tileset_rows - 1) - tile_ref / m.tileset_cols,
+                                  tile_ref % m.tileset_cols)
         else:
-            self.tileset_coord = (0, 0)
+            self.tileset_coord = (m.tileset_rows - 1, 0)
 
-        self.tileset_area = (self.tileset_coord[0] * TILE_SIZE, self.tileset_coord[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE)
         self.walkable = True
         self.tile_ref = tile_ref
-        self.rect = pygame.Rect((pos[0] * TILE_SIZE, pos[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE))
+        self.rect = pygame.Rect((x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE))
 
         if coll_grid:
-            if coll_grid[pos[0]][pos[1]] == 1330:
+            if coll_grid[x][y] == 1330:
                 self.walkable = False
         else:
-            if self.tile_ref in map.unwalkable:
+            if self.tile_ref in m.unwalkable:
                 self.walkable = False
 
 
@@ -116,6 +116,9 @@ class Map(object):
         # Note: We need the PIL decoder for this to be anything like fast. (GDI+ etc import bitmaps upside-down...)
         self.tileset = pyglet.image.load(tileset).get_texture().get_image_data()
         self.tileset_cols = self.tileset.width / TILE_SIZE
+        self.tileset_rows = self.tileset.height / TILE_SIZE
+
+        self.tileset_seq = pyglet.image.ImageGrid(self.tileset, self.tileset_rows, self.tileset_cols)
 
         tile_type_grid, coll_grid = load_map(map_file)
         self.grid = [[Tile(tile_type_grid, coll_grid, self, (i, j)) for j in range(len(tile_type_grid[0]))] for i in range(len(tile_type_grid))]
