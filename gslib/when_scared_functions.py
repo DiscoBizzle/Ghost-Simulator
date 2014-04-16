@@ -23,12 +23,15 @@ def panic(obj):
             obj.move_right = True
         else:
             obj.move_left = True
+
+    func.__name__ = 'panic'
     return func
 
 
 def freeze(obj):
     def func():
         obj.current_speed = 0
+    func.__name__ = 'freeze'
     return func
 
 
@@ -80,5 +83,6 @@ def run_away_straight(obj):
             obj.move_right = True
             obj.move_up = True
             return
+    func.__name__ = 'run_away_straight'
     return func
 

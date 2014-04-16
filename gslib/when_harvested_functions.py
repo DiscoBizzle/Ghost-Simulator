@@ -16,4 +16,5 @@ def red_square(obj):  # get ooga booga'd
         sprite.scale_y = 10
         sprite.color_rgb = (120, 0, 0)
         obj.flair['fear_harvested'] = (sprite, (-5, obj.dimensions[1] + 5))
+    func.__name__ = 'red_square'
     return func

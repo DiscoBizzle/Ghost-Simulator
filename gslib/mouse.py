@@ -21,13 +21,12 @@ class MouseController(object):
             if not self.interaction_this_click:
                 self.check_button_click(pos, typ, button)
 
-            if not self.interaction_this_click:
-                self.check_object_click(pos, typ, button)
-
             for k, v in self.game.drop_lists.iteritems():
                 if not self.interaction_this_click:
                     self.interaction_this_click = v.handle_event(pos, typ, button)
 
+            if not self.interaction_this_click:
+                self.check_object_click(pos, typ, button)
 
         elif self.game.GameState == SKILLS_SCREEN:
             self.game.SkillMenu.mouse_event(pos, typ, button)

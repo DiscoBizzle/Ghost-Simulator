@@ -6,6 +6,7 @@ from gslib import game_object
 from gslib import graphics
 from gslib import triggers
 from gslib import text
+from gslib import character_functions
 from gslib.constants import *
 
 
@@ -42,6 +43,18 @@ def change_object_value(editor, which, increment):
                 editor.object_to_edit.collision_weight = 0
             editor.buttons['collision_weight_value'].text = str(editor.object_to_edit.collision_weight)
 
+    return func
+
+
+def set_function(editor, module):
+    d = {'become_possessed_functions': 'possessed_function',
+         'when_scared_functions': 'feared_function',
+         'has_touched_functions': 'has_touched_function',
+         'become_unpossessed_functions': 'unpossessed_function',
+         'when_harvested_functions': 'harvested_function'}
+    def func():
+        a = getattr(editor.object_to_edit, d[module])
+        a.append(editor.drop_lists[module].selected(editor.object_to_edit))
     return func
 
 
@@ -112,6 +125,8 @@ class Editor(object):
         ###################################################################
         # Edit object
         ###################################################################
+        self.object_edit_buttons = []
+        self.object_edit_lists = []
         self.object_to_edit = None
         self.show_fears_checklist = False
         self.show_scared_of_checklist = False
@@ -179,17 +194,31 @@ class Editor(object):
 
         # name edit
         # age edit
-
+        v_ind = 0
         # function edit
+        for module, func_dict in character_functions.all_functions_dict.iteritems():
+            #display button
+            self.buttons[module] = button.DefaultButton(self, None,
+                                                        pos=(100 - v_ind * 50, self.game.dimensions[1] - 200 - v_ind * 40),
+                                                        size=(200, 20), text=module)
+            self.object_edit_buttons.append(module)
+            self.drop_lists[module] = drop_down_list.DropDownList(self, func_dict,
+                                                                  set_function(self, module), pos=(300 - v_ind * 50, self.game.dimensions[1] - 200 - v_ind * 40),
+                                                                  size=(200, 20))
+            self.object_edit_lists.append(module)
+            v_ind += 1
 
 
-        self.object_edit_buttons = ['fears_checklist_toggle', 'scared_of_checklist_toggle',
+        self.object_edit_buttons += ['fears_checklist_toggle', 'scared_of_checklist_toggle',
                                     'normal_speed_label', 'normal_speed_increment', 'normal_speed_decrement', 'normal_speed_value',
                                     'feared_speed_label', 'feared_speed_increment', 'feared_speed_decrement', 'feared_speed_value',
                                     'collision_weight_label', 'collision_weight_increment', 'collision_weight_decrement', 'collision_weight_value']
         for v in self.object_edit_buttons:
             self.buttons[v].visible = False
             self.buttons[v].enabled = False
+        for v in self.object_edit_lists:
+            self.drop_lists[v].visible = False
+            self.drop_lists[v].enabled = False
 
     def toggle_fears_checklist(self):  # flip between checklists, or just show/hide one
         self.show_fears_checklist = not self.show_fears_checklist
@@ -249,6 +278,9 @@ class Editor(object):
             for v in self.object_edit_buttons:
                 self.buttons[v].visible = True
                 self.buttons[v].enabled = True
+            for v in self.object_edit_lists:
+                self.drop_lists[v].visible = True
+                self.drop_lists[v].enabled = True
         else:
             self.show_fears_checklist = False
             self.show_scared_of_checklist = False
@@ -257,6 +289,9 @@ class Editor(object):
             for v in self.object_edit_buttons:
                 self.buttons[v].visible = False
                 self.buttons[v].enabled = False
+            for v in self.object_edit_lists:
+                self.drop_lists[v].visible = False
+                self.drop_lists[v].enabled = False
         self.display_fears_checklist()  # update on change selection
 
     def create_checklist_buttons(self):  # puts a button for each fear into the buttons dict
