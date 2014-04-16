@@ -9,7 +9,7 @@ from gslib import graphics
 from gslib import character
 from gslib import triggers
 from gslib import character_objects
-from gslib import fear_functions
+from gslib import character_functions
 from gslib.constants import *
 
 class FakeGame(object):

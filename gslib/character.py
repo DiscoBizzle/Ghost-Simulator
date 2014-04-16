@@ -4,7 +4,7 @@ import os.path
 import pygame
 import pyglet
 
-from gslib import fear_functions
+from gslib import character_functions
 from gslib.game_object import GameObject
 from gslib import graphics
 from gslib import sprite
@@ -129,9 +129,8 @@ class Character(GameObject):
         self.unpossessed_function - occurs when the character becomes unpossessed
         self.harvested_function - when the character has had its fear harvested (ooga booga'd)
 
-        Make these functions in fear_functions.py
+        Make these functions in character_functions.py
          - Function should take in any parameters and return a function.
-         - Returned function should take 0 parameters.
         """
         GameObject.__init__(self, game_class, x, y, w, h, pyglet.image.load(os.path.join(CHARACTER_DIR, sprite_sheet)).get_texture())
         if stats:
@@ -146,10 +145,10 @@ class Character(GameObject):
         # self.sprite = pygame.image.load(os.path.join(CHARACTER_DIR, 'Sprite_top.png'))
         # self.sprite = pygame.transform.scale(self.sprite, self.dimensions).convert()
         # self.sprite.set_colorkey((255, 0, 255))
-        self.feared_function = [fear_functions.freeze(self)]
-        self.possessed_function = [fear_functions.im_possessed(self)]
-        self.unpossessed_function = [fear_functions.undo_im_possessed(self)]
-        self.harvested_function = [fear_functions.red_square(self)]
+        self.feared_function = [character_functions.freeze(self)]
+        self.possessed_function = [character_functions.im_possessed(self)]
+        self.unpossessed_function = [character_functions.undo_im_possessed(self)]
+        self.harvested_function = [character_functions.red_square(self)]
         self.fainted = False
         self.feared_by_obj = None
         self.feared_from_pos = (0, 0)

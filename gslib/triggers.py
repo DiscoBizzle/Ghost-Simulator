@@ -1,4 +1,4 @@
-from gslib import fear_functions
+from gslib import character_functions
 
 
 ################################################################################
@@ -63,19 +63,19 @@ class FlipStateWhenUnTouchedConditional(Trigger):
 
 def trigger_flip_state_on_harvest(obj, target):
     def func():
-        fear_functions.flip_state(target)()
+        character_functions.flip_state(target)()
     obj.harvested_function.append(func)
 
 
 def trigger_flip_state_is_touched_by(toucher, touched, target):
     def func(o):
         if o == toucher:
-            fear_functions.flip_state(target)()
+            character_functions.flip_state(target)()
     touched.is_touched_function.append(func)
 
 
 def trigger_flip_state_is_untouched_by(untoucher, untouched, target):
     def func(o):
         if o == untoucher:
-            fear_functions.flip_state(target)()
+            character_functions.flip_state(target)()
     untouched.is_untouched_function.append(func)

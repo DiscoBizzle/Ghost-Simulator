@@ -23,7 +23,7 @@ from gslib import sound
 from gslib import text_box
 from gslib import key
 from gslib import mouse
-from gslib import fear_functions
+from gslib import character_functions
 from gslib import text
 from gslib import drop_down_list
 from gslib import map_edit
@@ -55,6 +55,7 @@ class Game(pyglet.window.Window):
         TODO.append("triggers/functions to handle move-to-position (after pathing)")
         TODO.append("click-to-edit text box - perhaps attached as a button function")
         TODO.append("then add character renaming/re-aging to map_edit (and able to edit speed by clicking the value")
+        TODO.append("add function choices to char edit")
         TODO.append("game_object.py set_colorkey pyglet port (use rgba spritesheet or write code to do magic)")
         TODO.append("create own Rect class for complete removal of pygame")
         TODO.append("implement pyglet camera")
@@ -64,7 +65,7 @@ class Game(pyglet.window.Window):
         TODO.append("credits screen port to pyglet")
         TODO.append("design more sprites and make default characters (in character_objects)")
         TODO.append("add foreground layer to maps - then make characters appear *through* the foreground")
-        TODO.append("add character save/load on a per-map basis")
+        TODO.append("add character save/load on a per-map basis (make sure triggers/funcs are preserved)")
         TODO.append("add more TODO's in __init__ of Game")
 
         self.TODO = TODO
@@ -75,6 +76,7 @@ class Game(pyglet.window.Window):
 
         self.options = {'FOV': True, 'VOF': False, 'torch': False, 'menu_scale': False}
         self.dimensions = (GAME_WIDTH, GAME_HEIGHT)
+        self.set_location(5, 30)  # aligns window to top left of screen (on windows atleast)
 
         self.Menu = menus.MainMenu(self, (161, 100))
         self.GameState = MAIN_MENU

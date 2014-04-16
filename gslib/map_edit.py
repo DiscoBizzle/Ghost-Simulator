@@ -180,6 +180,9 @@ class Editor(object):
         # name edit
         # age edit
 
+        # function edit
+
+
         self.object_edit_buttons = ['fears_checklist_toggle', 'scared_of_checklist_toggle',
                                     'normal_speed_label', 'normal_speed_increment', 'normal_speed_decrement', 'normal_speed_value',
                                     'feared_speed_label', 'feared_speed_increment', 'feared_speed_decrement', 'feared_speed_value',

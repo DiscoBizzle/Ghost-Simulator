@@ -112,15 +112,15 @@ class MainMenu(Menu):
 
         Menu.arrange_buttons(self)
 
-        self.todo_sprites = []
-        for i, t in enumerate(self.game_class.TODO):
-            self.todo_sprites.append(text.new(text=t, font_size=10))
-            self.todo_sprites[-1].x, self.todo_sprites[-1].y = (400, self.game_class.dimensions[1] - 50 - i * 30)
+        t = 'TODO:\n'
+        for l in self.game_class.TODO:
+            t += ' - ' + l + '\n'
+        self.todo_sprite = text.new(text=t, font_size=10, width=1000)
+        self.todo_sprite.x, self.todo_sprite.y = (400, 200)
 
     def display(self):
         Menu.display(self)
-        for s in self.todo_sprites:
-            s.draw()
+        self.todo_sprite.draw()
 
     def go_to_main_game(self):
         self.game_class.GameState = MAIN_GAME
@@ -172,7 +172,7 @@ class OptionsMenu(Menu):
                                             text=u'Screen Size', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0))
         self.buttons['screen_size'] = button.Button(self, self.set_screen_size, order = (8, 1), visible=True,
-                                            text_states=[u'480 x 320', u'1024 x 768', u'1600 x 900', u'1920 x 1080'],
+                                            text_states=[u'1024 x 768', u'1600 x 900', u'1920 x 1080', u'Fullscreen'],
                                             border_colour=(120, 50, 80), border_width=3, colour=(120, 0, 0))
         Menu.arrange_buttons(self)
 
@@ -230,11 +230,15 @@ class OptionsMenu(Menu):
         self.buttons['screen_size'].text_states_toggle += 1
         self.buttons['screen_size'].text_states_toggle %= len(self.buttons['screen_size'].text_states)
         new_size = self.buttons['screen_size'].text_states[self.buttons['screen_size'].text_states_toggle]
-        new_size = new_size.split(' x ')
-        new_size = (int(new_size[0]), int(new_size[1]))
-        # self.game_class.graphics.resize_window(new_size)
-        event = pygame.event.Event(pygame.VIDEORESIZE, size=new_size, w=new_size[0], h=new_size[1])
-        pygame.event.post(event)
+        if 'x' in new_size:
+            self.game_class.set_fullscreen(fullscreen=False)
+            new_size = new_size.split(' x ')
+            new_size = (int(new_size[0]), int(new_size[1]))
+            self.game_class.set_size(new_size[0], new_size[1])
+
+            self.game_class.set_location(5, 30)  # aligns window to top left of screen (on windows atleast)
+        elif new_size == u'Fullscreen':
+            self.game_class.set_fullscreen()
 
 
 class SkillsMenu(Menu):

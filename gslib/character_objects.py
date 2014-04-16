@@ -1,4 +1,4 @@
-import gslib.fear_functions as fear_functions
+import gslib.character_functions as fear_functions
 import gslib.character as character
 from gslib.character import Character
 from gslib.constants import *
