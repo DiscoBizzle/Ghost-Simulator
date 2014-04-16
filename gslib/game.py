@@ -69,8 +69,6 @@ class Game(pyglet.window.Window):
 
         self.TODO = TODO
 
-        pyglet.clock.set_fps_limit(None)
-
         # enable alpha-blending
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
@@ -182,6 +180,8 @@ class Game(pyglet.window.Window):
         self.objects = {}
         self.gather_buttons_and_drop_lists_and_objects()
 
+        pyglet.clock.schedule_interval((lambda _: self.update()), 1.0/30.0)
+
     # pyglet event
     def on_key_press(self, symbol, modifiers):
         self.key_controller.keys.on_key_press(symbol, modifiers)
@@ -212,7 +212,6 @@ class Game(pyglet.window.Window):
                 self.graphics.draw_cutscene()
             else:
                 #print "not cutscene"
-                self.update()
                 self.graphics.main_game_draw()
 
             self.fps_clock.draw()
