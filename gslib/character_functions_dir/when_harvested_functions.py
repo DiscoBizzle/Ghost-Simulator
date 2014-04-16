@@ -1,6 +1,6 @@
 __author__ = 'Martin'
 
-import graphics
+from gslib import graphics
 
 
 ################################################################################

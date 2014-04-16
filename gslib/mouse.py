@@ -21,9 +21,8 @@ class MouseController(object):
             if not self.interaction_this_click:
                 self.check_button_click(pos, typ, button)
 
-            for k, v in self.game.drop_lists.iteritems():
-                if not self.interaction_this_click:
-                    self.interaction_this_click = v.handle_event(pos, typ, button)
+            if not self.interaction_this_click:
+                self.check_list_event(pos, typ, button)
 
             if not self.interaction_this_click:
                 self.check_object_click(pos, typ, button)
@@ -85,11 +84,18 @@ class MouseController(object):
             self.game.object_stats = None
             self.game.editor.object_to_edit_selected(None)
 
-    def check_button_click(self, pos, typ, button=None):
+    def check_button_click(self, pos, typ, mouse_button=None):
         if typ == 'up':
             return
         for button in self.game.buttons.itervalues():
             if button.check_clicked(pos):
+                self.interaction_this_click = True
+
+    def check_list_event(self, pos, typ, button=None):
+        if typ == 'up':
+            return
+        for v in self.game.drop_lists.itervalues():
+            if v.handle_event(pos, typ, button):
                 self.interaction_this_click = True
 
     def editor_click(self, pos, typ, button=None):

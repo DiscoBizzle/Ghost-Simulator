@@ -8,7 +8,7 @@ import math
 ################################################################################
 def panic(obj):
     def func():
-        obj.current_speed = 10
+        obj.current_speed = obj.feared_speed
 
         obj.move_down = False
         obj.move_up = False

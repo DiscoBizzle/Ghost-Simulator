@@ -53,8 +53,9 @@ def set_function(editor, module):
          'become_unpossessed_functions': 'unpossessed_function',
          'when_harvested_functions': 'harvested_function'}
     def func():
-        a = getattr(editor.object_to_edit, d[module])
-        a.append(editor.drop_lists[module].selected(editor.object_to_edit))
+        if module:
+            a = getattr(editor.object_to_edit, d[module])
+            a.append(editor.drop_lists[module].selected(editor.object_to_edit))
     return func
 
 

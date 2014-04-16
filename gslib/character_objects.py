@@ -24,6 +24,7 @@ class SmallDoor(Character):
                        1: {'animation_state': 2, 'collision_weight': 100}}
         self.state_index = 1  # make sure you set this after the states are defined, so the properties get updated
 
+        print
         self.possessed_function = [fear_functions.flip_state(self)]
         self.unpossessed_function = [fear_functions.flip_state(self)]
 

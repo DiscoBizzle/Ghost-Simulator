@@ -139,8 +139,11 @@ class DropDownList(object):
         if not self.open:
             return
 
+        b = False
         for b in self.drop_buttons:
-            b.check_clicked(click_pos)
+            if b.check_clicked(click_pos):
+                b = True
+        return b
 
     def handle_mouse_motion(self, event_pos):
         pos = self.pos

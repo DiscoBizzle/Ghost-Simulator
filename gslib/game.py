@@ -55,7 +55,9 @@ class Game(pyglet.window.Window):
         TODO.append("triggers/functions to handle move-to-position (after pathing)")
         TODO.append("click-to-edit text box - perhaps attached as a button function")
         TODO.append("then add character renaming/re-aging to map_edit (and able to edit speed by clicking the value")
-        TODO.append("add function choices to char edit")
+        TODO.append("add deletion of function choices to char edit")
+        TODO.append("add deletion of triggers to map edit")
+        TODO.append("add deletion of objects to map edit")
         TODO.append("game_object.py set_colorkey pyglet port (use rgba spritesheet or write code to do magic)")
         TODO.append("create own Rect class for complete removal of pygame")
         TODO.append("implement pyglet camera")
@@ -66,6 +68,8 @@ class Game(pyglet.window.Window):
         TODO.append("design more sprites and make default characters (in character_objects)")
         TODO.append("add foreground layer to maps - then make characters appear *through* the foreground")
         TODO.append("add character save/load on a per-map basis (make sure triggers/funcs are preserved)")
+        TODO.append("make active drop down list appear in front of other buttons (and therefore other lists)")
+        TODO.append("make edit of (e.g. speed) values a class")
         TODO.append("add more TODO's in __init__ of Game")
 
         self.TODO = TODO
