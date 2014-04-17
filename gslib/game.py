@@ -59,7 +59,6 @@ class Game(pyglet.window.Window):
         TODO.append("then add character renaming/re-aging to map_edit (and able to edit speed by clicking the value")
         TODO.append("add deletion of function choices to char edit")
         TODO.append("add deletion of triggers to map edit")
-        TODO.append("add deletion of objects to map edit")
         TODO.append("game_object.py set_colorkey pyglet port (use rgba spritesheet or write code to do magic)")
         TODO.append("create own Rect class for complete removal of pygame")
         TODO.append("implement pyglet camera")
@@ -72,6 +71,7 @@ class Game(pyglet.window.Window):
         TODO.append("add character save/load on a per-map basis (make sure triggers/funcs are preserved)")
         TODO.append("make active drop down list appear in front of other buttons (and therefore other lists) and then make only top-most button be clicked - or always arrange it so buttons never overlap")
         TODO.append("make it possible to cancel trigger creation")
+        TODO.append("handle deletion of target of trigger")
         TODO.append("add more TODO's in __init__ of Game")
 
         self.TODO = TODO
