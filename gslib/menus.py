@@ -239,7 +239,7 @@ class OptionsMenu(Menu):
             self.game_class.set_location(5, 30)  # aligns window to top left of screen (on windows atleast)
         elif new_size == u'Fullscreen':
             self.game_class.set_fullscreen()
-            self.game_class.dimensions = self.game_class.get_size()
+        self.game_class.dimensions = self.game_class.get_size()
 
 
 class SkillsMenu(Menu):
