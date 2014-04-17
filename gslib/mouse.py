@@ -15,14 +15,15 @@ class MouseController(object):
             self.game.Menu.mouse_event(pos, typ, button)
         elif self.game.GameState == MAIN_GAME:
             if not self.interaction_this_click:
-                if self.game.editor_active:
-                    self.editor_click(pos, typ, button)
-
-            if not self.interaction_this_click:
                 self.check_button_click(pos, typ, button)
 
             if not self.interaction_this_click:
                 self.check_list_event(pos, typ, button)
+
+            if not self.interaction_this_click:
+                if self.game.editor_active:
+                    self.editor_click(pos, typ, button)
+
 
             if not self.interaction_this_click:
                 self.check_object_click(pos, typ, button)
@@ -61,7 +62,7 @@ class MouseController(object):
         if typ == 'down':
             if pos[0] > LEVEL_WIDTH or pos[1] > LEVEL_HEIGHT:  # don't check for object outside of level area
                 return
-            for o in self.game.objects.itervalues():
+            for o_name, o in self.game.objects.iteritems():
                 if o == self.game.cursor:
                     continue
                 st = SELECTION_TOLERANCE
@@ -69,7 +70,7 @@ class MouseController(object):
                 if temp_rect.collidepoint((pos[0]+self.game.camera_coords[0], pos[1]+self.game.camera_coords[1])) and isinstance(o, character.Character):
 
                     if self.game.new_trigger_capture:
-                        self.game.editor.update_new_trigger(o)
+                        self.game.editor.update_new_trigger(o_name)
                     else:
                         self.game.disp_object_stats = True
                         self.game.object_stats = o.info_sheet
@@ -110,12 +111,17 @@ class MouseController(object):
         if self.game.editor.object_prototype and self.game.cursor == self.game.editor.object_prototype:
             obj_type = type(self.game.cursor)
             pos = self.game.cursor.coord
-            name = 0
-            for n in self.game.map.objects.keys():
-                if isinstance(n, int):
-                    if n >= name:
-                        name = n + 1
+            name = self.game.cursor.__class__.__name__
+            while True:
+                if name in self.game.map.objects.keys():
+                    name += '0'
+                else:
+                    break
+
             self.game.map.objects[name] = obj_type(self.game, x=pos[0], y=pos[1])
             self.game.gather_buttons_and_drop_lists_and_objects()
             self.interaction_this_click = True
+
+        for name, o in self.game.map.objects.iteritems():
+            print name, o
 

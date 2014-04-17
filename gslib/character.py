@@ -183,7 +183,7 @@ class Character(GameObject):
         if stats:
             self.fears = stats['fears']
             self.scared_of = stats['scared_of']
-            self.scared_of.append(u'player')
+            # self.scared_of.append(u'player')
         else:
             self.fears = []
             self.scared_of = []
@@ -192,22 +192,15 @@ class Character(GameObject):
         # self.sprite = pygame.image.load(os.path.join(CHARACTER_DIR, 'Sprite_top.png'))
         # self.sprite = pygame.transform.scale(self.sprite, self.dimensions).convert()
         # self.sprite.set_colorkey((255, 0, 255))7
-        self.feared_function = [character_functions.freeze(self)]
-        self.possessed_function = [character_functions.im_possessed(self)]
-        self.unpossessed_function = [character_functions.undo_im_possessed(self)]
-        self.harvested_function = [character_functions.red_square(self)]
+        self.feared_function = [] # [character_functions.freeze(self)]
+        self.possessed_function = [] # [character_functions.im_possessed(self)]
+        self.unpossessed_function = [] # [character_functions.undo_im_possessed(self)]
+        self.harvested_function = [] # [character_functions.red_square(self)]
         self.fainted = False
         self.feared_by_obj = None
         self.feared_from_pos = (0, 0)
 
         self.possessed_by = []
-        # self.create_save_dict()
-
-    def create_save_dict(self):
-        save_dict = {}
-        for k, v in self.__dict__.iteritems():
-            save_dict[k] = v
-        print save_dict
 
     def get_stats(self, name):
         name = name

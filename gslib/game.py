@@ -9,6 +9,7 @@ import pyglet
 #import pyglet.window
 #from pygame import Rect
 import pygame
+import random
 
 from gslib import button
 from gslib import character
@@ -27,6 +28,7 @@ from gslib import character_functions
 from gslib import text
 from gslib import drop_down_list
 from gslib import map_edit
+from gslib import save_load
 from gslib.constants import *
 
 
@@ -69,6 +71,7 @@ class Game(pyglet.window.Window):
         TODO.append("add foreground layer to maps - then make characters appear *through* the foreground")
         TODO.append("add character save/load on a per-map basis (make sure triggers/funcs are preserved)")
         TODO.append("make active drop down list appear in front of other buttons (and therefore other lists) and then make only top-most button be clicked - or always arrange it so buttons never overlap")
+        TODO.append("make it possible to cancel trigger creation")
         TODO.append("add more TODO's in __init__ of Game")
 
         self.TODO = TODO
@@ -143,13 +146,19 @@ class Game(pyglet.window.Window):
 
         #sound.start_next_music(self.music_list)
 
-        self.map_list = []
-        self.map_list.append(maps.Map(os.path.join(TILES_DIR, 'level3.png'), os.path.join(TILES_DIR, 'level3.json'), self))
-        self.map_list.append(maps.Map(os.path.join(TILES_DIR, 'level2.png'), os.path.join(TILES_DIR, 'level2.json'), self))
-        self.map_list.append(maps.Map(os.path.join(TILES_DIR, 'martin.png'), os.path.join(TILES_DIR, 'martin.json'), self))
+        self.map_dict = {}
+        # self.map_dict['level3'] = maps.Map('level3', os.path.join(TILES_DIR, 'level3.png'), os.path.join(TILES_DIR, 'level3.json'), self)
+        # self.map_dict['level2'] = maps.Map('level2', os.path.join(TILES_DIR, 'level2.png'), os.path.join(TILES_DIR, 'level2.json'), self)
+        # self.map_dict['martin'] = maps.Map('martin', os.path.join(TILES_DIR, 'martin.png'), os.path.join(TILES_DIR, 'martin.json'), self)
 
-        self.map_index = 0
-        self.map = self.map_list[self.map_index]
+        self.map_dict['level3'] = save_load.load_map(self, 'level3')
+        # self.map_list = []
+        # self.map_list.append(maps.Map(os.path.join(TILES_DIR, 'level3.png'), os.path.join(TILES_DIR, 'level3.json'), self))
+        # self.map_list.append(maps.Map(os.path.join(TILES_DIR, 'level2.png'), os.path.join(TILES_DIR, 'level2.json'), self))
+        # self.map_list.append(maps.Map(os.path.join(TILES_DIR, 'martin.png'), os.path.join(TILES_DIR, 'martin.json'), self))
+
+        self.map_index = 'level3'
+        self.map = self.map_dict[self.map_index]
 
         self.game_buttons = {
             'change_map': button.Button(self, self.change_map, pos=(0, 0), size=(20, 20), visible=True,
@@ -237,6 +246,7 @@ class Game(pyglet.window.Window):
         self.objects = dict(self.players.items() + self.map.objects.items())
         if self.cursor:
             self.objects['cursor'] = self.cursor
+
 
     def update(self):
         # this is fixed timestep, 30 FPS. if game runs slower, we lag.
@@ -338,9 +348,10 @@ class Game(pyglet.window.Window):
                 self.world_objects_to_draw.append(sprit)
 
     def change_map(self):
-        self.map_index += 1
-        self.map_index %= len(self.map_list)
-        self.map = self.map_list[self.map_index]
+        # self.map_index += 1
+        # self.map_index %= len(self.map_list)
+        self.map_index = random.choice(self.map_dict.keys())
+        self.map = self.map_dict[self.map_index]
         # self.objects = dict(self.players.items() + self.map.objects.items())
         self.gather_buttons_and_drop_lists_and_objects()
         self.graphics.clip_area = pygame.Rect((0, 0), (self.dimensions[0], self.dimensions[1]))

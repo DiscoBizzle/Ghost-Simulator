@@ -20,9 +20,9 @@ class SmallDoor(Character):
         self.max_frames = 0
         self.sprite_height = 32
         self.sprite_width = 32
-        self.states = {0: {'animation_state': 0, 'collision_weight': 0},
-                       1: {'animation_state': 2, 'collision_weight': 100}}
-        self.state_index = 1  # make sure you set this after the states are defined, so the properties get updated
+        self.states = {'0': {'animation_state': 0, 'collision_weight': 0},
+                       '1': {'animation_state': 2, 'collision_weight': 100}}
+        self.state_index = '1'  # make sure you set this after the states are defined, so the properties get updated
 
         self.possessed_function = [fear_functions.flip_state(self)]
         self.unpossessed_function = [fear_functions.flip_state(self)]
@@ -32,5 +32,10 @@ class SmallDoor(Character):
 
 
 class Dude(Character):
-    def __init__(self, game_class, x=0, y=0, stats=character.gen_character()):
-        Character.__init__(self, game_class, x, y, 16, 16, stats)
+    def __init__(self, game_class, x=0, y=0, stats=None):
+        if stats is None:
+            stat = character.gen_character()
+        else:
+            stat = stats
+        Character.__init__(self, game_class, x, y, 16, 16, stat, sprite_sheet='DudeSheet.png')
+        self.normal_speed = 0

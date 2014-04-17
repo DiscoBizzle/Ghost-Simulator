@@ -7,6 +7,7 @@ from gslib import graphics
 from gslib import triggers
 from gslib import text
 from gslib import character_functions
+from gslib import save_load
 from gslib.constants import *
 
 
@@ -225,6 +226,16 @@ class Editor(object):
             self.drop_lists[v].visible = False
             self.drop_lists[v].enabled = False
 
+        ###################################################################
+        # Save Map
+        ###################################################################
+        self.buttons['save_map'] = button.DefaultButton(self, self.save_map,
+                                                        pos=(self.game.dimensions[0] - 100 - h_off, self.game.dimensions[1] - v_off - 200),
+                                                        size=(100, 20), text="Save Map", visible=True, enabled=True)
+
+    def save_map(self):
+        save_load.save_map(self.game.map)
+
     def toggle_function_edit(self):
         self.show_function_edit = not self.show_function_edit
         self.toggle_button_colour(self.buttons['function_edit_toggle'], self.show_function_edit)
@@ -354,13 +365,13 @@ class Editor(object):
         # t = self.drop_lists['view_triggers'].selected
         if t:
             # font = pygame.font.SysFont(FONT, 20)
-            for i, o in enumerate(t.objects):
+            for i, o_name in enumerate(t.objects):
                 circ = graphics.draw_circle(25, self.trigger_display_colours[i])
                 # circ.set_position(o.coord[0], o.coord[1])
                 te = self.create_text_sprite(t.legend[i])  # font.render(t.legend[i], True, (255, 255, 255))
                 # t.set_position(o.coord[0, o.coord[1]])
-                self.trigger_display_circles.append((circ, o))
-                self.trigger_display_text.append((te, o))
+                self.trigger_display_circles.append((circ, self.game.map.objects[o_name]))
+                self.trigger_display_text.append((te, self.game.map.objects[o_name]))
 
     def create_text_sprite(self, tex):
         if not tex in self.text_sprites.keys():
@@ -378,26 +389,28 @@ class Editor(object):
 
     def new_trigger(self):
         if self.drop_lists['new_triggers'].selected:
-            self.trigger_prototype = self.drop_lists['new_triggers'].selected()
+            self.trigger_prototype = self.drop_lists['new_triggers'].selected(self.game.map)
             self.game.new_trigger_capture = True
             self.create_trigger_cursor(self.trigger_prototype.legend[0])
 
-    def update_new_trigger(self, o):
+    def update_new_trigger(self, o_name):
         t = self.trigger_prototype
         l = t.objects
-        if o in l:
-            l.remove(o)
-        else:
-            l.append(o)
+        # if o_name in l:
+        #     l.remove(o_name)
+        # else:
+        #     l.append(o_name)
+        l.append(o_name)
 
         target_number = len(self.trigger_prototype.legend)
         if len(l) == target_number:
-            name = 0
-            for n in self.game.map.triggers.keys():
-                if isinstance(n, int):
-                    if n >= name:
-                        name = n + 1
-            self.game.map.triggers[name] = self.drop_lists['new_triggers'].selected(*l)
+            name = self.trigger_prototype.__class__.__name__
+            while True:
+                if name in self.game.map.triggers.keys():
+                    name += '0'
+                else:
+                    break
+            self.game.map.triggers[name] = self.drop_lists['new_triggers'].selected(self.game.map, *l)
             self.draw_trigger(None)
             self.game.cursor = None
             self.game.gather_buttons_and_drop_lists_and_objects()

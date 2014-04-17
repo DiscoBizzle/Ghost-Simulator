@@ -37,8 +37,8 @@ for k, v in module_dict.iteritems():
     for i, s in enumerate(v):
         f = getattr(k, s)
         if hasattr(f, '__call__'): # check if it is a function
-            temp_dict[s] = f  # fill temp dict with 'function_name': function
-    all_functions_dict[str(k.__name__)[30:]] = temp_dict  # add 'module': {'function names': functions}, [30:] strips gslib.character_functions_dir
+            temp_dict[unicode(s)] = f  # fill temp dict with 'function_name': function
+    all_functions_dict[unicode(str(k.__name__)[30:])] = temp_dict  # add 'module': {'function names': functions}, [30:] strips gslib.character_functions_dir
 
 del temp_dict
 del module_dict

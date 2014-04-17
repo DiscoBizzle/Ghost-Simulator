@@ -69,7 +69,8 @@ class Button(object):
             self._pos = pos
             self.update_position()
         else:
-            raise Exception('Negative button position')
+            pass
+            # raise Exception('Negative button position')
 
     def pos_getter(self):
         return self._pos
