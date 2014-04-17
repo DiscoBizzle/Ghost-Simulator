@@ -120,6 +120,53 @@ def gen_name(gender):
     return u"{} {}".format(first_name, second_name)
 
 
+def draw_info_sheet(stats):
+    if not stats:
+        return
+    font_size = 20
+    #dim = w, h = (GAME_WIDTH - LEVEL_WIDTH, int((GAME_WIDTH - LEVEL_WIDTH) / 1.6))
+
+    x = 0
+    y = 0
+
+    sprites = []
+
+    h = 200.0
+    w = h / 1.6
+    dim = (w, h)
+
+    border = 8
+    #fill_background(surf, border) # TODO PYGLET
+
+    # draw character image
+    im = textures.get(stats['image_name'])
+    im_sprite = sprite.Sprite(im)
+    im_sprite.scale_x = w / im_sprite.width
+    im_sprite.scale_y = h / im_sprite.height
+
+
+    # draw name/age and text boxes
+    name_text = text.new('comic sans', font_size, u'Name: ' + stats['name'])
+    age_text = text.new('comic sans', font_size, u'Age: ' + str(stats['age']))
+
+
+    # age_text.x = name_text.x
+    # age_text.y = name_text.y - name_text.content_height
+
+    # draw background
+    background_sprite = graphics.new_rect_sprite()
+    background_sprite.color_rgb = GREY
+    background_sprite.scale_x = w + name_text.content_width + border * 2
+    background_sprite.scale_y = h + 2 * border  # - name_text.content_height - age_text.content_height - 3 * border
+
+    sprites.append(background_sprite)
+    sprites.append(im_sprite)
+    sprites.append(name_text)
+    sprites.append(age_text)
+
+    return sprites
+
+
 class Character(GameObject):
     def __init__(self, game_class, x, y, w, h, stats, sprite_sheet='DudeSheet.png'):
         """
@@ -141,7 +188,7 @@ class Character(GameObject):
             self.fears = []
             self.scared_of = []
         self.stats = stats
-        self.info_sheet = self.draw_info_sheet()
+        self.info_sheet = draw_info_sheet(self.stats)
         # self.sprite = pygame.image.load(os.path.join(CHARACTER_DIR, 'Sprite_top.png'))
         # self.sprite = pygame.transform.scale(self.sprite, self.dimensions).convert()
         # self.sprite.set_colorkey((255, 0, 255))7
@@ -154,6 +201,13 @@ class Character(GameObject):
         self.feared_from_pos = (0, 0)
 
         self.possessed_by = []
+        # self.create_save_dict()
+
+    def create_save_dict(self):
+        save_dict = {}
+        for k, v in self.__dict__.iteritems():
+            save_dict[k] = v
+        print save_dict
 
     def get_stats(self, name):
         name = name
@@ -202,51 +256,7 @@ class Character(GameObject):
 
         GameObject.update(self)
 
-    def draw_info_sheet(self):
-        if not self.stats:
-            return
-        font_size = 20
-        #dim = w, h = (GAME_WIDTH - LEVEL_WIDTH, int((GAME_WIDTH - LEVEL_WIDTH) / 1.6))
 
-        x = 0
-        y = 0
-
-        sprites = []
-
-        h = 200.0
-        w = h / 1.6
-        dim = (w, h)
-
-        border = 8
-        #fill_background(surf, border) # TODO PYGLET
-
-        # draw character image
-        im = textures.get(self.stats['image_name'])
-        im_sprite = sprite.Sprite(im)
-        im_sprite.scale_x = w / im_sprite.width
-        im_sprite.scale_y = h / im_sprite.height
-
-
-        # draw name/age and text boxes
-        name_text = text.new('comic sans', font_size, u'Name: ' + self.stats['name'])
-        age_text = text.new('comic sans', font_size, u'Age: ' + str(self.stats['age']))
-
-
-        # age_text.x = name_text.x
-        # age_text.y = name_text.y - name_text.content_height
-
-        # draw background
-        background_sprite = graphics.new_rect_sprite()
-        background_sprite.color_rgb = GREY
-        background_sprite.scale_x = w + name_text.content_width + border * 2
-        background_sprite.scale_y = h + 2 * border  # - name_text.content_height - age_text.content_height - 3 * border
-
-        sprites.append(background_sprite)
-        sprites.append(im_sprite)
-        sprites.append(name_text)
-        sprites.append(age_text)
-
-        return sprites
 
 
 if __name__ == "__main__":
