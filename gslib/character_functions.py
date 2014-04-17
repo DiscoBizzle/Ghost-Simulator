@@ -24,7 +24,7 @@ import os
 import gslib.character_functions_dir
 
 module_dict = {}
-a =  os.path.dirname(gslib.character_functions_dir.__file__) + '\\'
+a =  os.path.dirname(gslib.character_functions_dir.__file__) + '/'
 for _, m, _ in pkgutil.iter_modules([os.path.dirname(a)], prefix='gslib.character_functions_dir.'):
     mod = importlib.import_module(m)
     module_dict[mod] = dir(mod)

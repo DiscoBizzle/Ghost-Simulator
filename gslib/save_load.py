@@ -51,8 +51,8 @@ def save_map(m):
     file_dict[u'objects'] = obj_dict
     file_dict[u'triggers'] = trig_dict
     file_dict[u'name'] = m._name
-    file_dict[u'tileset'] = m._tileset_file
-    file_dict[u'map_file'] = m._map_file
+    file_dict[u'tileset'] = m._tileset_file.replace('\\', '/')
+    file_dict[u'map_file'] = m._map_file.replace('\\', '/')
 
     with open(os.path.join(SAVE_DIR, str(m._name + '_save.dat')), 'w') as f:
         json.dump(file_dict, f)
