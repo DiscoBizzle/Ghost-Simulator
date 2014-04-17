@@ -147,15 +147,9 @@ class Game(pyglet.window.Window):
         #sound.start_next_music(self.music_list)
 
         self.map_dict = {}
-        # self.map_dict['level3'] = maps.Map('level3', os.path.join(TILES_DIR, 'level3.png'), os.path.join(TILES_DIR, 'level3.json'), self)
-        # self.map_dict['level2'] = maps.Map('level2', os.path.join(TILES_DIR, 'level2.png'), os.path.join(TILES_DIR, 'level2.json'), self)
-        # self.map_dict['martin'] = maps.Map('martin', os.path.join(TILES_DIR, 'martin.png'), os.path.join(TILES_DIR, 'martin.json'), self)
-
         self.map_dict['level3'] = save_load.load_map(self, 'level3')
-        # self.map_list = []
-        # self.map_list.append(maps.Map(os.path.join(TILES_DIR, 'level3.png'), os.path.join(TILES_DIR, 'level3.json'), self))
-        # self.map_list.append(maps.Map(os.path.join(TILES_DIR, 'level2.png'), os.path.join(TILES_DIR, 'level2.json'), self))
-        # self.map_list.append(maps.Map(os.path.join(TILES_DIR, 'martin.png'), os.path.join(TILES_DIR, 'martin.json'), self))
+        self.map_dict['level2'] = save_load.load_map(self, 'level2')
+        self.map_dict['martin'] = save_load.load_map(self, 'martin')
 
         self.map_index = 'level3'
         self.map = self.map_dict[self.map_index]
