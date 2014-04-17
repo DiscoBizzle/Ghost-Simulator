@@ -156,6 +156,7 @@ class Editor(object):
         self.object_edit_buttons = []
         self.object_edit_lists = []
         self.object_to_edit = None
+        self.object_to_edit_name = None
         self.show_fears_checklist = False
         self.show_scared_of_checklist = False
 
@@ -214,11 +215,16 @@ class Editor(object):
             self.function_edit_lists.append(module)
             v_ind += 1
 
+        self.buttons['delete_selection'] = button.DefaultButton(self, self.delete_selected_object,
+                                                        pos=(self.game.dimensions[0] - 210 - h_off, self.game.dimensions[1] - v_off - 200),
+                                                        size=(100, 20), text="Delete Object", visible=True, enabled=True)
+
 
         self.object_edit_buttons += ['fears_checklist_toggle', 'scared_of_checklist_toggle',
                                     'normal_speed_label', 'normal_speed_increment', 'normal_speed_decrement', 'normal_speed_value',
                                     'feared_speed_label', 'feared_speed_increment', 'feared_speed_decrement', 'feared_speed_value',
-                                    'collision_weight_label', 'collision_weight_increment', 'collision_weight_decrement', 'collision_weight_value']
+                                    'collision_weight_label', 'collision_weight_increment', 'collision_weight_decrement', 'collision_weight_value',
+                                    'delete_selection']
         for v in self.object_edit_buttons:
             self.buttons[v].visible = False
             self.buttons[v].enabled = False
@@ -227,11 +233,15 @@ class Editor(object):
             self.drop_lists[v].enabled = False
 
         ###################################################################
-        # Save Map
+        # Other buttons
         ###################################################################
         self.buttons['save_map'] = button.DefaultButton(self, self.save_map,
                                                         pos=(self.game.dimensions[0] - 100 - h_off, self.game.dimensions[1] - v_off - 200),
                                                         size=(100, 20), text="Save Map", visible=True, enabled=True)
+
+    def delete_selected_object(self):
+        del self.game.map.objects[self.object_to_edit_name]
+        self.game.gather_buttons_and_drop_lists_and_objects()
 
     def save_map(self):
         save_load.save_map(self.game.map)
@@ -295,9 +305,10 @@ class Editor(object):
                 b.colour = self.colour
                 b.border_colour = self.border_colour
 
-    def object_to_edit_selected(self, o):  # show object editing options when an object is selected
-        self.object_to_edit = o
-        if self.object_to_edit:
+    def object_to_edit_selected(self, o_name):  # show object editing options when an object is selected
+        self.object_to_edit_name = o_name
+        if self.object_to_edit_name:
+            self.object_to_edit = self.game.objects[o_name]
             self.buttons['feared_speed_value'].text = str(self.object_to_edit.feared_speed)
             self.buttons['normal_speed_value'].text = str(self.object_to_edit.normal_speed)
             self.buttons['collision_weight_value'].text = str(self.object_to_edit.collision_weight)
