@@ -60,13 +60,13 @@ def run_away_straight(obj):
             return
         if 22.5 <= ang <= 67.5:
             obj.move_right = True
-            obj.move_down = True
+            obj.move_up = True
             return
         if 67.5 <= ang <= 112.5:
-            obj.move_down = True
+            obj.move_up = True
             return
         if 112.5 <= ang <= 157.5:
-            obj.move_down = True
+            obj.move_up = True
             obj.move_left = True
             return
         if 157.5 <= ang <= 202.5:
@@ -74,14 +74,14 @@ def run_away_straight(obj):
             return
         if 202.5 <= ang <= 247.5:
             obj.move_left = True
-            obj.move_up = True
+            obj.move_down = True
             return
         if ang >= 247.5 or ang <= -67.5:
-            obj.move_up = True
+            obj.move_down = True
             return
         if -67.5 <= ang <= -22.5:
             obj.move_right = True
-            obj.move_up = True
+            obj.move_down = True
             return
     func.__name__ = 'run_away_straight'
     return func

@@ -171,7 +171,7 @@ class Editor(object):
         self.int_edits = {}
 
         h_off = 10
-        v_off = 250
+        v_off = 400
 
         self.create_checklist_buttons()
         #fears/scared_by checklist show/hide
