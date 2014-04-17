@@ -145,7 +145,6 @@ class Character(GameObject):
         # self.sprite = pygame.image.load(os.path.join(CHARACTER_DIR, 'Sprite_top.png'))
         # self.sprite = pygame.transform.scale(self.sprite, self.dimensions).convert()
         # self.sprite.set_colorkey((255, 0, 255))7
-        print character_functions
         self.feared_function = [character_functions.freeze(self)]
         self.possessed_function = [character_functions.im_possessed(self)]
         self.unpossessed_function = [character_functions.undo_im_possessed(self)]

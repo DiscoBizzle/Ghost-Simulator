@@ -41,7 +41,7 @@ class Button(object):
         # Other properties' validity are checked in redraw(), this is called whenever they are changed, so exceptions will lead back to the incorrect assignment
         self._size = size  # underscore is "hidden" variable, not for direct access
         self._colour = colour
-        self._visible = visible
+        self._visible = True # ensures button gets drawn, otherwise can't change its position
         self._border_colour = border_colour
         self._border_width = border_width
         self._text = text
@@ -62,6 +62,7 @@ class Button(object):
         self.text_sprite = None
         self.sprites = [self.outer_sprite, self.inner_sprite, self.text_sprite]
         self.redraw()
+        self._visible = visible
 
     def pos_setter(self, pos):
         if pos[0] >= 0 and pos[1] >= 0:
@@ -92,7 +93,7 @@ class Button(object):
         if self.text_states:
             self._text = self.text_states[self.text_states_toggle]
 
-        if not self.visible:
+        if not self._visible:
             return
 
         self.outer_sprite.color_rgb = self.border_colour

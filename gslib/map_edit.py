@@ -59,6 +59,32 @@ def set_function(editor, module):
     return func
 
 
+class IntEdit(object):
+    def __init__(self, editor, pos, name):
+        self._pos = pos
+        self.name = name
+        self.buttons = {}
+        self.buttons[name + '_label'] = button.DefaultButton(self, None, pos=(0, 0), size=(100, 20), text=name)
+        self.buttons[name + '_increment'] = button.DefaultButton(self, change_object_value(editor, name, 1), pos=(0, 0),
+                                                                 size=(30, 30), text="+")
+        self.buttons[name + '_decrement'] = button.DefaultButton(self, change_object_value(editor, name, -1), pos=(0, 0),
+                                                                 size=(30, 30), text="-")
+        self.buttons[name + '_value'] = button.DefaultButton(self, None, pos=(0, 0), size=(30, 30), text="0")
+        self.set_pos(pos)
+
+    def get_pos(self):
+        return self._pos
+
+    def set_pos(self, pos):
+        self.buttons[self.name + '_label'].pos = (pos[0], pos[1] + 35)
+        self.buttons[self.name + '_increment'].pos = (pos[0] + 70, pos[1])
+        self.buttons[self.name + '_decrement'].pos = pos
+        self.buttons[self.name + '_value'].pos = (pos[0] + 35, pos[1])
+        self._pos = pos
+
+    pos = property(get_pos, set_pos)
+
+
 class Cursor(game_object.GameObject):
     def __init__(self, game, sprite):
         game_object.GameObject.__init__(self, game, 0, 0, 0, 0, None)
@@ -140,6 +166,8 @@ class Editor(object):
         self.possible_fears = [u'player']
         self.get_fears_from_file()
 
+        self.int_edits = {}
+
         h_off = 10
         v_off = 250
 
@@ -151,62 +179,38 @@ class Editor(object):
         self.buttons['scared_of_checklist_toggle'] = button.DefaultButton(self, self.toggle_scared_of_checklist,
                                                                       pos=(self.game.dimensions[0] - 210 - h_off, self.game.dimensions[1] - v_off - 70),
                                                                       size=(100, 20), text="Scared Of")
-        # normal speed
-        self.buttons['normal_speed_label'] = button.DefaultButton(self, None,
-                                                                      pos=(self.game.dimensions[0] - 210 - h_off, self.game.dimensions[1] - v_off),
-                                                                      size=(100, 20), text="Normal Speed")
-        self.buttons['normal_speed_increment'] = button.DefaultButton(self, change_object_value(self, 'normal_speed', 1),
-                                                                      pos=(self.game.dimensions[0] - 140 - h_off, self.game.dimensions[1] - v_off - 35),
-                                                                      size=(30, 30), text="+")
-        self.buttons['normal_speed_decrement'] = button.DefaultButton(self, change_object_value(self, 'normal_speed', -1),
-                                                                      pos=(self.game.dimensions[0] - 210 - h_off, self.game.dimensions[1] - v_off - 35),
-                                                                      size=(30, 30), text="-")
-        self.buttons['normal_speed_value'] = button.DefaultButton(self, None,
-                                                                      pos=(self.game.dimensions[0] - 175 - h_off, self.game.dimensions[1] - v_off - 35),
-                                                                      size=(30, 30), text="0")
 
-        # feared speed
-        self.buttons['feared_speed_label'] = button.DefaultButton(self, None,
-                                                                      pos=(self.game.dimensions[0] - 100 - h_off, self.game.dimensions[1] - v_off),
-                                                                      size=(100, 20), text="Feared Speed")
-        self.buttons['feared_speed_increment'] = button.DefaultButton(self, change_object_value(self, 'feared_speed', 1),
-                                                                      pos=(self.game.dimensions[0] - 30 - h_off, self.game.dimensions[1] - v_off - 35),
-                                                                      size=(30, 30), text="+")
-        self.buttons['feared_speed_decrement'] = button.DefaultButton(self, change_object_value(self, 'feared_speed', -1),
-                                                                      pos=(self.game.dimensions[0] - 100 - h_off, self.game.dimensions[1] - v_off - 35),
-                                                                      size=(30, 30), text="-")
-        self.buttons['feared_speed_value'] = button.DefaultButton(self, None,
-                                                                      pos=(self.game.dimensions[0] - 65 - h_off, self.game.dimensions[1] - v_off - 35),
-                                                                      size=(30, 30), text="0")
+        # speed and weight edit button sets.
+        self.int_edits['normal_speed'] = IntEdit(self, (self.game.dimensions[0] - 210 - h_off, self.game.dimensions[1] - v_off - 35), 'normal_speed')
+        self.int_edits['feared_speed'] = IntEdit(self, (self.game.dimensions[0] - 100 - h_off, self.game.dimensions[1] - v_off - 35), 'feared_speed')
+        self.int_edits['collision_weight'] = IntEdit(self, (self.game.dimensions[0] - 320 - h_off, self.game.dimensions[1] - v_off - 35), 'collision_weight')
 
-        # collision weight
-        self.buttons['collision_weight_label'] = button.DefaultButton(self, None,
-                                                                      pos=(self.game.dimensions[0] - 320 - h_off, self.game.dimensions[1] - v_off),
-                                                                      size=(100, 20), text="Collision Weight")
-        self.buttons['collision_weight_increment'] = button.DefaultButton(self, change_object_value(self, 'collision_weight', 1),
-                                                                      pos=(self.game.dimensions[0] - 250 - h_off, self.game.dimensions[1] - v_off - 35),
-                                                                      size=(30, 30), text="+")
-        self.buttons['collision_weight_decrement'] = button.DefaultButton(self, change_object_value(self, 'collision_weight', -1),
-                                                                      pos=(self.game.dimensions[0] - 320 - h_off, self.game.dimensions[1] - v_off - 35),
-                                                                      size=(30, 30), text="-")
-        self.buttons['collision_weight_value'] = button.DefaultButton(self, None,
-                                                                      pos=(self.game.dimensions[0] - 285 - h_off, self.game.dimensions[1] - v_off - 35),
-                                                                      size=(30, 30), text="0")
+        for ie in self.int_edits.itervalues():
+            self.buttons = dict(self.buttons.items() + ie.buttons.items())
 
         # name edit
         # age edit
+
         v_ind = 0
         # function edit
+        self.show_function_edit = False
+        self.function_edit_buttons = []
+        self.function_edit_lists = []
+        self.buttons['function_edit_toggle'] = button.DefaultButton(self, self.toggle_function_edit,
+                                                                      pos=(self.game.dimensions[0] - 320 - h_off, self.game.dimensions[1] - v_off - 70),
+                                                                      size=(100, 20), text="Function Edit", visible=False, enabled=False)
+        self.object_edit_buttons.append('function_edit_toggle')
         for module, func_dict in character_functions.all_functions_dict.iteritems():
             #display button
             self.buttons[module] = button.DefaultButton(self, None,
                                                         pos=(100 - v_ind * 50, self.game.dimensions[1] - 200 - v_ind * 40),
-                                                        size=(200, 20), text=module)
-            self.object_edit_buttons.append(module)
+                                                        size=(200, 20), text=module, visible=False, enabled=False)
+            self.function_edit_buttons.append(module)
+
             self.drop_lists[module] = drop_down_list.DropDownList(self, func_dict,
                                                                   set_function(self, module), pos=(300 - v_ind * 50, self.game.dimensions[1] - 200 - v_ind * 40),
-                                                                  size=(200, 20))
-            self.object_edit_lists.append(module)
+                                                                  size=(200, 20), visible=False, enabled=False)
+            self.function_edit_lists.append(module)
             v_ind += 1
 
 
@@ -220,6 +224,16 @@ class Editor(object):
         for v in self.object_edit_lists:
             self.drop_lists[v].visible = False
             self.drop_lists[v].enabled = False
+
+    def toggle_function_edit(self):
+        self.show_function_edit = not self.show_function_edit
+        self.toggle_button_colour(self.buttons['function_edit_toggle'], self.show_function_edit)
+        for n in self.function_edit_buttons:
+            self.buttons[n].visible = self.show_function_edit
+            self.buttons[n].enabled = self.show_function_edit
+        for n in self.function_edit_lists:
+            self.drop_lists[n].visible = self.show_function_edit
+            self.drop_lists[n].enabled = self.show_function_edit
 
     def toggle_fears_checklist(self):  # flip between checklists, or just show/hide one
         self.show_fears_checklist = not self.show_fears_checklist

@@ -68,8 +68,7 @@ class Game(pyglet.window.Window):
         TODO.append("design more sprites and make default characters (in character_objects)")
         TODO.append("add foreground layer to maps - then make characters appear *through* the foreground")
         TODO.append("add character save/load on a per-map basis (make sure triggers/funcs are preserved)")
-        TODO.append("make active drop down list appear in front of other buttons (and therefore other lists)")
-        TODO.append("make edit of (e.g. speed) values a class")
+        TODO.append("make active drop down list appear in front of other buttons (and therefore other lists) and then make only top-most button be clicked - or always arrange it so buttons never overlap")
         TODO.append("add more TODO's in __init__ of Game")
 
         self.TODO = TODO
