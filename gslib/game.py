@@ -359,7 +359,7 @@ class Game(pyglet.window.Window):
         self.GameState = state
 
     def quit_game(self):
-        self.game_running = False
+        self.dispatch_event('on_close')
 
     def save_options(self):
         f = open(OPTIONS_FILE, 'w')
