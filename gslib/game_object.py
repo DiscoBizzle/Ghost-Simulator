@@ -122,7 +122,7 @@ class GameObject(object):
                                       self.sprite_width, self.sprite_height)
     animation_state = property(get_animation_state, set_animation_state)
 
-    def update(self):
+    def update(self, dt):
         v_x, v_y = 0, 0
         if self.move_down:
             v_y -= self.current_speed

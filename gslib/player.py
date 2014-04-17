@@ -50,11 +50,11 @@ class Player(GameObject):
             return True
         return False
 
-    def update(self):
+    def update(self, dt):
         # set current speed, then call parent update (handles movement and animation
         self.current_speed = self.normal_speed
 
-        GameObject.update(self)
+        GameObject.update(self, dt)
 
         # velocity is set by parent update function
 

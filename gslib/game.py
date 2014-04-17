@@ -188,7 +188,10 @@ class Game(pyglet.window.Window):
         self.objects = {}
         self.gather_buttons_and_drop_lists_and_objects()
 
-        pyglet.clock.schedule_interval((lambda _: self.update()), 1.0/30.0)
+        self.ticks_clock = pyglet.clock.Clock()
+        self.ticks_clock_display = pyglet.clock.ClockDisplay(format='                 ticks:%(fps).2f',
+                                                             clock=self.ticks_clock)
+        pyglet.clock.schedule_interval(self.update, 1.0 / TICKS_PER_SEC)
 
     # pyglet event
     def on_key_press(self, symbol, modifiers):
@@ -223,6 +226,7 @@ class Game(pyglet.window.Window):
                 self.graphics.main_game_draw()
 
             self.fps_clock.draw()
+            self.ticks_clock_display.draw()
 
     def on_resize(self, width, height):
         self.dimensions = (width, height)
@@ -242,10 +246,11 @@ class Game(pyglet.window.Window):
             self.objects['cursor'] = self.cursor
 
 
-    def update(self):
+    def update(self, dt):
         # this is fixed timestep, 30 FPS. if game runs slower, we lag.
         # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
         #self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
+        self.ticks_clock.tick()
         self.camera_coords = self.calc_camera_coord()
         if self.show_fears:
             self.say_fears()
@@ -255,7 +260,7 @@ class Game(pyglet.window.Window):
         if self.GameState == MAIN_GAME:
             self.last_touching = [p for p in self.touching]  # creates a copy
             for obj in self.objects.itervalues():
-                obj.update()
+                obj.update(dt)
 
             for i, p in enumerate(self.touching):
                 if not p in self.last_touching:  # detect on touch
@@ -276,9 +281,9 @@ class Game(pyglet.window.Window):
                             f(p[0])
 
         elif self.GameState == CREDITS:
-            self.credits.update()
+            self.credits.update(dt)
         elif self.GameState == TEXTBOX_TEST:
-            self.text_box_test.update()
+            self.text_box_test.update(dt)
 
     def calc_camera_coord(self):
         avg_pos = [0, 0]

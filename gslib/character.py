@@ -208,7 +208,7 @@ class Character(GameObject):
         age, bio, self.fears = load_stats(name)
         return {'name': name, 'age': age, 'image_name': image, 'bio': bio}
 
-    def update(self):
+    def update(self, dt):
 
         if not self.possessed_by:
             self.update_timer += 1
@@ -247,7 +247,7 @@ class Character(GameObject):
             self.move_left = self.possessed_by[-1].move_left
             self.move_right = self.possessed_by[-1].move_right
 
-        GameObject.update(self)
+        GameObject.update(self, dt)
 
 
 
