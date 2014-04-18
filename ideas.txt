@@ -1,0 +1,83 @@
+merlish: i've got a sort of idea for a boss battle (yes really)
+merlish: some big huge monster like thing, like the big metroid
+merlish: you have to scare people so that they run into bombs causing damage to the monster
+merlish: chapter title: the quantum catastrophe
+merlish: (a.k.a. spooky action at a distance)
+
+
+(TG := tutorial-ghost)
+
+[('TG', 'Where have all the good ghosts gone?
+
+
+
+Ghostdows 98
+
+jump on start button to do things
+
+guess you move around and see e-mail and stuff w/ghost in fucked up perspective
+
+
+
+
+perspire
+shropshire
+
+
+TG: This is a really good video game so far! I can't wait to see what those kooks come up with next.
+You: I do not think it is a good game. It is a bad game.
+TG: No, actually, it is very good.
+You: I disagree.
+TG: Then we will have to agree that you are wrong.
+You: No.
+
+TG: By following my instructions, you too can bask in my success.
+
+
+
+Ghostpeople. Gheeple.
+
+WAKE UP SHEEPLE
+
+it implies that sheep are shleepy, of which i have seen NO evidence
+
+
+
+TG: The mass of a coconut is inviolable.
+
+TG: Put the coconut on the switch, but carefully; the mass of a coconut is 
+    inviolable.
+
+TG: Lamentable coconut! O hark, thy mass is inviolable.
+
+
+
++=+=+ limes and lemons +=+=+
+
+TG: Woah, woah, woah! Watch where you put the citrus!
+
+TG: Putting the citrus is an honored task.
+.
+TG: Did you enjoy putting the citrus? I remember when I put my first citrus.
+    Not where, though, admittedly.
+
+TG: Move the citrus with care. It is a delicacy.
+
+
+
++=+=+ TUTORIAL +=+=+
+
+{
+"tutorial_start":
+["Oh, ghostliness. Very ghosty.",
+"It's really important when you're a ghost to do, uh, scary shit.",
+"So you should totally go ahead and do that.",
+"Oh! Look. There's some kind of a NON-ephemereal being over there. Go and touch him a bit."],
+
+"tutorial_near_man":
+["See how he's freaking out like a motherfucker? Wow! This is pretty crazy.",
+"
+
+
+
+
