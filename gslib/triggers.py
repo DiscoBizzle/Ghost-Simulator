@@ -1,6 +1,7 @@
 from gslib import character_functions
 
 
+
 ################################################################################
 ### triggers - links character objects
 ### E.g. Do thing to B when A does x.
@@ -51,6 +52,10 @@ class FlipStateWhenUnTouchedConditional(Trigger):
         self.legend = (u'Untoucher', u'Untouched', u'Target')
 
 
+possible_triggers = {'Flip State On Harvest': FlipStateOnHarvest,
+                     'Flip State When Touched (Conditional)': FlipStateWhenTouchedConditional,
+                     'Flip State When UnTouched (Conditional)': FlipStateWhenUnTouchedConditional}
+
 # Game events that can call functions:
 # - feared_function - executed every tick when the character is scared
 # - possessed_function - occurs when the character becomes possessed
@@ -63,8 +68,8 @@ class FlipStateWhenUnTouchedConditional(Trigger):
 
 # Make sure 'trigger' occurs in the func.__name__ (and doesn't occur in the other function types)
 def trigger_flip_state_on_harvest(obj, target):
-    def func():
-        character_functions.flip_state(target)()
+    def func(harvester):
+        character_functions.flip_state(target)(harvester)
     func.__name__ = 'trigger_flip_state_on_harvest'
     obj.harvested_function.append(func)
 
@@ -72,7 +77,7 @@ def trigger_flip_state_on_harvest(obj, target):
 def trigger_flip_state_is_touched_by(toucher, touched, target):
     def func(o):
         if o == toucher:
-            character_functions.flip_state(target)()
+            character_functions.flip_state(target)(o)
     func.__name__ = 'trigger_flip_state_is_touched_by'
     touched.is_touched_function.append(func)
 
@@ -80,6 +85,6 @@ def trigger_flip_state_is_touched_by(toucher, touched, target):
 def trigger_flip_state_is_untouched_by(untoucher, untouched, target):
     def func(o):
         if o == untoucher:
-            character_functions.flip_state(target)()
+            character_functions.flip_state(target)(o)
     func.__name__ = 'trigger_flip_state_is_untouched_by'
     untouched.is_untouched_function.append(func)

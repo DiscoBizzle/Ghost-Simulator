@@ -5,7 +5,7 @@ __author__ = 'Martin'
 ### These happen when a character is possessed
 ################################################################################
 def im_possessed(obj):
-    def func():
+    def func(possessor):
         return
         surf = text.speech_bubble("I'm possessed!", 150)
         pos = (obj.dimensions[0]/2,  - surf.get_height())
@@ -15,7 +15,7 @@ def im_possessed(obj):
 
 
 def flip_state(obj):
-    def func():
+    def func(possessor):
         obj.state_index = str((int(obj.state_index) + 1) % len(obj.states))
     func.__name__ = 'flip_state'
     return func

@@ -67,11 +67,11 @@ class MouseController(object):
                     continue
                 st = SELECTION_TOLERANCE
                 temp_rect = pygame.Rect((o.coord[0] - st, o.coord[1] - st), (o.dimensions[0] + 2*st, o.dimensions[1] + 2*st))
-                if temp_rect.collidepoint((pos[0]+self.game.camera_coords[0], pos[1]+self.game.camera_coords[1])) and isinstance(o, character.Character):
+                if temp_rect.collidepoint((pos[0]+self.game.camera_coords[0], pos[1]+self.game.camera_coords[1])):
 
                     if self.game.new_trigger_capture:
                         self.game.editor.update_new_trigger(o_name)
-                    else:
+                    elif isinstance(o, character.Character):
                         self.game.disp_object_stats = True
                         self.game.object_stats = o.info_sheet
                         self.game.selected_object = o

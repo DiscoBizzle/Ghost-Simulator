@@ -7,7 +7,7 @@ from gslib import graphics
 ### fear harvested functions
 ################################################################################
 def red_square(obj):  # get ooga booga'd
-    def func():
+    def func(harvester):
         obj.fear = 0
         obj.fainted = True
 

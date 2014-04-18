@@ -139,9 +139,10 @@ class Editor(object):
         # Create new Trigger
         ###################################################################
 
-        self.possible_triggers = {'Flip State On Harvest': triggers.FlipStateOnHarvest,
-                                  'Flip State When Touched (Conditional)': triggers.FlipStateWhenTouchedConditional,
-                                  'Flip State When UnTouched (Conditional)': triggers.FlipStateWhenUnTouchedConditional}
+        self.possible_triggers = triggers.possible_triggers
+        # self.possible_triggers = {'Flip State On Harvest': triggers.FlipStateOnHarvest,
+        #                           'Flip State When Touched (Conditional)': triggers.FlipStateWhenTouchedConditional,
+        #                           'Flip State When UnTouched (Conditional)': triggers.FlipStateWhenUnTouchedConditional}
         self.buttons['new_trigger_label'] = button.DefaultButton(self, None, pos=(760, self.game.dimensions[1] - 20), size=(100, 20),
                                                                  text="New trigger")
         self.drop_lists['new_triggers'] = drop_down_list.DropDownList(self, self.possible_triggers,

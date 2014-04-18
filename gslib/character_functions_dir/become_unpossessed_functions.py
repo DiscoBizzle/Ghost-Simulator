@@ -6,7 +6,7 @@ __author__ = 'Martin'
 ################################################################################
 
 def undo_im_possessed(obj):
-    def func():
+    def func(unpossessor):
         return
         if not obj.possessed_by:
             del obj.flair['possessed']
@@ -15,7 +15,7 @@ def undo_im_possessed(obj):
 
 
 def flip_state(obj):
-    def func():
+    def func(unpossessor):
         obj.state_index = str((int(obj.state_index) + 1) % len(obj.states))
     func.__name__ = 'flip_state'
     return func

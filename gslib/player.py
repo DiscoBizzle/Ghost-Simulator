@@ -80,7 +80,7 @@ class Player(GameObject):
                     # o.fear_collected()
                     self.fear += o.fear
                     for f in o.harvested_function:
-                        f()
+                        f(self)
                         # o.harvested_function()
 
     def toggle_possess(self):
@@ -104,7 +104,7 @@ class Player(GameObject):
             self.possessing = closest[1]
             closest[1].possessed_by.append(self)
             for f in self.possessing.possessed_function:
-                f()
+                f(self)
             # self.possessing.possessed_function()
             # self.try_possess = False
 
@@ -112,7 +112,7 @@ class Player(GameObject):
         self.coord = self.possessing.coord
         self.possessing.possessed_by.remove(self)
         for f in self.possessing.unpossessed_function:
-            f()
+            f(self)
         # self.possessing.unpossessed_function()
         self.possessing = False
 

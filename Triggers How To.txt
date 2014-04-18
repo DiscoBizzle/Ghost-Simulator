@@ -1,0 +1,174 @@
+So, you want to write a new trigger, eh?
+
+Triggers are only for 'linking' character objects (anything that isn't the player).
+I.e. when character X does A to Y, do B to Z
+See section 2.
+
+If you want to do something like:
+when character X does A, do B to X
+then you do not need a trigger.
+Instead see section 1 only.
+
+Functions made in section 1 can be given to objects in the edit menu.
+If you want *all* instances of a particular class to do X when Y happens to them,
+add self.<event_type_functions> = [X function]
+Otherwise use the edit menu to give it only to a certain few.
+
+
+Firstly think about what you want to happen and when.
+There are currently 8 game events that can call functions:
+- feared_function - executed every tick when the character is scared
+- possessed_function - occurs when the character becomes possessed
+- unpossessed_function - occurs when the character becomes unpossessed
+- harvested_function - when the character has had its fear harvested (ooga booga'd)
+- is_touched_function - when the charcter is touched; accepts input of object that touched it
+- is_untouched_function - when the charcter is untouched; accepts input of object that untouched it
+- has_touched_function - when the character touches an object; accepts input of of object that it touches
+- has_untouched_function - when the character untouches an object; accepts input of of object that it untouches
+
+
+Section 1:
+Creating a function to do something on an event.
+Open the relevant .py in character_functions_dir.
+Note: avoid using the same name as another function in any of the files (they can all be accessed through character_functions.py)
+      Try using a prefix on the function name.
+
+Structure is:
+def <name_to_be_accessed_by>(obj):  # takes in an object to do things to
+    def <temp_func_name>(obj2):  # take in the active partner (the obj that caused the event that called this func) - only when_scared functions have no active partner
+        Do things to obj
+    <temp_func_name>.__name__ = <name_to_be_accessed_by>
+    return <temp_func_name>
+
+Function will appear in the relevant drop list in edit - object - function edit (relevant = name of file you wrote it in)
+To have the same function appear in multiple lists, copy paste it (name conflicts don't matter in this case)
+
+
+
+Section 2: Creating a trigger.
+Triggers can use functions from section 1, or use objects' member functions.
+Open triggers.py
+
+Structure is:
+class <NameToBeAccessedBy>(Trigger):
+    def __init__(self, m, obj1=None, obj2=None, target=None):  # =None is important!!
+        """
+        describe the trigger
+        """
+        Trigger.__init__(self, m, trigger<_flip_state_on_harvest>, (obj1, obj2, target))
+
+        self.legend = (u'interactee', u'interactor', u'Target')
+
+
+def trigger<_flip_state_is_touched_by>(interactor, interactee, target):
+    def func(o):  # pass in thing that does the interacting (i.e. the active partner)
+        if o == interactor:  # check if said thing is the right thing
+            character_functions.flip_state(target)(o)  # call the function(s) that you want to happen to target - these don't have to be funcs form section 1
+            AND/OR target.member_function(o)
+    func.__name__ = 'trigger<_flip_state_is_touched_by>'  # set name - this will be shown in the editor
+    interactee.is_touched_function.append(func)  # add the function to the CORRECT function list
+
+where:
+m = map that owns trigger
+obj1 = the object that interacts with obj2 (i.e. touches) (the active partner) (do not use in the case of when_scared functions)
+obj2 = the object that obj1 interacts with (the passive partner)
+target = the object that has something done to it when the trigger activates
+legend = human-understandable names for each of the objects involved - must be exactly the right number of names
+
+
+Add your trigger class (without brackets) to the possible_triggers dict - with a human-readable key.
+If done correctly, your trigger will appear in the edit Create Trigger menu.
+
+
+
+EXAMPLE:
+So, I want a Cannon to shoot a Boss when Dude touches it.
+Dude == interactor
+Cannon == interactee
+Boss == target
+
+The cannon has a member function that is .shoot_target(target).
+
+I open triggers.py.
+
+I type:
+
+class ShootTargetWhenTouchedBy(Trigger):
+    def __init__(self, m, toucher=None, touched=None, target=None):  # =None is important!!
+        """
+        describe the trigger
+        """
+        Trigger.__init__(self, m, trigger_shoot_target_when_touched_by, (toucher, touched, target))
+
+        self.legend = (u'Toucher', u'Touched', u'Target')
+
+def trigger_shoot_target_when_touched_by(toucher, touched, target):
+    def func(o):
+        if o == toucher:
+            touched.shoot_target(target)
+    func.__name__ = 'trigger_shoot_target_when_touched_by'
+    touched.is_touched_function.append(func)
+
+I add 'Shoot Target When Touched (Conditional)': ShootTargetWhenTouchedBy to possible_triggers
+
+
+
+EXAMPLE 2:
+I want a bomb to explode when touched by anything (anything that collides)
+Bomb has member function  def explode(toucher=None):  (the argument is necessary to handle when you attach an on_tough condition)
+In is_touched_functions.py:
+
+def explode_on_touch(obj):
+    def func(toucher):
+        obj.explode(toucher)
+    func.__name__ = 'explode_on_touch
+    return func
+
+This will now appear in the edit menu under drop list is_touched_functions.
+Allows you to make some bombs explode on touch, and others to not (even if they are the same object type)
+The alternative being, define Bomb class to have self.is_touched_function = [self.explode]
+In which case, every bomb will explode on touch.
+
+
+
+EXAMPLE 3:
+I want Door to open when Switch is pressed by Dude (i.e. retinal scanner or whatnot).
+This already exists, but here's how it would be made.
+
+(Pseudo-aside) Section 1:
+Say I want any door to open when touched (i.e. it's not locked)
+I create (in is_touched_function.py):
+
+def flip_state(obj):
+    def func(toucher):  # need to accept toucher, even if this function don't need it!
+        obj.state_index = str((int(obj.state_index) + 1) % len(obj.states))
+    func.__name__ = 'touched_flip_state'
+    return func
+
+Now this will appear in the is_touched drop list in edit.
+Alternatively, door could have a def open(toucher=None): function.
+
+Creating the trigger:
+
+In triggers.py:
+
+class FlipStateWhenTouchedConditional(Trigger):
+    """
+    target flips character state when toucher comes into contact with touched
+    """
+    def __init__(self, m, toucher=None, touched=None, target=None):
+        Trigger.__init__(self, m, trigger_flip_state_is_touched_by, (toucher, touched, target))
+
+        self.legend = (u'Toucher', u'Touched', u'Target')
+
+
+def trigger_flip_state_is_touched_by(toucher, touched, target):
+    def func(o):  # o is the object that touches the button, it is then checked if it is the specific obj that can trigger the button
+        if o == toucher:
+            character_functions.flip_state(target)(o)
+            OR target.open(o)
+    func.__name__ = 'trigger_flip_state_is_touched_by'
+    touched.is_touched_function.append(func)
+
+
+Add 'Flip State When Touched (Conditional)': FlipStateWhenTouchedConditional to possible_triggers
