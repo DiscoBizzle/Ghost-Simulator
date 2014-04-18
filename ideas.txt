@@ -67,17 +67,109 @@ TG: Move the citrus with care. It is a delicacy.
 
 +=+=+ TUTORIAL +=+=+
 
-{
-"tutorial_start":
-["Oh, ghostliness. Very ghosty.",
-"It's really important when you're a ghost to do, uh, scary shit.",
-"So you should totally go ahead and do that.",
-"Oh! Look. There's some kind of a NON-ephemereal being over there. Go and touch him a bit."],
+TG: Oh, ghostliness. Very ghosty.
+TG: It's really important when you're a ghost to do, uh, scary shit.
+    So you should totally go ahead and do that.
+TG: Oh! Look. There's some kind of a NON-ephemereal being over there.
+    Do him. Go on: do him.
 
-"tutorial_near_man":
-["See how he's freaking out like a motherfucker? Wow! This is pretty crazy.",
-"
+...
 
+(encouragement, if necessary)
+TG: Come on. He's not that scary. I know this is all new to you, but if you
+    just go over and pull his pants down I promise you'll feel a lot better.
 
+...
+
+(more encouragement)
+TG: Do it. Do it! Do it do it do it do it do it do it do it do it do it do it.
+    Do. It.
+
+...
+
+(further encouragement still)
+TG: Everyone thinks you're really scary. Buck up man, come on. You can do this.
+    We can do this. Together.
+
+...
+
+(more encouragement)
+TG: Unless you're literally retarded, you should have figured it out by now.
+    You're just baiting me for lines. I'm flattered, but really, let's just
+     get the fuck on with it now. I'm a busy man.
+
+...
+
+(actually walked near man)
+TG: See how he's freaking out like a motherfucker? Wow! This is pretty crazy.
+TG: He's afeared of you. You are translucent, so you can see where he's coming
+    from.
+
+...
+
+(second man)
+TG: Because this is a video game, you have to do something new now.
+TG: I know. Wasn't standing slightly too close to people enough of a challenge?
+TG: I can't be fucked with all of this old-school bollocks. Just let me creep
+     people out and I'm set, like, you know?
+Someone else: Get on with it!
+TG: Fine, fine, fine. I read the contract, I know what I have to do.
+TG: Ok, so, right, the deal with this guy. He's not scared of you just being
+     near him.  Go on, try it.
+
+.
+
+TG: See? He doesn't care. Maybe he doesn't know what's good for him. Maybe
+     he's just dumb as hell. Maybe he was Timothy Leary's dealer in a past 
+     life, and his visual field is all just auroras at this point.
+TG: In any case, it's your job to scare him straight. Go stand near him and
+     go blaaaaghaalalalagaahaalaalagh or something. Push a box on his 'ed
+     or rub his genitals against a cheese grater. I don't know; do him in!
+
+...
+
+(after scared second man)
+TG: Nice one, probably. I mean, I've seen better, but at least you're trying,
+     and I guess that's what really matters.
+TG: Now let's go see victim number 3.
+
+.
+
+(encountering victim number 3)
+TG: Now this guy is only scared of *specific* shit. You'll be dealing with a
+     lot of these people, thanks to the marvelous desensitization machine
+     that is the internet.
+TG: To fuck this one over good and proper `like` we need to get a bit more info.
+TG: Click on him if you've got a mouse, or if you plugged in a controller
+     because you're actually a child who finds the interface afforded by
+     a Tonka toy more natural then press the appropriate button. It'll be B on
+     a 360 pad, or circle on a PS3 controller.
+
+...
+
+(displaying dialog)
+TG: Right, now you can see what the deelio is with this character. 
+TG: Some borderline slanderous background, followed by what amounts to a text
+     dump from some dank dark region of the game engine. Emphasis on 'dump'.
+TG: This dubious scenario has been engineered so that you'll need to possess 
+     that skateboard over there and ram that paperclip into the earth pin
+     of the mains.
+TG: You can possess stuff by getting near it and pressing the F key (F `here of
+     course` standing for 'fuck him up') or the A button on a 360 pad
+     or X on a Sonything.
+TG: This will result in a really bad day for the guy.
+
+...
+
+(you did it!)
+TG: Well, brutal murder achieved, and you're less than a minute into the game 
+     proper. Man, this video games is some good shit!
+TG: On a more practical note, I'd get out of there unless you want Eau de
+     Involuntary Bowel Movement stuck to the inside of your nostrils for the
+     rest of your ghost career.
+
+...
+
+TG: To the gaaaaaaaaaaaaaame!~
 
 
