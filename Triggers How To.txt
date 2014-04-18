@@ -146,6 +146,10 @@ def flip_state(obj):
     return func
 
 Now this will appear in the is_touched drop list in edit.
+
+Door class would then be expected to have two .states:
+{'0': <variables that correspond to closed>, '1': <variables that correspond to open}
+
 Alternatively, door could have a def open(toucher=None): function.
 
 Creating the trigger:
