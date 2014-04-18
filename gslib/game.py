@@ -65,7 +65,6 @@ class Game(pyglet.window.Window):
         TODO.append("implement field of view slider (after pyglet camera implemented)")
         TODO.append("keybind menu in alphabetical order")
         TODO.append("add sound/music volume to options saving")
-        TODO.append("credits screen port to pyglet")
         TODO.append("design more sprites and make default characters (in character_objects)")
         TODO.append("add foreground layer to maps - then make characters appear *through* the foreground")
         TODO.append("add character save/load on a per-map basis (make sure triggers/funcs are preserved)")
@@ -99,7 +98,7 @@ class Game(pyglet.window.Window):
         self.sound_handler.music_volume = 0.0
         self.sound_handler.start_next_music()
 
-        #self.credits = credits.Credits(self)
+        self.credits = credits.Credits(self)
         self.options_menu = menus.OptionsMenu(self, (200, 50))
         self.fps_clock = pyglet.clock.ClockDisplay()
 

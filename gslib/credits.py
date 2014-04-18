@@ -1,8 +1,9 @@
 import collections
 
-import pygame
+import pyglet
 
 from gslib.constants import *
+
 
 def parse_credits_file(fname):
     """Build up a credits dictionary from a text file.
@@ -19,85 +20,42 @@ def parse_credits_file(fname):
             res[key.decode('utf-8')].extend(names)
     return res
 
-def get_credits_size(credits, font, indent, spacing):
-    """Calculate the size required for the credits.
-
-    Arguments are as in the Credits class __init__ method.
-    """
-    if indent < 0:
-        indent = -indent
-    width, height = (0, 0)
-
-    for k, v in credits.iteritems():
-        # compute the size required for the header
-        size = font.size(k)
-        width = max(width, size[0])
-        height += size[1]
-
-        for name in v:
-            size = font.size(name)
-            width = max(width, size[0] + indent)
-            height += size[1]
-
-        height += spacing
-
-    return (width, height)
 
 class Credits(object):
-    def __init__(self, game, indent=80, title_col=(255, 255, 255),
-            name_col=(255, 255, 255), bg_col=(0, 0, 0), spacing=20, size=80):
+    def __init__(self, game, color=(255, 255, 255, 255), size=20, speed=3):
         """Display a credits screen for game.
 
         Arguments:
             - game: the game whose surface to write to
-            - indent: the difference between the header and names. Can be negative
-            - title_col: colour of the job titles
-            - name_col: colour of the names
-            - bg_col: background colour
-            - spacing: the vertical gap between the blocks of names
+            - color: colour of the job titles and names
             - size: the text size
+            - speed: number of pixels it moves up every game tick
         """
         self.credits = parse_credits_file(CREDITS_FILE)
-        self.GameClass = game
-        self.indent = indent
-        self.title_col = title_col
-        self.name_col = name_col
-        self.bg_col = bg_col
-        self.spacing = spacing
-        self.font = pygame.font.SysFont(FONT, size)
-        self.size = get_credits_size(self.credits, self.font, self.indent, self.spacing)
-        self.surface = pygame.Surface(self.size)
-        self.v_offset = game.graphics.surface.get_height()
-        self.margin = (game.graphics.surface.get_width() - self.surface.get_width())/4
+        self.game = game
+        self.color = color
+        self.font_size = size
+        self.speed = speed
+        self.v_offset = 0
+        self.batch = pyglet.graphics.Batch()
 
+        text = u""
+        for job, names in self.credits.iteritems():
+            text += job + '\n'
+            for name in names:
+                text += '\t' + name + '\n'
+            text += '\n'
+
+        self.text_label = pyglet.text.Label(text, FONT, self.font_size, color=self.color,
+                                            width=self.game.dimensions[0], batch=self.batch, multiline=True)
 
     def display(self):
-        height = 0
-        for k, v in self.credits.iteritems():
-            header = self.font.render(k, True, self.title_col, self.bg_col)
-            if self.indent < 0:
-                self.surface.blit(header, (self.indent, height))
-            else:
-                self.surface.blit(header, (0, height))
-            height += header.get_height()
+        self.batch.draw()
 
-            for n in v:
-                name = self.font.render(n, True, self.name_col, self.bg_col)
-                if self.indent < 0:
-                    self.surface.blit(name, (0, height))
-                else:
-                    self.surface.blit(name, (self.indent, height))
-                height += header.get_height()
-
-            height += self.spacing
-
-        self.GameClass.graphics.surface.fill(self.bg_col)
-        self.GameClass.graphics.surface.blit(self.surface, (self.margin, self.v_offset))
-
-    def update(self):
-        self.GameClass.graphics.surface.fill(self.bg_col)
-        self.v_offset -= 3
-        if self.v_offset < -(self.size[1]):
-            self.GameClass.GameState = MAIN_MENU
-            self.v_offset = self.GameClass.graphics.surface.get_height()
-        self.GameClass.graphics.surface.blit(self.surface, (self.margin, self.v_offset))
+    def update(self, dt):
+        self.text_label.x = (self.game.dimensions[0] - self.text_label.content_width) / 2
+        self.text_label.y = self.v_offset
+        self.v_offset += self.speed
+        if self.v_offset > self.text_label.content_height + self.game.dimensions[1]:
+            self.game.set_state(MAIN_MENU)
+            self.v_offset = 0
