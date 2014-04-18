@@ -251,10 +251,6 @@ class Game(pyglet.window.Window):
         #self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
         self.ticks_clock.tick()
         self.camera_coords = self.calc_camera_coord()
-        if self.show_fears:
-            self.say_fears()
-        if self.show_ranges:
-            self.show_fear_ranges()
 
         if self.GameState == MAIN_GAME:
             self.last_touching = [p for p in self.touching]  # creates a copy

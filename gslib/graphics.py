@@ -103,6 +103,12 @@ class Graphics(object):
 
             self.draw_fear_bar()
             self.draw_character_stats()
+
+            if self.game.show_fears:
+                self.game.say_fears()
+            if self.game.show_ranges:
+                self.game.show_fear_ranges()
+
         elif self.game.GameState == GAME_OVER:
             self.draw_game_over()
         elif self.game.GameState == CREDITS:
