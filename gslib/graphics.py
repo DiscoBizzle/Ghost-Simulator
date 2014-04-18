@@ -58,7 +58,7 @@ class Graphics(object):
         #self.fear_size = font.size(u"FEAR")
         #self.fear_txt = font.render(u"FEAR", True, (200, 200, 200)).convert_alpha()
         #self.fear_surf = pygame.Surface((self.game.dimensions[0], 32)).convert_alpha()
-        self.fear_text = text.new('comic sans', 20, u'FEAR')
+        self.fear_text = text.new(FONT, 20, u'FEAR')
 
         #font = pygame.font.SysFont(FONT, 80)
         #self.game_over_txt1_size = font.size(u"GAME OVER")
