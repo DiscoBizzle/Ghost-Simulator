@@ -48,7 +48,7 @@ class Button(object):
         self._text_dirty = None
         self._font_size = font_size
         self.text_states = text_states
-        self.text_states_toggle = False
+        self._text_states_toggle = False
         self.enabled = enabled  # whether button can be activated, visible or not
         self.batch = batch
         self.outer_group = groups[0]
@@ -90,6 +90,7 @@ class Button(object):
     border_width = create_property('border_width')
     text = create_property('text')
     font_size = create_property('font_size')
+    text_states_toggle = create_property('text_states_toggle')
 
     def redraw(self):
         if not (self.size[0] > 0 and self.size[1] > 0): raise Exception('Negative button size')

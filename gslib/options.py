@@ -12,7 +12,7 @@ class Options(dict, pyglet.event.EventDispatcher):
 
     def __setitem__(self, k, new_value):
         old_value = self[k] if k in self else None
-        print("option set: {} {} {}".format(k, old_value, new_value))
+        #print("option set: {} {} {}".format(k, old_value, new_value))
         super(Options, self).__setitem__(k, new_value)
         if new_value != old_value:
             self.dispatch_event('on_option_change', k, old_value, new_value)

@@ -176,6 +176,9 @@ class OptionsMenu(Menu):
         self.buttons['screen_size'] = button.Button(self, self.set_screen_size, order = (8, 1), visible=True,
                                             text_states=[u'1024 x 768', u'1280 x 720', u'1600 x 900', u'1920 x 1080', u'Fullscreen'],
                                             border_colour=(120, 50, 80), border_width=3, colour=(120, 0, 0), batch=self.batch, groups=self.groups)
+        self.buttons['vsync'] = button.Button(self, self.vsync_toggle, order = (9, 0), visible=True,
+                                            text_states=[u'vsync: Off', u'vsync: On'], border_colour=(120, 50, 80), border_width=3,
+                                            colour=(120, 0, 0), batch=self.batch, groups=self.groups)
 
         self.update_button_text_and_slider_values()
         Menu.arrange_buttons(self)
@@ -204,12 +207,16 @@ class OptionsMenu(Menu):
     def set_music(self, value):
         self.game_class.options['music_volume'] = value
 
+    def vsync_toggle(self):
+        self.game_class.options['vsync'] = not self.game_class.options['vsync']
+
     def update_button_text_and_slider_values(self):
         self.buttons['FOV'].text_states_toggle = self.game_class.options['FOV']
         self.buttons['VOF'].text_states_toggle = self.game_class.options['VOF']
         self.sliders['VOF'].visible = self.game_class.options['VOF']
         self.buttons['torch'].text_states_toggle = self.game_class.options['torch']
         self.buttons['menu_scale'].text_states_toggle = self.game_class.options['menu_scale']
+        self.buttons['vsync'].text_states_toggle = self.game_class.options['vsync']
 
         self.buttons['sound_display'].text = u'Sound Volume: {}'.format(int(self.game_class.options['sound_volume']/0.003))
         self.buttons['music_display'].text = u'Music Volume: {}'.format(int(self.game_class.options['music_volume']/0.003))

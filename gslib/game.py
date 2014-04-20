@@ -51,7 +51,7 @@ class Game(pyglet.window.Window):
     Objects will be drawn without having to add them to these lists.
     """
     def __init__(self):
-        super(Game, self).__init__(width=GAME_WIDTH, height=GAME_HEIGHT, resizable=True)
+        super(Game, self).__init__(width=GAME_WIDTH, height=GAME_HEIGHT, resizable=True, vsync=False)
 
         TODO = []
         TODO.append("character pathe-ing")
@@ -188,8 +188,11 @@ class Game(pyglet.window.Window):
         self.gather_buttons_and_drop_lists_and_objects()
 
         self.ticks_clock = pyglet.clock.Clock()
-        self.ticks_clock_display = pyglet.clock.ClockDisplay(format='                 ticks:%(fps).2f',
+        self.ticks_clock_display = pyglet.clock.ClockDisplay(format='               ticks:%(fps).2f',
                                                              clock=self.ticks_clock)
+        self.draw_clock = pyglet.clock.Clock()
+        self.draw_clock_display = pyglet.clock.ClockDisplay(format='                                     fps:%(fps).2f',
+                                                            clock=self.draw_clock)
         pyglet.clock.schedule_interval(self.update, 1.0 / TICKS_PER_SEC)
 
         self.options.push_handlers(self)
@@ -221,6 +224,7 @@ class Game(pyglet.window.Window):
 
     # pyglet event
     def on_draw(self):
+        self.draw_clock.tick()
         #print "got to stupid fucking drawing"
         if self.game_running:
             if self.GameState == CUTSCENE:
@@ -232,6 +236,7 @@ class Game(pyglet.window.Window):
 
             self.fps_clock.draw()
             self.ticks_clock_display.draw()
+            self.draw_clock_display.draw()
 
     # def on_resize(self, width, height):
     #     pyglet.window.Window.on_resize(self, width, height)

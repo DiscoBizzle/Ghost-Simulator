@@ -2,7 +2,7 @@
 
 import pyglet
 #pyglet.options['debug_gl'] = False
-pyglet.options['vsync'] = False
+#pyglet.options['vsync'] = False
 pyglet.options['shadow_window'] = False
 
 from gslib import game
