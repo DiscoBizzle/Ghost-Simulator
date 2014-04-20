@@ -5,11 +5,11 @@ from gslib.constants import *
 # TODO: if text rendering is too slow, make a func that uses pyglet.font.* instead.
 # pyglet.text looks like it's the slower but more complete option.
 
-def new(font=FONT, font_size=36, text='no text', centered=False, width=None, height=None):
+def new(font=FONT, font_size=36, text='no text', centered=False, width=None, height=None, batch=None, group=None):
     wrapped = (width is not None)
     label = pyglet.text.Label(text, font, font_size, width=width, height=height,
               anchor_x='left', anchor_y='bottom', align=('center' if centered else 'left'),
-              multiline=wrapped)
+              multiline=wrapped, batch=batch, group=group)
     label.content_valign = 'center'
     return label
 

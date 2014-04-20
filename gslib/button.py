@@ -35,7 +35,7 @@ class Button(object):
         Create function in class that creates the button and pass it in as second argument.
     """
     def __init__(self, owner, function, pos=(50, 50), size=(100, 100), visible=True, enabled=True, colour=(0, 0, 0),
-                 border_colour=(0, 0, 0), border_width=2, text=None, font_size=10, text_states=None, **kwargs):
+                 border_colour=(0, 0, 0), border_width=2, text=None, font_size=10, text_states=None, batch=None, groups=(None, None, None), **kwargs):
         self._pos = pos
 
         # Other properties' validity are checked in redraw(), this is called whenever they are changed, so exceptions will lead back to the incorrect assignment
@@ -50,6 +50,10 @@ class Button(object):
         self.text_states = text_states
         self.text_states_toggle = False
         self.enabled = enabled  # whether button can be activated, visible or not
+        self.batch = batch
+        self.outer_group = groups[0]
+        self.inner_group = groups[1]
+        self.text_group = groups[2]
 
         for arg in kwargs:  # allows for additional arbitrary arguments to be passed in, useful for more complicated button functions
             setattr(self, arg, kwargs[arg])
@@ -97,7 +101,17 @@ class Button(object):
             self._text = self.text_states[self.text_states_toggle]
 
         if not self._visible:
+            self.outer_sprite.batch = None
+            self.inner_sprite.batch = None
+            if self.text_sprite is not None:
+                self.text_sprite.delete()
             return
+
+        self.outer_sprite.batch = self.batch
+        self.inner_sprite.batch = self.batch
+
+        self.outer_sprite.group = self.outer_group
+        self.inner_sprite.group = self.inner_group
 
         self.outer_sprite.color_rgb = self.border_colour
         self.inner_sprite.color_rgb = self.colour
@@ -113,9 +127,13 @@ class Button(object):
         # do we need to rerender text? rendering text is SLOW. (< 30 fps)
         text_dirty_new = [self.text, self.font_size, self.size[0], self.size[1]]
         if self._text_dirty is None or self._text_dirty != text_dirty_new:
-            self.text_sprite = text.new(text=self.text, font_size=self.font_size, centered=True,
-                                         width=self.size[0], height=self.size[1])
-            self.text_sprite.color = (200, 200, 200, 255)
+            if self.text_sprite is not None:
+                self.text_sprite.delete()
+            self.text_sprite = pyglet.text.Label(text=self.text, font_name=FONT, font_size=self.font_size,
+                                                 color=(200, 200, 200, 255), width=self.size[0], height=self.size[1],
+                                                 anchor_x='left', anchor_y='bottom', align='center', multiline=True,
+                                                 batch=self.batch, group=self.text_group)
+            self.text_sprite.content_valign = 'center'
             self._text_dirty = text_dirty_new
 
         self.text_sprite.x = self.pos[0] # + self.outer_sprite.width / 2 - self.text_sprite.width / 2
