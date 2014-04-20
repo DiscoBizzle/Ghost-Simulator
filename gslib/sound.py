@@ -8,8 +8,10 @@ from gslib.constants import *
 
 
 class Sound(object):
-    def __init__(self):
+    def __init__(self, game):
         # TODO remove handler from currently playing when finished playing by pushing events
+
+        self.game = game
 
         self._music_volume = INITIAL_MUSIC_VOLUME
         self._sound_volume = INITIAL_SOUND_VOLUME
@@ -21,23 +23,17 @@ class Sound(object):
         self.load_all_sounds()
         self.load_all_music()
 
-    def get_music_volume(self):
-        return self._music_volume
+        self.game.options.push_handlers(self)
 
-    def set_music_volume(self, val):
-        self._music_volume = val
-        for m in self.music_playing:
-            m.volume = val
-    music_volume = property(get_music_volume, set_music_volume)
-
-    def get_sound_volume(self):
-        return self._music_volume
-
-    def set_sound_volume(self, val):
-        self._sound_volume = val
-        for s in self.sound_playing:
-            s.volume = val
-    sound_volume = property(get_sound_volume, set_sound_volume)
+    def on_option_change(self, k, old_value, new_value):
+        if k == 'music_volume':
+            self._music_volume = new_value
+            for m in self.music_playing:
+                m.volume = new_value
+        elif k == 'sound_volume':
+            self._sound_volume = new_value
+            for s in self.sound_playing:
+                s.volume = new_value
 
     def load_all_sounds(self):
         sound_dict = {}

@@ -1,4 +1,9 @@
+fullscreen;False~<type 'bool'>
 FOV;True~<type 'bool'>
+sound_volume;0.0~<type 'float'>
 torch;False~<type 'bool'>
-menu_scale;False~<type 'bool'>
 VOF;False~<type 'bool'>
+music_volume;0.0~<type 'float'>
+menu_scale;False~<type 'bool'>
+vsync;False~<type 'bool'>
+resolution;(1280, 720)~<type 'tuple'>

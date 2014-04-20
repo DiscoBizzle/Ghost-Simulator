@@ -34,19 +34,10 @@ class Menu(object):
                                                    visible=False, enabled=self.game_class.options['menu_scale'], batch=self.batch, groups=self.groups)
         # self.first_time = True
 
+        self.game_class.push_handlers(self)
+        self.game_class.options.push_handlers(self)
+
     def display(self):
-        if self.game_class.options['menu_scale']:
-            self.buttons['menu_scale_display'].visible = True
-            self.sliders['menu_scale'].visible = True
-            self.sliders['menu_scale'].enabled = True
-            self.set_menu_scale(self.sliders['menu_scale'].value)
-
-        else:
-            self.buttons['menu_scale_display'].visible = False
-            self.sliders['menu_scale'].visible = False
-            self.sliders['menu_scale'].enabled = False
-            self.set_menu_scale(1.0/self.frac)
-
         self.batch.draw()
 
     def mouse_event(self, pos, typ, button=None):
@@ -86,9 +77,26 @@ class Menu(object):
             self.button_size = (self.button_size[0], self.game_class.dimensions[1] - self.vert_offset - 32)
 
         # self.buttons_per_column = int(((self.game_class.dimensions[1] - self.vert_offset) / (self.button_size[1]+20))) #- 1
-        self.arrange_buttons()
         self.font_size = int(self.base_font_size * value * self.frac)
         self.buttons['menu_scale_display'].text = u"Menu scale: {}".format(round(self.button_size[0] / self.original_button_size[0], 2))
+        self.arrange_buttons()
+
+    def on_option_change(self, k, old_value, new_value):
+        if k == 'menu_scale':
+            self.buttons['menu_scale_display'].visible = new_value
+            self.buttons['menu_scale_display'].enabled = new_value
+            self.sliders['menu_scale'].visible = new_value
+            self.sliders['menu_scale'].enabled = new_value
+            if new_value:
+                self.set_menu_scale(self.sliders['menu_scale'].value)
+            else:
+                self.set_menu_scale(1.0/self.frac)
+
+    def on_resize(self, width, height):
+        if self.game_class.options['menu_scale']:
+            self.set_menu_scale(self.sliders['menu_scale'].value)
+        else:
+            self.set_menu_scale(1.0/self.frac)
 
 
 class MainMenu(Menu):
@@ -147,8 +155,8 @@ class OptionsMenu(Menu):
                                             text=u'Music Volume: {}'.format(int(INITIAL_MUSIC_VOLUME/0.003)), border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0), batch=self.batch, groups=self.groups)
 
-        self.sliders['sound'] = slider.Slider(self, self.set_sound, range=(0.0, 2.0), order = (3, 1), value = game_class.sound_handler.sound_volume, batch=self.batch, groups=self.groups)
-        self.sliders['music'] = slider.Slider(self, self.set_music, range=(0.0, 2.0), order = (4, 1), value = game_class.sound_handler.music_volume, batch=self.batch, groups=self.groups)
+        self.sliders['sound'] = slider.Slider(self, self.set_sound, range=(0.0, 2.0), order = (3, 1), value=self.game_class.options['sound_volume'], batch=self.batch, groups=self.groups)
+        self.sliders['music'] = slider.Slider(self, self.set_music, range=(0.0, 2.0), order = (4, 1), value=self.game_class.options['music_volume'], batch=self.batch, groups=self.groups)
 
         self.buttons['menu_scale'] = button.Button(self, self.menu_scale_toggle, order = (5, 0), visible=True,
                                             text_states=[u'Menu Scaling: Off', u'Menu Scaling: On'], border_colour=(120, 50, 80), border_width=3,
@@ -166,74 +174,84 @@ class OptionsMenu(Menu):
                                             text=u'Screen Size', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0), batch=self.batch, groups=self.groups)
         self.buttons['screen_size'] = button.Button(self, self.set_screen_size, order = (8, 1), visible=True,
-                                            text_states=[u'1024 x 768', u'1600 x 900', u'1920 x 1080', u'Fullscreen'],
+                                            text_states=[u'1024 x 768', u'1280 x 720', u'1600 x 900', u'1920 x 1080', u'Fullscreen'],
                                             border_colour=(120, 50, 80), border_width=3, colour=(120, 0, 0), batch=self.batch, groups=self.groups)
+
+        self.update_button_text_and_slider_values()
         Menu.arrange_buttons(self)
 
     def FOV_toggle(self):
         self.game_class.options['FOV'] = not self.game_class.options['FOV']
-        self.buttons['FOV'].text_states_toggle = not self.buttons['FOV'].text_states_toggle
 
     def VOF_toggle(self):
-        self.sliders['VOF'].visible = not self.sliders['VOF'].visible
         self.game_class.options['VOF'] = not self.game_class.options['VOF']
-        self.buttons['VOF'].text_states_toggle = not self.buttons['VOF'].text_states_toggle
 
     def VOF_value(self, val):
         self.game_class.graphics.field.opacity = val
 
     def torch_toggle(self):
         self.game_class.options['torch'] = not self.game_class.options['torch']
-        self.buttons['torch'].text_states_toggle = not self.buttons['torch'].text_states_toggle
 
     def keybind_toggle(self):
         self.game_class.GameState = KEYBIND_MENU
 
     def menu_scale_toggle(self):
         self.game_class.options['menu_scale'] = not self.game_class.options['menu_scale']
-        self.buttons['menu_scale'].text_states_toggle = not self.buttons['menu_scale'].text_states_toggle
-        self.arrange_buttons()
 
     def set_sound(self, value):
-        self.game_class.sound_handler.sound_volume = value
-        self.buttons['sound_display'].text = u'Sound Volume: {}'.format(int(value / 0.003))
+        self.game_class.options['sound_volume'] = value
 
     def set_music(self, value):
-        self.game_class.sound_handler.music_volume = value
-        self.buttons['music_display'].text = u'Music Volume: {}'.format(int(value / 0.003))
+        self.game_class.options['music_volume'] = value
 
     def update_button_text_and_slider_values(self):
         self.buttons['FOV'].text_states_toggle = self.game_class.options['FOV']
         self.buttons['VOF'].text_states_toggle = self.game_class.options['VOF']
+        self.sliders['VOF'].visible = self.game_class.options['VOF']
         self.buttons['torch'].text_states_toggle = self.game_class.options['torch']
         self.buttons['menu_scale'].text_states_toggle = self.game_class.options['menu_scale']
 
-        self.buttons['sound_display'].text = u'Sound Volume: {}'.format(int(self.game_class.sound_handler.sound_volume/0.003))
-        self.buttons['music_display'].text = u'Music Volume: {}'.format(int(self.game_class.sound_handler.music_volume/0.003))
+        self.buttons['sound_display'].text = u'Sound Volume: {}'.format(int(self.game_class.options['sound_volume']/0.003))
+        self.buttons['music_display'].text = u'Music Volume: {}'.format(int(self.game_class.options['music_volume']/0.003))
 
-        self.sliders['sound'].value = self.game_class.sound_handler.sound_volume
-        self.sliders['music'].value = self.game_class.sound_handler.music_volume
+        self.sliders['sound'].value = self.game_class.options['sound_volume']
+        self.sliders['music'].value = self.game_class.options['music_volume']
+
+        size = "{} x {}".format(*self.game_class.options['resolution'])
+        if self.game_class.options['fullscreen']:
+            self.buttons['screen_size'].text_states_toggle = 0
+        elif size in self.buttons['screen_size'].text_states:
+            new_index = self.buttons['screen_size'].text_states.index(size) + 1
+            self.buttons['screen_size'].text_states_toggle = new_index % len(self.buttons['screen_size'].text_states)
+        else:
+            self.buttons['screen_size'].text_states_toggle = 0
 
     def load(self):
-        self.game_class.load_options()
+        self.game_class.options.load_options()
 
     def save(self):
-        self.game_class.save_options()
+        self.game_class.options.save_options()
 
     def set_screen_size(self):
-        self.buttons['screen_size'].text_states_toggle += 1
-        self.buttons['screen_size'].text_states_toggle %= len(self.buttons['screen_size'].text_states)
         new_size = self.buttons['screen_size'].text_states[self.buttons['screen_size'].text_states_toggle]
         if 'x' in new_size:
-            self.game_class.set_fullscreen(fullscreen=False)
             new_size = new_size.split(' x ')
             new_size = (int(new_size[0]), int(new_size[1]))
-            self.game_class.set_size(new_size[0], new_size[1])
-
-            self.game_class.set_location(5, 30)  # aligns window to top left of screen (on windows atleast)
+            self.game_class.options['fullscreen'] = False
+            self.game_class.options['resolution'] = new_size
         elif new_size == u'Fullscreen':
-            self.game_class.set_fullscreen()
-        self.game_class.dimensions = self.game_class.get_size()
+            self.game_class.options['fullscreen'] = True
+
+    def on_option_change(self, k, old_value, new_value):
+        self.update_button_text_and_slider_values()
+        super(OptionsMenu, self).on_option_change(k, old_value, new_value)
+
+    def on_resize(self, width, height):
+        self.update_button_text_and_slider_values()
+        if self.game_class.options['menu_scale']:
+            self.set_menu_scale(self.sliders['menu_scale'].value)
+        else:
+            self.set_menu_scale(1.0/self.frac)
 
 
 class SkillsMenu(Menu):

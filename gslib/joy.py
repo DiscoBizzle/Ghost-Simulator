@@ -44,6 +44,8 @@ class JoyController(object):
             self.game.options['VOF'] = not self.game.options['VOF']
         elif button == 6:
             self.game.options['torch'] = not self.game.options['torch']
+        elif button == 7:
+            self.game.options['vsync'] = not self.game.options['vsync']
         elif button == 9:
             if self.game.GameState == MAIN_MENU:
                 self.game.set_state(MAIN_GAME)

@@ -29,6 +29,7 @@ from gslib import text
 from gslib import drop_down_list
 from gslib import map_edit
 from gslib import save_load
+from gslib import options
 from gslib.constants import *
 
 
@@ -78,8 +79,8 @@ class Game(pyglet.window.Window):
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
 
-        self.options = {'FOV': True, 'VOF': False, 'torch': False, 'menu_scale': False}
-        self.dimensions = (GAME_WIDTH, GAME_HEIGHT)
+        self.options = options.Options(DEFAULT_OPTIONS)
+
         self.set_location(5, 30)  # aligns window to top left of screen (on windows atleast)
 
         self.Menu = menus.MainMenu(self, (161, 100))
@@ -93,8 +94,8 @@ class Game(pyglet.window.Window):
 
         # TODO PYGLET
 
-        self.sound_handler = sound.Sound()
-        self.sound_handler.music_volume = 0.0
+        self.sound_handler = sound.Sound(self)
+        # self.sound_handler.music_volume = 0.0
         self.sound_handler.start_next_music()
 
         self.credits = credits.Credits(self)
@@ -191,6 +192,12 @@ class Game(pyglet.window.Window):
                                                              clock=self.ticks_clock)
         pyglet.clock.schedule_interval(self.update, 1.0 / TICKS_PER_SEC)
 
+        self.options.push_handlers(self)
+
+    @property
+    def dimensions(self):
+        return self.get_size()
+
     # pyglet event
     def on_key_press(self, symbol, modifiers):
         self.key_controller.keys.on_key_press(symbol, modifiers)
@@ -226,9 +233,8 @@ class Game(pyglet.window.Window):
             self.fps_clock.draw()
             self.ticks_clock_display.draw()
 
-    def on_resize(self, width, height):
-        self.dimensions = (width, height)
-        pyglet.window.Window.on_resize(self, width, height)
+    # def on_resize(self, width, height):
+    #     pyglet.window.Window.on_resize(self, width, height)
 
     def gather_buttons_and_drop_lists_and_objects(self):
         self.buttons = dict(self.game_buttons.items())
@@ -355,34 +361,12 @@ class Game(pyglet.window.Window):
     def quit_game(self):
         self.dispatch_event('on_close')
 
-    def save_options(self):
-        f = open(OPTIONS_FILE, 'w')
-        for option, val in self.options.iteritems():
-            f.write(option + ';' + str(val) + '~' + str(type(val)) + '\n')
-        f.close()
-
-    def load_options(self):
-        f = open(OPTIONS_FILE, 'r')
-        for l in f:
-            semi = l.find(';')
-            tilde = l.find('~')
-            option = l[:semi]
-            val = l[semi+1:tilde]
-            typ = l[tilde+1:]
-            typ = typ.rstrip()
-            if typ == "<type 'bool'>":
-                if val == 'True':
-                    val = True
-                else:
-                    val = False
-            elif typ == "<type 'int'>":
-                val = int(val)
-            elif typ == "<type 'float'>":
-                val = float(val)
-
-            self.options[option] = val
-        f.close()
-
-        self.options_menu.update_button_text_and_slider_values()
-        # self.options_menu.set_sound(self.options['sound_volume'])
-        # self.options_menu.set_music(self.options['music_volume'])
+    def on_option_change(self, k, old_value, new_value):
+        if k == 'vsync':
+            self.set_vsync(new_value)
+        elif k == 'fullscreen':
+            self.set_fullscreen(fullscreen=new_value)
+            self.options['resolution'] = self.get_size()
+        elif k == 'resolution':
+            self.set_size(*new_value)
+            # self.set_location(5, 31)  # aligns window to top left of screen (on windows atleast)

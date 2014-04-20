@@ -1,10 +1,12 @@
 import os.path
 import sys
 
-def fallback_files(target, *fnames):
+def fallback_files(target, required, *fnames):
     for fname in fnames:
         if os.path.exists(fname):
             return fname
+    if not required:
+        return fnames[0]
     raise Exception("Couldn't find {}".format(target))
 
 # Game States
@@ -66,16 +68,16 @@ FEAR_PER_TICK = 0 #3.0
 POSSESSION_RANGE = 50
 FEAR_COLLECTION_RADIUS = 300
 
-MUSIC_DIR = fallback_files("music dir", "music", os.path.join(sys.prefix, "gs-music"))
-SOUND_DIR = fallback_files("sound dir", "sound", os.path.join(sys.prefix, "gs-sound"))
-VIDEO_DIR = fallback_files("video dir", "video", os.path.join(sys.prefix, "gs-video"))
-CHARACTER_DIR = fallback_files("characters dir", "characters", os.path.join(sys.prefix, "gs-chars"))
-TILES_DIR = fallback_files("tiles dir", "tiles", os.path.join(sys.prefix, 'gs-tiles'))
-CREDITS_FILE = fallback_files("credits file", "credits.txt", os.path.join(sys.prefix, 'gs-data', 'credits.txt'))
-SKILLS_FILE = fallback_files("skills file", "skills.json", os.path.join(sys.prefix, 'gs-data', 'skills.json'))
-KEYMAP_FILE = fallback_files("keymap file", "keymap.txt", os.path.join(sys.prefix, 'gs-data', 'keymap.txt'))
-OPTIONS_FILE = fallback_files("options file", "options.txt", os.path.join(sys.prefix, 'gs-data', 'options.txt'))
-SAVE_DIR = fallback_files("save dir", "save", os.path.join(sys.prefix, 'gs-save'))
+MUSIC_DIR = fallback_files("music dir", True, "music", os.path.join(sys.prefix, "gs-music"))
+SOUND_DIR = fallback_files("sound dir", True, "sound", os.path.join(sys.prefix, "gs-sound"))
+VIDEO_DIR = fallback_files("video dir", True, "video", os.path.join(sys.prefix, "gs-video"))
+CHARACTER_DIR = fallback_files("characters dir", True, "characters", os.path.join(sys.prefix, "gs-chars"))
+TILES_DIR = fallback_files("tiles dir", True, "tiles", os.path.join(sys.prefix, 'gs-tiles'))
+CREDITS_FILE = fallback_files("credits file", True, "credits.txt", os.path.join(sys.prefix, 'gs-data', 'credits.txt'))
+SKILLS_FILE = fallback_files("skills file", True, "skills.json", os.path.join(sys.prefix, 'gs-data', 'skills.json'))
+KEYMAP_FILE = fallback_files("keymap file", True, "keymap.txt", os.path.join(sys.prefix, 'gs-data', 'keymap.txt'))
+OPTIONS_FILE = fallback_files("options file", False, "options.txt", os.path.join(sys.prefix, 'gs-data', 'options.txt'))
+SAVE_DIR = fallback_files("save dir", True, "save", os.path.join(sys.prefix, 'gs-save'))
 
 LEARNT_SKILL_COLOUR = (0, 150, 0)
 CAN_BE_LEARNT_COLOUR = (0, 0, 150)
@@ -85,3 +87,7 @@ INITIAL_SOUND_VOLUME = 0.0
 INITIAL_MUSIC_VOLUME = 0.0
 
 FONT = ['Papyrus', 'Helvetica']
+
+DEFAULT_OPTIONS = {'FOV': True, 'VOF': False, 'torch': False, 'menu_scale': False, 'vsync': False,
+                   'sound_volume': INITIAL_SOUND_VOLUME, 'music_volume': INITIAL_MUSIC_VOLUME,
+                   'fullscreen': False, 'resolution': (GAME_WIDTH, GAME_HEIGHT)}
