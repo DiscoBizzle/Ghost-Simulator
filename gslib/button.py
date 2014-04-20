@@ -41,7 +41,7 @@ class Button(object):
         # Other properties' validity are checked in redraw(), this is called whenever they are changed, so exceptions will lead back to the incorrect assignment
         self._size = size  # underscore is "hidden" variable, not for direct access
         self._colour = colour
-        self._visible = True # ensures button gets drawn, otherwise can't change its position
+        self._visible = visible
         self._border_colour = border_colour
         self._border_width = border_width
         self._text = text
@@ -105,7 +105,11 @@ class Button(object):
             self.outer_sprite.batch = None
             self.inner_sprite.batch = None
             if self.text_sprite is not None:
+                # delete to remove from batch
                 self.text_sprite.delete()
+                self.text_sprite = None
+                # force redraw
+                self._text_dirty = True
             return
 
         self.outer_sprite.batch = self.batch
@@ -129,6 +133,7 @@ class Button(object):
         text_dirty_new = [self.text, self.font_size, self.size[0], self.size[1]]
         if self._text_dirty is None or self._text_dirty != text_dirty_new:
             if self.text_sprite is not None:
+                # delete to remove from batch
                 self.text_sprite.delete()
             self.text_sprite = pyglet.text.Label(text=self.text, font_name=FONT, font_size=self.font_size,
                                                  color=(200, 200, 200, 255), width=self.size[0], height=self.size[1],
@@ -143,11 +148,11 @@ class Button(object):
         self.sprites = [self.outer_sprite, self.inner_sprite, self.text_sprite]
 
     def update_position(self):
-        self.outer_sprite.position = self.pos
-        self.inner_sprite.position = (self.pos[0] + self._border_width, self.pos[1] + self._border_width)
-        self.text_sprite.x = self.pos[0]
-        self.text_sprite.y = self.pos[1]
-
+        if self._visible:
+            self.outer_sprite.position = self.pos
+            self.inner_sprite.position = (self.pos[0] + self._border_width, self.pos[1] + self._border_width)
+            self.text_sprite.x = self.pos[0]
+            self.text_sprite.y = self.pos[1]
 
     def check_clicked(self, click_pos):  # perform button function if a position is passed in that is within bounds
         pos = self.pos
