@@ -201,6 +201,10 @@ class Game(pyglet.window.Window):
     def dimensions(self):
         return self.get_size()
 
+    @dimensions.setter
+    def dimensions(self, (width, height)):
+        self.set_size(width, height)
+
     # pyglet event
     def on_key_press(self, symbol, modifiers):
         self.key_controller.keys.on_key_press(symbol, modifiers)
