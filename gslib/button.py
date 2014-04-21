@@ -64,6 +64,8 @@ class Button(object):
         self.redraw()
         self._visible = visible
 
+        self.priority = False
+
     def pos_setter(self, pos):
         if pos[0] >= 0 and pos[1] >= 0:
             self._pos = pos
@@ -137,6 +139,17 @@ class Button(object):
         if abs(click_pos[0] - (pos[0] + w)) < w and abs(click_pos[1] - (pos[1] + h)) < h:
             if self.enabled:
                 self.perf_function()
+                return True
+        return False
+
+    def check_clicked_no_function(self, click_pos):
+        pos = self.pos
+        w, h = self._size
+        w /= 2
+        h /= 2
+
+        if abs(click_pos[0] - (pos[0] + w)) < w and abs(click_pos[1] - (pos[1] + h)) < h:
+            if self.enabled:
                 return True
         return False
 

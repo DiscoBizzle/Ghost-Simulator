@@ -8,17 +8,24 @@ class MouseController(object):
     def __init__(self, game):
         self.game = game
         self.interaction_this_click = False
+        self.button_to_click = None
 
     def mouse_click(self, pos, typ, button):
         self.interaction_this_click = False
         if self.game.GameState == MAIN_MENU:
             self.game.Menu.mouse_event(pos, typ, button)
         elif self.game.GameState == MAIN_GAME:
+            self.button_to_click = None
             if not self.interaction_this_click:
                 self.check_button_click(pos, typ, button)
 
             if not self.interaction_this_click:
                 self.check_list_event(pos, typ, button)
+            # if not self.interaction_this_click:
+            #     self.check_list_and_button_click(pos, typ, button)
+
+            # if self.button_to_click:
+            #     self.button_to_click.perf_function()
 
             if not self.interaction_this_click:
                 if self.game.editor_active:
@@ -85,18 +92,57 @@ class MouseController(object):
             self.game.object_stats = None
             self.game.editor.object_to_edit_selected(None)
 
+    def check_list_and_button_click(self, pos, typ, button=None):
+        if typ == 'up':
+            return
+        to_click = None
+        for button in self.game.buttons.itervalues():
+            if button.check_clicked_no_function(pos):
+                to_click = button
+                if button.priority:
+                    break
+        if to_click:
+            self.interaction_this_click = True
+            to_click.perf_function()
+            # self.button_to_click = to_click
+            return
+
+        for v in self.game.drop_lists.itervalues():
+            if v.check_click_within_area(pos):
+                to_click = v
+                if v.priority:
+                    break
+        if to_click:
+            if to_click.handle_event(pos, typ, button):
+                self.interaction_this_click = True
+
     def check_button_click(self, pos, typ, mouse_button=None):
         if typ == 'up':
             return
+        to_click = None
         for button in self.game.buttons.itervalues():
-            if button.check_clicked(pos):
-                self.interaction_this_click = True
+            if button.check_clicked_no_function(pos):
+                to_click = button
+                if button.priority:
+                    break
+        if to_click:
+            self.interaction_this_click = True
+            # self.button_to_click = to_click
+            to_click.perf_function()
+            # if button.check_clicked(pos):
+            #     self.interaction_this_click = True
 
     def check_list_event(self, pos, typ, button=None):
         if typ == 'up':
             return
+        to_click = None
         for v in self.game.drop_lists.itervalues():
-            if v.handle_event(pos, typ, button):
+            if v.check_click_within_area(pos):
+                to_click = v
+                if v.priority:
+                    break
+        if to_click:
+            if to_click.handle_event(pos, typ, button):
                 self.interaction_this_click = True
 
     def editor_click(self, pos, typ, button=None):
@@ -121,7 +167,4 @@ class MouseController(object):
             self.game.map.objects[name] = obj_type(self.game, x=pos[0], y=pos[1])
             self.game.gather_buttons_and_drop_lists_and_objects()
             self.interaction_this_click = True
-
-        for name, o in self.game.map.objects.iteritems():
-            print name, o
 

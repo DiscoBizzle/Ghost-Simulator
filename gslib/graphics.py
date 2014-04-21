@@ -173,14 +173,22 @@ class Graphics(object):
             self.game.world_objects_to_draw.append(t)
 
     def draw_buttons(self):
+        priority_buttons = []
         for button in self.game.buttons.itervalues():
             if not button.visible:
                 continue
-            self.game.screen_objects_to_draw.append(button.outer_sprite)
-            self.game.screen_objects_to_draw.append(button.inner_sprite)
-            self.game.screen_objects_to_draw.append(button.text_sprite)
+            if button.priority:
+                priority_buttons.append(button.outer_sprite)
+                priority_buttons.append(button.inner_sprite)
+                priority_buttons.append(button.text_sprite)
+            else:
+                self.game.screen_objects_to_draw.append(button.outer_sprite)
+                self.game.screen_objects_to_draw.append(button.inner_sprite)
+                self.game.screen_objects_to_draw.append(button.text_sprite)
+        self.game.screen_objects_to_draw += priority_buttons
             
     def draw_drop_lists(self):
+        priority_buttons = []
         for l in self.game.drop_lists.itervalues():
             if not l.visible:
                 continue
@@ -190,9 +198,15 @@ class Graphics(object):
             if not l.open:
                 continue
             for b in l.drop_buttons:
-                self.game.screen_objects_to_draw.append(b.outer_sprite)
-                self.game.screen_objects_to_draw.append(b.inner_sprite)
-                self.game.screen_objects_to_draw.append(b.text_sprite)
+                if b.priority:
+                    priority_buttons.append(b.outer_sprite)
+                    priority_buttons.append(b.inner_sprite)
+                    priority_buttons.append(b.text_sprite)
+                else:
+                    self.game.screen_objects_to_draw.append(b.outer_sprite)
+                    self.game.screen_objects_to_draw.append(b.inner_sprite)
+                    self.game.screen_objects_to_draw.append(b.text_sprite)
+        self.game.screen_objects_to_draw += priority_buttons
 
     def draw_objects(self):
         sort_objs = sorted(self.game.objects.values(), key=(lambda obj: -obj.coord[1]))

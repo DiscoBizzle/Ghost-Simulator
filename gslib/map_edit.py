@@ -54,7 +54,7 @@ def set_function(editor, module):
          'become_unpossessed_functions': 'unpossessed_function',
          'when_harvested_functions': 'harvested_function'}
     def func():
-        if module:
+        if editor.drop_lists[module].selected:
             a = getattr(editor.object_to_edit, d[module])
             a.append(editor.drop_lists[module].selected(editor.object_to_edit))
     return func
@@ -206,12 +206,12 @@ class Editor(object):
         for module, func_dict in character_functions.all_functions_dict.iteritems():
             #display button
             self.buttons[module] = button.DefaultButton(self, None,
-                                                        pos=(100 - v_ind * 50, self.game.dimensions[1] - 200 - v_ind * 40),
+                                                        pos=(100, self.game.dimensions[1] - 200 - v_ind * 40),
                                                         size=(200, 20), text=module, visible=False, enabled=False)
             self.function_edit_buttons.append(module)
-
+            # drop list to choose funciton for each object event type
             self.drop_lists[module] = drop_down_list.DropDownList(self, func_dict,
-                                                                  set_function(self, module), pos=(300 - v_ind * 50, self.game.dimensions[1] - 200 - v_ind * 40),
+                                                                  set_function(self, module), pos=(300, self.game.dimensions[1] - 200 - v_ind * 40),
                                                                   size=(200, 20), visible=False, enabled=False)
             self.function_edit_lists.append(module)
             v_ind += 1
@@ -247,8 +247,11 @@ class Editor(object):
     def save_map(self):
         save_load.save_map(self.game.map)
 
-    def toggle_function_edit(self):
-        self.show_function_edit = not self.show_function_edit
+    def toggle_function_edit(self, state=None):
+        if state is None:
+            self.show_function_edit = not self.show_function_edit
+        else:
+            self.show_function_edit = state
         self.toggle_button_colour(self.buttons['function_edit_toggle'], self.show_function_edit)
         for n in self.function_edit_buttons:
             self.buttons[n].visible = self.show_function_edit
@@ -330,6 +333,7 @@ class Editor(object):
             for v in self.object_edit_lists:
                 self.drop_lists[v].visible = False
                 self.drop_lists[v].enabled = False
+            self.toggle_function_edit(False)
         self.display_fears_checklist()  # update on change selection
 
     def create_checklist_buttons(self):  # puts a button for each fear into the buttons dict

@@ -41,6 +41,7 @@ class DropDownList(object):
         self._font_size = font_size
         self.enabled = enabled  # whether button can be activated, visible or not
         self.labels = labels
+        self.priority = False
 
         for arg in kwargs:  # allows for additional arbitrary arguments to be passed in, useful for more complicated functions
             setattr(self, arg, kwargs[arg])
@@ -57,7 +58,7 @@ class DropDownList(object):
         self.drop_buttons = []
         self.refresh()
 
-        self.open = False
+        self._open = False
         self.function = function
 
         self.high_colour = (0, 120, 0)
@@ -66,6 +67,7 @@ class DropDownList(object):
         self.surface = pygame.Surface(self._size)
         self.update_buttons()
         # self.redraw()
+         ## TODO make lists add their buttons to the buttons in owner container when open, allows for easier priority detection
 
     # all below variables affect the button surface, so make them properties to redraw on change
     visible = create_property('visible')
@@ -77,6 +79,15 @@ class DropDownList(object):
     font_size = create_property('font_size')
     selected_name = create_property('selected_name')
     pos = create_property('pos')
+
+    def get_open(self):
+        return self._open
+    def set_open(self, n):
+        self._open = n
+        self.priority = n
+        for b in self.drop_buttons:
+            b.priority = n
+    open = property(get_open, set_open)
 
     def refresh(self):  # call if the list changes
         self.drop_buttons = []
@@ -115,11 +126,21 @@ class DropDownList(object):
 
     def handle_event(self, pos, typ, button=None):
         if not self.enabled:
-            return
+            return False
         if typ == 'down':
             return self.check_clicked(pos)
         elif typ == 'move' and self.open:
             self.handle_mouse_motion(pos)
+
+    def check_click_within_area(self, click_pos):
+        pos = self.pos
+        if self.open:
+            h = self.size[1] * len(self.drop_buttons)
+        else:
+            h = 0
+        if pos[0] < click_pos[0] < pos[0] + self.size[0] and pos[1] - h < click_pos[1] < pos[1] + self.size[1]:
+            return True
+        return False
 
     def check_clicked(self, click_pos):  # show/hide list on click
         pos = self.pos
