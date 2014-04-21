@@ -229,18 +229,12 @@ class Game(pyglet.window.Window):
     # pyglet event
     def on_draw(self):
         self.draw_clock.tick()
-        #print "got to stupid fucking drawing"
-        if self.game_running:
-            if self.GameState == CUTSCENE:
-                #print "cutscene"
-                self.graphics.draw_cutscene()
-            else:
-                #print "not cutscene"
-                self.graphics.main_game_draw()
 
-            self.fps_clock.draw()
-            self.ticks_clock_display.draw()
-            self.draw_clock_display.draw()
+        self.graphics.main_game_draw()
+
+        self.fps_clock.draw()
+        self.ticks_clock_display.draw()
+        self.draw_clock_display.draw()
 
     # def on_resize(self, width, height):
     #     pyglet.window.Window.on_resize(self, width, height)

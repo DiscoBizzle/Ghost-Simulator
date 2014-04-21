@@ -60,13 +60,11 @@ class Graphics(object):
         #self.fear_surf = pygame.Surface((self.game.dimensions[0], 32)).convert_alpha()
         self.fear_text = text.new(FONT, 20, u'FEAR')
 
-        #font = pygame.font.SysFont(FONT, 80)
-        #self.game_over_txt1_size = font.size(u"GAME OVER")
-        #self.game_over_txt1 = font.render(u"GAME OVER", True, (255, 255, 255))
+        self.game_over_txt1 = pyglet.text.Label(u"GAME OVER", FONT, 80, color=(255, 255, 255, 255),
+                                                anchor_x='left', anchor_y='bottom', align='center')
 
-        #font = pygame.font.SysFont(FONT, 20)
-        #self.game_over_txt2_size = font.size(u"press esc scrub")
-        #self.game_over_txt2 = font.render(u"press esc scrub", True, (255, 255, 255))
+        self.game_over_txt2 = pyglet.text.Label(u"press esc scrub", FONT, 20, color=(255, 255, 255, 255),
+                                                anchor_x='left', anchor_y='bottom', align='center')
 
         self.clip_area = pygame.Rect((0, 0), (self.game.dimensions[0], self.game.dimensions[1]))
 
@@ -75,11 +73,14 @@ class Graphics(object):
         self.tile_sprite = None
 
     def draw_game_over(self):
-        margin = (self.game.dimensions[0] - self.game_over_txt1_size[0]) / 2
-        self.game.screen_objects_to_draw.append((self.game_over_txt1, (margin, 100)))
+        self.game_over_txt1.x = (self.game.dimensions[0] - self.game_over_txt1.content_width) / 2
+        self.game_over_txt1.y = (self.game.dimensions[1] - self.game_over_txt1.content_height) / 2
+        self.game.screen_objects_to_draw.append(self.game_over_txt1)
 
-        margin = (self.game.dimensions[0] - self.game_over_txt2_size[0]) / 2
-        self.game.screen_objects_to_draw.append((self.game_over_txt2, (margin, 200)))
+        self.game_over_txt2.x = (self.game.dimensions[0] - self.game_over_txt2.content_width) / 2
+        self.game_over_txt2.y = (self.game.dimensions[1] - self.game_over_txt2.content_height -
+                                 self.game_over_txt1.content_height) / 2
+        self.game.screen_objects_to_draw.append(self.game_over_txt2)
     
     def main_game_draw(self):
         # this runs faster than game update. animation can be done here with no problems.
@@ -121,24 +122,24 @@ class Graphics(object):
             self.draw_text_box()
         elif self.game.GameState == KEYBIND_MENU or self.game.GameState == KEYBIND_CAPTURE:
             self.game.keybind_menu.display()
+        elif self.game.GameState == CUTSCENE:
+            self.draw_cutscene()
 
         if self.game.options['FOV']:
             self.draw_world_objects()
             self.draw_screen_objects()
 
-        if self.game.options['VOF'] and self.game.GameState != CUTSCENE:
+        if self.game.options['VOF']:
             # self.field.opacity = 128
             self.field.draw()
 
     def draw_map(self):
         m = self.game.map
 
-        if self.last_map is None or self.last_map != m:
-            print('Redrawing map...')
-            start_time = time.clock()
-            if self.map_texture is not None:
-                # self.map_texture.delete()  # TODO check actual deletion: depreciated in pyglet, causes crash on map change
-                pass
+        if self.last_map != m:
+            #print('Redrawing map...')
+            #start_time = time.clock()
+
             grid_size = TILE_SIZE
 
             self.map_texture = pyglet.image.Texture.create(grid_size * len(m.grid), grid_size * len(m.grid[0]))
@@ -151,13 +152,9 @@ class Graphics(object):
                 for j in range(nh):
                     self.map_texture.blit_into(m.tileset_seq[m.grid[i][j].tileset_coord], i * grid_size, j * grid_size, 0)
 
-                ##TEMPORARY - DRAWS SOLID TILES FOR COLLISION DEBUG
-                #if not m.grid[i][j].walkable:
-                #    temprect = pygame.Rect(i * grid_size, j * grid_size, TILE_SIZE, TILE_SIZE)
-                #    pygame.draw.rect(surf, 0x0000ff, temprect)
             self.last_map = m
 
-            print('Map redraw complete (took ' + str(time.clock() - start_time) + 's)')
+            #print('Map redraw complete (took ' + str(time.clock() - start_time) + 's)')
 
         self.game.world_objects_to_draw.insert(0, self.tile_sprite)
         return self.tile_sprite
