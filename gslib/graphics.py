@@ -294,7 +294,7 @@ class Graphics(object):
     def draw_cutscene(self):
         if self.game.cutscene_started and hasattr(self, 'movie_player'):
             if not self.movie_player.playing:
-                self.game.state = MAIN_GAME
+                self.game.state = self.game.last_state
                 self.game.cutscene_started = False
             else:
                 self.movie_player.get_texture().blit(0, 0, width=self.game.dimensions[0], height=self.game.dimensions[1])
@@ -313,7 +313,7 @@ class Graphics(object):
                 self.game.cutscene_started = True
             except IOError:
                 print(u"Video not found: " + self.game.cutscene_next)
-                self.game.state = MAIN_MENU
+                self.game.state = self.game.last_state
 
     def draw_torch(self):
         ppos = (self.game.players['player1'].coord[0] + self.game.players['player1'].dimensions[0] / 2, self.game.players['player1'].coord[1] + self.game.players['player1'].dimensions[1] / 2)

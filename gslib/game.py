@@ -84,7 +84,8 @@ class Game(pyglet.window.Window):
         self.set_location(5, 30)  # aligns window to top left of screen (on windows atleast)
 
         self.Menu = menus.MainMenu(self, (161, 100))
-        self._state = MAIN_MENU
+        self._state = STARTUP
+        self.last_state = None
         self.cutscene_started = False
         self.cutscene_next = os.path.join(VIDEO_DIR, "default.mpg")
         self.game_running = True
@@ -196,6 +197,8 @@ class Game(pyglet.window.Window):
 
         self.options.push_handlers(self)
 
+        self.state = MAIN_MENU
+
     @property
     def dimensions(self):
         return self.get_size()
@@ -210,7 +213,13 @@ class Game(pyglet.window.Window):
 
     @state.setter
     def state(self, state):
+        self.last_state = self._state
         self._state = state
+        # update menu enabled states
+        self.Menu.enabled = state == MAIN_MENU
+        self.SkillMenu.enabled = state == SKILLS_SCREEN
+        self.options_menu.enabled = state == OPTIONS_MENU
+        self.keybind_menu.enabled = state == KEYBIND_MENU or state == KEYBIND_CAPTURE
 
     # pyglet event
     def on_key_press(self, symbol, modifiers):
