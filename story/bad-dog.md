@@ -19,12 +19,15 @@ That is very unfortunate.
 "Yes! Yes, it is!!!"
 
 * The dog... hacked your phone?
+
 "Yes, well, it is a **ghost** dog, so all bets are off."
 
 * How is the phone a problem exactly?
+
 "I always check it whenever it rings. It's some of that Pavlovian Training gubbins or whatever. I'd put it on vibrate but the tone of this game is poor enough as it is."
 
 * How much piss are we talking about here?
+
 "Gallons. Well, more like a pint. But very spread out. *Very* spread out."
 
 So not so much piss at all.
@@ -32,18 +35,23 @@ So not so much piss at all.
 "Well no, but ideally in an indoors location what you are looking for is in fact a complete absence of piss."
 
 * Why should I help you?
+
 "You're a young ghost without your skill tree fully specced out, yes? Well, I reckon I can spare a point or two for a young get-goer such as yourself, provided you _go_ and _get_ that dog."
 
 * I see you have a cage over there.
+
 "Ah yes, well spotted. See, I used to have a friend what was a bird and he was in the cage. Now he is not. Then this damn dog turned up and I thought this could be the perfect solution. Some feathers, a beak; who could tell the difference?"
 
 * I think dogs should be allowed to live as who they are, and not birds.
+
 "There are some skill points in it for you. And I promise I'll take him out for w- er, flys regularly."
 
 * So what are dogs scared of?
+
 "I don't know. Click on him and read the thing, you lazy bugger."
 
 * Can we skip the whole cage part?
+
 "Oh, I suppose so. I will accept the head of the dog cleanly separated from the body as proof you have completed this quest. **Cleanly** separated, mind, I'm not cruel."
 
 
