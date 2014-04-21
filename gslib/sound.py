@@ -13,8 +13,6 @@ class Sound(object):
 
         self.game = game
 
-        self._music_volume = INITIAL_MUSIC_VOLUME
-        self._sound_volume = INITIAL_SOUND_VOLUME
         self.music_playing = []
         self.sound_playing = []
         self.music_list = []
@@ -27,11 +25,9 @@ class Sound(object):
 
     def on_option_change(self, k, old_value, new_value):
         if k == 'music_volume':
-            self._music_volume = new_value
             for m in self.music_playing:
                 m.volume = new_value
         elif k == 'sound_volume':
-            self._sound_volume = new_value
             for s in self.sound_playing:
                 s.volume = new_value
 
@@ -51,10 +47,10 @@ class Sound(object):
 
     def start_next_music(self):
         handler = random.choice(self.music_list).play()
-        handler.volume = self._music_volume
+        handler.volume = self.game.options['music_volume']
         self.music_playing.append(handler)
 
     def play_sound(self, name):
         handler = self.sound_dict[name].play()
-        handler.volume = self._sound_volume
+        handler.volume = self.game.options['sound_volume']
         self.sound_playing.append(handler)
