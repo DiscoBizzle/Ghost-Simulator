@@ -84,8 +84,7 @@ class Game(pyglet.window.Window):
         self.set_location(5, 30)  # aligns window to top left of screen (on windows atleast)
 
         self.Menu = menus.MainMenu(self, (161, 100))
-        self.GameState = MAIN_MENU
-        #self.GameState = MAIN_GAME
+        self._state = MAIN_MENU
         self.cutscene_started = False
         self.cutscene_next = os.path.join(VIDEO_DIR, "default.mpg")
         self.game_running = True
@@ -205,6 +204,14 @@ class Game(pyglet.window.Window):
     def dimensions(self, (width, height)):
         self.set_size(width, height)
 
+    @property
+    def state(self):
+        return self._state
+
+    @state.setter
+    def state(self, state):
+        self._state = state
+
     # pyglet event
     def on_key_press(self, symbol, modifiers):
         self.key_controller.keys.on_key_press(symbol, modifiers)
@@ -260,7 +267,7 @@ class Game(pyglet.window.Window):
         self.ticks_clock.tick()
         self.camera_coords = self.calc_camera_coord()
 
-        if self.GameState == MAIN_GAME:
+        if self.state == MAIN_GAME:
             self.last_touching = [p for p in self.touching]  # creates a copy
             for obj in self.objects.itervalues():
                 obj.update(dt)
@@ -283,9 +290,9 @@ class Game(pyglet.window.Window):
                         for f in p[1].is_untouched_function:
                             f(p[0])
 
-        elif self.GameState == CREDITS:
+        elif self.state == CREDITS:
             self.credits.update(dt)
-        elif self.GameState == TEXTBOX_TEST:
+        elif self.state == TEXTBOX_TEST:
             self.text_box_test.update(dt)
 
     def calc_camera_coord(self):
@@ -357,9 +364,6 @@ class Game(pyglet.window.Window):
         # self.objects = dict(self.players.items() + self.map.objects.items())
         self.gather_buttons_and_drop_lists_and_objects()
         self.graphics.clip_area = pygame.Rect((0, 0), (self.dimensions[0], self.dimensions[1]))
-
-    def set_state(self, state):
-        self.GameState = state
 
     def quit_game(self):
         self.dispatch_event('on_close')

@@ -57,5 +57,5 @@ class Credits(object):
         self.text_label.y = self.v_offset
         self.v_offset += self.speed
         if self.v_offset > self.text_label.content_height + self.game.dimensions[1]:
-            self.game.set_state(MAIN_MENU)
+            self.game.state = MAIN_MENU
             self.v_offset = 0

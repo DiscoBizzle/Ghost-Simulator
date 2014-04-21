@@ -125,13 +125,13 @@ class MainMenu(Menu):
         self.todo_sprite.x, self.todo_sprite.y = (400, 200)
 
     def go_to_main_game(self):
-        self.game_class.GameState = MAIN_GAME
+        self.game_class.state = MAIN_GAME
 
     def go_to_options(self):
-        self.game_class.GameState = OPTIONS_MENU
+        self.game_class.state = OPTIONS_MENU
 
     def credits(self):
-        self.game_class.GameState = CREDITS
+        self.game_class.state = CREDITS
 
 
 class OptionsMenu(Menu):
@@ -195,7 +195,7 @@ class OptionsMenu(Menu):
         self.game_class.options['torch'] = not self.game_class.options['torch']
 
     def keybind_toggle(self):
-        self.game_class.GameState = KEYBIND_MENU
+        self.game_class.state = KEYBIND_MENU
 
     def menu_scale_toggle(self):
         self.game_class.options['menu_scale'] = not self.game_class.options['menu_scale']
@@ -337,7 +337,7 @@ class KeyBindMenu(Menu):
     def rebind(self, action_name):
         def func():
             self.game_class.action_to_rebind = action_name
-            self.game_class.GameState = KEYBIND_CAPTURE
+            self.game_class.state = KEYBIND_CAPTURE
             self.buttons[action_name + ' key'].colour = self.active_colour
             self.buttons[action_name + ' key'].border_colour = self.active_border_colour
         return func

@@ -29,27 +29,27 @@ class KeyController(object):
 
     def handle_keys(self, symbol, modifiers):
 
-        if self.game.GameState == KEYBIND_CAPTURE:
+        if self.game.state == KEYBIND_CAPTURE:
             self.rebind(symbol)
-            self.game.set_state(KEYBIND_MENU)
+            self.game.state = KEYBIND_MENU
             return
 
-        if self.keys[Pkey.ESCAPE] and self.game.GameState != CUTSCENE:
-            self.game.set_state(MAIN_MENU)
+        if self.keys[Pkey.ESCAPE] and self.game.state != CUTSCENE:
+            self.game.state = MAIN_MENU
         if self.keys[Pkey.M]:
-            if self.game.GameState == MAIN_MENU or self.game.GameState == MAIN_GAME:
-                self.game.set_state(CUTSCENE)
-        if self.keys[self.key_map['Skill Screen']] and (self.game.GameState == MAIN_MENU or self.game.GameState == MAIN_GAME):
-            self.game.set_state(SKILLS_SCREEN)
-        if self.keys[Pkey.T] and (self.game.GameState == MAIN_MENU or self.game.GameState == MAIN_GAME or self.game.GameState == TEXTBOX_TEST):
-            self.game.set_state(TEXTBOX_TEST)
+            if self.game.state == MAIN_MENU or self.game.state == MAIN_GAME:
+                self.game.state = CUTSCENE
+        if self.keys[self.key_map['Skill Screen']] and (self.game.state == MAIN_MENU or self.game.state == MAIN_GAME):
+            self.game.state = SKILLS_SCREEN
+        if self.keys[Pkey.T] and (self.game.state == MAIN_MENU or self.game.state == MAIN_GAME or self.game.state == TEXTBOX_TEST):
+            self.game.state = TEXTBOX_TEST
             if self.game.text_box_test.state == TB_ACTIVE:
                 self.game.text_box_test.state = TB_CLOSING
             elif self.game.text_box_test.state == TB_INACTIVE:
                 self.game.text_box_test.state = TB_STARTING
             print(self.game.text_box_test.state)
 
-        if self.game.GameState == MAIN_GAME:
+        if self.game.state == MAIN_GAME:
             self.game.show_fears = self.keys[self.key_map['Show Fears']]
             self.game.show_ranges = self.keys[self.key_map['Show Fear Ranges']]
             if self.keys[self.key_map['Toggle Editor']]:

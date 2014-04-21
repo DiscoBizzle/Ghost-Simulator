@@ -12,9 +12,9 @@ class MouseController(object):
 
     def mouse_click(self, pos, typ, button):
         self.interaction_this_click = False
-        if self.game.GameState == MAIN_MENU:
+        if self.game.state == MAIN_MENU:
             self.game.Menu.mouse_event(pos, typ, button)
-        elif self.game.GameState == MAIN_GAME:
+        elif self.game.state == MAIN_GAME:
             self.button_to_click = None
             if not self.interaction_this_click:
                 self.check_button_click(pos, typ, button)
@@ -35,25 +35,25 @@ class MouseController(object):
             if not self.interaction_this_click:
                 self.check_object_click(pos, typ, button)
 
-        elif self.game.GameState == SKILLS_SCREEN:
+        elif self.game.state == SKILLS_SCREEN:
             self.game.SkillMenu.mouse_event(pos, typ, button)
-        elif self.game.GameState == OPTIONS_MENU:
+        elif self.game.state == OPTIONS_MENU:
             self.game.options_menu.mouse_event(pos, typ, button)
-        elif self.game.GameState == KEYBIND_MENU:
+        elif self.game.state == KEYBIND_MENU:
             self.game.keybind_menu.mouse_event(pos, typ, button)
 
     def mouse_move(self, pos):
-        if self.game.GameState == MAIN_MENU:
+        if self.game.state == MAIN_MENU:
             self.game.Menu.mouse_event(pos, 'move')
-        elif self.game.GameState == MAIN_GAME:
+        elif self.game.state == MAIN_GAME:
             for k, v in self.game.drop_lists.iteritems():
                 v.handle_event(pos, 'move')
             if self.game.cursor:
                 self.calc_cursor_coord(pos, 'move')
 
-        elif self.game.GameState == SKILLS_SCREEN:
+        elif self.game.state == SKILLS_SCREEN:
             self.game.SkillMenu.mouse_event(pos, 'move')
-        elif self.game.GameState == OPTIONS_MENU:
+        elif self.game.state == OPTIONS_MENU:
             self.game.options_menu.mouse_event(pos, 'move')
 
     def calc_cursor_coord(self, pos, typ, button=None):

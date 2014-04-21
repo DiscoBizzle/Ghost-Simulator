@@ -84,14 +84,14 @@ class Graphics(object):
     
     def main_game_draw(self):
         # this runs faster than game update. animation can be done here with no problems.
-        if self.game.GameState != CUTSCENE:
+        if self.game.state != CUTSCENE:
             self.game.clear()
 
-        if self.game.GameState == STARTUP:
+        if self.game.state == STARTUP:
             pass
-        elif self.game.GameState == MAIN_MENU:
+        elif self.game.state == MAIN_MENU:
             self.game.Menu.display()
-        elif self.game.GameState == MAIN_GAME:
+        elif self.game.state == MAIN_GAME:
             self.draw_map()
             self.draw_objects()
             if self.game.options['torch']:
@@ -110,19 +110,19 @@ class Graphics(object):
             if self.game.show_ranges:
                 self.game.show_fear_ranges()
 
-        elif self.game.GameState == GAME_OVER:
+        elif self.game.state == GAME_OVER:
             self.draw_game_over()
-        elif self.game.GameState == CREDITS:
+        elif self.game.state == CREDITS:
             self.game.credits.display()
-        elif self.game.GameState == SKILLS_SCREEN:
+        elif self.game.state == SKILLS_SCREEN:
             self.game.SkillMenu.display()
-        elif self.game.GameState == OPTIONS_MENU:
+        elif self.game.state == OPTIONS_MENU:
             self.game.options_menu.display()
-        elif self.game.GameState == TEXTBOX_TEST:
+        elif self.game.state == TEXTBOX_TEST:
             self.draw_text_box()
-        elif self.game.GameState == KEYBIND_MENU or self.game.GameState == KEYBIND_CAPTURE:
+        elif self.game.state == KEYBIND_MENU or self.game.state == KEYBIND_CAPTURE:
             self.game.keybind_menu.display()
-        elif self.game.GameState == CUTSCENE:
+        elif self.game.state == CUTSCENE:
             self.draw_cutscene()
 
         if self.game.options['FOV']:
@@ -294,7 +294,7 @@ class Graphics(object):
     def draw_cutscene(self):
         if self.game.cutscene_started and hasattr(self, 'movie_player'):
             if not self.movie_player.playing:
-                self.game.GameState = MAIN_GAME
+                self.game.state = MAIN_GAME
                 self.game.cutscene_started = False
             else:
                 self.movie_player.get_texture().blit(0, 0, width=self.game.dimensions[0], height=self.game.dimensions[1])
@@ -313,7 +313,7 @@ class Graphics(object):
                 self.game.cutscene_started = True
             except IOError:
                 print(u"Video not found: " + self.game.cutscene_next)
-                self.game.set_state(MAIN_MENU)
+                self.game.state = MAIN_MENU
 
     def draw_torch(self):
         ppos = (self.game.players['player1'].coord[0] + self.game.players['player1'].dimensions[0] / 2, self.game.players['player1'].coord[1] + self.game.players['player1'].dimensions[1] / 2)

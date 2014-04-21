@@ -47,10 +47,10 @@ class JoyController(object):
         elif button == 7:
             self.game.options['vsync'] = not self.game.options['vsync']
         elif button == 9:
-            if self.game.GameState == MAIN_MENU:
-                self.game.set_state(MAIN_GAME)
-            elif self.game.GameState == MAIN_GAME or self.game.GameState == GAME_OVER:
-                self.game.set_state(MAIN_MENU)
+            if self.game.state == MAIN_MENU:
+                self.game.state = MAIN_GAME
+            elif self.game.state == MAIN_GAME or self.game.state == GAME_OVER:
+                self.game.state =MAIN_MENU
 
     def on_joybutton_release(self, joystick, button):
         pass
