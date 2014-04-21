@@ -137,48 +137,47 @@ class MainMenu(Menu):
 class OptionsMenu(Menu):
     def __init__(self, game_class, button_size):
         Menu.__init__(self, game_class, button_size)
-        self.buttons['FOV'] = button.Button(self, self.FOV_toggle, order = (0, 0), visible=True,
-                                            text_states=[u'Field of View: No', u'Field of View: Yes'], border_colour=(120, 50, 80), border_width=3,
-                                            colour=(120, 0, 0), batch=self.batch, groups=self.groups)
-        self.buttons['VOF'] = button.Button(self, self.VOF_toggle, order = (1, 0), visible=True,
-                                            text_states=[u'View of Field: No', u'View of Field: Yes'], border_colour=(120, 50, 80), border_width=3,
-                                            colour=(120, 0, 0), batch=self.batch, groups=self.groups)
-        self.sliders['VOF'] = slider.Slider(self, self.VOF_value, range=(0, 255), order = (1, 1), value=128, visible=False, batch=self.batch, groups=self.groups)
 
-        self.buttons['torch'] = button.Button(self, self.torch_toggle, order = (2, 0), visible=True,
-                                            text_states=[u'Torch: No', u'Torch: Yes'], border_colour=(120, 50, 80), border_width=3,
-                                            colour=(120, 0, 0), batch=self.batch, groups=self.groups)
-        self.buttons['sound_display'] = button.Button(self, None , order = (3, 0), visible=True,
-                                            text=u'Sound Volume: {}'.format(int(INITIAL_SOUND_VOLUME/0.003)), border_colour=(120, 50, 80), border_width=3,
-                                            colour=(120, 0, 0), batch=self.batch, groups=self.groups)
-        self.buttons['music_display'] = button.Button(self, None, order = (4, 0), visible=True,
-                                            text=u'Music Volume: {}'.format(int(INITIAL_MUSIC_VOLUME/0.003)), border_colour=(120, 50, 80), border_width=3,
-                                            colour=(120, 0, 0), batch=self.batch, groups=self.groups)
+        common_attribs = dict(border_colour=(120, 50, 80), border_width=3, colour=(120, 0, 0),
+                              batch=self.batch, groups=self.groups)
 
-        self.sliders['sound'] = slider.Slider(self, self.set_sound, range=(0.0, 2.0), order = (3, 1), value=self.game_class.options['sound_volume'], batch=self.batch, groups=self.groups)
-        self.sliders['music'] = slider.Slider(self, self.set_music, range=(0.0, 2.0), order = (4, 1), value=self.game_class.options['music_volume'], batch=self.batch, groups=self.groups)
-
-        self.buttons['menu_scale'] = button.Button(self, self.menu_scale_toggle, order = (5, 0), visible=True,
-                                            text_states=[u'Menu Scaling: Off', u'Menu Scaling: On'], border_colour=(120, 50, 80), border_width=3,
-                                            colour=(120, 0, 0), batch=self.batch, groups=self.groups)
-        self.buttons['key_bind'] = button.Button(self, self.keybind_toggle, order = (6, 0), visible=True,
-                                            text=u'Keybind Menu', border_colour=(120, 50, 80), border_width=3,
-                                            colour=(120, 0, 0), batch=self.batch, groups=self.groups)
-        self.buttons['load'] = button.Button(self, self.load, order = (7, 0), visible=True,
-                                            text=u'Load Options', border_colour=(120, 50, 80), border_width=3,
-                                            colour=(120, 0, 0), batch=self.batch, groups=self.groups)
-        self.buttons['save'] = button.Button(self, self.save, order = (7, 1), visible=True,
-                                            text=u'Save Options', border_colour=(120, 50, 80), border_width=3,
-                                            colour=(120, 0, 0), batch=self.batch, groups=self.groups)
-        self.buttons['screen_size_display'] = button.Button(self, None, order = (8, 0), visible=True,
-                                            text=u'Screen Size', border_colour=(120, 50, 80), border_width=3,
-                                            colour=(120, 0, 0), batch=self.batch, groups=self.groups)
-        self.buttons['screen_size'] = button.Button(self, self.set_screen_size, order = (8, 1), visible=True,
-                                            text_states=[u'1024 x 768', u'1280 x 720', u'1600 x 900', u'1920 x 1080', u'Fullscreen'],
-                                            border_colour=(120, 50, 80), border_width=3, colour=(120, 0, 0), batch=self.batch, groups=self.groups)
-        self.buttons['vsync'] = button.Button(self, self.vsync_toggle, order = (9, 0), visible=True,
-                                            text_states=[u'vsync: Off', u'vsync: On'], border_colour=(120, 50, 80), border_width=3,
-                                            colour=(120, 0, 0), batch=self.batch, groups=self.groups)
+        self.buttons['FOV'] = button.Button(self, self.FOV_toggle, order=(0, 0), visible=True,
+                                            text_states=[u'Field of View: No', u'Field of View: Yes'], **common_attribs)
+        self.buttons['VOF'] = button.Button(self, self.VOF_toggle, order=(1, 0), visible=True,
+                                            text_states=[u'View of Field: No', u'View of Field: Yes'], **common_attribs)
+        self.sliders['VOF'] = slider.Slider(self, self.VOF_value, range=(0, 255), order = (1, 1), value=128,
+                                            visible=False, batch=self.batch, groups=self.groups)
+        self.buttons['torch'] = button.Button(self, self.torch_toggle, order=(2, 0), visible=True,
+                                              text_states=[u'Torch: No', u'Torch: Yes'], **common_attribs)
+        self.buttons['sound_display'] = button.Button(self, None, order=(3, 0), visible=True,
+                                                      text=u'Sound Volume: {}'.format(int(INITIAL_SOUND_VOLUME/0.003)),
+                                                      **common_attribs)
+        self.buttons['music_display'] = button.Button(self, None, order=(4, 0), visible=True,
+                                                      text=u'Music Volume: {}'.format(int(INITIAL_MUSIC_VOLUME/0.003)),
+                                                      **common_attribs)
+        self.sliders['sound'] = slider.Slider(self, self.set_sound, range=(0.0, 2.0), order=(3, 1),
+                                              value=self.game_class.options['sound_volume'], batch=self.batch,
+                                              groups=self.groups)
+        self.sliders['music'] = slider.Slider(self, self.set_music, range=(0.0, 2.0), order=(4, 1),
+                                              value=self.game_class.options['music_volume'], batch=self.batch,
+                                              groups=self.groups)
+        self.buttons['menu_scale'] = button.Button(self, self.menu_scale_toggle, order=(5, 0), visible=True,
+                                                   text_states=[u'Menu Scaling: Off', u'Menu Scaling: On'],
+                                                   **common_attribs)
+        self.buttons['key_bind'] = button.Button(self, self.keybind_toggle, order=(6, 0), visible=True,
+                                                 text=u'Keybind Menu', **common_attribs)
+        self.buttons['load'] = button.Button(self, self.load, order=(7, 0), visible=True,
+                                             text=u'Load Options', **common_attribs)
+        self.buttons['save'] = button.Button(self, self.save, order=(7, 1), visible=True,
+                                             text=u'Save Options', **common_attribs)
+        self.buttons['screen_size_display'] = button.Button(self, None, order=(8, 0), visible=True,
+                                                            text=u'Screen Size', **common_attribs)
+        self.buttons['screen_size'] = button.Button(self, self.set_screen_size, order=(8, 1), visible=True,
+                                                    text_states=[u'1024 x 768', u'1280 x 720', u'1600 x 900',
+                                                                 u'1920 x 1080', u'Fullscreen'],
+                                                    **common_attribs)
+        self.buttons['vsync'] = button.Button(self, self.vsync_toggle, order=(9, 0), visible=True,
+                                              text_states=[u'vsync: Off', u'vsync: On'], **common_attribs)
 
         self.update_button_text_and_slider_values()
         Menu.arrange_buttons(self)
