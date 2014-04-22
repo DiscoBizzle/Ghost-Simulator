@@ -145,7 +145,9 @@ class Game(pyglet.window.Window):
         self.show_fears = False
         self.show_ranges = False
 
-        self.options.load_options()
+        # TODO: fix loading options at startup
+        #self.options.load_options()
+
         self.key_controller.load()
 
         self.touching = []
