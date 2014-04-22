@@ -6,6 +6,7 @@ MANIFEST
 Thumbs.db
 *.swp
 deps/pyglet-9781eb46dca2/_build/
-
-
+/pyglet/
+/avbin.dll
+/avbin64.dll
 options.txt
