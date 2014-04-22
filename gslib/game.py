@@ -81,9 +81,10 @@ class Game(pyglet.window.Window):
 
         self.options = options.Options(DEFAULT_OPTIONS)
 
-        self.set_location(5, 30)  # aligns window to top left of screen (on windows atleast)
+        # TODO: why would we want this?
+        #self.set_location(5, 30)  # aligns window to top left of screen (on windows atleast)
 
-        self.Menu = menus.MainMenu(self, (161, 100))
+        self.main_menu = menus.MainMenu(self, (161, 100))
         self._state = STARTUP
         self.last_state = None
         self.cutscene_started = False
@@ -92,27 +93,20 @@ class Game(pyglet.window.Window):
         self.graphics = graphics.Graphics(self)
         self.set_caption("Ghost Simulator v. 0.000000001a")
 
-        # TODO PYGLET
-
         self.sound_handler = sound.Sound(self)
-        # self.sound_handler.music_volume = 0.0
         self.sound_handler.start_next_music()
 
         self.credits = credits.Credits(self)
         self.options_menu = menus.OptionsMenu(self, (200, 50))
-        self.fps_clock = pyglet.clock.ClockDisplay()
 
         self.camera_coords = (0, 0)
         self.camera_padding = (32, 32, 96, 32)  # left right up down
 
-        self.players = {}
-        self.players['player1'] = player.Player(self, TILE_SIZE*6, TILE_SIZE*2, 16, 16, 'GhostSheet.png')
-        self.players['player2'] = player.Player(self, 0, 0, 16, 16, 'TutorialGhost2.png')
-
-        # self.objects = dict(self.players.items())
+        self.players = {'player1': player.Player(self, TILE_SIZE * 6, TILE_SIZE * 2, 16, 16, 'GhostSheet.png'),
+                        'player2': player.Player(self, 0, 0, 16, 16, 'TutorialGhost2.png')}
 
         self.skills_dict = skills.load_skill_dict()
-        self.SkillMenu = menus.SkillsMenu(self, (200,150))
+        self.skill_menu = menus.SkillsMenu(self, (200, 150))
 
         #self.text_box_test = text_box.TextBox("Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go. Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go. Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go.")
 
@@ -121,34 +115,17 @@ class Game(pyglet.window.Window):
         self.disp_object_stats = False
         self.object_stats = None
 
-
-        self.key_controller = key.KeyController(self)
-        # # HACK
-        # self.keys = self.key_controller.keys
-
         self.keybind_menu = menus.KeyBindMenu(self, (190, 40))
         self.action_to_rebind = None
 
+        # input controllers
+        self.key_controller = key.KeyController(self)
         self.mouse_controller = mouse.MouseController(self)
-
         self.joy_controller = joy.JoyController(self)
 
-        # self.event_map = {
-        #     pygame.KEYDOWN: self.key_controller.handle_keys,
-        #     pygame.KEYUP: self.key_controller.handle_keys,
-        #     pygame.QUIT: (lambda _: self.quit_game()),
-        #     # pygame.MOUSEBUTTONDOWN: self.mouse_controller.mouse_click,
-        #     # pygame.MOUSEBUTTONUP: self.mouse_controller.mouse_up,
-        #     # pygame.MOUSEMOTION: self.mouse_controller.mouse_move,
-        #     pygame.VIDEORESIZE: self.graphics.resize_window,
-        # }
-
-        #sound.start_next_music(self.music_list)
-
-        self.map_dict = {}
-        self.map_dict['level3'] = save_load.load_map(self, 'level3')
-        self.map_dict['level2'] = save_load.load_map(self, 'level2')
-        self.map_dict['martin'] = save_load.load_map(self, 'martin')
+        self.map_dict = {'level3': save_load.load_map(self, 'level3'),
+                         'level2': save_load.load_map(self, 'level2'),
+                         'martin': save_load.load_map(self, 'martin')}
 
         self.map_index = 'level3'
         self.map = self.map_dict[self.map_index]
@@ -168,8 +145,7 @@ class Game(pyglet.window.Window):
         self.show_fears = False
         self.show_ranges = False
 
-        # TODO PYGLET
-        #self.load_options()
+        self.options.load_options()
         self.key_controller.load()
 
         self.touching = []
@@ -187,12 +163,14 @@ class Game(pyglet.window.Window):
         self.objects = {}
         self.gather_buttons_and_drop_lists_and_objects()
 
+        self.fps_clock = pyglet.clock.ClockDisplay()
         self.ticks_clock = pyglet.clock.Clock()
         self.ticks_clock_display = pyglet.clock.ClockDisplay(format='               ticks:%(fps).2f',
                                                              clock=self.ticks_clock)
         self.draw_clock = pyglet.clock.Clock()
         self.draw_clock_display = pyglet.clock.ClockDisplay(format='                                     fps:%(fps).2f',
                                                             clock=self.draw_clock)
+
         pyglet.clock.schedule_interval(self.update, 1.0 / TICKS_PER_SEC)
 
         self.options.push_handlers(self)
@@ -216,8 +194,8 @@ class Game(pyglet.window.Window):
         self.last_state = self._state
         self._state = state
         # update menu enabled states
-        self.Menu.enabled = state == MAIN_MENU
-        self.SkillMenu.enabled = state == SKILLS_SCREEN
+        self.main_menu.enabled = state == MAIN_MENU
+        self.skill_menu.enabled = state == SKILLS_SCREEN
         self.options_menu.enabled = state == OPTIONS_MENU
         self.keybind_menu.enabled = state == KEYBIND_MENU or state == KEYBIND_CAPTURE
 
@@ -254,6 +232,17 @@ class Game(pyglet.window.Window):
 
     # def on_resize(self, width, height):
     #     pyglet.window.Window.on_resize(self, width, height)
+
+    def on_option_change(self, k, old_value, new_value):
+        if k == 'vsync':
+            self.set_vsync(new_value)
+        elif k == 'fullscreen':
+            self.set_fullscreen(fullscreen=new_value)
+            self.options['resolution'] = self.get_size()
+        elif k == 'resolution':
+            self.set_size(*new_value)
+            # TODO: why would we want this?
+            # self.set_location(5, 31)  # aligns window to top left of screen (on windows atleast)
 
     def gather_buttons_and_drop_lists_and_objects(self):
         self.buttons = dict(self.game_buttons.items())
@@ -377,12 +366,3 @@ class Game(pyglet.window.Window):
     def quit_game(self):
         self.dispatch_event('on_close')
 
-    def on_option_change(self, k, old_value, new_value):
-        if k == 'vsync':
-            self.set_vsync(new_value)
-        elif k == 'fullscreen':
-            self.set_fullscreen(fullscreen=new_value)
-            self.options['resolution'] = self.get_size()
-        elif k == 'resolution':
-            self.set_size(*new_value)
-            # self.set_location(5, 31)  # aligns window to top left of screen (on windows atleast)
