@@ -31,7 +31,7 @@ class Menu(object):
         self.buttons['menu_scale_display'] = button.Button(self, None, order=(-1, 0), visible=False,
                                             text=u'Menu Scale: 1.0', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0), size=(200, 50), pos=(60, 40), batch=self.batch, groups=self.groups)
-        self.sliders['menu_scale'] = slider.Slider(self, self.set_menu_scale, range=(1.0, 5.0/frac), order=(-1, 1),
+        self.sliders['menu_scale'] = slider.Slider(self, (lambda _: self.arrange_buttons), range=(1.0, 5.0/frac), order=(-1, 1),
                                                    value=1.0/frac, size=(200, 50), pos=(60 + 200 + 20, 40),
                                                    visible=False, enabled=self.game_class.options['menu_scale'], batch=self.batch, groups=self.groups)
         # self.first_time = True
@@ -46,14 +46,7 @@ class Menu(object):
     @enabled.setter
     def enabled(self, enabled):
         if enabled:
-            self.buttons['menu_scale_display'].visible = self.game_class.options['menu_scale']
-            self.buttons['menu_scale_display'].enabled = self.game_class.options['menu_scale']
-            self.sliders['menu_scale'].visible = self.game_class.options['menu_scale']
-            self.sliders['menu_scale'].enabled = self.game_class.options['menu_scale']
-            if self.game_class.options['menu_scale']:
-                self.set_menu_scale(self.sliders['menu_scale'].value)
-            else:
-                self.set_menu_scale(1.0/self.frac)
+            self.arrange_buttons()
         self._enabled = enabled
 
     def display(self):
@@ -67,6 +60,15 @@ class Menu(object):
                 button.check_clicked(pos)
 
     def arrange_buttons(self):
+        self.buttons['menu_scale_display'].visible = self.game_class.options['menu_scale']
+        self.buttons['menu_scale_display'].enabled = self.game_class.options['menu_scale']
+        self.sliders['menu_scale'].visible = self.game_class.options['menu_scale']
+        self.sliders['menu_scale'].enabled = self.game_class.options['menu_scale']
+        if self.game_class.options['menu_scale']:
+            self.set_menu_scale(self.sliders['menu_scale'].value)
+        else:
+            self.set_menu_scale(1.0/self.frac)
+
         self.buttons_per_column = int(((self.game_class.dimensions[1] - self.vert_offset) / (self.button_size[1]+20))) #- 1
 
         self.vert_offset = 50 #+ self.game_class.options['menu_scale'] * self.buttons['menu_scale_display'].size[1]
@@ -98,26 +100,19 @@ class Menu(object):
         # self.buttons_per_column = int(((self.game_class.dimensions[1] - self.vert_offset) / (self.button_size[1]+20))) #- 1
         self.font_size = int(self.base_font_size * value * self.frac)
         self.buttons['menu_scale_display'].text = u"Menu scale: {}".format(round(self.button_size[0] / self.original_button_size[0], 2))
-        self.arrange_buttons()
 
     def on_option_change(self, k, old_value, new_value):
-        if self.enabled:
-            if k == 'menu_scale':
-                self.buttons['menu_scale_display'].visible = new_value
-                self.buttons['menu_scale_display'].enabled = new_value
-                self.sliders['menu_scale'].visible = new_value
-                self.sliders['menu_scale'].enabled = new_value
-                if new_value:
-                    self.set_menu_scale(self.sliders['menu_scale'].value)
-                else:
-                    self.set_menu_scale(1.0/self.frac)
+        if not self.enabled:
+            return
+
+        if k == 'menu_scale':
+            self.arrange_buttons()
 
     def on_resize(self, width, height):
-        if self.enabled:
-            if self.game_class.options['menu_scale']:
-                self.set_menu_scale(self.sliders['menu_scale'].value)
-            else:
-                self.set_menu_scale(1.0/self.frac)
+        if not self.enabled:
+            return
+
+        self.arrange_buttons()
 
 
 class MainMenu(Menu):
@@ -270,17 +265,16 @@ class OptionsMenu(Menu):
             self.game_class.options['fullscreen'] = True
 
     def on_option_change(self, k, old_value, new_value):
-        if self.enabled:
-            self.update_button_text_and_slider_values()
-            super(OptionsMenu, self).on_option_change(k, old_value, new_value)
+        if not self.enabled:
+            return
+        self.update_button_text_and_slider_values()
+        super(OptionsMenu, self).on_option_change(k, old_value, new_value)
 
     def on_resize(self, width, height):
-        if self.enabled:
-            self.update_button_text_and_slider_values()
-            if self.game_class.options['menu_scale']:
-                self.set_menu_scale(self.sliders['menu_scale'].value)
-            else:
-                self.set_menu_scale(1.0/self.frac)
+        if not self.enabled:
+            return
+        self.update_button_text_and_slider_values()
+        super(OptionsMenu, self).on_resize(width, height)
 
 
 class SkillsMenu(Menu):

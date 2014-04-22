@@ -50,7 +50,7 @@ class JoyController(object):
             if self.game.state == MAIN_MENU:
                 self.game.state = MAIN_GAME
             elif self.game.state == MAIN_GAME or self.game.state == GAME_OVER:
-                self.game.state =MAIN_MENU
+                self.game.state = MAIN_MENU
 
     def on_joybutton_release(self, joystick, button):
         pass
