@@ -115,13 +115,13 @@ class Game(pyglet.window.Window):
         self.disp_object_stats = False
         self.object_stats = None
 
-        self.keybind_menu = menus.KeyBindMenu(self, (190, 40))
-        self.action_to_rebind = None
-
         # input controllers
         self.key_controller = key.KeyController(self)
         self.mouse_controller = mouse.MouseController(self)
         self.joy_controller = joy.JoyController(self)
+
+        self.keybind_menu = menus.KeyBindMenu(self, (190, 40))
+        self.action_to_rebind = None
 
         self.map_dict = {'level3': save_load.load_map(self, 'level3'),
                          'level2': save_load.load_map(self, 'level2'),

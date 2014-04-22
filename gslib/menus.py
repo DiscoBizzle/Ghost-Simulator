@@ -31,7 +31,7 @@ class Menu(object):
         self.buttons['menu_scale_display'] = button.Button(self, None, order=(-1, 0), visible=False,
                                             text=u'Menu Scale: 1.0', border_colour=(120, 50, 80), border_width=3,
                                             colour=(120, 0, 0), size=(200, 50), pos=(60, 40), batch=self.batch, groups=self.groups)
-        self.sliders['menu_scale'] = slider.Slider(self, (lambda _: self.arrange_buttons), range=(1.0, 5.0/frac), order=(-1, 1),
+        self.sliders['menu_scale'] = slider.Slider(self, (lambda _: self.arrange_buttons()), range=(1.0, 5.0/frac), order=(-1, 1),
                                                    value=1.0/frac, size=(200, 50), pos=(60 + 200 + 20, 40),
                                                    visible=False, enabled=self.game_class.options['menu_scale'], batch=self.batch, groups=self.groups)
         # self.first_time = True

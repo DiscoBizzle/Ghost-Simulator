@@ -90,7 +90,7 @@ class Graphics(object):
         if self.game.state == STARTUP:
             pass
         elif self.game.state == MAIN_MENU:
-            self.game.Menu.display()
+            self.game.main_menu.display()
         elif self.game.state == MAIN_GAME:
             self.draw_map()
             self.draw_objects()
@@ -115,7 +115,7 @@ class Graphics(object):
         elif self.game.state == CREDITS:
             self.game.credits.display()
         elif self.game.state == SKILLS_SCREEN:
-            self.game.SkillMenu.display()
+            self.game.skill_menu.display()
         elif self.game.state == OPTIONS_MENU:
             self.game.options_menu.display()
         elif self.game.state == TEXTBOX_TEST:
