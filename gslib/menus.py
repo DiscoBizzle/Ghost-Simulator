@@ -264,17 +264,15 @@ class OptionsMenu(Menu):
         elif new_size == u'Fullscreen':
             self.game_class.options['fullscreen'] = True
 
+    def arrange_buttons(self):
+        self.update_button_text_and_slider_values()
+        super(OptionsMenu, self).arrange_buttons()
+
     def on_option_change(self, k, old_value, new_value):
         if not self.enabled:
             return
         self.update_button_text_and_slider_values()
         super(OptionsMenu, self).on_option_change(k, old_value, new_value)
-
-    def on_resize(self, width, height):
-        if not self.enabled:
-            return
-        self.update_button_text_and_slider_values()
-        super(OptionsMenu, self).on_resize(width, height)
 
 
 class SkillsMenu(Menu):
