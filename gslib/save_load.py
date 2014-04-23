@@ -38,7 +38,7 @@ def create_save_trigger(trigger):
 
 
 def save_map(m):
-    print 'Saving map: ' + m._name
+    print('Saving map: ' + m._name)
     obj_dict = {}
     for k, v in m.objects.iteritems():
         obj_dict[str(k)] = create_save_char(v)

@@ -150,8 +150,8 @@ class GameObject(object):
             return False
 
     def get_distance_squared(self, other):
-        x = self.coord[0] + self.dimensions[0]/2 - (other.coord[0] + other.dimensions[0]/2)
-        y = self.coord[1] + self.dimensions[1]/2 - (other.coord[1] + other.dimensions[1]/2)
+        x = self.coord[0] + self.dimensions[0]/2.0 - (other.coord[0] + other.dimensions[0]/2.0)
+        y = self.coord[1] + self.dimensions[1]/2.0 - (other.coord[1] + other.dimensions[1]/2.0)
         return x**2 + y**2
 
     def apply_fear(self):
@@ -225,8 +225,8 @@ class GameObject(object):
         # NOTE: assumes largest object w/ collision is 64x64 (i.e. 2x2 tiles)
 
         if pro_pos[0] >= 0 and pro_pos[1] >= 0:
-            i = pro_pos[0] / TILE_SIZE  # get the index of the upper left tile
-            j = pro_pos[1] / TILE_SIZE
+            i = pro_pos[0] // TILE_SIZE  # get the index of the upper left tile
+            j = pro_pos[1] // TILE_SIZE
         else:
             i = 0
             j = 0
@@ -234,7 +234,7 @@ class GameObject(object):
         #check collision against the 9 possible tiles surrounding object
         for ni in range(i, i + 2):
             for nj in range(j, j + 2):
-                if ni >= 0 and ni < LEVEL_WIDTH / TILE_SIZE and nj >= 0 and nj < LEVEL_HEIGHT / TILE_SIZE:
+                if 0 <= ni < LEVEL_WIDTH // TILE_SIZE and 0 <= nj < LEVEL_HEIGHT // TILE_SIZE:
                     if not self.game_class.map.grid[ni][nj].walkable:
                         # pygame.draw.rect(self.game_class.surface, (200, 0, 0), self.rect)
                         # pygame.draw.rect(self.game_class.surface, (0, 200, 0), self.game_class.map.grid[ni][nj].rect)

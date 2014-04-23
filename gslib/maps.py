@@ -92,10 +92,11 @@ def load_objects(map_filename):
 
 
 class Tile(object):
-    def __init__(self, tile_type_grid, coll_grid, m, (x, y)):
+    def __init__(self, tile_type_grid, coll_grid, m, pos):
+        x, y = pos
         tile_ref = tile_type_grid[x][y]
         if tile_ref != -1:
-            self.tileset_coord = ((m.tileset_rows - 1) - tile_ref / m.tileset_cols,
+            self.tileset_coord = ((m.tileset_rows - 1) - tile_ref // m.tileset_cols,
                                   tile_ref % m.tileset_cols)
         else:
             self.tileset_coord = (m.tileset_rows - 1, 0)
@@ -119,8 +120,8 @@ class Map(object):
         self._map_file = map_file
         # Note: We need the PIL decoder for this to be anything like fast. (GDI+ etc import bitmaps upside-down...)
         self.tileset = pyglet.image.load(tileset).get_texture().get_image_data()
-        self.tileset_cols = self.tileset.width / TILE_SIZE
-        self.tileset_rows = self.tileset.height / TILE_SIZE
+        self.tileset_cols = self.tileset.width // TILE_SIZE
+        self.tileset_rows = self.tileset.height // TILE_SIZE
 
         self.tileset_seq = pyglet.image.ImageGrid(self.tileset, self.tileset_rows, self.tileset_cols)
 

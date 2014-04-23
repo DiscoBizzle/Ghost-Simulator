@@ -184,8 +184,8 @@ class Game(pyglet.window.Window):
         return self.get_size()
 
     @dimensions.setter
-    def dimensions(self, (width, height)):
-        self.set_size(width, height)
+    def dimensions(self, dimensions):
+        self.set_size(*dimensions)
 
     @property
     def state(self):
