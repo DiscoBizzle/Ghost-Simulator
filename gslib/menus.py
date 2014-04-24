@@ -24,13 +24,14 @@ class Menu(object):
         self.buttons_per_column = ((self.game_class.dimensions[1] - self.vert_offset) / (self.button_size[1]+20)) - 1
 
         self.batch = pyglet.graphics.Batch()
-        self.groups = [pyglet.graphics.OrderedGroup(x) for x in range(3)]
+        self.text_batch = pyglet.graphics.Batch()
+        self.groups = [pyglet.graphics.OrderedGroup(x) for x in range(2)]
 
         self._enabled = False
 
         self.buttons['menu_scale_display'] = button.Button(self, None, order=(-1, 0), visible=False,
                                             text=u'Menu Scale: 1.0', border_colour=(120, 50, 80), border_width=3,
-                                            colour=(120, 0, 0), size=(200, 50), pos=(60, 40), batch=self.batch, groups=self.groups)
+                                            colour=(120, 0, 0), size=(200, 50), pos=(60, 40), batch=self.batch, groups=self.groups, text_batch=self.text_batch)
         self.sliders['menu_scale'] = slider.Slider(self, (lambda _: self.arrange_buttons()), range=(1.0, 5.0/frac), order=(-1, 1),
                                                    value=1.0/frac, size=(200, 50), pos=(60 + 200 + 20, 40),
                                                    visible=False, enabled=self.game_class.options['menu_scale'], batch=self.batch, groups=self.groups)
@@ -51,6 +52,7 @@ class Menu(object):
 
     def display(self):
         self.batch.draw()
+        self.text_batch.draw()
 
     def mouse_event(self, pos, typ, button=None):
         for slider in self.sliders.itervalues():
@@ -121,23 +123,24 @@ class MainMenu(Menu):
 
         self.buttons['main_game'] = button.Button(self, self.go_to_main_game, order = (0, 0), visible=True,
                                                   text=u'Start Game', border_colour=(120, 50, 80), border_width=3,
-                                                  colour=(120, 0, 0), batch=self.batch, groups=self.groups)
+                                                  colour=(120, 0, 0), batch=self.batch, groups=self.groups,
+                                                  text_batch=self.text_batch)
         self.buttons['credits'] = button.Button(self, self.credits, order = (1, 0), visible=True, text=u'Credits',
                                              border_colour=(120, 50, 80), border_width=2,
-                                             colour=(120, 0, 0), batch=self.batch, groups=self.groups)
+                                             colour=(120, 0, 0), batch=self.batch, groups=self.groups, text_batch=self.text_batch)
         self.buttons['quit'] = button.Button(self, self.game_class.quit_game, order = (3, 0), visible=True, text=u'Quit',
                                              border_colour=(120, 50, 80), border_width=3,
-                                             colour=(120, 0, 0), batch=self.batch, groups=self.groups)
+                                             colour=(120, 0, 0), batch=self.batch, groups=self.groups, text_batch=self.text_batch)
         self.buttons['options'] = button.Button(self, self.go_to_options, order = (2, 0), visible=True, text=u'Options',
                                              border_colour=(120, 50, 80), border_width=3,
-                                             colour=(120, 0, 0), batch=self.batch, groups=self.groups)
+                                             colour=(120, 0, 0), batch=self.batch, groups=self.groups, text_batch=self.text_batch)
 
         Menu.arrange_buttons(self)
 
         t = 'TODO:\n'
         for l in self.game_class.TODO:
             t += ' - ' + l + '\n'
-        self.todo_sprite = text.new(text=t, font_size=10, width=1000, batch=self.batch, group=self.groups[2])
+        self.todo_sprite = text.new(text=t, font_size=10, width=1000, batch=self.text_batch)
         self.todo_sprite.x, self.todo_sprite.y = (400, 200)
 
     def go_to_main_game(self):
@@ -155,7 +158,7 @@ class OptionsMenu(Menu):
         Menu.__init__(self, game_class, button_size)
 
         common_attribs = dict(border_colour=(120, 50, 80), border_width=3, colour=(120, 0, 0),
-                              batch=self.batch, groups=self.groups)
+                              batch=self.batch, groups=self.groups, text_batch=self.text_batch)
 
         self.buttons['FOV'] = button.Button(self, self.FOV_toggle, order=(0, 0), visible=True,
                                             text_states=[u'Field of View: No', u'Field of View: Yes'], **common_attribs)
@@ -288,9 +291,9 @@ class SkillsMenu(Menu):
                 skill_colour = UNLEARNABLE_COLOUR
             f = lambda skill2=skill: self.learn_skill(skill2)
             self.buttons[skill] = button.Button(self, f, text = skill + " cost:" + str(self.game_class.skills_dict[skill].cost), border_colour = (120, 50, 80),
-                                                border_width = 3, colour = skill_colour, order = (temp_order, 0), batch=self.batch, groups=self.groups)
+                                                border_width = 3, colour = skill_colour, order = (temp_order, 0), batch=self.batch, groups=self.groups, text_batch=self.text_batch)
             self.buttons[skill + "_description"] = button.Button(self, None, text = self.game_class.skills_dict[skill].description,
-                                                                 border_colour = (120, 50, 80), border_width = 3, colour = (30, 120, 140), order = (temp_order, 1), batch=self.batch, groups=self.groups)
+                                                                 border_colour = (120, 50, 80), border_width = 3, colour = (30, 120, 140), order = (temp_order, 1), batch=self.batch, groups=self.groups, text_batch=self.text_batch)
             temp_order += 1
         Menu.arrange_buttons(self)
 
@@ -324,29 +327,29 @@ class KeyBindMenu(Menu):
         ord = 0
         self.buttons['load'] = button.Button(self, self.load, order=(ord, 0), visible=True, text=u'Load',
                                              border_colour=self.border_colour, border_width=3,
-                                             colour=self.colour, batch=self.batch, groups=self.groups)
+                                             colour=self.colour, batch=self.batch, groups=self.groups, text_batch=self.text_batch)
         self.buttons['save'] = button.Button(self, self.save, order=(ord, 1), visible=True, text=u'Save',
                                              border_colour=self.border_colour, border_width=3,
-                                             colour=self.colour, batch=self.batch, groups=self.groups)
+                                             colour=self.colour, batch=self.batch, groups=self.groups, text_batch=self.text_batch)
         ord += 1
         for player, p_map in self.game_class.key_controller.player_map.iteritems():
             for k, v in p_map.iteritems():
                 name = 'Player ' + str(player) + ' ' + k
                 self.buttons[name] = button.Button(self, None, order=(ord, 0), visible=True, text=unicode(name),
                                                    border_colour=self.border_colour, border_width=3,
-                                                   colour=self.colour, batch=self.batch, groups=self.groups)
+                                                   colour=self.colour, batch=self.batch, groups=self.groups, text_batch=self.text_batch)
                 self.buttons[name + ' key'] = button.Button(self, self.rebind(name), order=(ord, 1), visible=True, text=unicode(pyglet.window.key.symbol_string(p_map[k])),
                                                             border_colour=self.border_colour, border_width=3,
-                                                            colour=self.colour, batch=self.batch, groups=self.groups)
+                                                            colour=self.colour, batch=self.batch, groups=self.groups, text_batch=self.text_batch)
                 ord += 1
 
         for k, v in self.game_class.key_controller.key_map.iteritems():
             self.buttons[k] = button.Button(self, None, order=(ord, 0), visible=True, text=unicode(k),
                                             border_colour=self.border_colour, border_width=3,
-                                            colour=self.colour, batch=self.batch, groups=self.groups)
+                                            colour=self.colour, batch=self.batch, groups=self.groups, text_batch=self.text_batch)
             self.buttons[k + ' key'] = button.Button(self, self.rebind(k), order=(ord, 1), visible=True, text=unicode(pyglet.window.key.symbol_string(v)),
                                                      border_colour=self.border_colour, border_width=3,
-                                                     colour=self.colour, batch=self.batch, groups=self.groups)
+                                                     colour=self.colour, batch=self.batch, groups=self.groups, text_batch=self.text_batch)
             ord += 1
 
     def rebind(self, action_name):

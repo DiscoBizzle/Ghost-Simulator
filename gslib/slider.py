@@ -24,7 +24,7 @@ class Slider(object):
         Create function in class that creates the slider and pass it in as second argument.
     """
     def __init__(self, owner, func, pos=(0, 0), range=(0, 100), value=50, size=(100, 20), back_colour=(120, 0, 0),
-                 fore_colour=(0, 120, 0), order=(0, 0), enabled=True, visible=True, batch=None, groups=(None, None, None)):
+                 fore_colour=(0, 120, 0), order=(0, 0), enabled=True, visible=True, batch=None, groups=(None, None)):
 
         self.owner = owner
         self.min, self.max = range

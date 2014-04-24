@@ -35,7 +35,8 @@ class Button(object):
         Create function in class that creates the button and pass it in as second argument.
     """
     def __init__(self, owner, function, pos=(50, 50), size=(100, 100), visible=True, enabled=True, colour=(0, 0, 0),
-                 border_colour=(0, 0, 0), border_width=2, text=None, font_size=10, text_states=None, batch=None, groups=(None, None, None), **kwargs):
+                 border_colour=(0, 0, 0), border_width=2, text=None, font_size=10, text_states=None, batch=None,
+                 groups=(None, None), text_batch=None, **kwargs):
         self._pos = pos
 
         # Other properties' validity are checked in redraw(), this is called whenever they are changed, so exceptions will lead back to the incorrect assignment
@@ -53,7 +54,7 @@ class Button(object):
         self.batch = batch
         self.outer_group = groups[0]
         self.inner_group = groups[1]
-        self.text_group = groups[2]
+        self.text_batch = text_batch
 
         for arg in kwargs:  # allows for additional arbitrary arguments to be passed in, useful for more complicated button functions
             setattr(self, arg, kwargs[arg])
@@ -109,7 +110,7 @@ class Button(object):
                 self.text_sprite.delete()
                 self.text_sprite = None
                 # force redraw
-                self._text_dirty = True
+                self._text_dirty = None
             return
 
         self.outer_sprite.batch = self.batch
@@ -138,7 +139,7 @@ class Button(object):
             self.text_sprite = pyglet.text.Label(text=self.text, font_name=FONT, font_size=self.font_size,
                                                  color=(200, 200, 200, 255), width=self.size[0], height=self.size[1],
                                                  anchor_x='left', anchor_y='bottom', align='center', multiline=True,
-                                                 batch=self.batch, group=self.text_group)
+                                                 batch=self.text_batch)
             self.text_sprite.content_valign = 'center'
             self._text_dirty = text_dirty_new
 
