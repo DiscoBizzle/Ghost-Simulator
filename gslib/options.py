@@ -9,6 +9,7 @@ class Options(dict, pyglet.event.EventDispatcher):
     def __init__(self, *args, **kwargs):
         super(Options, self).__init__(*args, **kwargs)
         self.register_event_type('on_option_change')
+        self.load_options()
 
     def __setitem__(self, k, new_value):
         old_value = self[k] if k in self else None
