@@ -13,9 +13,9 @@ class Sound(object):
 
         self.game = game
 
-        self.music_playing = []
+        self.music_playing = None
         self.sound_playing = []
-        self.music_list = []
+        self.music_dict = []
         self.sound_dict = {}
 
         self.load_all_sounds()
@@ -25,8 +25,8 @@ class Sound(object):
 
     def on_option_change(self, k, old_value, new_value):
         if k == 'music_volume':
-            for m in self.music_playing:
-                m.volume = new_value
+            if self.music_playing is not None:
+                self.music_playing.volume = new_value
         elif k == 'sound_volume':
             for s in self.sound_playing:
                 s.volume = new_value
@@ -39,18 +39,22 @@ class Sound(object):
         self.sound_dict = sound_dict
 
     def load_all_music(self):
-        music_list = []
+        music_dict = {}
         for f in os.listdir(MUSIC_DIR):
             if f[-4:] in (".ogg", ".wav"):
-                music_list.append(pyglet.media.load(os.path.join(MUSIC_DIR, f)))
-        self.music_list = music_list
+                music_dict[f[:-4]] = pyglet.media.load(os.path.join(MUSIC_DIR, f))
+        self.music_dict = music_dict
 
-    def start_next_music(self):
-        handler = random.choice(self.music_list).play()
+    def play_music(self, name):
+        if self.music_playing is not None:
+            self.music_playing.pause()
+        handler = self.music_dict[name].play()
         handler.volume = self.game.options['music_volume']
-        self.music_playing.append(handler)
+        self.music_playing = handler
+        self.music_playing.name = name
 
     def play_sound(self, name):
         handler = self.sound_dict[name].play()
         handler.volume = self.game.options['sound_volume']
         self.sound_playing.append(handler)
+        self.sound_playing.name = name

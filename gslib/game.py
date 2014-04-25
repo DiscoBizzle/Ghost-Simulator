@@ -94,7 +94,7 @@ class Game(pyglet.window.Window):
         self.set_caption("Ghost Simulator v. 0.000000001a")
 
         self.sound_handler = sound.Sound(self)
-        self.sound_handler.start_next_music()
+        self.sound_handler.play_music('2 ghost lane')
 
         self.credits = credits.Credits(self)
         self.options_menu = menus.OptionsMenu(self, (200, 50))
@@ -268,6 +268,10 @@ class Game(pyglet.window.Window):
         self.camera_coords = self.calc_camera_coord()
 
         if self.state == MAIN_GAME:
+            if self.sound_handler.music_playing is not None:
+                if self.sound_handler.music_playing.name != 'transylvania':
+                    self.sound_handler.play_music('transylvania')
+
             self.last_touching = [p for p in self.touching]  # creates a copy
             for obj in self.objects.itervalues():
                 obj.update(dt)
