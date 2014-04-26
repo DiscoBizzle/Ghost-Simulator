@@ -1,12 +1,14 @@
-import pygame
+import pyglet
 
 from gslib import graphics
 from gslib import sprite
 
 def create_property(var):  # creates a member variable that redraws the button when changed.
     def _setter(self, val):
-        setattr(self, '_' + var, val)
-        self.redraw()
+        old_val = getattr(self, '_' + var)
+        if old_val != val:
+            setattr(self, '_' + var, val)
+            self.redraw()
 
     def _getter(self):
         return getattr(self, '_' + var)
@@ -23,8 +25,12 @@ class Slider(object):
         Function passed in will be called with 1 argument (current value of slider).
         Create function in class that creates the slider and pass it in as second argument.
     """
+
+    back_group = pyglet.graphics.OrderedGroup(0)
+    fore_group = pyglet.graphics.OrderedGroup(1)
+
     def __init__(self, owner, func, pos=(0, 0), range=(0, 100), value=50, size=(100, 20), back_colour=(120, 0, 0),
-                 fore_colour=(0, 120, 0), order=(0, 0), enabled=True, visible=True, batch=None, groups=(None, None)):
+                 fore_colour=(0, 120, 0), order=(0, 0), enabled=True, visible=True, sprite_batch=None, sprite_group=None):
 
         self.owner = owner
         self.min, self.max = range
@@ -35,12 +41,14 @@ class Slider(object):
         self._visible = visible
         self.enabled = enabled
         self._pos = pos
-        self.batch = batch
+        self.sprite_batch = sprite_batch
         self.sprites = [graphics.new_rect_sprite(), graphics.new_rect_sprite()]
-        self.sprites[0].batch = self.batch
-        self.sprites[1].batch = self.batch
-        self.sprites[0].group = groups[0]
-        self.sprites[1].group = groups[1]
+
+        if sprite_group:
+            self.back_group = pyglet.graphics.OrderedGroup(0, sprite_group)
+            self.fore_group = pyglet.graphics.OrderedGroup(1, sprite_group)
+        self.sprites[0].group = self.back_group
+        self.sprites[1].group = self.fore_group
         self.order = order
 
         self.isClicked = False
@@ -76,14 +84,14 @@ class Slider(object):
 
         # background sprite
         self.sprites[0].color_rgb = self.back_colour
-        self.sprites[0].batch = self.batch
+        self.sprites[0].batch = self.sprite_batch
         self.sprites[0].set_position(self.pos[0], self.pos[1])
         self.sprites[0].scale_x = self.size[0]
         self.sprites[0].scale_y = self.size[1]
 
         # foreground sprite
         self.sprites[1].color_rgb = self.fore_colour
-        self.sprites[1].batch = self.batch
+        self.sprites[1].batch = self.sprite_batch
         self.sprites[1].set_position(self.pos[0], self.pos[1])
         self.sprites[1].scale_x = self.size[0] * (self.value - self.min) / float(self.max - self.min)
         self.sprites[1].scale_y = self.size[1]

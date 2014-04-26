@@ -16,8 +16,10 @@ def valid_colour(colour):
 
 def create_property(var):  # creates a member variable that redraws the button when changed.
     def _setter(self, val):
-        setattr(self, '_' + var, val)
-        self.redraw()
+        old_val = getattr(self, '_' + var)
+        if val != old_val:
+            setattr(self, '_' + var, val)
+            self.redraw()
 
     def _getter(self):
         return getattr(self, '_' + var)
@@ -34,9 +36,13 @@ class Button(object):
         Function passed in will be called with 0 arguments.
         Create function in class that creates the button and pass it in as second argument.
     """
-    def __init__(self, owner, function, pos=(50, 50), size=(100, 100), visible=True, enabled=True, colour=(0, 0, 0),
-                 border_colour=(0, 0, 0), border_width=2, text=None, font_size=10, text_states=None, batch=None,
-                 groups=(None, None), text_batch=None, **kwargs):
+
+    back_group = pyglet.graphics.OrderedGroup(0, pyglet.graphics.Group())
+    fore_group = pyglet.graphics.OrderedGroup(1, pyglet.graphics.Group())
+
+    def __init__(self, owner, function=None, pos=(50, 50), size=(100, 100), visible=True, enabled=True, colour=(0, 0, 0),
+                 border_colour=(0, 0, 0), border_width=2, text=u'', font_size=10, text_states=None, sprite_batch=None,
+                 sprite_group=None, text_batch=None, text_group=None, **kwargs):
         self._pos = pos
 
         # Other properties' validity are checked in redraw(), this is called whenever they are changed, so exceptions will lead back to the incorrect assignment
@@ -51,10 +57,10 @@ class Button(object):
         self.text_states = text_states
         self._text_states_toggle = False
         self.enabled = enabled  # whether button can be activated, visible or not
-        self.batch = batch
-        self.outer_group = groups[0]
-        self.inner_group = groups[1]
+        self.sprite_batch = sprite_batch
+        self.sprite_group = sprite_group
         self.text_batch = text_batch
+        self.text_group = text_group
 
         for arg in kwargs:  # allows for additional arbitrary arguments to be passed in, useful for more complicated button functions
             setattr(self, arg, kwargs[arg])
@@ -64,6 +70,11 @@ class Button(object):
 
         self.outer_sprite = graphics.new_rect_sprite()
         self.inner_sprite = graphics.new_rect_sprite()
+        if sprite_group:
+            self.back_group = pyglet.graphics.OrderedGroup(0, sprite_group)
+            self.fore_group = pyglet.graphics.OrderedGroup(1, sprite_group)
+        self.inner_sprite.group = self.fore_group
+        self.outer_sprite.group = self.back_group
         self.text_sprite = None
         self.sprites = [self.outer_sprite, self.inner_sprite, self.text_sprite]
         self.redraw()
@@ -113,11 +124,8 @@ class Button(object):
                 self._text_dirty = None
             return
 
-        self.outer_sprite.batch = self.batch
-        self.inner_sprite.batch = self.batch
-
-        self.outer_sprite.group = self.outer_group
-        self.inner_sprite.group = self.inner_group
+        self.outer_sprite.batch = self.sprite_batch
+        self.inner_sprite.batch = self.sprite_batch
 
         self.outer_sprite.color_rgb = self.border_colour
         self.inner_sprite.color_rgb = self.colour
@@ -139,7 +147,7 @@ class Button(object):
             self.text_sprite = pyglet.text.Label(text=self.text, font_name=FONT, font_size=self.font_size,
                                                  color=(200, 200, 200, 255), width=self.size[0], height=self.size[1],
                                                  anchor_x='left', anchor_y='bottom', align='center', multiline=True,
-                                                 batch=self.text_batch)
+                                                 batch=self.text_batch, group=self.text_group)
             self.text_sprite.content_valign = 'center'
             self._text_dirty = text_dirty_new
 
