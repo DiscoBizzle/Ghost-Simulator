@@ -107,7 +107,6 @@ class Game(pyglet.window.Window):
         self.set_caption("Ghost Simulator v. 0.000000001a")
 
         self.sound_handler = sound.Sound(self)
-        self.sound_handler.play_music('2 ghost lane')
 
         self.credits = credits.Credits(self)
         self.options_menu = menus.OptionsMenu(self, (200, 50))
@@ -158,9 +157,6 @@ class Game(pyglet.window.Window):
         self.show_fears = False
         self.show_ranges = False
 
-        # TODO: fix loading options at startup
-        #self.options.load_options()
-
         self.key_controller.load()
 
         self.touching = []
@@ -189,6 +185,10 @@ class Game(pyglet.window.Window):
         pyglet.clock.schedule_interval(self.update, 1.0 / TICKS_PER_SEC)
 
         self.options.push_handlers(self)
+
+        self.options.load_options()
+
+        self.sound_handler.play_music('2 ghost lane')
 
         self.state = MAIN_MENU
 
