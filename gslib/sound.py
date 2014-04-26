@@ -50,11 +50,11 @@ class Sound(object):
             self.music_playing.pause()
         handler = self.music_dict[name].play()
         handler.volume = self.game.options['music_volume']
+        handler.name = name
         self.music_playing = handler
-        self.music_playing.name = name
 
     def play_sound(self, name):
         handler = self.sound_dict[name].play()
         handler.volume = self.game.options['sound_volume']
+        handler.name = name
         self.sound_playing.append(handler)
-        self.sound_playing.name = name
