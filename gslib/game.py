@@ -71,7 +71,19 @@ class Game(pyglet.window.Window):
         TODO.append("add character save/load on a per-map basis (make sure triggers/funcs are preserved)")
         TODO.append("make it possible to cancel trigger creation")
         TODO.append("handle deletion of target of trigger")
+        TODO.append("add idle_function to characters - wander, stand still, patrol (req. pathing)")
         TODO.append("add more TODO's in __init__ of Game")
+
+        TODO.append("1 drop list for # of parties in trigger")
+        TODO.append("1 drop list for type of interaction")
+        TODO.append("1 drop list for do what to target (adds to list)")
+        TODO.append("1 drop list that appears if action req. argument")
+        TODO.append("allow a zone to be chosen as a trigger target")
+
+        TODO.append("auto undo what happened in play mode if leave and re-enter edit mode (reload most recent save state)")
+        TODO.append("auto pause game in edit mode")
+        TODO.append("add undo button to editor (i.e. lots of save states)")
+
 
         self.TODO = TODO
 
