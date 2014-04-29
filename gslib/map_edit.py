@@ -102,7 +102,8 @@ class Cursor(game_object.GameObject):
 class Editor(object):
     def __init__(self, game):
         self.game = game
-        # self.pos = pos
+
+        self.save_state = None # to go back to when you re-open editor after testing your changes
 
         self.text_sprites = {}
         self.font_size = 20
@@ -239,6 +240,13 @@ class Editor(object):
         self.buttons['save_map'] = button.DefaultButton(self, self.save_map,
                                                         pos=(self.game.dimensions[0] - 100 - h_off, self.game.dimensions[1] - v_off - 200),
                                                         size=(100, 20), text="Save Map", visible=True, enabled=True)
+
+    def enter_edit_mode(self):
+        if not self.save_state is None:
+            save_load.restore_save_state(self.game, self.game.map, self.save_state)
+
+    def exit_edit_mode(self):
+        self.save_state = save_load.create_save_state(self.game.map)
 
     def delete_selected_object(self):
         del self.game.map.objects[self.object_to_edit_name]

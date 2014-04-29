@@ -86,7 +86,7 @@ class Game(pyglet.window.Window):
         TODO.append("1 drop list that appears if action req. argument")
         TODO.append("allow a zone to be chosen as a trigger target")
 
-        TODO.append("auto undo what happened in play mode if leave and re-enter edit mode (reload most recent save state)")
+        TODO.append("add players to saving - both save_map and save_state")
         TODO.append("add undo button to editor (i.e. lots of save states OR every func has an un-func) - save all as dicts (using current framework, reload all chars and triggers)")
 
         TODO.append("create decorator/thing to determine which properties to save")
@@ -172,7 +172,7 @@ class Game(pyglet.window.Window):
         self.last_touching = []
         
         self.editor = map_edit.Editor(self)
-        self.editor_active = False
+        self._editor_active = False
         self.cursor = None
         self.new_trigger_capture = False
 
@@ -218,6 +218,18 @@ class Game(pyglet.window.Window):
         self.skill_menu.enabled = state == SKILLS_SCREEN
         self.options_menu.enabled = state == OPTIONS_MENU
         self.keybind_menu.enabled = state == KEYBIND_MENU or state == KEYBIND_CAPTURE
+
+    @property
+    def editor_active(self):
+        return self._editor_active
+
+    @editor_active.setter
+    def editor_active(self, b):
+        self._editor_active = b
+        if b:
+            self.editor.enter_edit_mode()
+        else:
+            self.editor.exit_edit_mode()
 
     # pyglet event
     def on_key_press(self, symbol, modifiers):

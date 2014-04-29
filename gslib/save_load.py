@@ -59,6 +59,21 @@ def save_map(m):
     f.close()
 
 
+def create_save_state(m):
+    obj_dict = {}
+    for k, v in m.objects.iteritems():
+        obj_dict[str(k)] = create_save_char(v)
+
+    trig_dict = {}
+    for k, v in m.triggers.iteritems():
+        trig_dict[str(k)] = create_save_trigger(v)
+
+    file_dict = {}
+    file_dict[u'objects'] = obj_dict
+    file_dict[u'triggers'] = trig_dict
+    return file_dict
+
+
 ##########################################################################################################
 character_type_map = {'Dude': character_objects.Dude,
                       'SmallDoor': character_objects.SmallDoor}
@@ -117,3 +132,9 @@ def load_map(game, map_name):
     return new_map
 
 
+def restore_save_state(game, m, state_dict):
+    for o_name, o_dict in state_dict[u'objects'].iteritems():
+        m.objects[o_name] = load_object(game, o_dict)
+
+    for t_name, t_dict in state_dict[u'triggers'].iteritems():
+        m.triggers[t_name] = load_trigger(m, t_dict)
