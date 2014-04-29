@@ -12,7 +12,7 @@ class CutsceneAction(object):
     def describe(self):
         return self.__class__.__name__ + " describe() not implemented"
 
-    # Called when CutsceneAction needs to forget its state and act new.
+    # Called when CutsceneAction should forget its state and start anew.
     def restart(self):
         pass
 
@@ -20,9 +20,9 @@ class CutsceneAction(object):
     def update_again(self):
         return False
 
-    # Gets called once/tick at least once and then as long as update_again() returns True.
+    # Gets called once per tick at least once and then as long as update_again() returns True.
     def update(self):
-        raise Exception("CutsceneAction '" + self.__class__.__name__ + "' not implemented!")
+        raise Exception("CutsceneAction '" + self.__class__.__name__ + "' update() not implemented!")
 
 
 class Cutscene(object):
@@ -32,14 +32,14 @@ class Cutscene(object):
         self.name = name
         self.actions = actions
         self.current_actions = []
-        self.remaining_actions = actions
+        self.remaining_actions = actions.copy()
         self.tick = 0           # just for tracking ticks done
         self.done = False       # just for tracking if finished
         self.wait_group = None  # just for tracking current wait group
 
     def restart(self):
         self.current_actions = []
-        self.remaining_actions = self.actions
+        self.remaining_actions = self.actions.copy()
         self.tick = 0           # just for tracking ticks done
         self.done = False       # just for tracking if finished
         self.wait_group = None  # just for tracking current wait group
