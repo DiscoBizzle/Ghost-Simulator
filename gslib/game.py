@@ -56,23 +56,29 @@ class Game(pyglet.window.Window):
         TODO = []
         TODO.append("character pathe-ing")
         TODO.append("triggers/functions to handle move-to-position (after pathing)")
+
         TODO.append("click-to-edit text box - perhaps attached as a button function")
         TODO.append("then add character renaming/re-aging to map_edit (and able to edit speed by clicking the value")
+
         TODO.append("add deletion of function choices to char edit")
         TODO.append("add deletion of triggers to map edit")
-        TODO.append("game_object.py set_colorkey pyglet port (use rgba spritesheet or write code to do magic)")
-        TODO.append("create own Rect class for complete removal of pygame")
+
+        TODO.append("REDUNDANT? game_object.py set_colorkey pyglet port (use rgba spritesheet or write code to do magic)")
+        TODO.append("OPTIONAL create own Rect class for complete removal of pygame")
+
         TODO.append("implement pyglet camera")
         TODO.append("implement field of view slider (after pyglet camera implemented)")
+
         TODO.append("keybind menu in alphabetical order")
         TODO.append("add sound/music volume to options saving")
+
         TODO.append("design more sprites and make default characters (in character_objects)")
         TODO.append("add foreground layer to maps - then make characters appear *through* the foreground")
         TODO.append("add character save/load on a per-map basis (make sure triggers/funcs are preserved)")
         TODO.append("make it possible to cancel trigger creation")
         TODO.append("handle deletion of target of trigger")
+
         TODO.append("add idle_function to characters - wander, stand still, patrol (req. pathing)")
-        TODO.append("add more TODO's in __init__ of Game")
 
         TODO.append("1 drop list for # of parties in trigger")
         TODO.append("1 drop list for type of interaction")
@@ -81,9 +87,9 @@ class Game(pyglet.window.Window):
         TODO.append("allow a zone to be chosen as a trigger target")
 
         TODO.append("auto undo what happened in play mode if leave and re-enter edit mode (reload most recent save state)")
-        TODO.append("auto pause game in edit mode")
-        TODO.append("add undo button to editor (i.e. lots of save states)")
+        TODO.append("add undo button to editor (i.e. lots of save states OR every func has an un-func) - save all as dicts (using current framework, reload all chars and triggers)")
 
+        TODO.append("create decorator/thing to determine which properties to save")
 
         self.TODO = TODO
 
@@ -285,8 +291,9 @@ class Game(pyglet.window.Window):
                     self.sound_handler.play_music('transylvania')
 
             self.last_touching = [p for p in self.touching]  # creates a copy
-            for obj in self.objects.itervalues():
-                obj.update(dt)
+            if not self.editor_active: # pause game while in edit mode
+                for obj in self.objects.itervalues():
+                    obj.update(dt)
 
             for i, p in enumerate(self.touching):
                 if not p in self.last_touching:  # detect on touch
