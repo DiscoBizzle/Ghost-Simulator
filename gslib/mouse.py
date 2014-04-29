@@ -92,30 +92,6 @@ class MouseController(object):
             self.game.object_stats = None
             self.game.editor.object_to_edit_selected(None)
 
-    def check_list_and_button_click(self, pos, typ, button=None):
-        if typ == 'up':
-            return
-        to_click = None
-        for button in self.game.buttons.itervalues():
-            if button.check_clicked_no_function(pos):
-                to_click = button
-                if button.priority:
-                    break
-        if to_click:
-            self.interaction_this_click = True
-            to_click.perf_function()
-            # self.button_to_click = to_click
-            return
-
-        for v in self.game.drop_lists.itervalues():
-            if v.check_click_within_area(pos):
-                to_click = v
-                if v.priority:
-                    break
-        if to_click:
-            if to_click.handle_event(pos, typ, button):
-                self.interaction_this_click = True
-
     def check_button_click(self, pos, typ, mouse_button=None):
         if typ == 'up':
             return
@@ -128,6 +104,8 @@ class MouseController(object):
         if to_click:
             self.interaction_this_click = True
             # self.button_to_click = to_click
+            if self.game.editor_active and not (to_click.text == "Undo" or to_click.text == "Redo"):
+                self.game.editor.create_undo_state()
             to_click.perf_function()
             # if button.check_clicked(pos):
             #     self.interaction_this_click = True
@@ -142,6 +120,8 @@ class MouseController(object):
                 if v.priority:
                     break
         if to_click:
+            if self.game.editor_active:
+                self.game.editor.create_undo_state()
             if to_click.handle_event(pos, typ, button):
                 self.interaction_this_click = True
 
@@ -167,4 +147,6 @@ class MouseController(object):
             self.game.map.objects[name] = obj_type(self.game, x=pos[0], y=pos[1])
             self.game.gather_buttons_and_drop_lists_and_objects()
             self.interaction_this_click = True
+
+            self.game.editor.create_undo_state()
 

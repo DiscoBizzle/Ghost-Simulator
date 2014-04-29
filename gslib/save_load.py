@@ -98,10 +98,12 @@ def load_object(game, d):
             func_list = json.loads(v)
             afd = character_functions.all_functions_dict
             attr = getattr(new_obj, k)
+            func_names = [a.__name__ for a in attr]
             for f in func_list:
                 if not 'trigger' in f:
-                    function_type = afd[function_type_map[k]]
-                    attr.append(function_type[f](new_obj))
+                    if not f in func_names:
+                        function_type = afd[function_type_map[k]]
+                        attr.append(function_type[f](new_obj))
         elif k != u'object_type':
             setattr(new_obj, k, json.loads(v))
 
@@ -133,8 +135,12 @@ def load_map(game, map_name):
 
 
 def restore_save_state(game, m, state_dict):
+    m.objects = {}
     for o_name, o_dict in state_dict[u'objects'].iteritems():
         m.objects[o_name] = load_object(game, o_dict)
 
+    m.triggers = {}
     for t_name, t_dict in state_dict[u'triggers'].iteritems():
         m.triggers[t_name] = load_trigger(m, t_dict)
+
+    game.gather_buttons_and_drop_lists_and_objects()

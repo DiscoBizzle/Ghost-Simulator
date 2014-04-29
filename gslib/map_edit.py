@@ -105,6 +105,8 @@ class Editor(object):
         self.game = game
 
         self.save_state = None # to go back to when you re-open editor after testing your changes
+        self.undo_states = []
+        self.undo_index = 0
 
         self.text_sprites = {}
         self.font_size = 20
@@ -276,6 +278,39 @@ class Editor(object):
         self.buttons['save_map'] = button.DefaultButton(self, self.save_map,
                                                         pos=(self.game.dimensions[0] - 100 - h_off, self.game.dimensions[1] - v_off - 200),
                                                         size=(100, 20), text="Save Map", visible=True, enabled=True)
+
+        self.buttons['undo'] = button.DefaultButton(self, self.undo,
+                                                        pos=(self.game.dimensions[0] - 210 - h_off, self.game.dimensions[1] - v_off - 170),
+                                                        size=(100, 20), text="Undo", visible=True, enabled=True)
+
+        self.buttons['redo'] = button.DefaultButton(self, self.redo,
+                                                        pos=(self.game.dimensions[0] - 100 - h_off, self.game.dimensions[1] - v_off - 170),
+                                                        size=(100, 20), text="Redo", visible=True, enabled=True)
+
+
+    def create_undo_state(self):
+        n_history = 200
+        state = save_load.create_save_state(self.game.map)
+
+        if self.undo_index < len(self.undo_states) - 1: # delete redo info if have undone stuff and then do new things
+            self.undo_states = self.undo_states[:self.undo_index]
+
+        self.undo_states.append(state)
+        self.undo_index += 1
+        if len(self.undo_states) > n_history:
+            self.undo_index = n_history - 1
+
+
+    def undo(self):
+        if self.undo_index > 0:
+            self.undo_index -= 1
+            save_load.restore_save_state(self.game, self.game.map, self.undo_states[self.undo_index])
+
+    def redo(self):
+        if self.undo_index < len(self.undo_states) - 1:
+            self.undo_index += 1
+            save_load.restore_save_state(self.game, self.game.map, self.undo_states[self.undo_index])
+
 
     def enter_edit_mode(self):
         if not self.save_state is None:
@@ -503,6 +538,8 @@ class Editor(object):
             self.trigger_prototype = None
 
             self.drop_lists['view_triggers'].refresh()
+
+            self.create_undo_state()
         else:
             self.create_trigger_cursor(self.trigger_prototype.legend[len(l)])
 
