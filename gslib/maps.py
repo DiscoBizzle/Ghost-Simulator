@@ -130,6 +130,7 @@ class Map(object):
 
         self.objects = {}
 
+        self.cutscenes = {}
         self.triggers = {}
 
     def create_object_from_dict(self, d, game_class):

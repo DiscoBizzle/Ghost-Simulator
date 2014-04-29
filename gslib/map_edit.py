@@ -2,6 +2,7 @@ import pygame
 from gslib import drop_down_list
 from gslib import button
 from gslib import character_objects
+from gslib import cutscene
 from gslib import game_object
 from gslib import graphics
 from gslib import triggers
@@ -235,6 +236,41 @@ class Editor(object):
             self.drop_lists[v].enabled = False
 
         ###################################################################
+        # Cutscene editor
+        ###################################################################
+        self.cutscenes = self.game.map.cutscenes
+        self.cutscenes['New...'] = None
+        self.possible_cutscene_actions = cutscene.possible_actions
+        self.buttons['cutscenes'] = button.DefaultButton(self, self.toggle_cutscene_editor,
+                                                         pos=(0, self.game.dimensions[1] - 20),
+                                                         size=(100, 20), text="Cutscenes")
+        self.drop_lists['cutscenes'] = drop_down_list.DropDownList(self, self.cutscenes, self.select_cutscene,
+                                                                   pos=(980, self.game.dimensions[1] - 55),
+                                                                   size=(300, 20))
+        self.buttons['play_cutscene'] = button.DefaultButton(self, self.play_cutscene,
+                                                             pos=(980, self.game.dimensions[1] - 75), size=(20, 20),
+                                                             text=">")
+        self.buttons['play_cutscene_and_run'] = button.DefaultButton(self, self.play_cutscene_and_run,
+                                                                     pos=(1000, self.game.dimensions[1] - 75),
+                                                                     size=(40, 20), text="> R")
+        self.buttons['stop_cutscene'] = button.DefaultButton(self, self.stop_cutscene,
+                                                             pos=(1040, self.game.dimensions[1] - 75), size=(20, 20),
+                                                             text="[]")
+        self.buttons['cutscene_status'] = button.DefaultButton(self, None, pos=(1060, self.game.dimensions[1] - 75),
+                                                               size=(1280 - 1060, 20), text="No cutscene selected.")
+
+        self.cutscene_editor = [self.drop_lists['cutscenes'], self.buttons['play_cutscene'],
+                                self.buttons['play_cutscene_and_run'], self.buttons['stop_cutscene'],
+                                self.buttons['cutscene_status']]
+
+        for ce in self.cutscene_editor:
+            ce.visible = False
+            ce.enabled = False
+
+        # self.new_trigger_objects = []
+        self.trigger_prototype = None
+
+        ###################################################################
         # Other buttons
         ###################################################################
         self.buttons['save_map'] = button.DefaultButton(self, self.save_map,
@@ -247,6 +283,28 @@ class Editor(object):
 
     def exit_edit_mode(self):
         self.save_state = save_load.create_save_state(self.game.map)
+
+    def toggle_cutscene_editor(self):
+        for ce in self.cutscene_editor:
+            ce.visible = not ce.visible
+            ce.enabled = not ce.enabled
+
+    def select_cutscene(self, entry):
+        if entry == "New...":
+            # TODO new cutscene
+            pass
+        else:
+            # TODO select existing cutscene
+            pass
+
+    def play_cutscene(self):
+        pass
+
+    def play_cutscene_and_run(self):
+        pass
+
+    def stop_cutscene(self):
+        pass
 
     def delete_selected_object(self):
         del self.game.map.objects[self.object_to_edit_name]
