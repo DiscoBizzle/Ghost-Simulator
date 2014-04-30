@@ -1,5 +1,5 @@
+import pygame
 from gslib import button
-from gslib.constants import *
 
 
 def create_property(var):  # creates a member variable that redraws the button when changed.
@@ -22,12 +22,11 @@ def list_func(owner, val):
         else:
             owner.selected_name = str(val)
             owner.selected = owner.items[val]
-        if owner.function:
-            owner.function()
+        owner.function()
     return func
 
 
-class DropDownList(object):
+class List(object):
     def __init__(self, owner, items, function=None, pos=(50, 50), size=(100, 20), visible=True, enabled=True, colour=(120, 0, 0),
                  border_colour=(120, 50, 80), border_width=2, text=None, font_size=10, labels='dictkey', **kwargs):
         self._pos = pos
@@ -51,14 +50,10 @@ class DropDownList(object):
         self.items = items
         self._selected_name = "<None>"
         self.selected = None
-        self.main_button = button.Button(self, None, pos=pos, size=size, font_size=font_size, visible=visible,
-                                         text=u"<None>",
-                                         border_colour=self._border_colour, border_width=self.border_width,
-                                         colour=self.colour)
         self.drop_buttons = []
         self.refresh()
 
-        self._open = False
+        self._open = True
         self.function = function
 
         self.high_colour = (0, 120, 0)
@@ -90,10 +85,6 @@ class DropDownList(object):
 
     def refresh(self):  # call if the list changes
         self.drop_buttons = []
-        self.drop_buttons.append(button.Button(self, list_func(self, None), size=self.size, font_size=self.font_size,
-                                               visible=False, enabled=False, text=u"<None>",
-                                               border_colour=self._border_colour, border_width=self.border_width,
-                                               colour=self.colour))
 
         for k, v in self.items.iteritems():
             if self.labels == 'classname':
@@ -103,40 +94,31 @@ class DropDownList(object):
             else:
                 t = unicode(k)
             self.drop_buttons.append(button.Button(self, list_func(self, k), size=self.size, font_size=self.font_size,
-                                                   visible=False, enabled=False, text=t,
+                                                   visible=self.visible, enabled=self.enabled, text=t,
                                                    border_colour=self._border_colour, border_width=self.border_width,
                                                    colour=self.colour))
+        self.update_buttons()
 
     def update_buttons(self):
-        self.main_button.text = self.selected_name
-        self.main_button.colour = self.colour
-        self.main_button.border_colour = self.border_colour
-        self.main_button.size = self.size
-        self.main_button.visible = self.visible
-        self.main_button.font_size = self.font_size
-        self.main_button.pos = self.pos
         for i, b in enumerate(self.drop_buttons):
             b.colour = self.colour
             b.border_colour = self.border_colour
             b.size = self.size
             b.visible = self.visible
             b.font_size = self.font_size
-            b.pos = (self.pos[0], self.pos[1] - (1 + i) * self.size[1])
+            b.pos = (self.pos[0], self.pos[1] - (i + 1) * self.size[1])
 
     def handle_event(self, pos, typ, button=None):
         if not self.enabled:
             return False
         if typ == 'down':
             return self.check_clicked(pos)
-        elif typ == 'move' and self.open:
+        elif typ == 'move':
             self.handle_mouse_motion(pos)
 
     def check_click_within_area(self, click_pos):
         pos = self.pos
-        if self.open:
-            h = self.size[1] * len(self.drop_buttons)
-        else:
-            h = 0
+        h = self.size[1] * len(self.drop_buttons)
         if pos[0] < click_pos[0] < pos[0] + self.size[0] and pos[1] - h < click_pos[1] < pos[1] + self.size[1]:
             return True
         return False
@@ -147,6 +129,7 @@ class DropDownList(object):
         w /= 2
         h /= 2
 
+        """
         if abs(click_pos[0] - (pos[0] + w)) < w and abs(click_pos[1] - (pos[1] + h)) < h:
             self.open = not self.open
             for b in self.drop_buttons:
@@ -158,6 +141,7 @@ class DropDownList(object):
 
         if not self.open:
             return
+        """
 
         b = False
         for b in self.drop_buttons:
@@ -173,23 +157,13 @@ class DropDownList(object):
         eh = pos[1] + h - event_pos[1]
         h_ind = eh / h
 
-        # if move off edge, close list
-        # if move off bottom or top, close list
-        if abs(event_pos[0] - (pos[0] + w)) > w or h_ind > len(self.drop_buttons) or h_ind < 0:
-            self.open = not self.open
-            for b in self.drop_buttons:
-                b.visible = not b.visible
-                b.enabled = not b.enabled
-            return
-
         # highlight the moused-over button
-
         for b in self.drop_buttons:
             if b.colour != self.colour:
                 b.colour = self.colour
             if b.border_colour != self.border_colour:
                 b.border_colour = self.border_colour
-        if h_ind > 0:
+        if len(self.drop_buttons) >= h_ind > 0:
             b = self.drop_buttons[h_ind - 1]
             if b.border_colour != self.high_border_colour:
                 b.border_colour = self.high_border_colour

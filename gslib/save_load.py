@@ -1,6 +1,7 @@
 import os
 import json
 from gslib import character_objects
+from gslib import cutscene
 from gslib import maps
 from gslib import character_functions
 from gslib import triggers
@@ -37,6 +38,23 @@ def create_save_trigger(trigger):
     return save_dict
 
 
+def save_cutscene_as_dict(cs):
+    c_dict = {}
+    for i in range(0, len(cs.actions)):
+        c_dict[i] = cs.actions[i].save()
+    return c_dict
+
+
+def save_cutscenes(cutscenes, filename):
+    cutscenes_dict = {}
+    for cn, c in cutscenes.iteritems():
+        cutscenes_dict[c.name] = save_cutscene_as_dict(c)
+
+    with open(filename.replace('\\', '/'), 'w') as f:
+        json.dump(cutscenes_dict, f)
+    f.close()
+
+
 def save_map(m):
     print('Saving map: ' + m._name)
     obj_dict = {}
@@ -47,12 +65,15 @@ def save_map(m):
     for k, v in m.triggers.iteritems():
         trig_dict[str(k)] = create_save_trigger(v)
 
+    save_cutscenes(m.cutscenes, m._cutscenes_file)
+
     file_dict = {}
     file_dict[u'objects'] = obj_dict
     file_dict[u'triggers'] = trig_dict
     file_dict[u'name'] = m._name
     file_dict[u'tileset'] = m._tileset_file.replace('\\', '/')
     file_dict[u'map_file'] = m._map_file.replace('\\', '/')
+    file_dict[u'cutscenes_file'] = m._cutscenes_file.replace('\\', '/')
 
     with open(os.path.join(SAVE_DIR, str(m._name + '_save.dat')), 'w') as f:
         json.dump(file_dict, f)
@@ -117,21 +138,47 @@ def load_trigger(game, d):
     new_trig = trigger_type_map[d[u'trigger_type']](game, *obj_refs)
     return new_trig
 
+
+def load_cutscene_from_dict(game_, map_, name, d):
+    actions = []
+    if d.keys():
+        for k in range(min(map(int, d.keys())), max(map(int, d.keys())) + 1):
+            act_d = d[unicode(k)]
+            cl = getattr(cutscene, act_d['class_name'])
+            actions.append(cl(game_, map_, act_d))
+    return cutscene.Cutscene(name, actions)
+
+
+def load_cutscenes(game_, map_, cutscenes_file):
+    with open(cutscenes_file.replace('\\', '/'), 'r') as f:
+        file_dict = json.load(f)
+    f.close()
+
+    cutscenes = {}
+    for k, v in file_dict.iteritems():
+        cutscenes[k] = load_cutscene_from_dict(game_, map_, k, v)
+
+    return cutscenes
+
+
 def load_map(game, map_name):
-    with open(os.path.join(SAVE_DIR, str(map_name+ '_save.dat')), 'r') as f:
-         map_dict = json.load(f)
+    with open(os.path.join(SAVE_DIR, str(map_name + '_save.dat')), 'r') as f:
+        map_dict = json.load(f)
     f.close()
 
     name = map_dict[u'name']
     tileset = map_dict[u'tileset']
     map_file = map_dict[u'map_file']
-    new_map = maps.Map(name, tileset, map_file, game)
+    cutscenes_file = map_dict[u'cutscenes_file']
+    new_map = maps.Map(name, tileset, map_file, cutscenes_file, game)
 
     for o_name, o_dict in map_dict[u'objects'].iteritems():
         new_map.objects[o_name] = load_object(game, o_dict)
 
     for t_name, t_dict in map_dict[u'triggers'].iteritems():
         new_map.triggers[t_name] = load_trigger(game, t_dict)
+
+    new_map.cutscenes = load_cutscenes(game, new_map, cutscenes_file)
 
     return new_map
 

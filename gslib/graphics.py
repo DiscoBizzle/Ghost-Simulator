@@ -194,9 +194,10 @@ class Graphics(object):
         for l in self.game.drop_lists.itervalues():
             if not l.visible:
                 continue
-            self.game.screen_objects_to_draw.append(l.main_button.outer_sprite)
-            self.game.screen_objects_to_draw.append(l.main_button.inner_sprite)
-            self.game.screen_objects_to_draw.append(l.main_button.text_sprite)
+            if hasattr(l, 'main_button'):
+                self.game.screen_objects_to_draw.append(l.main_button.outer_sprite)
+                self.game.screen_objects_to_draw.append(l.main_button.inner_sprite)
+                self.game.screen_objects_to_draw.append(l.main_button.text_sprite)
             if not l.open:
                 continue
             for b in l.drop_buttons:

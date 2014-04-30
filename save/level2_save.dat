@@ -1,1 +1,1 @@
-{"tileset": "tiles/level2.png", "objects": {}, "map_file": "tiles/level2.json", "name": "level2", "triggers": {}}
+{"tileset": "tiles/level2.png", "objects": {}, "cutscenes_file": "save/level2_cutscenes.json", "map_file": "tiles/level2.json", "name": "level2", "triggers": {}}

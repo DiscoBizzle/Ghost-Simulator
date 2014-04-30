@@ -114,11 +114,13 @@ class Tile(object):
 
 
 class Map(object):
-    def __init__(self, name, tileset, map_file, game_class):
+    def __init__(self, name, tileset, map_file, cutscenes_file, game_class):
         self._name = name
         self._tileset_file = tileset
         self._map_file = map_file
-        # Note: We need the PIL decoder for this to be anything like fast. (GDI+ etc import bitmaps upside-down...)
+        self._cutscenes_file = cutscenes_file
+
+        # .get_texture().get_image_data() trick to ensure fast load
         self.tileset = pyglet.image.load(tileset).get_texture().get_image_data()
         self.tileset_cols = self.tileset.width // TILE_SIZE
         self.tileset_rows = self.tileset.height // TILE_SIZE

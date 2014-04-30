@@ -1,1 +1,1 @@
-{"tileset": "tiles/martin.png", "objects": {}, "map_file": "tiles/martin.json", "name": "martin", "triggers": {}}
+{"tileset": "tiles/martin.png", "objects": {}, "cutscenes_file": "save/martin_cutscenes.json", "map_file": "tiles/martin.json", "name": "martin", "triggers": {}}

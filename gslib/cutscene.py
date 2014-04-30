@@ -1,16 +1,28 @@
 
-possible_actions = {}
-
 
 class CutsceneAction(object):
 
-    def __init__(self, game_, wait_group=None):
+    def __init__(self, game_, map_, load_dict=None):
         self.game = game_
-        self.wait_group = wait_group
+        self.map = map_
+        self.load_dict = load_dict or {}
+        self.wait_group = self.try_load('wait_group')
+
+    def try_load(self, var_name):
+        if var_name in self.load_dict:
+            return self.load_dict[var_name]
+        else:
+            return None
+
+    def get_editor(self):
+        return {'wait_group': 'wait_group'}
+
+    def save(self):
+        return {'class_name': self.__class__.__name__, 'wait_group': self.wait_group}
 
     # Used in editor.
     def describe(self):
-        return self.__class__.__name__ + " describe() not implemented"
+        return self.__class__.__name__ + "\nwait_g " + str(self.wait_group) + " "
 
     # Called when CutsceneAction should forget its state and start anew.
     def restart(self):
@@ -27,19 +39,18 @@ class CutsceneAction(object):
 
 class Cutscene(object):
 
-    def __init__(self, name, game_, actions):
-        self.game = game_
+    def __init__(self, name, actions):
         self.name = name
         self.actions = actions
         self.current_actions = []
-        self.remaining_actions = actions.copy()
+        self.remaining_actions = actions[:]
         self.tick = 0           # just for tracking ticks done
         self.done = False       # just for tracking if finished
         self.wait_group = None  # just for tracking current wait group
 
     def restart(self):
         self.current_actions = []
-        self.remaining_actions = self.actions.copy()
+        self.remaining_actions = self.actions[:]
         self.tick = 0           # just for tracking ticks done
         self.done = False       # just for tracking if finished
         self.wait_group = None  # just for tracking current wait group
@@ -76,3 +87,12 @@ class Cutscene(object):
             self.done = True
         self.wait_group = last_wait_group
         self.tick += 1
+
+
+class TestAction(CutsceneAction):
+
+    def __init__(self, g, m, l):
+        CutsceneAction.__init__(self, g, m, l)
+
+
+possible_actions = {'Test Action': TestAction}

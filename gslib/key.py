@@ -21,7 +21,6 @@ class KeyController(object):
         self.game = game
 
         self.keys = Pkey.KeyStateHandler()
-
         self.key_map = {'Skill Screen': Pkey.Q, 'Show Fear Ranges': Pkey.R, 'Show Fears': Pkey.E,
                         'Toggle Editor': Pkey.B, 'Snap to Grid': Pkey.LCTRL}
         self.player_map = {'1': {'up': Pkey.UP, 'down': Pkey.DOWN, 'left': Pkey.LEFT, 'right': Pkey.RIGHT, 'possess': Pkey.F, 'harvest fear': Pkey.Z},
