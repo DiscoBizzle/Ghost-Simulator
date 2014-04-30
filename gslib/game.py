@@ -60,9 +60,6 @@ class Game(pyglet.window.Window):
         TODO.append("click-to-edit text box - perhaps attached as a button function")
         TODO.append("then add character renaming/re-aging to map_edit (and able to edit speed by clicking the value")
 
-        TODO.append("add deletion of function choices to char edit")
-        TODO.append("add deletion of triggers to map edit")
-
         TODO.append("REDUNDANT? game_object.py set_colorkey pyglet port (use rgba spritesheet or write code to do magic)")
         TODO.append("OPTIONAL create own Rect class for complete removal of pygame")
 
@@ -74,13 +71,15 @@ class Game(pyglet.window.Window):
 
         TODO.append("design more sprites and make default characters (in character_objects)")
         TODO.append("add foreground layer to maps - then make characters appear *through* the foreground")
-        TODO.append("add character save/load on a per-map basis (make sure triggers/funcs are preserved)")
+
         TODO.append("make it possible to cancel trigger creation")
         TODO.append("handle deletion of target of trigger")
+        TODO.append("add deletion of function choices to char edit")
+        TODO.append("add deletion of triggers to map edit")
 
         TODO.append("add idle_function to characters - wander, stand still, patrol (req. pathing)")
 
-        TODO.append("1 drop list that appears if action req. argument")
+        TODO.append("drop list that appears if trigger action req. string argument")
         TODO.append("allow a zone to be chosen as a trigger target")
 
         TODO.append("add players to saving - both save_map and save_state")
