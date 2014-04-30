@@ -37,8 +37,8 @@ class Button(object):
         Create function in class that creates the button and pass it in as second argument.
     """
 
-    back_group = pyglet.graphics.OrderedGroup(0, pyglet.graphics.Group())
-    fore_group = pyglet.graphics.OrderedGroup(1, pyglet.graphics.Group())
+    back_group = pyglet.graphics.OrderedGroup(0)
+    fore_group = pyglet.graphics.OrderedGroup(1)
 
     def __init__(self, owner, function=None, pos=(50, 50), size=(100, 100), visible=True, enabled=True, colour=(0, 0, 0),
                  border_colour=(0, 0, 0), border_width=2, text=u'', font_size=10, text_states=None, sprite_batch=None,
