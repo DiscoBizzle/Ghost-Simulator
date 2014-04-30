@@ -40,7 +40,7 @@ from gslib.constants import *
 #os.environ['SDL_VIDEODRIVER'] = ''
 
 
-class Game(pyglet.window.Window):
+class Game(pyglet.event.EventDispatcher):
     """
     To draw something relative to map: (accounts for camera)
     game.world_objects_to_draw.append((surface, position))
@@ -51,7 +51,6 @@ class Game(pyglet.window.Window):
     Objects will be drawn without having to add them to these lists.
     """
     def __init__(self):
-        super(Game, self).__init__(width=GAME_WIDTH, height=GAME_HEIGHT, resizable=True, vsync=False)
 
         TODO = []
         TODO.append("character pathe-ing")
@@ -88,11 +87,20 @@ class Game(pyglet.window.Window):
 
         self.TODO = TODO
 
+        self.options = options.Options(DEFAULT_OPTIONS)
+
+        self.options.load_options()
+
+        self.window = GameWindow(self, width=self.options['resolution'][0], height=self.options['resolution'][1],
+                                 resizable=True, vsync=self.options['vsync'], fullscreen=self.options['fullscreen'])
+
         # enable alpha-blending
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
 
-        self.options = options.Options(DEFAULT_OPTIONS)
+        self.window.push_handlers(self)
+
+        self.options.push_handlers(self)
 
         # TODO: why would we want this?
         #self.set_location(5, 30)  # aligns window to top left of screen (on windows atleast)
@@ -104,7 +112,7 @@ class Game(pyglet.window.Window):
         self.cutscene_next = os.path.join(VIDEO_DIR, "default.mpg")
         self.game_running = True
         self.graphics = graphics.Graphics(self)
-        self.set_caption("Ghost Simulator v. 0.000000001a")
+        self.window.set_caption("Ghost Simulator v. 0.000000001a")
 
         self.sound_handler = sound.Sound(self)
 
@@ -184,21 +192,13 @@ class Game(pyglet.window.Window):
 
         pyglet.clock.schedule_interval(self.update, 1.0 / TICKS_PER_SEC)
 
-        self.options.push_handlers(self)
-
-        self.options.load_options()
-
         self.sound_handler.play_music('2 ghost lane')
 
         self.state = MAIN_MENU
 
     @property
     def dimensions(self):
-        return self.get_size()
-
-    @dimensions.setter
-    def dimensions(self, dimensions):
-        self.set_size(*dimensions)
+        return self.window.get_size()
 
     @property
     def state(self):
@@ -206,8 +206,11 @@ class Game(pyglet.window.Window):
 
     @state.setter
     def state(self, state):
+        if state == self._state:
+            return
         self.last_state = self._state
         self._state = state
+        self.dispatch_event('on_state_change', state)
         # update menu enabled states
         self.main_menu.enabled = state == MAIN_MENU
         self.skill_menu.enabled = state == SKILLS_SCREEN
@@ -227,27 +230,6 @@ class Game(pyglet.window.Window):
             self.editor.exit_edit_mode()
 
     # pyglet event
-    def on_key_press(self, symbol, modifiers):
-        self.key_controller.keys.on_key_press(symbol, modifiers)
-        self.key_controller.handle_keys(symbol, modifiers)
-
-    def on_key_release(self, symbol, modifiers):
-        self.key_controller.keys.on_key_release(symbol, modifiers)
-        self.key_controller.handle_keys(symbol, modifiers)
-
-    def on_mouse_motion(self, x, y, dx, dy):
-        self.mouse_controller.mouse_move((x, y))
-
-    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        self.mouse_controller.mouse_move((x, y))
-
-    def on_mouse_press(self, x, y, button, modifiers):
-        self.mouse_controller.mouse_click((x, y), 'down', button)
-
-    def on_mouse_release(self, x, y, button, modifiers):
-        self.mouse_controller.mouse_click((x, y), 'up', button)
-
-    # pyglet event
     def on_draw(self):
         self.draw_clock.tick()
 
@@ -256,20 +238,6 @@ class Game(pyglet.window.Window):
         self.fps_clock.draw()
         self.ticks_clock_display.draw()
         self.draw_clock_display.draw()
-
-    # def on_resize(self, width, height):
-    #     pyglet.window.Window.on_resize(self, width, height)
-
-    def on_option_change(self, k, old_value, new_value):
-        if k == 'vsync':
-            self.set_vsync(new_value)
-        elif k == 'fullscreen':
-            self.set_fullscreen(fullscreen=new_value)
-            self.options['resolution'] = self.get_size()
-        elif k == 'resolution':
-            self.set_size(*new_value)
-            # TODO: why would we want this?
-            # self.set_location(5, 31)  # aligns window to top left of screen (on windows atleast)
 
     def gather_buttons_and_drop_lists_and_objects(self):
         self.buttons = dict(self.game_buttons.items())
@@ -283,7 +251,6 @@ class Game(pyglet.window.Window):
         self.objects = dict(self.players.items() + self.map.objects.items())
         if self.cursor:
             self.objects['cursor'] = self.cursor
-
 
     def update(self, dt):
         # this is fixed timestep, 30 FPS. if game runs slower, we lag.
@@ -396,5 +363,33 @@ class Game(pyglet.window.Window):
         self.graphics.clip_area = pygame.Rect((0, 0), (self.dimensions[0], self.dimensions[1]))
 
     def quit_game(self):
-        self.dispatch_event('on_close')
+        self.window.dispatch_event('on_close')
 
+Game.register_event_type('on_state_change')
+
+
+class GameWindow(pyglet.window.Window):
+    def __init__(self, game, *args, **kwargs):
+        super(GameWindow, self).__init__(*args, **kwargs)
+        self.game = game
+        self.game.options.push_handlers(self)
+
+    # disable the default pyglet key press handler
+    def on_key_press(self, symbol, modifiers):
+        pass
+
+    def on_resize(self, width, height):
+        super(GameWindow, self).on_resize(width, height)
+        self.game.options['resolution'] = (width, height)
+
+    def on_option_change(self, k, old_value, new_value):
+        if k == 'vsync':
+            self.set_vsync(new_value)
+        elif k == 'fullscreen':
+            self.set_fullscreen(fullscreen=new_value)
+            self.game.options['resolution'] = self.get_size()
+        elif k == 'resolution':
+            if self.fullscreen:
+                self.set_fullscreen(width=new_value[0], height=new_value[1])
+            else:
+                self.set_size(*new_value)

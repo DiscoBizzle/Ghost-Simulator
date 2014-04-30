@@ -9,6 +9,19 @@ class MouseController(object):
         self.game = game
         self.interaction_this_click = False
         self.button_to_click = None
+        self.game.window.push_handlers(self)
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        self.mouse_move((x, y))
+
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        self.mouse_move((x, y))
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        self.mouse_click((x, y), 'down', button)
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        self.mouse_click((x, y), 'up', button)
 
     def mouse_click(self, pos, typ, button):
         self.interaction_this_click = False

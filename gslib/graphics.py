@@ -46,7 +46,7 @@ class Graphics(object):
         #self.surface = pygame.display.set_mode(self.game.dimensions, pygame.RESIZABLE)
 
         self.field = sprite.Sprite(pyglet.image.load(os.path.join(TILES_DIR, 'field.png')).get_texture())
-        self.field.opacity = 128
+        self.field.opacity = self.game.options['VOF_opacity']
         #self.field.scale_x = self.game.dimensions[0] / self.field.image.width
         #self.field.scale_y = self.game.dimensions[1] / self.field.image.height
 
@@ -72,6 +72,12 @@ class Graphics(object):
         self.map_texture = None
         self.tile_sprite = None
 
+        self.game.options.push_handlers(self)
+
+    def on_option_change(self, key, old_value, value):
+        if key == 'VOF_opacity':
+            self.field.opacity = value
+
     def draw_game_over(self):
         self.game_over_txt1.x = (self.game.dimensions[0] - self.game_over_txt1.content_width) / 2
         self.game_over_txt1.y = (self.game.dimensions[1] - self.game_over_txt1.content_height) / 2
@@ -85,7 +91,7 @@ class Graphics(object):
     def main_game_draw(self):
         # this runs faster than game update. animation can be done here with no problems.
         if self.game.state != CUTSCENE:
-            self.game.clear()
+            self.game.window.clear()
 
         if self.game.state == STARTUP:
             pass
@@ -130,7 +136,6 @@ class Graphics(object):
             self.draw_screen_objects()
 
         if self.game.options['VOF']:
-            # self.field.opacity = 128
             self.field.draw()
 
     def draw_map(self):

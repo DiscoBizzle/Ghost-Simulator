@@ -48,10 +48,10 @@ class Menu(object):
     def enabled(self, enabled):
         if enabled and not self._enabled:
             self.arrange_buttons()
-            self.game.push_handlers(self)
+            self.game.window.push_handlers(self)
             self.game.options.push_handlers(self)
         elif not enabled and self._enabled:
-            self.game.remove_handlers(self)
+            self.game.window.remove_handlers(self)
             self.game.options.remove_handlers(self)
         self._enabled = enabled
 
@@ -76,7 +76,8 @@ class Menu(object):
             slider.check_clicked(pos, typ)
         if typ == 'down':
             for button in self.buttons.itervalues():
-                button.check_clicked(pos)
+                if button.check_clicked(pos):
+                    return
 
     def arrange_buttons(self):
         self.buttons['menu_scale_display'].visible = self.game.options['menu_scale']
@@ -168,17 +169,15 @@ class OptionsMenu(Menu):
                                             text_states=[u'Field of View: No', u'Field of View: Yes'], **common)
         self.buttons['VOF'] = button.Button(self, self.vof_toggle, order=(1, 0),
                                             text_states=[u'View of Field: No', u'View of Field: Yes'], **common)
-        self.sliders['VOF'] = slider.Slider(self, self.vof_value, range=(0, 255), order=(1, 1), value=128,
-                                            visible=False, sprite_batch=self.sprite_batch)
+        self.sliders['VOF_opacity'] = slider.Slider(self, self.vof_value, range=(0, 255), order=(1, 1),
+                                                    sprite_batch=self.sprite_batch)
         self.buttons['torch'] = button.Button(self, self.torch_toggle, order=(2, 0),
                                               text_states=[u'Torch: No', u'Torch: Yes'], **common)
         self.buttons['sound_display'] = button.Button(self, order=(3, 0), **common)
         self.buttons['music_display'] = button.Button(self, order=(4, 0), **common)
         self.sliders['sound'] = slider.Slider(self, self.set_sound, range=(0.0, 2.0), order=(3, 1),
-                                              value=self.game.options['sound_volume'],
                                               sprite_batch=self.sprite_batch)
         self.sliders['music'] = slider.Slider(self, self.set_music, range=(0.0, 2.0), order=(4, 1),
-                                              value=self.game.options['music_volume'],
                                               sprite_batch=self.sprite_batch)
         self.buttons['menu_scale'] = button.Button(self, self.menu_scale_toggle, order=(5, 0),
                                                    text_states=[u'Menu Scaling: Off', u'Menu Scaling: On'], **common)
@@ -189,9 +188,12 @@ class OptionsMenu(Menu):
         self.buttons['screen_size_display'] = button.Button(self, order=(8, 0), text=u'Screen Size', **common)
         self.buttons['screen_size'] = button.Button(self, self.set_screen_size, order=(8, 1),
                                                     text_states=[u'1024 x 768', u'1280 x 720', u'1600 x 900',
-                                                                 u'1920 x 1080', u'Fullscreen'], **common)
+                                                                 u'1920 x 1080'], **common)
         self.buttons['vsync'] = button.Button(self, self.vsync_toggle, order=(9, 0),
                                               text_states=[u'vsync: Off', u'vsync: On'], **common)
+        self.buttons['fullscreen'] = button.Button(self, self.fullscreen_toggle, order=(10, 0),
+                                                   text_states=[u'fullscreen: Off', u'fullscreen: On'], **common)
+        self.buttons['reset'] = button.Button(self, self.reset, order=(11, 0), text=u'Reset Options', **common)
 
         self.arrange_buttons()
 
@@ -202,7 +204,7 @@ class OptionsMenu(Menu):
         self.game.options['VOF'] = not self.game.options['VOF']
 
     def vof_value(self, val):
-        self.game.graphics.field.opacity = val
+        self.game.options['VOF_opacity'] = val
 
     def torch_toggle(self):
         self.game.options['torch'] = not self.game.options['torch']
@@ -222,13 +224,18 @@ class OptionsMenu(Menu):
     def vsync_toggle(self):
         self.game.options['vsync'] = not self.game.options['vsync']
 
+    def fullscreen_toggle(self):
+        self.game.options['fullscreen'] = not self.game.options['fullscreen']
+
     def update_button_text_and_slider_values(self):
         self.buttons['FOV'].text_states_toggle = self.game.options['FOV']
         self.buttons['VOF'].text_states_toggle = self.game.options['VOF']
-        self.sliders['VOF'].visible = self.game.options['VOF']
+        self.sliders['VOF_opacity'].visible = self.game.options['VOF']
+        self.sliders['VOF_opacity'].value = self.game.options['VOF_opacity']
         self.buttons['torch'].text_states_toggle = self.game.options['torch']
         self.buttons['menu_scale'].text_states_toggle = self.game.options['menu_scale']
         self.buttons['vsync'].text_states_toggle = self.game.options['vsync']
+        self.buttons['fullscreen'].text_states_toggle = self.game.options['fullscreen']
 
         self.buttons['sound_display'].text = \
             u'Sound Volume: {}'.format(int(self.game.options['sound_volume'] / 0.003))
@@ -239,9 +246,7 @@ class OptionsMenu(Menu):
         self.sliders['music'].value = self.game.options['music_volume']
 
         size = "{} x {}".format(*self.game.options['resolution'])
-        if self.game.options['fullscreen']:
-            self.buttons['screen_size'].text_states_toggle = 0
-        elif size in self.buttons['screen_size'].text_states:
+        if size in self.buttons['screen_size'].text_states:
             new_index = self.buttons['screen_size'].text_states.index(size) + 1
             self.buttons['screen_size'].text_states_toggle = new_index % len(self.buttons['screen_size'].text_states)
         else:
@@ -253,15 +258,17 @@ class OptionsMenu(Menu):
     def save(self):
         self.game.options.save_options()
 
+    def reset(self):
+        # not using .update() to ensure .__setitem__() is called
+        for k, v in DEFAULT_OPTIONS.iteritems():
+            self.game.options[k] = v
+
     def set_screen_size(self):
         new_size = self.buttons['screen_size'].text_states[self.buttons['screen_size'].text_states_toggle]
         if 'x' in new_size:
             new_size = new_size.split(' x ')
             new_size = (int(new_size[0]), int(new_size[1]))
-            self.game.options['fullscreen'] = False
             self.game.options['resolution'] = new_size
-        elif new_size == u'Fullscreen':
-            self.game.options['fullscreen'] = True
 
     def arrange_buttons(self):
         self.update_button_text_and_slider_values()
