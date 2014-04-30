@@ -52,7 +52,9 @@ Count: I don't know. Click on him and read the thing, you lazy bugger.
 
 * Can we skip the whole cage part?
 
-Count: Oh, I suppose so. I will accept the head of the dog cleanly separated from the body as proof you have completed this quest. **Cleanly** separated, mind, I'm not cruel.
+Count: Oh, I suppose so. I will accept the head of the dog cleanly separated from the body as proof you have completed this quest. 
+
+Count: **Cleanly** separated, mind, I'm not cruel.
 
 
 ## the doge is dazed
