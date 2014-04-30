@@ -275,9 +275,6 @@ class Editor(object):
             ce.visible = False
             ce.enabled = False
 
-        # self.new_trigger_objects = []
-        self.trigger_prototype = None
-
         ###################################################################
         # Other buttons
         ###################################################################
