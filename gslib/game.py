@@ -80,14 +80,10 @@ class Game(pyglet.window.Window):
 
         TODO.append("add idle_function to characters - wander, stand still, patrol (req. pathing)")
 
-        TODO.append("1 drop list for # of parties in trigger")
-        TODO.append("1 drop list for type of interaction")
-        TODO.append("1 drop list for do what to target (adds to list)")
         TODO.append("1 drop list that appears if action req. argument")
         TODO.append("allow a zone to be chosen as a trigger target")
 
         TODO.append("add players to saving - both save_map and save_state")
-        TODO.append("add undo button to editor (i.e. lots of save states OR every func has an un-func) - save all as dicts (using current framework, reload all chars and triggers)")
 
         TODO.append("create decorator/thing to determine which properties to save")
 

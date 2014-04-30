@@ -127,7 +127,7 @@ class Editor(object):
         self.object_prototype = None
 
         ###################################################################
-        # View existing Trigger
+        # View/Edit existing Trigger
         ###################################################################
 
         self.buttons['view_triggers_label'] = button.DefaultButton(self, None, pos=(320, self.game.dimensions[1] - 20), size=(120, 20),
@@ -138,6 +138,12 @@ class Editor(object):
         self.trigger_display_colours = ((120, 0, 0), (0, 120, 0), (0, 0, 120), (120, 120, 0), (120, 0, 120), (0, 120, 120), (120, 120, 120))
         self.trigger_display_circles = []
         self.trigger_display_text = []
+        self.trigger_to_edit = None
+
+
+        self.drop_lists['add_actions'] = drop_down_list.DropDownList(self, triggers.trigger_functions_dict,
+                                                                     self.add_action_to_trigger, pos=(440, self.game.dimensions[1] - 50),
+                                                                     size=(300, 20))
 
         ###################################################################
         # Create new Trigger
@@ -482,13 +488,15 @@ class Editor(object):
         # t = self.drop_lists['view_triggers'].selected
         if t:
             # font = pygame.font.SysFont(FONT, 20)
-            for i, o_name in enumerate(t.objects):
+            for i, o_name in enumerate(t.object_references):
+                if o_name is None:
+                    continue
                 circ = graphics.draw_circle(25, self.trigger_display_colours[i])
                 # circ.set_position(o.coord[0], o.coord[1])
                 te = self.create_text_sprite(t.legend[i])  # font.render(t.legend[i], True, (255, 255, 255))
                 # t.set_position(o.coord[0, o.coord[1]])
-                self.trigger_display_circles.append((circ, self.game.map.objects[o_name]))
-                self.trigger_display_text.append((te, self.game.map.objects[o_name]))
+                self.trigger_display_circles.append((circ, self.game.objects[o_name]))
+                self.trigger_display_text.append((te, self.game.objects[o_name]))
 
     def create_text_sprite(self, tex):
         if not tex in self.text_sprites.keys():
@@ -498,6 +506,11 @@ class Editor(object):
 
     def display_trigger(self):
         self.draw_trigger(self.drop_lists['view_triggers'].selected)
+        self.trigger_to_edit = self.drop_lists['view_triggers'].selected
+
+    def add_action_to_trigger(self):
+        trig = self.trigger_to_edit
+        trig.add_action(self.drop_lists['add_actions'].selected)
 
     def create_trigger_cursor(self, tex):
         t = self.create_text_sprite(tex)
@@ -506,17 +519,13 @@ class Editor(object):
 
     def new_trigger(self):
         if self.drop_lists['new_triggers'].selected:
-            self.trigger_prototype = self.drop_lists['new_triggers'].selected(self.game.map)
+            self.trigger_prototype = self.drop_lists['new_triggers'].selected(self.game)
             self.game.new_trigger_capture = True
             self.create_trigger_cursor(self.trigger_prototype.legend[0])
 
     def update_new_trigger(self, o_name):
         t = self.trigger_prototype
-        l = t.objects
-        # if o_name in l:
-        #     l.remove(o_name)
-        # else:
-        #     l.append(o_name)
+        l = t.object_references
         l.append(o_name)
 
         target_number = len(self.trigger_prototype.legend)
@@ -527,7 +536,7 @@ class Editor(object):
                     name += '0'
                 else:
                     break
-            self.game.map.triggers[name] = self.drop_lists['new_triggers'].selected(self.game.map, *l)
+            self.game.map.triggers[name] = self.drop_lists['new_triggers'].selected(self.game, *l)
             self.draw_trigger(None)
             self.game.cursor = None
             self.game.gather_buttons_and_drop_lists_and_objects()

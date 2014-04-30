@@ -78,9 +78,11 @@ def create_save_state(m):
 character_type_map = {'Dude': character_objects.Dude,
                       'SmallDoor': character_objects.SmallDoor}
 
-trigger_type_map = {'FlipStateOnHarvest': triggers.FlipStateOnHarvest,
-                    'FlipStateWhenTouchedConditional': triggers.FlipStateWhenTouchedConditional,
-                    'FlipStateWhenUnTouchedConditional': triggers.FlipStateWhenUnTouchedConditional}
+trigger_type_map = {'OnHarvest': triggers.OnHarvest,
+                    'OnHarvestConditional': triggers.OnHarvestConditional,
+                    'IsTouched': triggers.IsTouched,
+                    'IsTouchedConditional': triggers.IsTouchedConditional}
+
 
 function_type_map = {'has_touched_function': u'has_touched_functions',
                      'feared_function': u'when_scared_functions',
@@ -110,9 +112,9 @@ def load_object(game, d):
     return new_obj
 
 
-def load_trigger(m, d):
+def load_trigger(game, d):
     obj_refs = d[u'object_references']
-    new_trig = trigger_type_map[d[u'trigger_type']](m, *obj_refs)
+    new_trig = trigger_type_map[d[u'trigger_type']](game, *obj_refs)
     return new_trig
 
 def load_map(game, map_name):
@@ -129,7 +131,7 @@ def load_map(game, map_name):
         new_map.objects[o_name] = load_object(game, o_dict)
 
     for t_name, t_dict in map_dict[u'triggers'].iteritems():
-        new_map.triggers[t_name] = load_trigger(new_map, t_dict)
+        new_map.triggers[t_name] = load_trigger(game, t_dict)
 
     return new_map
 
