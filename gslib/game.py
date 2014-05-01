@@ -30,6 +30,7 @@ from gslib import drop_down_list
 from gslib import map_edit
 from gslib import save_load
 from gslib import options
+from gslib import walrus
 from gslib.constants import *
 
 
@@ -164,6 +165,7 @@ class Game(pyglet.event.EventDispatcher):
 
         self.show_fears = False
         self.show_ranges = False
+        self.walrus = walrus.MetaWalrus()
 
         self.key_controller.load()
 
@@ -236,6 +238,7 @@ class Game(pyglet.event.EventDispatcher):
         self.graphics.main_game_draw()
 
         self.fps_clock.draw()
+        self.walrus.walruss()
         self.ticks_clock_display.draw()
         self.draw_clock_display.draw()
 
@@ -257,6 +260,7 @@ class Game(pyglet.event.EventDispatcher):
         #self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
         self.ticks_clock.tick()
         self.camera_coords = self.calc_camera_coord()
+        self.walrus.walrusss(self.dimensions[0], self.dimensions[1])
 
         if self.state == MAIN_GAME:
             if self.sound_handler.music_playing is not None:
