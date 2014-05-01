@@ -176,7 +176,7 @@ class Graphics(object):
 
     def draw_buttons(self):
         priority_buttons = []
-        for button in self.game.buttons.itervalues():
+        for button in dict(self.game.buttons, **self.game.editor.dyn_buttons if self.game.editor_active else {}).itervalues():
             if not button.visible:
                 continue
             if button.priority:
@@ -191,7 +191,7 @@ class Graphics(object):
             
     def draw_drop_lists(self):
         priority_buttons = []
-        for l in self.game.drop_lists.itervalues():
+        for l in dict(self.game.drop_lists, **self.game.editor.dyn_drop_lists if self.game.editor_active else {}).itervalues():
             if not l.visible:
                 continue
             if hasattr(l, 'main_button'):

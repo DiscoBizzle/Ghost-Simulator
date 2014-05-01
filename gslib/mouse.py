@@ -93,7 +93,7 @@ class MouseController(object):
         if typ == 'up':
             return
         to_click = None
-        for button in self.game.buttons.itervalues():
+        for button in dict(self.game.buttons, **self.game.editor.dyn_buttons).itervalues():
             if button.check_clicked_no_function(pos):
                 to_click = button
                 if button.priority:
@@ -111,7 +111,7 @@ class MouseController(object):
         if typ == 'up':
             return
         to_click = None
-        for v in self.game.drop_lists.itervalues():
+        for v in dict(self.game.drop_lists, **self.game.editor.dyn_drop_lists).itervalues():
             if v.check_click_within_area(pos):
                 to_click = v
                 if v.priority:

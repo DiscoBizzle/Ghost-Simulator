@@ -22,7 +22,7 @@ class CutsceneAction(object):
 
     # Used in editor.
     def describe(self):
-        return self.__class__.__name__ + "\nwait_g " + str(self.wait_group) + " "
+        return self.__class__.__name__ + ": w_g " + str(self.wait_group) + " "
 
     # Called when CutsceneAction should forget its state and start anew.
     def restart(self):

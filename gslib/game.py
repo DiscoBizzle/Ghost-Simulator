@@ -247,7 +247,6 @@ class Game(pyglet.event.EventDispatcher):
             self.drop_lists = dict(self.drop_lists.items() + self.editor.drop_lists.items())
             self.buttons = dict(self.buttons.items() + self.editor.buttons.items())
 
-
         self.objects = dict(self.players.items() + self.map.objects.items())
         if self.cursor:
             self.objects['cursor'] = self.cursor
