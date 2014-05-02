@@ -48,7 +48,7 @@ class MouseController(object):
 
     def mouse_move(self, pos):
         if self.game.state == MAIN_GAME:
-            for k, v in self.game.drop_lists.iteritems():
+            for k, v in dict(self.game.drop_lists, **self.game.editor.get_lists() if self.game.editor_active else {}).iteritems():
                 v.handle_event(pos, 'move')
             if self.game.cursor:
                 self.calc_cursor_coord(pos, 'move')
@@ -93,7 +93,7 @@ class MouseController(object):
         if typ == 'up':
             return
         to_click = None
-        for button in dict(self.game.buttons, **self.game.editor.dyn_buttons).itervalues():
+        for button in dict(self.game.buttons, **self.game.editor.get_buttons() if self.game.editor_active else {}).itervalues():
             if button.check_clicked_no_function(pos):
                 to_click = button
                 if button.priority:
@@ -111,7 +111,7 @@ class MouseController(object):
         if typ == 'up':
             return
         to_click = None
-        for v in dict(self.game.drop_lists, **self.game.editor.dyn_drop_lists).itervalues():
+        for v in dict(self.game.drop_lists, **self.game.editor.get_lists() if self.game.editor_active else {}).itervalues():
             if v.check_click_within_area(pos):
                 to_click = v
                 if v.priority:

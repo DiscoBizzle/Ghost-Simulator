@@ -1,9 +1,6 @@
-import pygame
 from gslib import drop_down_list
-from gslib import list_box
 from gslib import button
 from gslib import character_objects
-from gslib import cutscene
 from gslib import game_object
 from gslib import graphics
 from gslib import triggers
@@ -11,7 +8,7 @@ from gslib import text
 from gslib import character_functions
 from gslib import save_load
 from gslib.constants import *
-import collections
+from gslib.editor import cutscene
 
 
 def none():
@@ -248,68 +245,7 @@ class Editor(object):
         ###################################################################
         # Cutscene editor
         ###################################################################
-        self.cutscenes = self.game.map.cutscenes.copy()
-        self.cutscenes['New... (TODO)'] = None
-        self.possible_cutscene_actions = cutscene.possible_actions
-        self.cutscene_editor = []
-
-        def pu(tine):
-            self.cutscene_editor.append(tine)
-            return tine
-
-        self.buttons['cutscenes'] = button.DefaultButton(self, self.toggle_cutscene_editor,
-                                                         pos=(0, self.game.dimensions[1] - 20),
-                                                         size=(100, 20), text="Cutscenes")
-        self.drop_lists['cutscenes'] = pu(drop_down_list.DropDownList(self, self.cutscenes, self.select_cutscene,
-                                                                      pos=(980, self.game.dimensions[1] - 55),
-                                                                      size=(300, 20)))
-        self.buttons['play_cutscene'] = pu(button.DefaultButton(self, self.play_cutscene,
-                                                                pos=(980, self.game.dimensions[1] - 75), size=(20, 20),
-                                                                text=u"\u25B6"))
-        self.buttons['play_cutscene_and_run'] = pu(button.DefaultButton(self, self.play_cutscene_and_run,
-                                                                        pos=(1000, self.game.dimensions[1] - 75),
-                                                                        size=(40, 20), text=u"\u25B6 R"))
-        self.buttons['stop_cutscene'] = pu(button.DefaultButton(self, self.stop_cutscene,
-                                                                pos=(1040, self.game.dimensions[1] - 75), size=(20, 20),
-                                                                text=u"\u25A0"))
-        self.buttons['cutscene_status'] = pu(button.DefaultButton(self, None, pos=(1060, self.game.dimensions[1] - 75),
-                                                                  size=(1280 - 1060, 20), text="No cutscene selected."))
-
-        self.drop_lists['cutscene_add_events'] = pu(drop_down_list.DropDownList(self, cutscene.possible_actions, None,
-                                                                                pos=(980, self.game.dimensions[1] - 95),
-                                                                                size=(280, 20)))
-        self.buttons['cutscene_add_events'] = pu(button.DefaultButton(self, self.add_cutscene_event,
-                                                                      pos=(980 + 280, self.game.dimensions[1] - 95),
-                                                                      size=(20, 20), text="+"))
-        self.buttons['cutscene_events_push_up'] = pu(button.DefaultButton(self, self.push_cutscene_event_up,
-                                                                          pos=(880, self.game.dimensions[1] - 115),
-                                                                          size=(50, 20), text="push ^"))
-        self.buttons['cutscene_events_push_down'] = pu(button.DefaultButton(self, self.push_cutscene_event_down,
-                                                                            pos=(880, self.game.dimensions[1] - 135),
-                                                                            size=(50, 20), text="push v"))
-        self.buttons['cutscene_events_delete'] = pu(button.DefaultButton(self, self.delete_cutscene_event,
-                                                                         pos=(880, self.game.dimensions[1] - 155),
-                                                                         size=(50, 20), text="-"))
-        self.buttons['cutscene_events_more_up'] = pu(button.DefaultButton(self, self.scroll_cutscene_events_up,
-                                                                          pos=(880, self.game.dimensions[1] - 175),
-                                                                          size=(50, 20), text="more ^"))
-        self.buttons['cutscene_events_more_down'] = pu(button.DefaultButton(self, self.scroll_cutscene_events_down,
-                                                                            pos=(880, self.game.dimensions[1] - 195),
-                                                                            size=(50, 20), text="more v"))
-        self.cutscene = None
-        self.selected_cutscene_event = None
-        self.cutscene_events_desc = collections.OrderedDict()
-        self.selected_cutscene_event_shit = None
-
-        self.dyn_buttons = {}
-        self.dyn_drop_lists = {}
-
-        self.drop_lists['cutscene_events'] = pu(list_box.List(self, self.cutscene_events_desc, self.select_cutscene_event,
-                                                              pos=(930, self.game.dimensions[1] - 95), size=(350, 20)))
-
-        for ce in self.cutscene_editor:
-            ce.visible = False
-            ce.enabled = False
+        self.cutscene_editor = cutscene.CutsceneEditor(self.game)
 
         ###################################################################
         # Other buttons
@@ -326,6 +262,21 @@ class Editor(object):
                                                         pos=(self.game.dimensions[0] - 100 - h_off, self.game.dimensions[1] - v_off - 170),
                                                         size=(100, 20), text="Redo", visible=True, enabled=True)
 
+    def list_to_dict_shabby(self, base_key, l):
+        k = 0
+        d = {}
+
+        for el in l:
+            d[base_key + str(k)] = el
+            k += 1
+
+        return d
+
+    def get_buttons(self):
+        return dict(self.buttons, **self.list_to_dict_shabby('editor_cutscene_b_', self.cutscene_editor.buttons))
+
+    def get_lists(self):
+        return dict(self.drop_lists, **self.list_to_dict_shabby('editor_cutscene_l_', self.cutscene_editor.lists))
 
     def create_undo_state(self):
         n_history = 200
@@ -357,191 +308,6 @@ class Editor(object):
 
     def exit_edit_mode(self):
         self.save_state = save_load.create_save_state(self.game.map)
-
-    def toggle_cutscene_editor(self):
-        for ce in self.cutscene_editor:
-            ce.visible = not ce.visible
-            ce.enabled = not ce.enabled
-
-    def select_cutscene(self):
-        selected = self.drop_lists['cutscenes'].selected
-        self.cutscene = selected
-
-        if not selected:
-            print('TODO: select new cutscene')
-
-        self.refresh_cutscene_events()
-        self.refresh_cutscene_status()
-        # ugh
-        self.drop_lists['cutscene_events'].selected = None
-        self.select_cutscene_event()
-
-    def refresh_cutscene_events(self):
-        self.cutscene_events_desc.clear()
-        if self.cutscene:
-            for i in range(0, len(self.cutscene.actions)):
-                ca = self.cutscene.actions[i]
-                self.cutscene_events_desc[str(i) + " " + ca.describe()] = ca
-        else:
-            self.cutscene_events_desc = {}
-
-        self.drop_lists['cutscene_events'].refresh()
-
-        self.select_cutscene_event()
-
-    def refresh_cutscene_status(self):
-        if self.cutscene:
-            self.buttons['cutscene_status'].text = self.cutscene.name + ": Tick " + str(self.cutscene.tick)
-        else:
-            self.buttons['cutscene_status'].text = "No cutscene selected."
-
-    def select_cutscene_event(self):
-        # remove old shite
-        if len(self.dyn_drop_lists) > 0 or len(self.dyn_buttons) > 0:
-            for item in dict(self.dyn_buttons, **self.dyn_drop_lists).itervalues():
-                self.cutscene_editor.remove(item)
-            self.dyn_drop_lists.clear()
-            self.dyn_buttons.clear()
-
-        self.selected_cutscene_event = self.drop_lists['cutscene_events'].selected
-
-        def add_control(x):
-            # ALL the boilerplate!
-            self.cutscene_editor.append(x)
-            if isinstance(x, drop_down_list.DropDownList) or isinstance(x, list_box.List):
-                self.dyn_drop_lists[add_control.control_i] = x
-            elif isinstance(x, button.Button):
-                self.dyn_buttons[add_control.control_i] = x
-            add_control.control_i += 1
-            x.priority = True
-
-        add_control.control_i = 0
-
-        def wait_group_dec_fun(ev, attr):
-            wg = getattr(ev, attr)
-            if wg is not None:
-                if wg == 1:
-                    wg = None
-                else:
-                    wg -= 1
-            setattr(ev, attr, wg)
-
-        def wait_group_inc_fun(ev, attr):
-            wg = getattr(ev, attr)
-            if wg is None:
-                wg = 1
-            elif wg == 0:
-                pass
-            else:
-                wg += 1
-            setattr(ev, attr, wg)
-
-        def incredifun(thing, attr, fun):
-            def clicky():
-                fun(thing, attr)
-                self.select_cutscene_event()    # re-render controls
-                self.refresh_cutscene_events()  # re-render event descriptions
-            return clicky
-
-        # new shite?
-        if self.selected_cutscene_event:
-            ev = self.selected_cutscene_event
-
-            def get_pos(add_x=20):
-                get_pos.x_pos += add_x
-                return 930 + get_pos.x_pos - add_x, 240 - get_pos.row * 20
-
-            get_pos.row = 0
-            get_pos.x_pos = 0
-
-            container = button.DefaultButton(self, None, pos=(930, 160), size=(1280 - 930, 100))
-            add_control(container)
-            container.priority = False
-
-            for k, v in ev.get_editor().iteritems():
-                add_control(button.DefaultButton(self, None, get_pos(add_x=80), text=k, size=(80, 20)))
-                if v == 'wait_group':
-                    add_control(button.DefaultButton(self, incredifun(ev, k, wait_group_dec_fun),
-                                                     get_pos(), text="-", size=(20, 20)))
-                    add_control(button.DefaultButton(self, None, get_pos(add_x=50), text=str(getattr(ev, k)),
-                                                     size=(50, 20)))
-                    add_control(button.DefaultButton(self, incredifun(ev, k, wait_group_inc_fun),
-                                                     get_pos(), text="+", size=(20, 20)))
-                elif v == 'int':
-                    print('TODO int')
-                elif v == 'string':
-                    print('TODO string')
-                elif v == 'coords':
-                    print('TODO coords')
-                elif v == 'obj_ref':
-                    print('TODO obj_ref')
-                else:
-                    print("!!! Cutscene action editor doesn't know what a '" + v + "' is")
-
-                get_pos.x_pos = 0
-                get_pos.row += 1
-
-    def push_cutscene_event_up(self):
-        if self.cutscene and self.selected_cutscene_event:
-            i = self.cutscene.actions.index(self.selected_cutscene_event)
-            if i > 0:
-                self.cutscene.actions.remove(self.selected_cutscene_event)
-                self.cutscene.actions.insert(i - 1, self.selected_cutscene_event)
-                self.refresh_cutscene_events()
-                self.drop_lists['cutscene_events'].selected = self.selected_cutscene_event
-                self.select_cutscene_event()
-
-    def push_cutscene_event_down(self):
-        if self.cutscene and self.selected_cutscene_event:
-            i = self.cutscene.actions.index(self.selected_cutscene_event)
-            if i < len(self.cutscene.actions) - 1:
-                self.cutscene.actions.remove(self.selected_cutscene_event)
-                self.cutscene.actions.insert(i + 1, self.selected_cutscene_event)
-                self.refresh_cutscene_events()
-                self.drop_lists['cutscene_events'].selected = self.selected_cutscene_event
-                self.select_cutscene_event()
-
-    def delete_cutscene_event(self):
-        if self.cutscene and self.selected_cutscene_event:
-            i = self.cutscene.actions.index(self.selected_cutscene_event)
-            self.cutscene.actions.remove(self.selected_cutscene_event)
-            del self.selected_cutscene_event
-            self.selected_cutscene_event = None
-            self.refresh_cutscene_events()
-            if len(self.cutscene.actions) > i:
-                self.drop_lists['cutscene_events'].selected = self.cutscene.actions[i]
-            elif len(self.cutscene.actions) > 0:
-                self.drop_lists['cutscene_events'].selected = self.cutscene.actions[len(self.cutscene.actions) - 1]
-            else:
-                self.drop_lists['cutscene_events'].selected = None
-            self.select_cutscene_event()
-
-    def scroll_cutscene_events_up(self):
-        pass
-
-    def scroll_cutscene_events_down(self):
-        pass
-
-    def play_cutscene(self):
-        pass
-
-    def play_cutscene_and_run(self):
-        pass
-
-    def stop_cutscene(self):
-        pass
-
-    def add_cutscene_event(self):
-        if self.cutscene and self.drop_lists['cutscene_add_events'].selected:
-            if self.selected_cutscene_event:
-                i = self.cutscene.actions.index(self.selected_cutscene_event) + 1
-            else:
-                i = len(self.cutscene.actions)
-            action = self.drop_lists['cutscene_add_events'].selected(self.game, self.game.map, {})
-            self.cutscene.actions.insert(i, action)
-            self.refresh_cutscene_events()
-            self.drop_lists['cutscene_events'].selected = action
-            self.select_cutscene_event()
 
     def delete_selected_object(self):
         del self.game.map.objects[self.object_to_edit_name]

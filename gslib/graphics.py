@@ -176,7 +176,7 @@ class Graphics(object):
 
     def draw_buttons(self):
         priority_buttons = []
-        for button in dict(self.game.buttons, **self.game.editor.dyn_buttons if self.game.editor_active else {}).itervalues():
+        for button in dict(self.game.buttons, **self.game.editor.get_buttons() if self.game.editor_active else {}).itervalues():
             if not button.visible:
                 continue
             if button.priority:
@@ -191,7 +191,7 @@ class Graphics(object):
             
     def draw_drop_lists(self):
         priority_buttons = []
-        for l in dict(self.game.drop_lists, **self.game.editor.dyn_drop_lists if self.game.editor_active else {}).itervalues():
+        for l in dict(self.game.drop_lists, **self.game.editor.get_lists() if self.game.editor_active else {}).itervalues():
             if not l.visible:
                 continue
             if hasattr(l, 'main_button'):
@@ -204,10 +204,12 @@ class Graphics(object):
                 if b.priority:
                     priority_buttons.append(b.outer_sprite)
                     priority_buttons.append(b.inner_sprite)
+                    #if b.text_sprite:
                     priority_buttons.append(b.text_sprite)
                 else:
                     self.game.screen_objects_to_draw.append(b.outer_sprite)
                     self.game.screen_objects_to_draw.append(b.inner_sprite)
+                    #if b.text_sprite:
                     self.game.screen_objects_to_draw.append(b.text_sprite)
         self.game.screen_objects_to_draw += priority_buttons
 
@@ -279,6 +281,8 @@ class Graphics(object):
 
     def draw_screen_objects(self):  # stuff relative to screen
         for f in self.game.screen_objects_to_draw:
+            if f is None:
+                print(self.game.screen_objects_to_draw)
             f.draw()
         self.game.screen_objects_to_draw = []
 
