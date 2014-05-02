@@ -42,6 +42,7 @@ class DropDownList(object):
         self.enabled = enabled  # whether button can be activated, visible or not
         self.labels = labels
         self.priority = False
+        self._open = False
 
         for arg in kwargs:  # allows for additional arbitrary arguments to be passed in, useful for more complicated functions
             setattr(self, arg, kwargs[arg])
@@ -58,7 +59,6 @@ class DropDownList(object):
         self.drop_buttons = []
         self.refresh()
 
-        self._open = False
         self.function = function
 
         self.high_colour = (0, 120, 0)
@@ -106,6 +106,8 @@ class DropDownList(object):
                                                    visible=False, enabled=False, text=t,
                                                    border_colour=self._border_colour, border_width=self.border_width,
                                                    colour=self.colour))
+        if self.open:
+            self.update_buttons()
 
     def update_buttons(self):
         self.main_button.text = self.selected_name
