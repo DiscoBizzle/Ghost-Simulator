@@ -106,7 +106,7 @@ class CutsceneEditor(object):
         self.refresh_cutscene_actions()
         self.refresh_cutscene_status()
         # ugh
-        self.cutscene_list.selected = None
+        list_box.list_func(self.cutscene_actions_list, None)()
         self.select_cutscene_action()
 
     def refresh_cutscene_actions(self):
@@ -118,7 +118,7 @@ class CutsceneEditor(object):
         else:
             self.cutscene_actions_desc = {}
 
-        self.cutscene_list.refresh()
+        self.cutscene_actions_list.refresh()
 
         self.select_cutscene_action()
 
@@ -221,7 +221,7 @@ class CutsceneEditor(object):
                 self.refresh_cutscene_actions()
 
                 # re-select
-                self.cutscene_actions_list.selected = self.selected_cutscene_action
+                list_box.list_func(self.cutscene_actions_list, self.selected_cutscene_action)()
                 self.select_cutscene_action()
 
     def push_cutscene_action_down(self):
@@ -233,7 +233,7 @@ class CutsceneEditor(object):
                 self.refresh_cutscene_actions()
 
                 # re-select
-                self.cutscene_actions_list.selected = self.selected_cutscene_action
+                list_box.list_func(self.cutscene_actions_list, self.selected_cutscene_action)()
                 self.select_cutscene_action()
 
     def delete_cutscene_action(self):
@@ -283,5 +283,5 @@ class CutsceneEditor(object):
             action = cnal.selected(self.game, self.game.map, {})
             self.selected_cutscene.actions.insert(i, action)
             self.refresh_cutscene_actions()
-            self.cutscene_actions_list.selected = action
+            list_box.list_func(self.cutscene_actions_list, action)()
             self.select_cutscene_action()
