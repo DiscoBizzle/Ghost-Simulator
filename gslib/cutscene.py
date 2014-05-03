@@ -95,12 +95,13 @@ class TestAction(CutsceneAction):
         CutsceneAction.__init__(self, g, m, l)
         self.ticks_remaining = 30
         self.obj_ref = self.try_load('obj_ref') or '<None>'
+        self.pos = self.try_load('pos') or (0, 0)
 
     def get_editor(self):
-        return dict(CutsceneAction.get_editor(self), **{'obj_ref': 'obj_ref'})
+        return dict(CutsceneAction.get_editor(self), **{'obj_ref': 'obj_ref', 'pos': 'coords'})
 
     def save(self):
-        return dict(CutsceneAction.save(self), **{'obj_ref': self.obj_ref})
+        return dict(CutsceneAction.save(self), **{'obj_ref': self.obj_ref, 'pos': self.pos})
 
     def update_again(self):
         return self.ticks_remaining >= 0

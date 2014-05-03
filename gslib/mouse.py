@@ -42,6 +42,10 @@ class MouseController(object):
                 if self.game.editor_active:
                     self.editor_click(pos, typ, button)
 
+            if not self.interaction_this_click and typ == 'down':
+                if self.game.editor_active:
+                    # TODO: take into account camera coordinates
+                    self.interaction_this_click = self.game.editor.handle_map_click(pos)
 
             if not self.interaction_this_click:
                 self.check_object_click(pos, typ, button)

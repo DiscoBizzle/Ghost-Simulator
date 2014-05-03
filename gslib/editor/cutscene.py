@@ -46,7 +46,6 @@ class CutsceneEditor(object):
                                                    text=u"\u25A0"))
 
         # Controls to add new action
-        print(cutscene.possible_actions)
         self.cutscene_new_action_list = pu(drop_down_list.DropDownList(self, cutscene.possible_actions, None,
                                            pos=(980, self.game.dimensions[1] - 95),
                                            size=(280, 20)))
@@ -82,6 +81,8 @@ class CutsceneEditor(object):
         self.dyn_lists = []
 
         self.playing = False
+
+        self.map_click_handler = None
         self.object_click_handler = None
 
         self.highlighted = []
@@ -104,6 +105,11 @@ class CutsceneEditor(object):
             return True
         return False
 
+    def handle_map_click(self, pos):
+        if self.map_click_handler:
+            self.map_click_handler(pos)
+            return True
+        return False
 
     def toggle_visible(self):
         for ce in self.static_buttons + self.static_lists + self.dyn_buttons + self.dyn_lists:
@@ -171,6 +177,12 @@ class CutsceneEditor(object):
 
         add_control.control_i = 0
 
+        def int_dec_fun(ev, attr):
+            setattr(ev, attr, getattr(ev, attr) - 1)
+
+        def int_inc_fun(ev, attr):
+            setattr(ev, attr, getattr(ev, attr) + 1)
+
         def wait_group_dec_fun(ev, attr):
             wg = getattr(ev, attr)
             if wg is not None:
@@ -191,7 +203,7 @@ class CutsceneEditor(object):
             setattr(ev, attr, wg)
 
         def obj_ref_sel_fun(ev, attr):
-            def finish_click(o_name):
+            def finish_obj_click(o_name):
                 self.highlighted.remove(str(ev) + '-' + attr)
                 self.object_click_handler = None
                 setattr(ev, attr, o_name)
@@ -202,7 +214,21 @@ class CutsceneEditor(object):
                 self.object_click_handler = None
             else:
                 self.highlighted.append(str(ev) + '-' + attr)
-                self.object_click_handler = finish_click
+                self.object_click_handler = finish_obj_click
+
+        def pick_coords_fun(ev, attr):
+            def finish_coords_click(pos):
+                self.highlighted.remove(str(ev) + '-' + attr)
+                self.map_click_handler = None
+                setattr(ev, attr, pos)
+                self.select_cutscene_action()
+            # unclicking?
+            if (str(ev) + '-' + attr) in self.highlighted:
+                self.highlighted.remove(str(ev) + '-' + attr)
+                self.map_click_handler = None
+            else:
+                self.highlighted.append(str(ev) + '-' + attr)
+                self.map_click_handler = finish_coords_click
 
         def incredifun(thing, attr, fun):
             def clicky():
@@ -236,20 +262,34 @@ class CutsceneEditor(object):
                     add_control(button.DefaultButton(self, incredifun(ev, k, wait_group_inc_fun),
                                                      get_pos(), text="+", size=(20, 20)))
                 elif v == 'int':
-                    print('TODO int')
+                    add_control(button.DefaultButton(self, incredifun(ev, k, int_dec_fun),
+                                                     get_pos(), text="-", size=(20, 20)))
+                    add_control(button.DefaultButton(self, None, get_pos(add_x=50), text=str(getattr(ev, k)),
+                                                     size=(50, 20)))
+                    add_control(button.DefaultButton(self, incredifun(ev, k, int_inc_fun),
+                                                     get_pos(), text="+", size=(20, 20)))
                 elif v == 'string':
                     print('TODO string')
-                elif v == 'coords':
-                    print('TODO coords')
                 elif v == 'obj_ref':
                     add_control(button.DefaultButton(self, None, get_pos(add_x=100), text=getattr(ev, k),
                                                      size=(100, 20)))
 
                     if not (str(ev) + '-' + k) in self.highlighted:
-                        add_control(button.DefaultButton(self, incredifun(ev, k, obj_ref_sel_fun), get_pos(),
+                        add_control(button.DefaultButton(self, incredifun(ev, k, obj_ref_sel_fun), get_pos(50),
                                                          text="Pick", size=(50, 20)))
                     else:
                         add_control(button.Button(self, incredifun(ev, k, obj_ref_sel_fun), get_pos(50), text="Pick",
+                                                  size=(50, 20), colour=(0, 120, 0), border_colour=(0, 200, 0),
+                                                  border_width=3))
+                elif v == 'coords':
+                    add_control(button.DefaultButton(self, None, get_pos(add_x=100), text=str(getattr(ev, k)),
+                                                     size=(100, 20)))
+
+                    if not (str(ev) + '-' + k) in self.highlighted:
+                        add_control(button.DefaultButton(self, incredifun(ev, k, pick_coords_fun), get_pos(50),
+                                                         text="Pick", size=(50, 20)))
+                    else:
+                        add_control(button.Button(self, incredifun(ev, k, pick_coords_fun), get_pos(50), text="Pick",
                                                   size=(50, 20), colour=(0, 120, 0), border_colour=(0, 200, 0),
                                                   border_width=3))
                 else:

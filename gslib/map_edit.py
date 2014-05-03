@@ -400,6 +400,9 @@ class Editor(object):
         if not self.cutscene_editor.handle_object_click(o_name):
             self.object_to_edit_selected(o_name)
 
+    def handle_map_click(self, pos):
+        return self.cutscene_editor.handle_map_click(pos)
+
     def object_to_edit_selected(self, o_name):  # show object editing options when an object is selected
         self.object_to_edit_name = o_name
         if self.object_to_edit_name:
