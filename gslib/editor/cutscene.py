@@ -82,6 +82,9 @@ class CutsceneEditor(object):
         self.dyn_lists = []
 
         self.playing = False
+        self.object_click_handler = None
+
+        self.highlighted = []
 
         # hide by default
         #self.toggle_visible()
@@ -94,6 +97,13 @@ class CutsceneEditor(object):
 
     buttons = property(_get_buttons)
     lists = property(_get_lists)
+
+    def handle_object_click(self, o_name):
+        if self.object_click_handler:
+            self.object_click_handler(o_name)
+            return True
+        return False
+
 
     def toggle_visible(self):
         for ce in self.static_buttons + self.static_lists + self.dyn_buttons + self.dyn_lists:
@@ -112,6 +122,10 @@ class CutsceneEditor(object):
         # ugh
         list_box.list_func(self.cutscene_actions_list, None)()
         self.select_cutscene_action()
+
+        # double ugh
+        self.highlighted = []
+        self.object_click_handler = None
 
     def refresh_cutscene_actions(self):
         self.cutscene_actions_desc.clear()
@@ -138,6 +152,11 @@ class CutsceneEditor(object):
             self.dyn_lists = []
             self.dyn_buttons = []
 
+        # changed? upkeep...
+        if self.selected_cutscene_action != self.cutscene_actions_list.selected:
+            self.object_click_handler = None
+            self.highlighted = []
+
         self.selected_cutscene_action = self.cutscene_actions_list.selected
 
         def add_control(x):
@@ -148,6 +167,7 @@ class CutsceneEditor(object):
                 self.dyn_buttons.append(x)
             add_control.control_i += 1
             x.priority = True
+            return x
 
         add_control.control_i = 0
 
@@ -169,6 +189,20 @@ class CutsceneEditor(object):
             else:
                 wg += 1
             setattr(ev, attr, wg)
+
+        def obj_ref_sel_fun(ev, attr):
+            def finish_click(o_name):
+                self.highlighted.remove(str(ev) + '-' + attr)
+                self.object_click_handler = None
+                setattr(ev, attr, o_name)
+                self.select_cutscene_action()
+            # are they actually unclicking the button?
+            if (str(ev) + '-' + attr) in self.highlighted:
+                self.highlighted.remove(str(ev) + '-' + attr)
+                self.object_click_handler = None
+            else:
+                self.highlighted.append(str(ev) + '-' + attr)
+                self.object_click_handler = finish_click
 
         def incredifun(thing, attr, fun):
             def clicky():
@@ -208,7 +242,16 @@ class CutsceneEditor(object):
                 elif v == 'coords':
                     print('TODO coords')
                 elif v == 'obj_ref':
-                    print('TODO obj_ref')
+                    add_control(button.DefaultButton(self, None, get_pos(add_x=100), text=getattr(ev, k),
+                                                     size=(100, 20)))
+
+                    if not (str(ev) + '-' + k) in self.highlighted:
+                        add_control(button.DefaultButton(self, incredifun(ev, k, obj_ref_sel_fun), get_pos(),
+                                                         text="Pick", size=(50, 20)))
+                    else:
+                        add_control(button.Button(self, incredifun(ev, k, obj_ref_sel_fun), get_pos(50), text="Pick",
+                                                  size=(50, 20), colour=(0, 120, 0), border_colour=(0, 200, 0),
+                                                  border_width=3))
                 else:
                     print("!!! Cutscene action editor doesn't know what a '" + v + "' is")
 

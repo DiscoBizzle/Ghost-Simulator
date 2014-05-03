@@ -80,7 +80,7 @@ class MouseController(object):
                         self.game.object_stats = o.info_sheet
                         self.game.selected_object = o
                         if self.game.editor_active:
-                            self.game.editor.object_to_edit_selected(o_name)
+                            self.game.editor.handle_object_click(o_name)
 
                     self.interaction_this_click = True
                     return

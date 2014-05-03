@@ -396,6 +396,10 @@ class Editor(object):
                 b.colour = self.colour
                 b.border_colour = self.border_colour
 
+    def handle_object_click(self, o_name):
+        if not self.cutscene_editor.handle_object_click(o_name):
+            self.object_to_edit_selected(o_name)
+
     def object_to_edit_selected(self, o_name):  # show object editing options when an object is selected
         self.object_to_edit_name = o_name
         if self.object_to_edit_name:
