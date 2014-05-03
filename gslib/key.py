@@ -73,11 +73,14 @@ class KeyController(object):
                 self.game.text_box_test.state = TB_STARTING
             print(self.game.text_box_test.state)
 
-        if self.game.state == MAIN_GAME:
+        if self.game.state == MAIN_GAME or self.game.state == EDITOR:
             self.game.show_fears = self.keys[self.key_map['Show Fears']]
             self.game.show_ranges = self.keys[self.key_map['Show Fear Ranges']]
             if self.keys[self.key_map['Toggle Editor']]:
-                self.game.editor_active = not self.game.editor_active
+                if self.game.state == EDITOR:
+                    self.game.state = MAIN_GAME
+                else:
+                    self.game.state = EDITOR
                 self.game.gather_buttons_and_drop_lists_and_objects()
 
         for k, p in self.game.players.iteritems():

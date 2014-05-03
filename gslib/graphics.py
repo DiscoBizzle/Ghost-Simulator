@@ -97,7 +97,7 @@ class Graphics(object):
             pass
         elif self.game.state == MAIN_MENU:
             self.game.main_menu.draw()
-        elif self.game.state == MAIN_GAME:
+        elif self.game.state == MAIN_GAME or self.game.state == EDITOR:
             self.draw_map()
             self.draw_objects()
             if self.game.options['torch']:
@@ -105,7 +105,7 @@ class Graphics(object):
 
             self.draw_buttons()
             self.draw_drop_lists()
-            if self.game.editor_active:
+            if self.game.state == EDITOR:
                 self.draw_editor()
 
             self.draw_fear_bar()
@@ -182,7 +182,7 @@ class Graphics(object):
 
     def draw_buttons(self):
         priority_buttons = []
-        for button in dict(self.game.buttons, **self.game.editor.get_buttons() if self.game.editor_active else {}).itervalues():
+        for button in dict(self.game.buttons, **self.game.editor.get_buttons() if self.game.state == EDITOR else {}).itervalues():
             if not button.visible:
                 continue
             if button.priority:
@@ -197,7 +197,7 @@ class Graphics(object):
             
     def draw_drop_lists(self):
         priority_buttons = []
-        for l in dict(self.game.drop_lists, **self.game.editor.get_lists() if self.game.editor_active else {}).itervalues():
+        for l in dict(self.game.drop_lists, **self.game.editor.get_lists() if self.game.state == EDITOR else {}).itervalues():
             if not l.visible:
                 continue
             if hasattr(l, 'main_button'):

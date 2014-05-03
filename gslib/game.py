@@ -173,7 +173,6 @@ class Game(pyglet.event.EventDispatcher):
         self.last_touching = []
         
         self.editor = map_edit.Editor(self)
-        self._editor_active = False
         self.force_run_objects = False
         self.cursor = None
         self.new_trigger_capture = False
@@ -219,24 +218,21 @@ class Game(pyglet.event.EventDispatcher):
         self.last_state = self._state
         self._state = state
         self.dispatch_event('on_state_change', state)
+
+    def on_state_change(self, state):
         # update menu enabled states
         self.main_menu.enabled = state == MAIN_MENU
         self.skill_menu.enabled = state == SKILLS_SCREEN
         self.options_menu.enabled = state == OPTIONS_MENU
         self.keybind_menu.enabled = state == KEYBIND_MENU or state == KEYBIND_CAPTURE
-
-    @property
-    def editor_active(self):
-        return self._editor_active
-
-    @editor_active.setter
-    def editor_active(self, b):
-        if b != self._editor_active:
-            if b:
-                self.editor.enter_edit_mode()
-            else:
-                self.editor.exit_edit_mode()
-        self._editor_active = b
+        if state == MAIN_GAME:
+            if self.sound_handler.music_playing is not None:
+                if self.sound_handler.music_playing.name != 'transylvania':
+                    self.sound_handler.play_music('transylvania')
+        elif state == EDITOR:
+            self.editor.enter_edit_mode()
+        if self.last_state == EDITOR:
+            self.editor.exit_edit_mode()
 
     # pyglet event
     def on_draw(self):
@@ -265,13 +261,10 @@ class Game(pyglet.event.EventDispatcher):
         self.camera_coords = self.calc_camera_coord()
         #self.walrus.walrusss(self.dimensions[0], self.dimensions[1])
 
-        if self.state == MAIN_GAME:
-            if self.sound_handler.music_playing is not None:
-                if self.sound_handler.music_playing.name != 'transylvania':
-                    self.sound_handler.play_music('transylvania')
+        if self.state == MAIN_GAME or self.state == EDITOR:
 
             self.last_touching = [p for p in self.touching]  # creates a copy
-            if (not self.editor_active) or self.force_run_objects:  # pause game while in edit mode
+            if self.state != EDITOR or self.force_run_objects:  # pause game while in edit mode
                 for obj in self.objects.itervalues():
                     obj.update(dt)
 
@@ -299,7 +292,7 @@ class Game(pyglet.event.EventDispatcher):
             if self.text_box is not None:
                 self.text_box.update()
 
-            if self.editor_active:
+            if self.state == EDITOR:
                 self.editor.update()
 
         elif self.state == CREDITS:

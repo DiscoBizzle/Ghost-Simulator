@@ -35,7 +35,7 @@ class MouseController(object):
 
     def mouse_click(self, pos, typ, button):
         self.interaction_this_click = False
-        if self.game.state == MAIN_GAME:
+        if self.game.state == MAIN_GAME or self.game.state == EDITOR:
             self.button_to_click = None
             if not self.interaction_this_click:
                 self.check_button_click(pos, typ, button)
@@ -49,11 +49,11 @@ class MouseController(object):
             #     self.button_to_click.perf_function()
 
             if not self.interaction_this_click:
-                if self.game.editor_active:
+                if self.game.state == EDITOR:
                     self.editor_click(pos, typ, button)
 
             if not self.interaction_this_click and typ == 'down':
-                if self.game.editor_active:
+                if self.game.state == EDITOR:
                     # TODO: take into account camera coordinates
                     self.interaction_this_click = self.game.editor.handle_map_click(pos)
 
@@ -61,10 +61,10 @@ class MouseController(object):
                 self.check_object_click(pos, typ, button)
 
     def mouse_move(self, pos):
-        if self.game.state == MAIN_GAME:
+        if self.game.state == MAIN_GAME or self.game.state == EDITOR:
             if self.game.message_box:
                 return
-            for k, v in dict(self.game.drop_lists, **self.game.editor.get_lists() if self.game.editor_active else {}).iteritems():
+            for k, v in dict(self.game.drop_lists, **self.game.editor.get_lists() if self.game.state == EDITOR else {}).iteritems():
                 v.handle_event(pos, 'move')
             if self.game.cursor:
                 self.calc_cursor_coord(pos, 'move')
@@ -95,7 +95,7 @@ class MouseController(object):
                         self.game.disp_object_stats = True
                         self.game.object_stats = o.info_sheet
                         self.game.selected_object = o
-                        if self.game.editor_active:
+                        if self.game.state == EDITOR:
                             self.game.editor.handle_object_click(o_name)
 
                     self.interaction_this_click = True
@@ -115,7 +115,7 @@ class MouseController(object):
                     to_click = button
             self.interaction_this_click = True  # never continue checking when message box is up
         else:
-            for button in dict(self.game.buttons, **self.game.editor.get_buttons() if self.game.editor_active else {}).itervalues():
+            for button in dict(self.game.buttons, **self.game.editor.get_buttons() if self.game.state == EDITOR else {}).itervalues():
                 if button.check_clicked_no_function(pos):
                     to_click = button
                     if button.priority:
@@ -123,7 +123,7 @@ class MouseController(object):
         if to_click:
             self.interaction_this_click = True
             # self.button_to_click = to_click
-            if self.game.editor_active and not (to_click.text == "Undo" or to_click.text == "Redo") and not self.game.message_box:
+            if self.game.state == EDITOR and not (to_click.text == "Undo" or to_click.text == "Redo") and not self.game.message_box:
                 self.game.editor.create_undo_state()
             to_click.perf_function()
             # if button.check_clicked(pos):
@@ -133,13 +133,13 @@ class MouseController(object):
         if typ == 'up':
             return
         to_click = None
-        for v in dict(self.game.drop_lists, **self.game.editor.get_lists() if self.game.editor_active else {}).itervalues():
+        for v in dict(self.game.drop_lists, **self.game.editor.get_lists() if self.game.state == EDITOR else {}).itervalues():
             if v.check_click_within_area(pos):
                 to_click = v
                 if hasattr(v, 'priority') and v.priority:
                     break
         if to_click:
-            if self.game.editor_active:
+            if self.game.state == EDITOR:
                 self.game.editor.create_undo_state()
             if to_click.handle_event(pos, typ, button):
                 self.interaction_this_click = True
