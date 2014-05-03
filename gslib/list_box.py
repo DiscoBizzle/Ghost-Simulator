@@ -118,7 +118,7 @@ class List(object):
     def check_click_within_area(self, click_pos):
         pos = self.pos
         h = self.size[1] * len(self.drop_buttons)
-        if pos[0] < click_pos[0] < pos[0] + self.size[0] and pos[1] - h < click_pos[1] < pos[1] + self.size[1]:
+        if pos[0] < click_pos[0] < pos[0] + self.size[0] and pos[1] - h < click_pos[1] < pos[1]:
             return True
         return False
 
