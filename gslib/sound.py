@@ -9,12 +9,11 @@ from gslib.constants import *
 
 class Sound(object):
     def __init__(self, game):
-        # TODO remove handler from currently playing when finished playing by pushing events
 
         self.game = game
 
         self.music_playing = None
-        self.sound_playing = []
+        self.sound_playing = set()
         self.music_dict = []
         self.sound_dict = {}
 
@@ -57,4 +56,5 @@ class Sound(object):
         handler = self.sound_dict[name].play()
         handler.volume = self.game.options['sound_volume']
         handler.name = name
-        self.sound_playing.append(handler)
+        self.sound_playing.add(handler)
+        handler.push_handlers(on_eos=(lambda: self.sound_playing.remove(handler)))
