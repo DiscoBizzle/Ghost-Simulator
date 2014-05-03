@@ -227,9 +227,10 @@ class Game(pyglet.event.EventDispatcher):
     @editor_active.setter
     def editor_active(self, b):
         if b != self._editor_active:
-            self.editor.enter_edit_mode()
-        else:
-            self.editor.exit_edit_mode()
+            if b:
+                self.editor.enter_edit_mode()
+            else:
+                self.editor.exit_edit_mode()
         self._editor_active = b
 
     # pyglet event
