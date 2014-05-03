@@ -174,6 +174,7 @@ class Game(pyglet.event.EventDispatcher):
         
         self.editor = map_edit.Editor(self)
         self._editor_active = False
+        self.force_run_objects = False
         self.cursor = None
         self.new_trigger_capture = False
 
@@ -225,11 +226,11 @@ class Game(pyglet.event.EventDispatcher):
 
     @editor_active.setter
     def editor_active(self, b):
-        self._editor_active = b
-        if b:
+        if b != self._editor_active:
             self.editor.enter_edit_mode()
         else:
             self.editor.exit_edit_mode()
+        self._editor_active = b
 
     # pyglet event
     def on_draw(self):
@@ -264,7 +265,7 @@ class Game(pyglet.event.EventDispatcher):
                     self.sound_handler.play_music('transylvania')
 
             self.last_touching = [p for p in self.touching]  # creates a copy
-            if not self.editor_active: # pause game while in edit mode
+            if (not self.editor_active) or self.force_run_objects:  # pause game while in edit mode
                 for obj in self.objects.itervalues():
                     obj.update(dt)
 
@@ -285,6 +286,12 @@ class Game(pyglet.event.EventDispatcher):
                     if p[1].is_untouched_function:
                         for f in p[1].is_untouched_function:
                             f(p[0])
+
+            if self.map.active_cutscene is not None and not self.map.active_cutscene.done:
+                self.map.active_cutscene.update()
+
+            if self.editor_active:
+                self.editor.update()
 
         elif self.state == CREDITS:
             self.credits.update(dt)

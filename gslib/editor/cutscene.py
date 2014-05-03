@@ -7,8 +7,9 @@ from gslib import list_box
 
 
 class CutsceneEditor(object):
-    def __init__(self, game):
+    def __init__(self, game, main_editor):
         self.game = game
+        self.main_editor = main_editor
 
         self.cutscenes = self.game.map.cutscenes.copy()
         self.cutscenes['New... (TODO)'] = None
@@ -34,17 +35,18 @@ class CutsceneEditor(object):
                                          size=(1280 - 1060, 20), text="No cutscene selected."))
 
         # Cutscene playback controls
-        pu(button.DefaultButton(self, self.play_cutscene,
-                                pos=(980, self.game.dimensions[1] - 75), size=(20, 20),
-                                text=u"\u25B6"))
-        pu(button.DefaultButton(self, self.play_cutscene_and_run,
-                                pos=(1000, self.game.dimensions[1] - 75),
-                                size=(40, 20), text=u"\u25B6 R"))
-        pu(button.DefaultButton(self, self.stop_cutscene,
-                                pos=(1040, self.game.dimensions[1] - 75), size=(20, 20),
-                                text=u"\u25A0"))
+        self.play_button = pu(button.DefaultButton(self, self.play_cutscene,
+                                                   pos=(980, self.game.dimensions[1] - 75), size=(20, 20),
+                                                   text=u"\u25B6"))
+        self.play_and_run_button = pu(button.DefaultButton(self, self.play_cutscene_and_run,
+                                                           pos=(1000, self.game.dimensions[1] - 75),
+                                                           size=(40, 20), text=u"\u25B6 R"))
+        self.stop_button = pu(button.DefaultButton(self, self.stop_cutscene,
+                                                   pos=(1040, self.game.dimensions[1] - 75), size=(20, 20),
+                                                   text=u"\u25A0"))
 
         # Controls to add new action
+        print(cutscene.possible_actions)
         self.cutscene_new_action_list = pu(drop_down_list.DropDownList(self, cutscene.possible_actions, None,
                                            pos=(980, self.game.dimensions[1] - 95),
                                            size=(280, 20)))
@@ -78,6 +80,8 @@ class CutsceneEditor(object):
 
         self.dyn_buttons = []
         self.dyn_lists = []
+
+        self.playing = False
 
         # hide by default
         #self.toggle_visible()
@@ -175,7 +179,6 @@ class CutsceneEditor(object):
 
         # new shite?
         if self.selected_cutscene_action:
-            print('ACTUALLY')
             ev = self.selected_cutscene_action
 
             def get_pos(add_x=20):
@@ -265,13 +268,68 @@ class CutsceneEditor(object):
         pass
 
     def play_cutscene(self):
-        pass
+        if self.selected_cutscene:
+            # disable main editor controls
+            self.main_editor.disable_main_editor()
+
+            # disable (most of) cutscene editor
+            for x in self.buttons + self.dyn_buttons + self.lists + self.dyn_lists:
+                x.enabled = False
+            self.stop_button.enabled = True
+
+            # highlight the only shit that still works
+            self.play_button.colour = (0, 120, 0)
+            self.play_button.border_colour = (0, 200, 0)
+            self.stop_button.colour = (120, 120, 0)
+            self.stop_button.border_colour = (200, 200, 0)
+
+            # actually start cutscene
+            self.main_editor.exit_edit_mode()  # save game state
+            self.game.map.active_cutscene = self.selected_cutscene
+            self.selected_cutscene.restart()
+            self.playing = True
 
     def play_cutscene_and_run(self):
-        pass
+        if self.selected_cutscene:
+            self.play_cutscene()
+
+            # WELP
+            self.play_button.colour = (120, 0, 0)
+            self.play_button.border_colour = (120, 50, 80)
+            self.play_and_run_button.colour = (0, 120, 0)
+            self.play_and_run_button.border_colour = (0, 200, 0)
+
+            self.game.force_run_objects = True  # allow main game objects to update
 
     def stop_cutscene(self):
-        pass
+        if self.playing:
+            # re-enable main editor controls
+            self.main_editor.enable_main_editor()
+
+            # re-enable cutscene editor controls
+            for x in self.buttons + self.dyn_buttons + self.lists + self.dyn_lists:
+                x.enabled = True
+
+            # restore colour of play controls back to normal
+            self.play_button.colour = (120, 0, 0)
+            self.play_button.border_colour = (120, 50, 80)
+            self.play_and_run_button.colour = (120, 0, 0)
+            self.play_and_run_button.border_colour = (120, 50, 80)
+            self.stop_button.colour = (120, 0, 0)
+            self.stop_button.border_colour = (120, 50, 80)
+
+            # actually stop cutscene
+            self.main_editor.enter_edit_mode()  # load game state
+            self.game.map.active_cutscene = None
+            self.game.force_run_objects = False
+            self.playing = False
+
+    def update(self):
+        if self.playing:
+            self.refresh_cutscene_status()
+
+            if self.game.map.active_cutscene.done:
+                self.stop_cutscene()
 
     def add_cutscene_action(self):
         cnal = self.cutscene_new_action_list

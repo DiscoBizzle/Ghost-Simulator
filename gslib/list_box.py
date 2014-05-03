@@ -40,7 +40,7 @@ class List(object):
         self._font_size = font_size
         self.enabled = enabled  # whether button can be activated, visible or not
         self.labels = labels
-        self.priority = False
+        #self.priority = False
 
         for arg in kwargs:  # allows for additional arbitrary arguments to be passed in, useful for more complicated functions
             setattr(self, arg, kwargs[arg])
@@ -61,7 +61,6 @@ class List(object):
 
         self.update_buttons()
         # self.redraw()
-         ## TODO make lists add their buttons to the buttons in owner container when open, allows for easier priority detection
 
     # all below variables affect the button surface, so make them properties to redraw on change
     visible = create_property('visible')
@@ -78,9 +77,9 @@ class List(object):
         return self._open
     def set_open(self, n):
         self._open = n
-        self.priority = n
-        for b in self.drop_buttons:
-            b.priority = n
+        #self.priority = n
+        #for b in self.drop_buttons:
+        #    b.priority = n
     open = property(get_open, set_open)
 
     def refresh(self):  # call if the list changes

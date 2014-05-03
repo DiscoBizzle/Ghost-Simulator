@@ -44,9 +44,9 @@ class Cutscene(object):
         self.actions = actions
         self.current_actions = []
         self.remaining_actions = actions[:]
-        self.tick = 0           # just for tracking ticks done
-        self.done = False       # just for tracking if finished
-        self.wait_group = None  # just for tracking current wait group
+        self.tick = 0            # just for tracking ticks done
+        self.done = False        # just for tracking if finished
+        self.wait_group = None   # just for tracking current wait group
 
     def restart(self):
         self.current_actions = []
@@ -93,6 +93,16 @@ class TestAction(CutsceneAction):
 
     def __init__(self, g, m, l):
         CutsceneAction.__init__(self, g, m, l)
+        self.ticks_remaining = 30
+
+    def update_again(self):
+        return self.ticks_remaining >= 0
+
+    def update(self):
+        self.ticks_remaining -= 1
+
+    def restart(self):
+        self.ticks_remaining = 30
 
 
 possible_actions = {'Test Action': TestAction}

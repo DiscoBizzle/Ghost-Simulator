@@ -114,7 +114,7 @@ class MouseController(object):
         for v in dict(self.game.drop_lists, **self.game.editor.get_lists() if self.game.editor_active else {}).itervalues():
             if v.check_click_within_area(pos):
                 to_click = v
-                if v.priority:
+                if hasattr(v, 'priority') and v.priority:
                     break
         if to_click:
             if self.game.editor_active:

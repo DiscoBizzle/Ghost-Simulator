@@ -245,7 +245,7 @@ class Editor(object):
         ###################################################################
         # Cutscene editor
         ###################################################################
-        self.cutscene_editor = cutscene.CutsceneEditor(self.game)
+        self.cutscene_editor = cutscene.CutsceneEditor(self.game, self)
 
         ###################################################################
         # Other buttons
@@ -261,6 +261,9 @@ class Editor(object):
         self.buttons['redo'] = button.DefaultButton(self, self.redo,
                                                         pos=(self.game.dimensions[0] - 100 - h_off, self.game.dimensions[1] - v_off - 170),
                                                         size=(100, 20), text="Redo", visible=True, enabled=True)
+
+        self.stored_button_enabled_state = {}
+        self.stored_list_enabled_state = {}
 
     def list_to_dict_shabby(self, base_key, l):
         k = 0
@@ -301,6 +304,21 @@ class Editor(object):
             self.undo_index += 1
             save_load.restore_save_state(self.game, self.game.map, self.undo_states[self.undo_index])
 
+    def disable_main_editor(self):
+        for bk, bv in self.buttons.iteritems():
+            self.stored_button_enabled_state[bk] = bv.enabled
+            bv.enabled = False
+        for lk, lv in self.drop_lists.iteritems():
+            self.stored_list_enabled_state[lk] = lv.enabled
+            lv.enabled = False
+
+    def enable_main_editor(self):
+        for bk, be in self.stored_button_enabled_state.iteritems():
+            self.buttons[bk].enabled = be
+        for lk, le in self.stored_list_enabled_state.iteritems():
+            self.drop_lists[lk].enabled = le
+        self.stored_button_enabled_state = {}
+        self.stored_list_enabled_state = {}
 
     def enter_edit_mode(self):
         if not self.save_state is None:
@@ -515,5 +533,8 @@ class Editor(object):
             self.create_trigger_cursor(self.trigger_prototype.legend[len(l)])
 
             self.draw_trigger(t)
+
+    def update(self):
+        self.cutscene_editor.update()
 
 
