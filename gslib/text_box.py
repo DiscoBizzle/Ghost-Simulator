@@ -1,4 +1,3 @@
-import pygame
 from gslib.constants import *
 from gslib import text
 
@@ -8,6 +7,8 @@ class TextBox:
     def __init__(self, game, text, on_complete_fun):
         self.game = game
         self.on_complete_fun = on_complete_fun
+
+        return
 
         self.bg_color = pygame.Color(125, 25, 32)
         self.text_frame_color = pygame.Color(0, 0, 0)

@@ -1,4 +1,3 @@
-# import pygame
 import pyglet
 import pyglet.window.key as Pkey
 

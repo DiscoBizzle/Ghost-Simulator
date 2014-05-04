@@ -4,6 +4,7 @@ except ImportError:
     from io import BytesIO
 
 import pygame
+
 import pyglet.image
 
 from gslib.constants import *
@@ -13,10 +14,6 @@ from gslib import textures
 from gslib import text
 
 import time
-
-# screen = pygame.display.set_mode((800, 800))
-blue = pygame.Color(0, 255, 0)
-black = pygame.Color(0, 0, 0)
 
 rect_tex = None
 def new_rect_sprite():

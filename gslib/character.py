@@ -1,7 +1,6 @@
 import random
 import os.path
 
-import pygame
 import pyglet
 
 from gslib import character_functions
