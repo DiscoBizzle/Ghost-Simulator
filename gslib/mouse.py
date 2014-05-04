@@ -1,7 +1,6 @@
-import pygame
-
 import character
 from gslib.constants import *
+from gslib import rect
 
 
 class MouseController(object):
@@ -86,7 +85,7 @@ class MouseController(object):
                 if o == self.game.cursor:
                     continue
                 st = SELECTION_TOLERANCE
-                temp_rect = pygame.Rect((o.coord[0] - st, o.coord[1] - st), (o.dimensions[0] + 2*st, o.dimensions[1] + 2*st))
+                temp_rect = rect.Rect((o.coord[0] - st, o.coord[1] - st), (o.dimensions[0] + 2*st, o.dimensions[1] + 2*st))
                 if temp_rect.collidepoint((pos[0]+self.game.camera_coords[0], pos[1]+self.game.camera_coords[1])):
 
                     if self.game.new_trigger_capture:

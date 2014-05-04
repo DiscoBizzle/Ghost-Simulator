@@ -1,7 +1,4 @@
-import time
-
-import pygame
-
+from gslib import rect
 from gslib.constants import *
 
 
@@ -46,7 +43,7 @@ class GameObject(object):
         self.fear_radius = 50
         self.scared_of = []
         self.fears = []
-        self.rect = pygame.Rect(self.coord, self.dimensions)
+        self.rect = rect.Rect(self.coord, self.dimensions)
         self.update_timer = 40
         self.fear_timer = 0
         self.scream_timer = 0
@@ -61,8 +58,8 @@ class GameObject(object):
         self.max_frames = 3
         self.sprite_width = SPRITE_WIDTH
         self.sprite_height = SPRITE_HEIGHT
-        self.frame_rect = pygame.Rect(self.current_frame * self.sprite_width, self.animation_state * self.sprite_height,
-                                      self.sprite_width, self.sprite_height)
+        self.frame_rect = rect.Rect((self.current_frame * self.sprite_width, self.animation_state * self.sprite_height),
+                                    (self.sprite_width, self.sprite_height))
         # print('TODO: game_object.py set_colorkey pyglet port (use rgba spritesheet or write code to do magic)')
         #self.sprite_sheet.set_colorkey((255, 0, 255))
 
@@ -95,14 +92,14 @@ class GameObject(object):
         return self._coord
     def set_coord(self, new):
         self._coord = new
-        self.rect = pygame.Rect(self._coord, self._dimensions)
+        self.rect = rect.Rect(self._coord, self._dimensions)
     coord = property(get_coord, set_coord)
 
     def get_dimensions(self):
         return self._dimensions
     def set_dimensions(self, new):
         self._dimensions = new
-        self.rect = pygame.Rect(self._coord, self._dimensions)
+        self.rect = rect.Rect(self._coord, self._dimensions)
     dimensions = property(get_dimensions, set_dimensions)
 
     def get_current_frame(self):
@@ -110,16 +107,17 @@ class GameObject(object):
 
     def set_current_frame(self, val):
         self._current_frame = val
-        self.frame_rect = pygame.Rect(self._current_frame * self.sprite_width, self._animation_state * self.sprite_height,
-                                      self.sprite_width, self.sprite_height)
+        self.frame_rect = rect.Rect((self._current_frame * self.sprite_width, self._animation_state * self.sprite_height),
+                                    (self.sprite_width, self.sprite_height))
     current_frame = property(get_current_frame, set_current_frame)
 
     def get_animation_state(self):
         return self._animation_state
+
     def set_animation_state(self, val):
         self._animation_state = val
-        self.frame_rect = pygame.Rect(self._current_frame * self.sprite_width, self._animation_state * self.sprite_height,
-                                      self.sprite_width, self.sprite_height)
+        self.frame_rect = rect.Rect((self._current_frame * self.sprite_width, self._animation_state * self.sprite_height),
+                                    (self.sprite_width, self.sprite_height))
     animation_state = property(get_animation_state, set_animation_state)
 
     def update(self, dt):
@@ -214,7 +212,7 @@ class GameObject(object):
 
         # collide againt map boundaries
         pro_pos = (self.coord[0] + x_dir, self.coord[1] + y_dir)
-        pro_rect = pygame.Rect(pro_pos, self.dimensions)
+        pro_rect = rect.Rect(pro_pos, self.dimensions)
         if pro_pos[0] >= 0 and pro_pos[0] + self.dimensions[0] <= LEVEL_WIDTH and \
                         pro_pos[1] >= 0 and pro_pos[1] + self.dimensions[1] <= LEVEL_HEIGHT:
             pass

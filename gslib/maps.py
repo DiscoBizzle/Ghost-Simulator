@@ -1,16 +1,12 @@
 import json
 import os.path
 
-import pygame
 import pyglet
 import pyglet.gl
 
 from gslib import graphics
 from gslib import character
-from gslib import triggers
-from gslib import character_objects
-from gslib import character_functions
-# from gslib import save_load
+from gslib import rect
 from gslib.constants import *
 
 class FakeGame(object):
@@ -103,7 +99,9 @@ class Tile(object):
 
         self.walkable = True
         self.tile_ref = tile_ref
-        self.rect = pygame.Rect((x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE))
+        #self.rect = pygame.Rect((x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE))
+        # note top -> bottom coord system conversion
+        self.rect = rect.Rect((x * TILE_SIZE, y * TILE_SIZE), (TILE_SIZE, TILE_SIZE))
 
         if coll_grid:
             if coll_grid[x][y] == 1330:

@@ -1,6 +1,6 @@
-import pygame
 import pyglet.image
 
+from gslib import rect
 from gslib.constants import *
 from gslib.game_object import GameObject
 
@@ -11,8 +11,8 @@ class Player(GameObject):
 
         self.direction = DOWN
         self.animation_state = ANIM_DOWNIDLE
-        self.frame_rect = pygame.Rect(self.current_frame * SPRITE_WIDTH, self.animation_state * SPRITE_HEIGHT,
-                                      SPRITE_WIDTH, SPRITE_HEIGHT)
+        self.frame_rect = rect.Rect((self.current_frame * SPRITE_WIDTH, self.animation_state * SPRITE_HEIGHT),
+                                    (SPRITE_WIDTH, SPRITE_HEIGHT))
 
         self._fear = START_FEAR
         self.fears = ['player']
