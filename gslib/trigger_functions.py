@@ -5,13 +5,13 @@ from gslib import graphics
 # IMPORTANT: Name these functions with 'trigger' in the name, for reasons of saving.
 
 def flip_state_trigger(target):
-    def func(interacter):
+    def func(interactee, interacter):
         target.state_index = str((int(target.state_index) + 1) % len(target.states))
     func.__name__ = 'flip_state_trigger'
     return func
 
 def red_square_trigger(target):
-    def func(interacter):
+    def func(interactee, interacter):
         target.fear = 0
         target.fainted = True
 
