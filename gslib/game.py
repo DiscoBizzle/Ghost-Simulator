@@ -1,44 +1,26 @@
 import os
 import os.path
-import sys
-import time
 
 import pyglet
-#import pyglet.clock
-#import pyglet.gl
-#import pyglet.window
-#from pygame import Rect
 import random
 
 from gslib import button
-from gslib import character
 from gslib import credits
 from gslib import graphics
 from gslib import joy
-from gslib import maps
 from gslib import menus
 from gslib import player
 from gslib import skills
 from gslib import sound
-from gslib import text_box
 from gslib import key
 from gslib import mouse
-from gslib import character_functions
 from gslib import text
-from gslib import drop_down_list
 from gslib import map_edit
 from gslib import save_load
 from gslib import options
 from gslib import walrus
 from gslib.rect import Rect
 from gslib.constants import *
-
-
-# doesn't seem to be needed any more
-#if sys.platform == 'win32' and sys.getwindowsversion()[0] >= 5:
-#    # On NT like Windows versions smpeg video needs windb. --
-#os.environ['SDL_VIDEODRIVER'] = ''
-#os.environ['SDL_VIDEODRIVER'] = ''
 
 
 class Game(pyglet.event.EventDispatcher):
