@@ -197,6 +197,8 @@ class Game(pyglet.event.EventDispatcher):
 
         self.sound_handler.play_music('2 ghost lane')
 
+        self.message_box = None
+
         self.state = MAIN_MENU
 
     @property

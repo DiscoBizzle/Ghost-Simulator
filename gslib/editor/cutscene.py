@@ -1,8 +1,9 @@
 import collections
 
 from gslib import button
-from gslib import drop_down_list
 from gslib import cutscene
+from gslib import drop_down_list
+from gslib import msg_box
 from gslib import list_box
 
 
@@ -121,7 +122,8 @@ class CutsceneEditor(object):
         self.selected_cutscene = self.cutscene_list.selected
 
         if not self.selected_cutscene:
-            print('TODO: select new cutscene')
+            mb = msg_box.InputBox(self.game, 'TODO: create new cutscene. (for now, edit .json)', 'hi')
+            mb.show()
 
         self.refresh_cutscene_actions()
         self.refresh_cutscene_status()

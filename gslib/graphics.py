@@ -116,6 +116,9 @@ class Graphics(object):
             if self.game.show_ranges:
                 self.game.show_fear_ranges()
 
+            if self.game.message_box is not None:
+                self.game.message_box.draw()
+
         elif self.game.state == GAME_OVER:
             self.draw_game_over()
         elif self.game.state == CREDITS:

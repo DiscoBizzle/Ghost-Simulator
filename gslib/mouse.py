@@ -52,6 +52,8 @@ class MouseController(object):
 
     def mouse_move(self, pos):
         if self.game.state == MAIN_GAME:
+            if self.game.message_box:
+                return
             for k, v in dict(self.game.drop_lists, **self.game.editor.get_lists() if self.game.editor_active else {}).iteritems():
                 v.handle_event(pos, 'move')
             if self.game.cursor:
@@ -97,15 +99,21 @@ class MouseController(object):
         if typ == 'up':
             return
         to_click = None
-        for button in dict(self.game.buttons, **self.game.editor.get_buttons() if self.game.editor_active else {}).itervalues():
-            if button.check_clicked_no_function(pos):
-                to_click = button
-                if button.priority:
-                    break
+        if self.game.message_box is not None:
+            for button in self.game.message_box.buttons:
+                if button.check_clicked_no_function(pos):
+                    to_click = button
+            self.interaction_this_click = True  # never continue checking when message box is up
+        else:
+            for button in dict(self.game.buttons, **self.game.editor.get_buttons() if self.game.editor_active else {}).itervalues():
+                if button.check_clicked_no_function(pos):
+                    to_click = button
+                    if button.priority:
+                        break
         if to_click:
             self.interaction_this_click = True
             # self.button_to_click = to_click
-            if self.game.editor_active and not (to_click.text == "Undo" or to_click.text == "Redo"):
+            if self.game.editor_active and not (to_click.text == "Undo" or to_click.text == "Redo") and not self.game.message_box:
                 self.game.editor.create_undo_state()
             to_click.perf_function()
             # if button.check_clicked(pos):
