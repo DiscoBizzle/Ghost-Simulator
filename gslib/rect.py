@@ -31,7 +31,7 @@ class Rect(object):
 
     @x.setter
     def x(self, value):
-        self.left = x
+        self.left = value
 
     @property
     def y(self):
@@ -310,8 +310,8 @@ class Rect(object):
 
         A point on the top or right edge is not inside the Rect.
         """
-        return (self.left <= point[0] and self.right > point[0] and
-                self.bottom <= point[1] and self.top > point[1])
+        return (self.left <= point[0] < self.right and
+                self.bottom <= point[1] < self.top)
 
     def colliderect(self, other):
         """Return True when any portions of the Rects overlap.
