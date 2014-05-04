@@ -5,7 +5,10 @@ from gslib import text
 #define a list of textbox states
 
 class TextBox:
-    def __init__(self, text):
+    def __init__(self, game, text, on_complete_fun):
+        self.game = game
+        self.on_complete_fun = on_complete_fun
+
         self.bg_color = pygame.Color(125, 25, 32)
         self.text_frame_color = pygame.Color(0, 0, 0)
         self.text_color = pygame.Color(150, 255, 150)
@@ -44,6 +47,26 @@ class TextBox:
             self.w - 3*self.x_int_pad - self.portrait_rect.w, self.h - 2*self.y_int_pad)
 
         self.text_surface = pygame.Surface((self.text_frame_rect.w, self.text_frame_rect.h))
+
+    def show(self):
+        # ??? start text box
+        self.game.text_box = self
+        # TODO: update key.py etc to pass input only to game.text_box if game.text_box is not None
+        pass
+
+    def hide(self):
+        # ??? stop text box. usually should be called by text_box itself when convo is finished
+        self.game.text_box = None
+
+        # blah blah blah
+
+        if self.on_complete_fun is not None:
+            self.on_complete_fun(some_info_about_dialogue_branch_chosen)
+
+    def draw(self):
+        # add sprites/buttons to end of self.game.screen_objects_to_draw list
+        # self.game.screen_objects_to_draw += [thing1, thing2, etc]
+        pass
 
     def create_background_surface(self):  # creates a surface for the textbox (minus the text so we can make that scroll)
         self.background_surface.fill(self.bg_color)  # fill background

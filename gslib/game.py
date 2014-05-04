@@ -200,6 +200,8 @@ class Game(pyglet.event.EventDispatcher):
         self.message_box = None  # If set, a message box taking all focus is being displayed.
         self.text_caret = None   # If set, all keyboard input & copy of mouse events should be posted to this object.
 
+        self.text_box = None  # If set, dialogue is being played.
+
         self.state = MAIN_MENU
 
     @property
@@ -243,7 +245,7 @@ class Game(pyglet.event.EventDispatcher):
         self.graphics.main_game_draw()
 
         self.fps_clock.draw()
-        self.walrus.walruss()
+        #self.walrus.walruss()
         self.ticks_clock_display.draw()
         self.draw_clock_display.draw()
 
@@ -261,7 +263,7 @@ class Game(pyglet.event.EventDispatcher):
         #self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
         self.ticks_clock.tick()
         self.camera_coords = self.calc_camera_coord()
-        self.walrus.walrusss(self.dimensions[0], self.dimensions[1])
+        #self.walrus.walrusss(self.dimensions[0], self.dimensions[1])
 
         if self.state == MAIN_GAME:
             if self.sound_handler.music_playing is not None:
@@ -294,13 +296,14 @@ class Game(pyglet.event.EventDispatcher):
             if self.map.active_cutscene is not None and not self.map.active_cutscene.done:
                 self.map.active_cutscene.update()
 
+            if self.text_box is not None:
+                self.text_box.update()
+
             if self.editor_active:
                 self.editor.update()
 
         elif self.state == CREDITS:
             self.credits.update(dt)
-        elif self.state == TEXTBOX_TEST:
-            self.text_box_test.update(dt)
 
     def calc_camera_coord(self):
         avg_pos = [0, 0]
