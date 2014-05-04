@@ -1,6 +1,6 @@
 # from gslib import character_functions
 from gslib import trigger_functions
-import pygame
+from gslib import rect
 
 
 # get all functions from trigger_functions module
@@ -60,7 +60,7 @@ class TriggerZone(Trigger):
 
         self._pos = (0, 0)
         self._size = (1, 1)
-        self.zone = pygame.Rect(self._pos, self._size)
+        self.zone = rect.Rect(self._pos, self._size)
 
     @property
     def pos(self):
@@ -69,7 +69,7 @@ class TriggerZone(Trigger):
     @pos.setter
     def pos(self, p):
         self._pos = p
-        self.zone = pygame.Rect(self._pos, self._size)
+        self.zone = rect.Rect(self._pos, self._size)
 
     @property
     def size(self):
@@ -78,12 +78,12 @@ class TriggerZone(Trigger):
     @size.setter
     def size(self, s):
         self._size = s
-        self.zone = pygame.Rect(self._pos, self._size)
+        self.zone = rect.Rect(self._pos, self._size)
 
     def check_entry(self, prev_pos, obj):
         p = obj.coord
-        if self.zone.collidepoint(p[0], p[1]): # if is now in zone
-            if not self.zone.collidepoint(prev_pos[0], prev_pos[1]): # if wasnt in zone previously
+        if self.zone.collidepoint(p): # if is now in zone
+            if not self.zone.collidepoint(prev_pos): # if wasnt in zone previously
                 self.perf_actions(obj)
 
 ################################################################################

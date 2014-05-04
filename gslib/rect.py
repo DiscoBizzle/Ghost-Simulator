@@ -199,7 +199,7 @@ class Rect(object):
 
     def clamp_ip(self, other):
         """Same as clamp, but in-place."""
-        if self.w >= other.w or self.h >= other.w:
+        if self.w >= other.w or self.h >= other.h:
             self.center = other.center
             return
 
