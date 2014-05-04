@@ -11,17 +11,27 @@ class MouseController(object):
         self.button_to_click = None
         self.game.window.push_handlers(self)
 
+    def post_to_text_caret(self, fun_name, *args):
+        # post copy to text editor if set. don't overlap the text editor with usable controls!
+        # (input message boxes get away with it because they disable all non-msgbox controls.)
+        if self.game.text_caret is not None and hasattr(self.game.text_caret, fun_name):
+            getattr(self.game.text_caret, fun_name)(*args)
+
     def on_mouse_motion(self, x, y, dx, dy):
         self.mouse_move((x, y))
+        self.post_to_text_caret('on_mouse_motion', x, y, dx, dy)
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.mouse_move((x, y))
+        self.post_to_text_caret('on_mouse_drag', x, y, dx, dy, buttons, modifiers)
 
     def on_mouse_press(self, x, y, button, modifiers):
         self.mouse_click((x, y), 'down', button)
+        self.post_to_text_caret('on_mouse_press', x, y, button, modifiers)
 
     def on_mouse_release(self, x, y, button, modifiers):
         self.mouse_click((x, y), 'up', button)
+        self.post_to_text_caret('on_mouse_release', x, y, button, modifiers)
 
     def mouse_click(self, pos, typ, button):
         self.interaction_this_click = False

@@ -286,7 +286,14 @@ class Graphics(object):
         for f in self.game.screen_objects_to_draw:
             if f is None:
                 print(self.game.screen_objects_to_draw)
-            f.draw()
+
+            if hasattr(f, 'draw'):
+                f.draw()
+            else:
+                # button probably
+                f.outer_sprite.draw()
+                f.inner_sprite.draw()
+                f.text_sprite.draw()
         self.game.screen_objects_to_draw = []
 
     def blit_camera(self, sprite):

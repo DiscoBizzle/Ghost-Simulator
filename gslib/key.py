@@ -28,11 +28,6 @@ class KeyController(object):
 
         self.game.window.push_handlers(self)
 
-        self.on_text_handler = None
-        self.on_text_motion_handler = None
-        self.on_text_motion_select_handler = None
-        self.disable_game_keys = False
-
     def on_key_press(self, symbol, modifiers):
         self.keys.on_key_press(symbol, modifiers)
         self.handle_keys(symbol, modifiers)
@@ -42,19 +37,20 @@ class KeyController(object):
         self.handle_keys(symbol, modifiers)
 
     def on_text(self, text):
-        if self.on_text_handler is not None:
-            self.on_text_handler(text)
+        if self.game.text_caret is not None:
+            self.game.text_caret.on_text(text)
 
     def on_text_motion(self, motion):
-        if self.on_text_motion_handler is not None:
-            self.on_text_motion_handler(motion)
+        if self.game.text_caret is not None:
+            self.game.text_caret.on_text_motion(motion)
 
     def on_text_motion_select(self, motion):
-        if self.on_text_motion_select_handler is not None:
-            self.on_text_motion_select_handler(motion)
+        if self.game.text_caret is not None:
+            self.game.text_caret.on_text_motion_select(motion)
 
     def handle_keys(self, symbol, modifiers):
-        if self.disable_game_keys:
+        # text input mode?
+        if self.game.text_caret is not None:
             return
 
         if self.game.state == KEYBIND_CAPTURE:

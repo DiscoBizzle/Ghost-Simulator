@@ -197,7 +197,8 @@ class Game(pyglet.event.EventDispatcher):
 
         self.sound_handler.play_music('2 ghost lane')
 
-        self.message_box = None
+        self.message_box = None  # If set, a message box taking all focus is being displayed.
+        self.text_caret = None   # If set, all keyboard input & copy of mouse events should be posted to this object.
 
         self.state = MAIN_MENU
 
