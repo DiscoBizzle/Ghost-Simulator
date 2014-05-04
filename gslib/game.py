@@ -8,7 +8,6 @@ import pyglet
 #import pyglet.gl
 #import pyglet.window
 #from pygame import Rect
-import pygame
 import random
 
 from gslib import button
@@ -31,6 +30,7 @@ from gslib import map_edit
 from gslib import save_load
 from gslib import options
 from gslib import walrus
+from gslib.rect import Rect
 from gslib.constants import *
 
 
@@ -171,7 +171,7 @@ class Game(pyglet.event.EventDispatcher):
 
         self.touching = []
         self.last_touching = []
-        
+
         self.editor = map_edit.Editor(self)
         self.force_run_objects = False
         self.cursor = None
@@ -366,7 +366,7 @@ class Game(pyglet.event.EventDispatcher):
         self.map = self.map_dict[self.map_index]
         # self.objects = dict(self.players.items() + self.map.objects.items())
         self.gather_buttons_and_drop_lists_and_objects()
-        self.graphics.clip_area = pygame.Rect((0, 0), (self.dimensions[0], self.dimensions[1]))
+        self.graphics.clip_area = Rect((0, 0), (self.dimensions[0], self.dimensions[1]))
 
     def quit_game(self):
         self.window.dispatch_event('on_close')
