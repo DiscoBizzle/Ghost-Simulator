@@ -3,8 +3,6 @@ try:
 except ImportError:
     from io import BytesIO
 
-import pygame
-
 import pyglet.image
 
 from gslib.constants import *
@@ -62,8 +60,6 @@ class Graphics(object):
 
         self.game_over_txt2 = pyglet.text.Label(u"press esc scrub", FONT, 20, color=(255, 255, 255, 255),
                                                 anchor_x='left', anchor_y='bottom', align='center')
-
-        self.clip_area = pygame.Rect((0, 0), (self.game.dimensions[0], self.game.dimensions[1]))
 
         self.last_map = None
         self.map_texture = None
@@ -127,8 +123,6 @@ class Graphics(object):
             self.game.skill_menu.draw()
         elif self.game.state == OPTIONS_MENU:
             self.game.options_menu.draw()
-        elif self.game.state == TEXTBOX_TEST:
-            self.draw_text_box()
         elif self.game.state == KEYBIND_MENU or self.game.state == KEYBIND_CAPTURE:
             self.game.keybind_menu.draw()
         elif self.game.state == CUTSCENE:
@@ -259,10 +253,6 @@ class Graphics(object):
             o[3].y = o[2].y - o[2].content_height
             self.game.screen_objects_to_draw += o  # self.game.object_stats
 
-    def resize_fear_surface(self):
-        nplayers = len(self.game.players)
-        self.fear_surf = pygame.Surface((self.game.dimensions[0], nplayers*32)).convert_alpha()
-
     def draw_fear_bar(self):
         nplayers = len(self.game.players)
         self.game.screen_objects_to_draw.append(self.fear_text)
@@ -336,6 +326,8 @@ class Graphics(object):
                 self.game.state = self.game.last_state
 
     def draw_torch(self):
+        raise Exception("graphics.draw_torch() not ported to pyglet.")
+
         ppos = (self.game.players['player1'].coord[0] + self.game.players['player1'].dimensions[0] / 2, self.game.players['player1'].coord[1] + self.game.players['player1'].dimensions[1] / 2)
 
         self.light_surf.fill((0, 0, 0, 0))
@@ -351,11 +343,3 @@ class Graphics(object):
         self.light_surf.blit(self.light, (hole.left, hole.top))
         self.game.screen_objects_to_draw.append((self.light_surf, (0, 0)))
 
-    def draw_text_box(self):
-        self.surface.blit(self.game.text_box_test.background_surface,
-                          (self.game.text_box_test.base_rect.x, self.game.text_box_test.base_rect.y),
-                          self.game.text_box_test.draw_rect)
-        self.surface.blit(self.game.text_box_test.text_surface,
-                          (self.game.text_box_test.text_frame_rect.x + self.game.text_box_test.base_rect.x,
-                           self.game.text_box_test.text_frame_rect.y + self.game.text_box_test.base_rect.y),
-                          self.game.text_box_test.draw_rect)
