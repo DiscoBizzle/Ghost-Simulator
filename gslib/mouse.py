@@ -66,16 +66,15 @@ class MouseController(object):
             for k, v in dict(self.game.drop_lists, **self.game.editor.get_lists() if self.game.state == EDITOR else {}).iteritems():
                 v.handle_event(pos, 'move')
             if self.game.cursor:
-                self.calc_cursor_coord(pos, 'move')
+                self.game.cursor.coord = self.calc_cursor_coord(pos, 'move')
 
     def calc_cursor_coord(self, pos, typ, button=None):
         if self.game.key_controller.keys[self.game.key_controller.key_map['Snap to Grid']]:
             grid_x = (pos[0] + self.game.camera_coords[0]) / TILE_SIZE
             grid_y = (pos[1] + self.game.camera_coords[1]) / TILE_SIZE
-            self.game.cursor.coord = (grid_x * TILE_SIZE, grid_y * TILE_SIZE)
-
+            return grid_x * TILE_SIZE, grid_y * TILE_SIZE
         else:
-            self.game.cursor.coord = (pos[0] + self.game.camera_coords[0], pos[1] + self.game.camera_coords[1])
+            return pos[0] + self.game.camera_coords[0], pos[1] + self.game.camera_coords[1]
 
     def check_object_click(self, pos, typ, button=None):
         if typ == 'down':

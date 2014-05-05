@@ -79,6 +79,8 @@ class GameObject(object):
         self.flair = {}
         self.collision_weight = 1  # set to 0 for no collision, can only push things that are lighter, or same weight
 
+        self.cutscene_controlling = None
+
 
     def get_state_index(self):
         return self._state_index
@@ -121,19 +123,22 @@ class GameObject(object):
     animation_state = property(get_animation_state, set_animation_state)
 
     def update(self, dt):
-        v_x, v_y = 0, 0
-        if self.move_down:
-            v_y -= self.current_speed
-            self.direction = DOWN
-        if self.move_up:
-            v_y += self.current_speed
-            self.direction = UP
-        if self.move_left:
-            v_x -= self.current_speed
-            self.direction = LEFT
-        if self.move_right:
-            v_x += self.current_speed
-        self.velocity = (v_x, v_y)
+        if self.cutscene_controlling:
+            self.cutscene_controlling.game_object_hook(self)
+        else:
+            v_x, v_y = 0, 0
+            if self.move_down:
+                v_y -= self.current_speed
+                self.direction = DOWN
+            if self.move_up:
+                v_y += self.current_speed
+                self.direction = UP
+            if self.move_left:
+                v_x -= self.current_speed
+                self.direction = LEFT
+            if self.move_right:
+                v_x += self.current_speed
+            self.velocity = (v_x, v_y)
 
         if not self.velocity == (0, 0):
             self.move()

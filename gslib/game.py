@@ -183,6 +183,8 @@ class Game(pyglet.event.EventDispatcher):
 
         self.text_box = None  # If set, dialogue is being played.
 
+        self.update_exception_hook = (None, None)
+
         self.state = MAIN_MENU
 
     @property
@@ -240,46 +242,55 @@ class Game(pyglet.event.EventDispatcher):
             self.objects['cursor'] = self.cursor
 
     def update(self, dt):
-        # this is fixed timestep, 30 FPS. if game runs slower, we lag.
-        # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
-        #self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
-        self.ticks_clock.tick()
-        self.camera_coords = self.calc_camera_coord()
-        #self.walrus.walrusss(self.dimensions[0], self.dimensions[1])
+        try:
+            # this is fixed timestep, 30 FPS. if game runs slower, we lag.
+            # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
+            #self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
+            self.ticks_clock.tick()
+            self.camera_coords = self.calc_camera_coord()
+            #self.walrus.walrusss(self.dimensions[0], self.dimensions[1])
 
-        if self.state == MAIN_GAME or self.state == EDITOR:
+            if self.state == MAIN_GAME or self.state == EDITOR:
 
-            self.last_touching = [p for p in self.touching]  # creates a copy
-            if self.state != EDITOR or self.force_run_objects:  # pause game while in edit mode
-                for obj in self.objects.itervalues():
-                    obj.update(dt)
+                self.last_touching = self.touching[:]  # creates a copy
 
-            for i, p in enumerate(self.touching):
-                if not p in self.last_touching:  # detect on touch
-                    if p[0].has_touched_function:
-                        for f in p[0].has_touched_function:
-                            f(p[1])
-                    if p[1].is_touched_function:
-                        for f in p[1].is_touched_function:
-                            f(p[0])
+                if self.map.active_cutscene is not None and not self.map.active_cutscene.done:
+                    self.map.active_cutscene.update()
 
-            for i, p in enumerate(self.last_touching):
-                if not p in self.touching:  # detect on un-touch
-                    if p[0].has_untouched_function:
-                        for f in p[0].has_untouched_function:
-                            f(p[1])
-                    if p[1].is_untouched_function:
-                        for f in p[1].is_untouched_function:
-                            f(p[0])
+                if self.state != EDITOR or self.force_run_objects:  # pause game while in edit mode
+                    for obj in self.objects.itervalues():
+                        obj.update(dt)
 
-            if self.map.active_cutscene is not None and not self.map.active_cutscene.done:
-                self.map.active_cutscene.update()
+                for i, p in enumerate(self.touching):
+                    if not p in self.last_touching:  # detect on touch
+                        if p[0].has_touched_function:
+                            for f in p[0].has_touched_function:
+                                f(p[1])
+                        if p[1].is_touched_function:
+                            for f in p[1].is_touched_function:
+                                f(p[0])
 
-            if self.text_box is not None:
-                self.text_box.update()
+                for i, p in enumerate(self.last_touching):
+                    if not p in self.touching:  # detect on un-touch
+                        if p[0].has_untouched_function:
+                            for f in p[0].has_untouched_function:
+                                f(p[1])
+                        if p[1].is_untouched_function:
+                            for f in p[1].is_untouched_function:
+                                f(p[0])
 
-            if self.state == EDITOR:
-                self.editor.update()
+                if self.text_box is not None:
+                    self.text_box.update()
+
+                if self.state == EDITOR:
+                    self.editor.update()
+
+            elif self.state == CREDITS:
+                self.credits.update(dt)
+
+        except self.update_exception_hook[0] as exception:
+            self.update_exception_hook[1](exception)
+
 
     def calc_camera_coord(self):
         avg_pos = [0, 0]

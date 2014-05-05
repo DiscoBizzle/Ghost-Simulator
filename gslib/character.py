@@ -5,6 +5,7 @@ import pyglet
 
 from gslib import character_functions
 from gslib.game_object import GameObject
+from gslib import cutscene
 from gslib import graphics
 from gslib import sprite
 from gslib import text
@@ -209,42 +210,43 @@ class Character(GameObject):
 
     def update(self, dt):
 
-        if not self.possessed_by:
-            self.update_timer += 1
-            #pick random direction (currently only one of 8 directions, but at a random speed)
+        if not self.cutscene_controlling:
+            if not self.possessed_by:
+                self.update_timer += 1
+                #pick random direction (currently only one of 8 directions, but at a random speed)
 
-            if self.update_timer >= 50 and not self.fear_timer:
-                self.update_timer = 0
-                self.current_speed = random.randint(self.min_speed, self.normal_speed)
+                if self.update_timer >= 50 and not self.fear_timer:
+                    self.update_timer = 0
+                    self.current_speed = random.randint(self.min_speed, self.normal_speed)
 
-                self.move_down = False
-                self.move_up = False
-                self.move_left = False
-                self.move_right = False
-                if random.randint(0, 1):
-                    self.move_down = True
-                else:
-                    self.move_up = True
+                    self.move_down = False
+                    self.move_up = False
+                    self.move_left = False
+                    self.move_right = False
+                    if random.randint(0, 1):
+                        self.move_down = True
+                    else:
+                        self.move_up = True
 
-                if random.randint(0, 1):
-                    self.move_right = True
-                else:
-                    self.move_left = True
+                    if random.randint(0, 1):
+                        self.move_right = True
+                    else:
+                        self.move_left = True
 
-            if self.fear_timer:
-                for f in self.feared_function:
-                    f()
-                # self.feared_function()
-                self.fear_timer -= 1
+                if self.fear_timer:
+                    for f in self.feared_function:
+                        f()
+                    # self.feared_function()
+                    self.fear_timer -= 1
 
-        else:
-            # self.possessed_function(self)
-            self.current_speed = self.normal_speed
-            # tie move to possessing player move
-            self.move_down = self.possessed_by[-1].move_down  # last player to possess get control
-            self.move_up = self.possessed_by[-1].move_up
-            self.move_left = self.possessed_by[-1].move_left
-            self.move_right = self.possessed_by[-1].move_right
+            else:
+                # self.possessed_function(self)
+                self.current_speed = self.normal_speed
+                # tie move to possessing player move
+                self.move_down = self.possessed_by[-1].move_down  # last player to possess get control
+                self.move_up = self.possessed_by[-1].move_up
+                self.move_left = self.possessed_by[-1].move_left
+                self.move_right = self.possessed_by[-1].move_right
 
         GameObject.update(self, dt)
 

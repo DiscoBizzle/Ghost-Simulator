@@ -1,3 +1,6 @@
+class Error(Exception):
+    """Cutscene exception"""
+    pass
 
 
 class CutsceneAction(object):
@@ -5,20 +8,28 @@ class CutsceneAction(object):
     def __init__(self, game_, map_, load_dict=None):
         self.game = game_
         self.map = map_
+        self.edit_control_map = {}
+        self.to_save = []
         self.load_dict = load_dict or {}
-        self.wait_group = self.try_load('wait_group')
+        self.wait_group = self.property('wait_group', 'wait_group')
 
-    def try_load(self, var_name):
-        if var_name in self.load_dict:
-            return self.load_dict[var_name]
+    def property(self, name, editor_type, default=None):
+        self.edit_control_map[name] = editor_type
+        self.to_save.append(name)
+
+        if name in self.load_dict:
+            return self.load_dict[name]
         else:
-            return None
+            return default
 
     def get_editor(self):
-        return {'wait_group': 'wait_group'}
+        return self.edit_control_map
 
     def save(self):
-        return {'class_name': self.__class__.__name__, 'wait_group': self.wait_group}
+        d = {'class_name': self.__class__.__name__}
+        for k in self.to_save:
+            d[k] = getattr(self, k)
+        return d
 
     # Used in editor.
     def describe(self):
@@ -94,14 +105,8 @@ class TestAction(CutsceneAction):
     def __init__(self, g, m, l):
         CutsceneAction.__init__(self, g, m, l)
         self.ticks_remaining = 30
-        self.obj_ref = self.try_load('obj_ref') or '<None>'
-        self.pos = self.try_load('pos') or (0, 0)
-
-    def get_editor(self):
-        return dict(CutsceneAction.get_editor(self), **{'obj_ref': 'obj_ref', 'pos': 'coords'})
-
-    def save(self):
-        return dict(CutsceneAction.save(self), **{'obj_ref': self.obj_ref, 'pos': self.pos})
+        self.obj_ref = self.property('obj_ref', 'obj_ref', default='<None>')
+        self.pos = self.property('pos', 'coords', default=(0, 0))
 
     def update_again(self):
         return self.ticks_remaining >= 0
@@ -113,4 +118,60 @@ class TestAction(CutsceneAction):
         self.ticks_remaining = 30
 
 
-possible_actions = {'Test Action': TestAction}
+class ControllingCutsceneAction(CutsceneAction):
+
+    def __init__(self, g, m, l):
+        CutsceneAction.__init__(self, g, m, l)
+        self.what = self.property('what', 'obj_ref', default='<None>')
+
+    def valid_ref(self):
+        return self.what in self.map.objects
+
+    def get_ref(self):
+        return self.map.objects[self.what]
+
+    def hook(self):
+        if not self.valid_ref():
+            if self.what == '<None>':
+                raise Error("Action not configured. You need to set .what on:\n" + self.describe())
+            else:
+                raise Error("Couldn't find thing named '" + self.what + "' in the current map\n" + self.describe())
+        self.get_ref().cutscene_controlling = self
+
+    def unhook(self):
+        if self.valid_ref() and self.map.objects[self.what].cutscene_controlling == self:
+            self.get_ref().cutscene_controlling = None
+
+
+class WalkToAction(ControllingCutsceneAction):
+
+    def __init__(self, g, m, l):
+        ControllingCutsceneAction.__init__(self, g, m, l)
+        self.where = self.property('where', 'coords', default=(0, 0))
+        self.speed = self.property('speed', 'int', default=2)
+
+    def describe(self):
+        return "Move " + self.what + " to " + str(self.where) + " (" + str(self.speed) + ")"
+
+    def update_again(self):
+        return self.valid_ref() and (self.get_ref().coord[0] != self.where[0] or
+                                     self.get_ref().coord[1] != self.where[1])
+
+    def update(self):
+        self.hook()
+
+    def restart(self):
+        self.unhook()
+
+    def game_object_hook(self, ch):
+        p_start = ch.coord
+        p_end = self.where
+
+        if not self.update_again():
+            self.unhook()
+        else:
+            ch.velocity = (min(self.speed, max(-self.speed, p_end[0] - p_start[0])),
+                           min(self.speed, max(-self.speed, p_end[1] - p_start[1])))
+
+
+possible_actions = {'Test Action': TestAction, 'Walk To': WalkToAction}

@@ -21,7 +21,8 @@ def list_func(owner, val):
         else:
             owner.selected_name = str(val)
             owner.selected = owner.items[val]
-        owner.function()
+        if owner.function:
+            owner.function()
     return func
 
 
@@ -127,19 +128,9 @@ class List(object):
         w /= 2
         h /= 2
 
-        """
         if abs(click_pos[0] - (pos[0] + w)) < w and abs(click_pos[1] - (pos[1] + h)) < h:
-            self.open = not self.open
-            for b in self.drop_buttons:
-                b.visible = not b.visible
-                b.enabled = not b.enabled
             self.update_buttons()
-            # self.redraw()
             return True
-
-        if not self.open:
-            return
-        """
 
         b = False
         for b in self.drop_buttons:

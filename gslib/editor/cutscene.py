@@ -222,7 +222,9 @@ class CutsceneEditor(object):
             def finish_coords_click(pos):
                 self.highlighted.remove(str(ev) + '-' + attr)
                 self.map_click_handler = None
-                setattr(ev, attr, pos)
+                dest = self.game.mouse_controller.calc_cursor_coord(pos, 'down')
+                dest = (dest[0] - 12, dest[1])
+                setattr(ev, attr, dest)
                 self.select_cutscene_action()
             # unclicking?
             if (str(ev) + '-' + attr) in self.highlighted:
@@ -337,11 +339,11 @@ class CutsceneEditor(object):
 
             # select something useful
             if len(self.selected_cutscene.actions) > i:
-                self.cutscene_actions_list = self.selected_cutscene.actions[i]
+                list_box.list_func(self.cutscene_actions_list, self.selected_cutscene.actions[i])()
             elif len(self.selected_cutscene.actions) > 0:
-                self.cutscene_actions_list = self.selected_cutscene.actions[len(self.selected_cutscene.actions) - 1]
+                list_box.list_func(self.cutscene_actions_list, self.selected_cutscene.actions[len(self.selected_cutscene.actions) - 1])()
             else:
-                self.cutscene_actions_list = None
+                list_box.list_func(self.cutscene_actions_list, None)()
 
             # update selected action editor
             self.select_cutscene_action()
@@ -353,7 +355,24 @@ class CutsceneEditor(object):
         pass
 
     def play_cutscene(self):
+        self.play_cutscene_and_run()
+        return
+
+    def cutscene_play_exception(self, e):
+        self.stop_cutscene()
+        mb = msg_box.InfoBox(self.game,
+                             """The way is long but you can make it easy on me
+                                And the mother we share will never keep your cool code from falling
+                                And when it all fucks up, you put your head in my hands
+                                And the mother we share will never keep your real funcs from calling~
+
+                                """ + str(e))
+        mb.show()
+
+    def play_cutscene_and_run(self):
         if self.selected_cutscene:
+            self.game.update_exception_hook = (cutscene.Error, self.cutscene_play_exception)
+
             # disable main editor controls
             self.main_editor.disable_main_editor()
 
@@ -363,8 +382,8 @@ class CutsceneEditor(object):
             self.stop_button.enabled = True
 
             # highlight the only shit that still works
-            self.play_button.colour = (0, 120, 0)
-            self.play_button.border_colour = (0, 200, 0)
+            self.play_and_run_button.colour = (0, 120, 0)
+            self.play_and_run_button.border_colour = (0, 200, 0)
             self.stop_button.colour = (120, 120, 0)
             self.stop_button.border_colour = (200, 200, 0)
 
@@ -374,20 +393,13 @@ class CutsceneEditor(object):
             self.selected_cutscene.restart()
             self.playing = True
 
-    def play_cutscene_and_run(self):
-        if self.selected_cutscene:
-            self.play_cutscene()
-
-            # WELP
-            self.play_button.colour = (120, 0, 0)
-            self.play_button.border_colour = (120, 50, 80)
-            self.play_and_run_button.colour = (0, 120, 0)
-            self.play_and_run_button.border_colour = (0, 200, 0)
-
             self.game.force_run_objects = True  # allow main game objects to update
 
     def stop_cutscene(self):
         if self.playing:
+            # unhook exception handler
+            self.game.update_exception_hook = (None, None)
+
             # re-enable main editor controls
             self.main_editor.enable_main_editor()
 
@@ -405,6 +417,7 @@ class CutsceneEditor(object):
 
             # actually stop cutscene
             self.main_editor.enter_edit_mode()  # load game state
+            self.game.map.active_cutscene.restart()  # stop embracing like everything
             self.game.map.active_cutscene = None
             self.game.force_run_objects = False
             self.playing = False
