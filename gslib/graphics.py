@@ -177,13 +177,9 @@ class Graphics(object):
             if not button.visible:
                 continue
             if button.priority:
-                priority_buttons.append(button.outer_sprite)
-                priority_buttons.append(button.inner_sprite)
-                priority_buttons.append(button.text_sprite)
+                priority_buttons.append(button)
             else:
-                self.game.screen_objects_to_draw.append(button.outer_sprite)
-                self.game.screen_objects_to_draw.append(button.inner_sprite)
-                self.game.screen_objects_to_draw.append(button.text_sprite)
+                self.game.screen_objects_to_draw.append(button)
         self.game.screen_objects_to_draw += priority_buttons
             
     def draw_drop_lists(self):
@@ -192,22 +188,14 @@ class Graphics(object):
             if not l.visible:
                 continue
             if hasattr(l, 'main_button'):
-                self.game.screen_objects_to_draw.append(l.main_button.outer_sprite)
-                self.game.screen_objects_to_draw.append(l.main_button.inner_sprite)
-                self.game.screen_objects_to_draw.append(l.main_button.text_sprite)
+                self.game.screen_objects_to_draw.append(l.main_button)
             if not l.open:
                 continue
             for b in l.drop_buttons:
                 if b.priority:
-                    priority_buttons.append(b.outer_sprite)
-                    priority_buttons.append(b.inner_sprite)
-                    #if b.text_sprite:
-                    priority_buttons.append(b.text_sprite)
+                    priority_buttons.append(b)
                 else:
-                    self.game.screen_objects_to_draw.append(b.outer_sprite)
-                    self.game.screen_objects_to_draw.append(b.inner_sprite)
-                    #if b.text_sprite:
-                    self.game.screen_objects_to_draw.append(b.text_sprite)
+                    self.game.screen_objects_to_draw.append(b)
         self.game.screen_objects_to_draw += priority_buttons
 
     def draw_objects(self):
@@ -276,14 +264,7 @@ class Graphics(object):
         for f in self.game.screen_objects_to_draw:
             if f is None:
                 print(self.game.screen_objects_to_draw)
-
-            if hasattr(f, 'draw'):
-                f.draw()
-            else:
-                # button probably
-                f.outer_sprite.draw()
-                f.inner_sprite.draw()
-                f.text_sprite.draw()
+            f.draw()
         self.game.screen_objects_to_draw = []
 
     def blit_camera(self, sprite):

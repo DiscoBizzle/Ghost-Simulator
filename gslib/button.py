@@ -193,6 +193,13 @@ class Button(object):
     def text_toggle(self):
         self.text_states_toggle = not self.text_states_toggle
 
+    def draw(self):
+        if not self._visible:
+            return
+        self.outer_sprite.draw()
+        self.inner_sprite.draw()
+        self.text_sprite.draw()
+
 
 class DefaultButton(Button):
     def __init__(self, owner, function, pos, text="", size=(100, 20), **kwargs):
