@@ -151,7 +151,8 @@ class WalkToAction(ControllingCutsceneAction):
         self.speed = self.property('speed', 'int', default=2)
 
     def describe(self):
-        return "Move " + self.what + " to " + str(self.where) + " (" + str(self.speed) + ")"
+        return ControllingCutsceneAction.describe(self) + " " + self.what + " -> " + str(self.where) + \
+                                                          " x" + str(self.speed)
 
     def update_again(self):
         return self.valid_ref() and (self.get_ref().coord[0] != self.where[0] or
