@@ -118,6 +118,13 @@ class CutsceneEditor(object):
                 ce.visible = not ce.visible
                 ce.enabled = not ce.enabled
 
+    def change_cutscene_action_list_selection(self, action):
+        if action is None:
+            list_box.list_func(self.cutscene_actions_list, None)()
+        else:
+            list_box.list_func(self.cutscene_actions_list,
+                               str(self.selected_cutscene.actions.index(action)) + " " + action.describe())()
+
     def select_cutscene(self):
         self.selected_cutscene = self.cutscene_list.selected
 
@@ -128,8 +135,8 @@ class CutsceneEditor(object):
         self.refresh_cutscene_actions()
         self.refresh_cutscene_status()
         # ugh
-        list_box.list_func(self.cutscene_actions_list, None)()
-        self.select_cutscene_action()
+        self.change_cutscene_action_list_selection(None)
+        self.refresh_cutscene_actions()
 
         # double ugh
         self.highlighted = []
@@ -210,6 +217,7 @@ class CutsceneEditor(object):
                 self.object_click_handler = None
                 setattr(ev, attr, o_name)
                 self.select_cutscene_action()
+                self.refresh_cutscene_actions()
             # are they actually unclicking the button?
             if (str(ev) + '-' + attr) in self.highlighted:
                 self.highlighted.remove(str(ev) + '-' + attr)
@@ -226,6 +234,7 @@ class CutsceneEditor(object):
                 dest = (dest[0] - 12, dest[1])
                 setattr(ev, attr, dest)
                 self.select_cutscene_action()
+                self.refresh_cutscene_actions()
             # unclicking?
             if (str(ev) + '-' + attr) in self.highlighted:
                 self.highlighted.remove(str(ev) + '-' + attr)
@@ -311,7 +320,7 @@ class CutsceneEditor(object):
                 self.refresh_cutscene_actions()
 
                 # re-select
-                list_box.list_func(self.cutscene_actions_list, self.selected_cutscene_action)()
+                self.change_cutscene_action_list_selection(self.selected_cutscene_action)
                 self.select_cutscene_action()
 
     def push_cutscene_action_down(self):
@@ -323,7 +332,7 @@ class CutsceneEditor(object):
                 self.refresh_cutscene_actions()
 
                 # re-select
-                list_box.list_func(self.cutscene_actions_list, self.selected_cutscene_action)()
+                self.change_cutscene_action_list_selection(self.selected_cutscene_action)
                 self.select_cutscene_action()
 
     def delete_cutscene_action(self):
@@ -339,11 +348,12 @@ class CutsceneEditor(object):
 
             # select something useful
             if len(self.selected_cutscene.actions) > i:
-                list_box.list_func(self.cutscene_actions_list, self.selected_cutscene.actions[i])()
+                self.change_cutscene_action_list_selection(self.selected_cutscene.actions[i])
             elif len(self.selected_cutscene.actions) > 0:
-                list_box.list_func(self.cutscene_actions_list, self.selected_cutscene.actions[len(self.selected_cutscene.actions) - 1])()
+                self.change_cutscene_action_list_selection(
+                    self.selected_cutscene.actions[len(self.selected_cutscene.actions) - 1])
             else:
-                list_box.list_func(self.cutscene_actions_list, None)()
+                self.change_cutscene_action_list_selection(None)
 
             # update selected action editor
             self.select_cutscene_action()
@@ -439,5 +449,5 @@ class CutsceneEditor(object):
             action = cnal.selected(self.game, self.game.map, {})
             self.selected_cutscene.actions.insert(i, action)
             self.refresh_cutscene_actions()
-            list_box.list_func(self.cutscene_actions_list, action)()
+            self.change_cutscene_action_list_selection(action)
             self.select_cutscene_action()
