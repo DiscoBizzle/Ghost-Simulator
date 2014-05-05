@@ -86,7 +86,7 @@ UNLEARNABLE_COLOUR = (150, 0, 0)
 INITIAL_SOUND_VOLUME = 1.0
 INITIAL_MUSIC_VOLUME = 1.0
 
-FONT = ['Papyrus', 'Helvetica']
+FONT = ['Helvetica']
 
 DEFAULT_OPTIONS = {'FOV': True, 'VOF': False, 'torch': False, 'menu_scale': False, 'vsync': False,
                    'sound_volume': INITIAL_SOUND_VOLUME, 'music_volume': INITIAL_MUSIC_VOLUME,
