@@ -207,14 +207,18 @@ class Game(pyglet.event.EventDispatcher):
         self.skill_menu.enabled = state == SKILLS_SCREEN
         self.options_menu.enabled = state == OPTIONS_MENU
         self.keybind_menu.enabled = state == KEYBIND_MENU or state == KEYBIND_CAPTURE
+        if self.last_state == EDITOR:
+            self.editor.exit_edit_mode()
+        elif self.last_state == CREDITS:
+            self.credits.stop()
         if state == MAIN_GAME:
             if self.sound_handler.music_playing is not None:
                 if self.sound_handler.music_playing.name != 'transylvania':
                     self.sound_handler.play_music('transylvania')
         elif state == EDITOR:
             self.editor.enter_edit_mode()
-        if self.last_state == EDITOR:
-            self.editor.exit_edit_mode()
+        elif state == CREDITS:
+            self.credits.start()
 
     # pyglet event
     def on_draw(self):
@@ -276,9 +280,6 @@ class Game(pyglet.event.EventDispatcher):
 
             if self.state == EDITOR:
                 self.editor.update()
-
-        elif self.state == CREDITS:
-            self.credits.update(dt)
 
     def calc_camera_coord(self):
         avg_pos = [0, 0]

@@ -118,7 +118,7 @@ class Graphics(object):
         elif self.game.state == GAME_OVER:
             self.draw_game_over()
         elif self.game.state == CREDITS:
-            self.game.credits.display()
+            self.game.credits.draw()
         elif self.game.state == SKILLS_SCREEN:
             self.game.skill_menu.draw()
         elif self.game.state == OPTIONS_MENU:

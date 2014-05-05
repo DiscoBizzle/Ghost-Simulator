@@ -1,3 +1,5 @@
+from __future__ import division, print_function
+
 import collections
 
 import pyglet
@@ -22,14 +24,14 @@ def parse_credits_file(fname):
 
 
 class Credits(object):
-    def __init__(self, game, color=(255, 255, 255, 255), size=20, speed=3):
+    def __init__(self, game, color=(255, 255, 255, 255), size=20, speed=1):
         """Display a credits screen for game.
 
         Arguments:
             - game: the game whose surface to write to
             - color: colour of the job titles and names
             - size: the text size
-            - speed: number of pixels it moves up every game tick
+            - speed: number of pixels it moves up every 1/60 of a second
         """
         self.credits = parse_credits_file(CREDITS_FILE)
         self.game = game
@@ -49,13 +51,24 @@ class Credits(object):
         self.text_label = pyglet.text.Label(text, FONT, self.font_size, color=self.color,
                                             width=self.game.dimensions[0], batch=self.batch, multiline=True)
 
-    def display(self):
+    def draw(self):
         self.batch.draw()
 
     def update(self, dt):
-        self.text_label.x = (self.game.dimensions[0] - self.text_label.content_width) / 2
         self.text_label.y = self.v_offset
         self.v_offset += self.speed
         if self.v_offset > self.text_label.content_height + self.game.dimensions[1]:
             self.game.state = MAIN_MENU
             self.v_offset = 0
+
+    def start(self):
+        self.on_resize(*self.game.dimensions)
+        pyglet.clock.schedule_interval(self.update, 1 / 60)
+        self.game.window.push_handlers(self)
+
+    def stop(self):
+        self.game.window.remove_handlers(self)
+        pyglet.clock.unschedule(self.update)
+
+    def on_resize(self, width, height):
+        self.text_label.x = (width - self.text_label.content_width) // 2
