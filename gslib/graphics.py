@@ -62,8 +62,8 @@ class Graphics(object):
                                                 anchor_x='left', anchor_y='bottom', align='center')
 
         self.last_map = None
-        self.map_texture = None
-        self.tile_sprite = None
+        self.map_texture = {}
+        self.tile_sprite = {}
 
         self.game.options.push_handlers(self)
 
@@ -91,8 +91,9 @@ class Graphics(object):
         elif self.game.state == MAIN_MENU:
             self.game.main_menu.draw()
         elif self.game.state == MAIN_GAME or self.game.state == EDITOR:
-            self.draw_map()
+            self.draw_map_early()
             self.draw_objects()
+            self.draw_map_late()
             if self.game.options['torch']:
                 self.draw_torch()
 
@@ -135,7 +136,7 @@ class Graphics(object):
         if self.game.options['VOF']:
             self.field.draw()
 
-    def draw_map(self):
+    def _draw_map(self):
         m = self.game.map
 
         if self.last_map != m:
@@ -144,22 +145,30 @@ class Graphics(object):
 
             grid_size = TILE_SIZE
 
-            self.map_texture = pyglet.image.Texture.create(grid_size * len(m.grid), grid_size * len(m.grid[0]))
-            self.tile_sprite = sprite.Sprite(self.map_texture)
+            for layer_name, layer in m.grid.iteritems():
+                self.map_texture[layer_name] = pyglet.image.Texture.create(grid_size * m.grid_width, grid_size * m.grid_height)
+                self.tile_sprite[layer_name] = sprite.Sprite(self.map_texture[layer_name])
 
-            nw = len(m.grid)
-            nh = len(m.grid[0])
-
-            for i in range(nw):
-                for j in range(nh):
-                    self.map_texture.blit_into(m.tileset_seq[m.grid[i][j].tileset_coord], i * grid_size, j * grid_size, 0)
+            for layer_name, layer_texture in self.map_texture.iteritems():
+                for y in range(m.grid_height):
+                    for x in range(m.grid_width):
+                        layer_texture.blit_into(m.tileset_seq[m.grid[layer_name][y][x].tileset_coord], x * grid_size, y * grid_size, 0)
 
             self.last_map = m
 
             #print('Map redraw complete (took ' + str(time.clock() - start_time) + 's)')
 
-        self.game.world_objects_to_draw.insert(0, self.tile_sprite)
-        return self.tile_sprite
+    def draw_map_early(self):
+        self._draw_map()
+
+        for layer_name, layer_sprite in self.tile_sprite.iteritems():
+            if layer_name.startswith("ground"):
+                self.game.world_objects_to_draw.insert(0, layer_sprite)
+
+    def draw_map_late(self):
+        for layer_name, layer_sprite in self.tile_sprite.iteritems():
+            if layer_name.startswith("sky"):
+                self.game.world_objects_to_draw.append(layer_sprite)
 
     def draw_editor(self):
         for c, o in self.game.editor.trigger_display_circles:

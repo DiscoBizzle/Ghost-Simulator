@@ -1,3 +1,4 @@
+import itertools
 import json
 import os.path
 
@@ -9,32 +10,6 @@ from gslib import character
 from gslib import rect
 from gslib.constants import *
 
-class FakeGame(object):
-    def __init__(self, mmap):
-        self.dimensions = (800, 600)
-        self.world_objects_to_draw = []
-        self.map = mmap
-
-def test():
-    m = Map(os.path.join(TILES_DIR, 'level2.png'), os.path.join(TILES_DIR, 'level2.json'), None)
-    g = graphics.Graphics(FakeGame(m))
-
-    surf = g.draw_map()
-
-    window = pyglet.window.Window()
-
-
-    @window.event
-    def on_draw():
-        print('surf len: ' + str(len(surf)))
-        for spr in surf:
-            spr.draw()
-        #for i in range(10):
-            #surf[i].draw()
-
-    #pygame.display.update()
-    pyglet.app.run()
-    raw_input()
 
 def open_map_json(map_filename):
     try:
@@ -42,9 +17,23 @@ def open_map_json(map_filename):
         data = json.load(f)
         f.close()
     except IOError:
-        print("Couldn't open map file \"" + map_filename + "\".")
+        raise Exception("Couldn't open map file \"" + map_filename + "\".")
 
     return data
+
+
+def _produce_collision(mid_layers, width, height):
+
+    coll_grid = [[(False, None) for i in range(width)] for j in range(height)]
+
+    for ml in mid_layers:
+        for y in height:
+            for x in width:
+                if ml[y][x] != -1:
+                    coll_grid[y][x] = (True, rect.Rect((x * TILE_SIZE, y * TILE_SIZE), (TILE_SIZE, TILE_SIZE)))
+
+    return coll_grid
+
 
 def load_map(map_filename): # Load a map and objects from a map file
     data = open_map_json(map_filename)
@@ -52,63 +41,53 @@ def load_map(map_filename): # Load a map and objects from a map file
     width = data['tileswide']
     height = data['tileshigh']
 
-    # Use the last "tiles" layer to get the tile map -- in the future will need to get more layers
     all_layers = [item for item in data['layers'] if "tiles" in item]
 
+    tile_map = {}
+
     for l in all_layers:
-        if l['name'] == 'ground':
-            tile_map = l['tiles']
-        elif l['name'] == 'collision':
-            coll_map = l['tiles']
+        tile_map[l['name']] = l['tiles']
 
-    map_grid = [[0 for i in range(height)] for j in range(width)]
-    coll_grid = [[0 for i in range(height)] for j in range(width)]
+    map_grid = {}
 
-    for tile in tile_map:
-        x = tile['x']
-        y = height - tile['y'] - 1
-        map_grid[x][y] = tile['tile']
+    for k, m in tile_map.iteritems():
+        tmp = [[0 for i in range(width)] for j in range(height)]
+        for tile in m:
+            x = tile['x']
+            y = height - tile['y'] - 1
+            tmp[y][x] = tile['tile']
+        map_grid[k] = tmp
 
-    for tile in coll_map:
-        x = tile['x']
-        y = height - tile['y'] - 1
-        coll_grid[x][y] = tile['tile']
+    mid_grid = []
+    for k, g in map_grid.iteritems():
+        if k.startswith("mid"):
+            mid_grid.append(g)
+    coll_grid = _produce_collision(mid_grid, width, height)
 
-    return map_grid, coll_grid
-
-
-def load_objects(map_filename):
-    data = open_map_json(map_filename)
-    try:
-        obj_list = data['layers'][1]['objects']
-    except:
-        obj_list = []
-        print("Couldn't load any objects from map file \"" + map_filename + "\".")
-    return obj_list
+    return map_grid, coll_grid, width, height
 
 
 class Tile(object):
     def __init__(self, tile_type_grid, coll_grid, m, pos):
         x, y = pos
-        tile_ref = tile_type_grid[x][y]
+
+        tile_ref = tile_type_grid[y][x]
+
         if tile_ref != -1:
             self.tileset_coord = ((m.tileset_rows - 1) - tile_ref // m.tileset_cols,
                                   tile_ref % m.tileset_cols)
         else:
             self.tileset_coord = (m.tileset_rows - 1, 0)
 
-        self.walkable = True
         self.tile_ref = tile_ref
-        #self.rect = pygame.Rect((x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE))
-        # note top -> bottom coord system conversion
         self.rect = rect.Rect((x * TILE_SIZE, y * TILE_SIZE), (TILE_SIZE, TILE_SIZE))
 
-        if coll_grid:
-            if coll_grid[x][y] == 1330:
-                self.walkable = False
+        if coll_grid and coll_grid[y][x]:
+            self.walkable = False
+        elif self.tile_ref == -1:
+            self.walkable = False
         else:
-            if self.tile_ref in m.unwalkable:
-                self.walkable = False
+            self.walkable = True
 
 
 class Map(object):
@@ -125,8 +104,19 @@ class Map(object):
 
         self.tileset_seq = pyglet.image.ImageGrid(self.tileset, self.tileset_rows, self.tileset_cols)
 
-        tile_type_grid, coll_grid = load_map(map_file)
-        self.grid = [[Tile(tile_type_grid, coll_grid, self, (i, j)) for j in range(len(tile_type_grid[0]))] for i in range(len(tile_type_grid))]
+        tile_type_grid, self.coll_grid, self.grid_width, self.grid_height = load_map(map_file)
+
+        self.grid = {}
+
+        for layer_name, layer in tile_type_grid.iteritems():
+            self.grid[layer_name] = []
+
+            for y in range(self.grid_height):
+                self.grid[layer_name].append([])
+
+                for x in range(self.grid_width):
+                    print(len(layer), len(layer[0]))
+                    self.grid[layer_name][y].append(Tile(layer, self.coll_grid, self, (x, y)))
 
         self.objects = {}
 
@@ -134,15 +124,3 @@ class Map(object):
         self.active_cutscene = None
 
         self.triggers = {}
-
-    def create_object_from_dict(self, d, game_class):
-        if d['object_type'] == "character":
-            try:
-                self.objects[d['reference']] = character.Character(game_class, d['x'], d['y'], d['sprite_w'], d['sprite_h'], character.gen_character(), sprite_sheet=d['sprite_sheet'])
-            except:
-                print("Couldn't create an object from map file")
-
-
-
-if __name__ == '__main__':
-    test()

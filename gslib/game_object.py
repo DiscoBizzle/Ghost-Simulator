@@ -234,16 +234,17 @@ class GameObject(object):
             i = 0
             j = 0
 
-        #check collision against the 9 possible tiles surrounding object
+        # check collision against the 9 possible tiles surrounding object
         for ni in range(i, i + 2):
             for nj in range(j, j + 2):
                 if 0 <= ni < LEVEL_WIDTH // TILE_SIZE and 0 <= nj < LEVEL_HEIGHT // TILE_SIZE:
-                    if not self.game_class.map.grid[ni][nj].walkable:
+                    if self.game_class.map.coll_grid[nj][ni][0]:
                         # pygame.draw.rect(self.game_class.surface, (200, 0, 0), self.rect)
                         # pygame.draw.rect(self.game_class.surface, (0, 200, 0), self.game_class.map.grid[ni][nj].rect)
                         # pygame.display.update()
                         # time.sleep(0.1)
-                        if pro_rect.colliderect(self.game_class.map.grid[ni][nj].rect):
+                        # TODO: make collision use (row,col)
+                        if pro_rect.colliderect(self.game_class.map.coll_grid[nj][ni][1]):
                             collision = True
                             # print('collision!')
 
