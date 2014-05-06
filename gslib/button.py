@@ -160,6 +160,9 @@ class Button(object):
         if not self._visible:
             return
         colors = (self._border_color * 4 + self._color * 4)
+        colors = list(colors)
+        colors[9:12] = [min(int(x * 1.5), 255) for x in colors[9:12]]
+        colors[21:24] = [min(int(x * 1.5), 255) for x in colors[21:24]]
         self._vertex_list.colors[:] = colors
 
     def _update_position(self):
