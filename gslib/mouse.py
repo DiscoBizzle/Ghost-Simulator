@@ -10,6 +10,24 @@ class MouseController(object):
         self.button_to_click = None
         self.game.window.push_handlers(self)
 
+        self.object_capture_request = False
+        self.object_capture_function = None
+
+    def pick_object(self, func, return_object=False):
+        """
+            Pass in function to receive picked object_name as sole argument
+            OR set return_object=True, then the actual object is returned as sole argument
+        """
+        self.object_capture_request = True
+
+        if not return_object:
+            self.object_capture_function = func
+        else:
+            def f(o_name):
+                obj = self.game.objects[o_name]
+                func(obj)
+            self.object_capture_function = f
+
     def post_to_text_caret(self, fun_name, *args):
         # post copy to text editor if set. don't overlap the text editor with usable controls!
         # (input message boxes get away with it because they disable all non-msgbox controls.)
@@ -87,8 +105,9 @@ class MouseController(object):
                 temp_rect = rect.Rect((o.coord[0] - st, o.coord[1] - st), (o.dimensions[0] + 2*st, o.dimensions[1] + 2*st))
                 if temp_rect.collidepoint((pos[0]+self.game.camera_coords[0], pos[1]+self.game.camera_coords[1])):
 
-                    if self.game.new_trigger_capture:
-                        self.game.editor.update_new_trigger(o_name)
+                    if self.object_capture_request:
+                        self.object_capture_request = False
+                        self.object_capture_function(o_name)
                     elif isinstance(o, character.Character):
                         self.game.disp_object_stats = True
                         self.game.object_stats = o.info_sheet

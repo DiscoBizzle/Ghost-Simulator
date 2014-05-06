@@ -507,8 +507,9 @@ class Editor(object):
     def new_trigger(self):
         if self.drop_lists['new_triggers'].selected:
             self.trigger_prototype = self.drop_lists['new_triggers'].selected(self.game)
-            self.game.new_trigger_capture = True
+            # self.game.new_trigger_capture = True
             self.create_trigger_cursor(self.trigger_prototype.legend[0])
+            self.game.mouse_controller.pick_object(self.update_new_trigger)
 
     def update_new_trigger(self, o_name):
         t = self.trigger_prototype
@@ -530,13 +531,14 @@ class Editor(object):
 
             self.drop_lists['new_triggers'].selected = None
             self.drop_lists['new_triggers'].drop_buttons[0].perf_function()  # call the <None> function
-            self.game.new_trigger_capture = False
+            # self.game.new_trigger_capture = False
             self.trigger_prototype = None
 
             self.drop_lists['view_triggers'].refresh()
 
             self.create_undo_state()
         else:
+            self.game.mouse_controller.pick_object(self.update_new_trigger)
             self.create_trigger_cursor(self.trigger_prototype.legend[len(l)])
 
             self.draw_trigger(t)
