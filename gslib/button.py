@@ -1,25 +1,26 @@
+from __future__ import division, print_function
+
 import pyglet
 
 from gslib.constants import *
-from gslib import graphics
-from gslib import text
+
 
 def valid_colour(colour):
     if len(colour) != 3:
         return False
-        
+
     for i in colour:
         if i < 0 or i > 255:
             return False
     return True
 
 
-def create_property(var):  # creates a member variable that redraws the button when changed.
+def create_text_property(var):  # creates a member variable that redraws the text when changed.
     def _setter(self, val):
         old_val = getattr(self, '_' + var)
         if val != old_val:
             setattr(self, '_' + var, val)
-            self.redraw()
+            self._update_text()
 
     def _getter(self):
         return getattr(self, '_' + var)
@@ -37,151 +38,159 @@ class Button(object):
         Create function in class that creates the button and pass it in as second argument.
     """
 
-    back_group = pyglet.graphics.OrderedGroup(0)
-    fore_group = pyglet.graphics.OrderedGroup(1)
-
-    def __init__(self, owner, function=None, pos=(50, 50), size=(100, 100), visible=True, enabled=True, colour=(0, 0, 0),
-                 border_colour=(0, 0, 0), border_width=2, text=u'', font_size=10, text_states=None, sprite_batch=None,
-                 sprite_group=None, text_batch=None, text_group=None, **kwargs):
+    def __init__(self, owner, function=None, pos=(50, 50), order=(0, 0), size=(100, 100), visible=True, enabled=True,
+                 colour=(0, 0, 0), border_colour=(0, 0, 0), border_width=2, text=u'', font_size=10, text_states=None,
+                 sprite_batch=None, sprite_group=None, text_batch=None, text_group=None):
         self._pos = pos
-
-        # Other properties' validity are checked in redraw(), this is called whenever they are changed, so exceptions will lead back to the incorrect assignment
-        self._size = size  # underscore is "hidden" variable, not for direct access
-        self._colour = colour
+        self._size = size
+        self._color = colour
         self._visible = visible
-        self._border_colour = border_colour
+        self._border_color = border_colour
         self._border_width = border_width
         self._text = text
-        self._text_dirty = None
         self._font_size = font_size
         self.text_states = text_states
         self._text_states_toggle = False
         self.enabled = enabled  # whether button can be activated, visible or not
-        self.sprite_batch = sprite_batch
-        self.sprite_group = sprite_group
-        self.text_batch = text_batch
-        self.text_group = text_group
-
-        for arg in kwargs:  # allows for additional arbitrary arguments to be passed in, useful for more complicated button functions
-            setattr(self, arg, kwargs[arg])
-
+        self._sprite_batch = sprite_batch
+        self._sprite_group = sprite_group
+        self._text_batch = text_batch
+        self._text_group = text_group
+        self._visible = visible
         self.owner = owner  # container that created the button, allows for the button function to interact with its creator
         self.function = function
+        self.order = order
 
-        self.outer_sprite = graphics.new_rect_sprite()
-        self.inner_sprite = graphics.new_rect_sprite()
-        if sprite_group:
-            self.back_group = pyglet.graphics.OrderedGroup(0, sprite_group)
-            self.fore_group = pyglet.graphics.OrderedGroup(1, sprite_group)
-        self.inner_sprite.group = self.fore_group
-        self.outer_sprite.group = self.back_group
-        self.text_sprite = None
-        self.sprites = [self.outer_sprite, self.inner_sprite, self.text_sprite]
-        self.redraw()
-        self._visible = visible
+        self._text_layout = None
+        if self._sprite_batch is None:
+            self._vertex_list = pyglet.graphics.vertex_list(8, 'v2i', 'c3B')
+        else:
+            self._vertex_list = self._sprite_batch.add(8, pyglet.gl.GL_QUADS, self._sprite_group, 'v2i', 'c3B')
+        self._redraw()
 
         self.priority = False
 
-    def pos_setter(self, pos):
+    def _set_pos(self, pos):
+        if pos == self._pos:
+            return
         if pos[0] >= 0 and pos[1] >= 0:
             self._pos = pos
-            self.update_position()
+            self._update_position()
         else:
             pass
             # raise Exception('Negative button position')
+    pos = property(lambda self: self._pos, _set_pos)
 
-    def pos_getter(self):
-        return self._pos
+    text = create_text_property('text')
+    font_size = create_text_property('font_size')
+    text_states_toggle = create_text_property('text_states_toggle')
 
-    pos = property(pos_getter, pos_setter)
-    # all below variables affect the button surface, so make them properties to redraw on change
-    visible = create_property('visible')
-    size = create_property('size')
-    colour = create_property('colour')
-    border_colour = create_property('border_colour')
-    border_width = create_property('border_width')
-    text = create_property('text')
-    font_size = create_property('font_size')
-    text_states_toggle = create_property('text_states_toggle')
+    def _set_border_width(self, border_width):
+        if border_width == self._border_width:
+            return
+        if self.border_width < 0:
+            raise Exception('Negative button border width')
+        self._border_width = border_width
+        self._update_position()
+    border_width = property(lambda self: self._border_width, _set_border_width)
 
-    def redraw(self):
-        if not (self.size[0] > 0 and self.size[1] > 0): raise Exception('Negative button size')
-        if not valid_colour(self.border_colour): raise Exception('Invalid button border colour')
-        if not valid_colour(self.colour): raise Exception('Invalid button colour')
-        if self.border_width < 0: raise Exception('Negative button border width')
+    def _set_size(self, size):
+        if size == self._size:
+            return
+        if not (self.size[0] > 0 and self.size[1] > 0):
+            raise Exception('Negative button size')
+        self._size = size
+        self._update_text()
+        self._update_position()
+    size = property(lambda self: self._size, _set_size)
 
+    def _set_visible(self, visible):
+        if visible == self._visible:
+            return
+        self._visible = visible
+        if not visible:
+            self._vertex_list.vertices[:] = [0] * 16
+            if self._text_layout is not None:
+                # delete to remove from batch
+                self._text_layout.delete()
+                self._text_layout = None
+        else:
+            self._redraw()
+    visible = property(lambda self: self._visible, _set_visible)
+
+    def _set_color(self, color):
+        if color == self._color:
+            return
+        if not valid_colour(self.colour):
+            raise Exception('Invalid button colour')
+        self._color = color
+        self._update_colors()
+    colour = property(lambda self: self._color, _set_color)
+
+    def _set_border_colour(self, border_colour):
+        if border_colour == self._border_color:
+            return
+        if not valid_colour(self.border_colour):
+            raise Exception('Invalid button border colour')
+        self._border_color = border_colour
+        self._update_colors()
+    border_colour = property(lambda self: self._border_color, _set_border_colour)
+
+    def _redraw(self):
+        self._update_text()
+        self._update_position()
+        self._update_colors()
+
+    def _update_text(self):
+        if not self._visible:
+            return
         if self.text_states:
             self._text = self.text_states[self.text_states_toggle]
+        if self._text_layout is not None:
+            # delete to remove from batch
+            self._text_layout.delete()
+        self._text_layout = pyglet.text.Label(text=self._text, font_name=FONT, font_size=self._font_size,
+                                              color=(200, 200, 200, 255), x=self._pos[0], y=self._pos[1],
+                                              width=self._size[0], height=self._size[1], anchor_x='left',
+                                              anchor_y='bottom', align='center', multiline=True, batch=self._text_batch,
+                                              group=self._text_group)
+        self._text_layout.content_valign = 'center'
 
+    def _update_colors(self):
         if not self._visible:
-            self.outer_sprite.batch = None
-            self.inner_sprite.batch = None
-            if self.text_sprite is not None:
-                # delete to remove from batch
-                self.text_sprite.delete()
-                self.text_sprite = None
-                # force redraw
-                self._text_dirty = None
             return
+        colors = (self._border_color * 4 + self._color * 4)
+        self._vertex_list.colors[:] = colors
 
-        self.outer_sprite.batch = self.sprite_batch
-        self.inner_sprite.batch = self.sprite_batch
+    def _update_position(self):
+        if not self._visible:
+            return
+        # TODO: make faster by only changing the verticies that need it
+        self._text_layout.x, self._text_layout.y = self.pos
+        outer_rect = [
+            self.pos[0], self.pos[1],
+            self.pos[0] + self.size[0], self.pos[1],
+            self.pos[0] + self.size[0], self.pos[1] + self.size[1],
+            self.pos[0], self.pos[1] + self.size[1]]
+        inner_rect = [
+            self.pos[0] + self.border_width, self.pos[1] + self.border_width,
+            self.pos[0] + self.size[0] - self.border_width, self.pos[1] + self.border_width,
+            self.pos[0] + self.size[0] - self.border_width, self.pos[1] + self.size[1] - self.border_width,
+            self.pos[0] + self.border_width, self.pos[1] + self.size[1] - self.border_width]
 
-        self.outer_sprite.color_rgb = self.border_colour
-        self.inner_sprite.color_rgb = self.colour
-
-        self.outer_sprite.scale_x = self.size[0]
-        self.outer_sprite.scale_y = self.size[1]
-        self.inner_sprite.scale_x = self.size[0] - self._border_width * 2
-        self.inner_sprite.scale_y = self.size[1] - self._border_width * 2
-
-        self.outer_sprite.position = self.pos
-        self.inner_sprite.position = (self.pos[0] + self._border_width, self.pos[1] + self._border_width)
-
-        # do we need to rerender text? rendering text is SLOW. (< 30 fps)
-        text_dirty_new = [self.text, self.font_size, self.size[0], self.size[1]]
-        if self._text_dirty is None or self._text_dirty != text_dirty_new:
-            if self.text_sprite is not None:
-                # delete to remove from batch
-                self.text_sprite.delete()
-            self.text_sprite = pyglet.text.Label(text=self.text, font_name=FONT, font_size=self.font_size,
-                                                 color=(200, 200, 200, 255), width=self.size[0], height=self.size[1],
-                                                 anchor_x='left', anchor_y='bottom', align='center', multiline=True,
-                                                 batch=self.text_batch, group=self.text_group)
-            self.text_sprite.content_valign = 'center'
-            self._text_dirty = text_dirty_new
-
-        self.text_sprite.x = self.pos[0] # + self.outer_sprite.width / 2 - self.text_sprite.width / 2
-        self.text_sprite.y = self.pos[1] # + self.outer_sprite.height / 2 - self.text_sprite.height / 2
-
-        self.sprites = [self.outer_sprite, self.inner_sprite, self.text_sprite]
-
-    def update_position(self):
-        if self._visible:
-            self.outer_sprite.position = self.pos
-            self.inner_sprite.position = (self.pos[0] + self._border_width, self.pos[1] + self._border_width)
-            self.text_sprite.x = self.pos[0]
-            self.text_sprite.y = self.pos[1]
+        self._vertex_list.vertices[:] = map(int, outer_rect + inner_rect)
 
     def check_clicked(self, click_pos):  # perform button function if a position is passed in that is within bounds
-        pos = self.pos
-        w, h = self._size
-        w /= 2
-        h /= 2
-
-        if abs(click_pos[0] - (pos[0] + w)) < w and abs(click_pos[1] - (pos[1] + h)) < h:
-            if self.enabled:
-                self.perf_function()
-                return True
+        if self.check_clicked_no_function(click_pos):
+            self.perf_function()
+            return True
         return False
 
     def check_clicked_no_function(self, click_pos):
-        pos = self.pos
+        x, y = self._pos
         w, h = self._size
-        w /= 2
-        h /= 2
 
-        if abs(click_pos[0] - (pos[0] + w)) < w and abs(click_pos[1] - (pos[1] + h)) < h:
+        if x <= click_pos[0] < x + w and y <= click_pos[1] < y + h:
             if self.enabled:
                 return True
         return False
@@ -196,12 +205,11 @@ class Button(object):
     def draw(self):
         if not self._visible:
             return
-        self.outer_sprite.draw()
-        self.inner_sprite.draw()
-        self.text_sprite.draw()
+        self._vertex_list.draw(pyglet.gl.GL_QUADS)
+        self._text_layout.draw()
 
 
 class DefaultButton(Button):
     def __init__(self, owner, function, pos, text="", size=(100, 20), **kwargs):
-        Button.__init__(self, owner, function, size=size, pos=pos, border_colour=(120, 50, 80), border_width=3,
-                        colour=(120, 0, 0), text=text, **kwargs)
+        super(DefaultButton, self).__init__(owner, function, size=size, pos=pos, border_colour=(120, 50, 80),
+                                            border_width=3, colour=(120, 0, 0), text=text, **kwargs)
