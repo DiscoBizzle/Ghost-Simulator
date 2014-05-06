@@ -56,7 +56,7 @@ def load_map(map_filename): # Load a map and objects from a map file
     all_layers = [item for item in data['layers'] if "tiles" in item]
 
     for l in all_layers:
-        if l['name'] == 'background':
+        if l['name'] == 'ground':
             tile_map = l['tiles']
         elif l['name'] == 'collision':
             coll_map = l['tiles']
