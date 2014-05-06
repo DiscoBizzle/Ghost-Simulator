@@ -298,4 +298,3 @@ class GameObject(object):
 
         # self.frame_rect = pygame.Rect(self.current_frame * SPRITE_WIDTH, self.animation_state * SPRITE_HEIGHT,
         #                               SPRITE_WIDTH, SPRITE_HEIGHT)
-

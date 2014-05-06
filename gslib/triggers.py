@@ -1,6 +1,7 @@
 # from gslib import character_functions
 from gslib import trigger_functions
 from gslib import rect
+import json
 
 
 # get all functions from trigger_functions module
@@ -22,11 +23,9 @@ def conditional(desired_interacter):
 
 
 class Trigger(object):
-    def __init__(self, game, object_refs):
+    def __init__(self, game, object_refs, actions=None):
         if not hasattr(self, 'func_type'):
             self.func_type = None
-
-        self.actions = [] # the list of functions to do to target when triggered
 
         if object_refs[0] is None:  # set objects to list for reasons of editor making new trigger at runtime
             self.object_references = []
@@ -36,8 +35,16 @@ class Trigger(object):
             self.objects = [game.objects[o] for o in object_refs]
             getattr(self.objects[-2], self.func_type).append(self.perf_actions)
 
+        if actions is None: # the list of functions to do to target when triggered
+            self.actions = []
+        else:
+            self.actions = []
+            for a in actions:
+                self.add_action(a)
+
         self.legend = (u'Object 1', u'Object 2')
-        self.conditional = False
+        if not hasattr(self, 'conditional'):
+            self.conditional = False
 
     def add_action(self, action):
         if action is None:
@@ -53,10 +60,22 @@ class Trigger(object):
         for a in self.actions:
             a(self.objects[-2], interacter)
 
+    def create_save_dict(self):
+        save_dict = {}
+        save_dict[u'object_references'] = self.object_references
+
+        act_list = [f.__name__ for f in self.actions]
+
+        save_dict[u'actions'] = json.dumps(act_list)
+
+        save_dict[u'trigger_type'] = self.__class__.__name__
+
+        return save_dict
+
 
 class TriggerZone(Trigger):
-    def __init__(self, game, object_refs):
-        Trigger.__init__(self, game, object_refs)
+    def __init__(self, game, object_refs, actions=None):
+        Trigger.__init__(self, game, object_refs, actions)
 
         self._pos = (0, 0)
         self._size = (1, 1)
@@ -95,47 +114,47 @@ class TriggerZone(Trigger):
 ################################################################################
 
 class OnHarvest(Trigger):
-    def __init__(self, game, harvestee=None, target=None):
+    def __init__(self, game, harvestee=None, target=None, actions=None):
         """
         when harvestee has fear harvested, do actions to target
         """
         self.func_type = 'harvested_function'
-        Trigger.__init__(self, game, (harvestee, target))
+        Trigger.__init__(self, game, (harvestee, target), actions=actions)
 
         self.legend = (u'Harvestee', u'Target')
 
 class OnHarvestConditional(Trigger):
-    def __init__(self, game, harvester=None, harvestee=None, target=None):
+    def __init__(self, game, harvester=None, harvestee=None, target=None, actions=None):
         """
         when harvestee has fear harvested, do actions to target, IFF interacter is correct
         """
         self.func_type = 'harvested_function'
-        Trigger.__init__(self, game, (harvester, harvestee, target))
+        self.conditional = True
+        Trigger.__init__(self, game, (harvester, harvestee, target), actions=actions)
 
         self.legend = (u'Harvester', u'Harvestee', u'Target')
-        self.conditional = True
 
 
 class IsTouched(Trigger):
-    def __init__(self, game, touched=None, target=None):
+    def __init__(self, game, touched=None, target=None, actions=None):
         """
         when Touched is touched, do actions to Target
         """
         self.func_type = 'is_touched_function'
-        Trigger.__init__(self, game, (touched, target))
+        Trigger.__init__(self, game, (touched, target), actions=actions)
 
         self.legend = (u'Touched', u'Target')
 
 class IsTouchedConditional(Trigger):
-    def __init__(self, game, toucher=None, touched=None, target=None):
+    def __init__(self, game, toucher=None, touched=None, target=None, actions=None):
         """
         when Touched is touched by Toucher (only), do actions to Target
         """
         self.func_type = 'is_touched_function'
-        Trigger.__init__(self, game, (toucher, touched, target))
+        self.conditional = True
+        Trigger.__init__(self, game, (toucher, touched, target), actions=actions)
 
         self.legend = (u'Toucher', u'Touched', u'Target')
-        self.conditional = True
 
 # Game events that can call functions: TODO add the rest of these with both conditional and unconditional
 # - feared_function - executed every tick when the character is scared
@@ -148,7 +167,7 @@ class IsTouchedConditional(Trigger):
 # - has_untouched_function - when the character untouches an object; accepts input of of object that it untouches
 
 
-
+# TODO also add any new ones to save_load.trigger_type_map with *exact* class names
 possible_triggers = {'On Harvest': OnHarvest,
                      'On Harvest (Conditional)': OnHarvestConditional,
                      'Is Touched': IsTouched,

@@ -11,6 +11,7 @@ from gslib import sprite
 from gslib import text
 from gslib import textures
 from gslib.constants import *
+import json
 
 WHITE = (255, 255, 255)
 GREY = (60, 60, 60)
@@ -167,6 +168,16 @@ def draw_info_sheet(stats):
     return sprites
 
 
+#@save_this(self)
+def save_this(obj):
+    def g(func):
+        obj._to_save.add(func.func_name)
+        def f(*args, **kwargs):
+            func(*args, **kwargs)
+        return f
+    return g
+
+
 class Character(GameObject):
     def __init__(self, game_class, x, y, w, h, stats, sprite_sheet='DudeSheet.png'):
         """
@@ -201,6 +212,12 @@ class Character(GameObject):
         self.feared_from_pos = (0, 0)
 
         self.possessed_by = []
+
+        # TODO make easy way to add desired variables to this, perhaps using the decorator above this class and setter's?
+        self._to_save = {'feared_function', 'possessed_function', 'unpossessed_function', 'harvested_function',
+                         'has_touched_function', 'is_touched_function', 'has_untouched_function', 'is_untouched_function',
+                         'stats', 'fears', 'scared_of', 'feared_speed', 'normal_speed',
+                         'states', 'coord', 'collision_weight'}
 
     def get_stats(self, name):
         name = name
@@ -251,6 +268,23 @@ class Character(GameObject):
         GameObject.update(self, dt)
 
 
+    def create_save_dict(self):
+        to_save = self._to_save
+
+        save_dict = {}
+        for s in to_save:
+            o = getattr(self, s)
+            if isinstance(o, list):
+                if o:
+                    if hasattr(o[0], '__call__'): # check if function
+                        t_list = [f.__name__ for f in o]
+                        save_dict[s] = json.dumps(t_list)
+                        continue
+
+            save_dict[s] = json.dumps(o)
+
+        save_dict[u'object_type'] = self.__class__.__name__
+        return save_dict
 
 
 if __name__ == "__main__":

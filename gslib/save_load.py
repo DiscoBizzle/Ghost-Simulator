@@ -7,36 +7,6 @@ from gslib import character_functions
 from gslib import triggers
 from gslib.constants import *
 
-def create_save_char(charac):
-    to_save = ['feared_function', 'possessed_function', 'unpossessed_function', 'harvested_function',
-               'has_touched_function', 'is_touched_function', 'has_untouched_function', 'is_untouched_function',
-               'stats', 'fears', 'scared_of', 'feared_speed', 'normal_speed',
-               'states', 'coord', 'collision_weight']
-
-    save_dict = {}
-    for s in to_save:
-        o = getattr(charac, s)
-        if isinstance(o, list):
-            if o:
-                if hasattr(o[0], '__call__'): # check if function
-                    t_list = [f.__name__ for f in o]
-                    save_dict[s] = json.dumps(t_list)
-                    continue
-
-        save_dict[s] = json.dumps(o)
-
-    save_dict[u'object_type'] = charac.__class__.__name__
-    return save_dict
-
-
-def create_save_trigger(trigger):
-    save_dict = {}
-
-    save_dict[u'object_references'] = trigger.object_references
-
-    save_dict[u'trigger_type'] = trigger.__class__.__name__
-    return save_dict
-
 
 def save_cutscene_as_dict(cs):
     c_dict = {}
@@ -59,11 +29,11 @@ def save_map(m):
     print('Saving map: ' + m._name)
     obj_dict = {}
     for k, v in m.objects.iteritems():
-        obj_dict[str(k)] = create_save_char(v)
+        obj_dict[str(k)] = v.create_save_dict()#create_save_char(v)
 
     trig_dict = {}
     for k, v in m.triggers.iteritems():
-        trig_dict[str(k)] = create_save_trigger(v)
+        trig_dict[str(k)] = v.create_save_dict()#create_save_trigger(v)
 
     save_cutscenes(m.cutscenes, m._cutscenes_file)
 
@@ -83,11 +53,11 @@ def save_map(m):
 def create_save_state(m):
     obj_dict = {}
     for k, v in m.objects.iteritems():
-        obj_dict[str(k)] = create_save_char(v)
+        obj_dict[str(k)] = v.create_save_dict()#create_save_char(v)
 
     trig_dict = {}
     for k, v in m.triggers.iteritems():
-        trig_dict[str(k)] = create_save_trigger(v)
+        trig_dict[str(k)] = v.create_save_dict() #create_save_trigger(v)
 
     file_dict = {}
     file_dict[u'objects'] = obj_dict
@@ -123,7 +93,7 @@ def load_object(game, d):
             attr = getattr(new_obj, k)
             func_names = [a.__name__ for a in attr]
             for f in func_list:
-                if not 'trigger' in f:
+                if not 'trigger' in f and not 'perf_actions' in f:
                     if not f in func_names:
                         function_type = afd[function_type_map[k]]
                         attr.append(function_type[f](new_obj))
@@ -135,7 +105,10 @@ def load_object(game, d):
 
 def load_trigger(game, d):
     obj_refs = d[u'object_references']
-    new_trig = trigger_type_map[d[u'trigger_type']](game, *obj_refs)
+    actions = json.loads(d[u'actions'])
+
+    actions_funcs = [triggers.trigger_functions_dict[a] for a in actions]
+    new_trig = trigger_type_map[d[u'trigger_type']](game, *obj_refs, actions=actions_funcs)
     return new_trig
 
 
