@@ -145,6 +145,9 @@ class Graphics(object):
 
             grid_size = TILE_SIZE
 
+            self.map_texture = {}
+            self.tile_sprite = {}
+
             for layer_name, layer in m.grid.iteritems():
                 self.map_texture[layer_name] = pyglet.image.Texture.create(grid_size * m.grid_width, grid_size * m.grid_height)
                 self.tile_sprite[layer_name] = sprite.Sprite(self.map_texture[layer_name])
@@ -208,13 +211,15 @@ class Graphics(object):
         self.game.screen_objects_to_draw += priority_buttons
 
     def draw_objects(self):
-        sort_objs = sorted(self.game.objects.values(), key=(lambda obj: -obj.coord[1]))
+        sort_objs = sorted(self.game.objects.values() + self.game.map.static_objects, key=(lambda obj: -obj.coord[1]))
         for o in sort_objs:  # self.game.objects:
             if isinstance(o, player.Player): #o == self.game.player1:
                 if o.possessing:
                     continue
 
             if hasattr(o, 'is_cursor'):
+                object_sprite = o.sprite
+            elif hasattr(o, 'sprite'):
                 object_sprite = o.sprite
             else:
                 texture = o.sprite_sheet.get_region(o.frame_rect.x, o.frame_rect.y, o.sprite_width, o.sprite_height)
