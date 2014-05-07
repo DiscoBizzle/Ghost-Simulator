@@ -13,6 +13,9 @@ class MouseController(object):
         self.object_capture_request = False
         self.object_capture_function = None
 
+        self.position_capture_request = False
+        self.position_capture_function = None
+
     def pick_object(self, func, return_object=False):
         """
             Pass in function to receive picked object_name as sole argument
@@ -27,6 +30,15 @@ class MouseController(object):
                 obj = self.game.objects[o_name]
                 func(obj)
             self.object_capture_function = f
+
+    def pick_position(self, func):
+        """
+        Pass in a function to receive picked position (x, y) as sole argument
+        Returns cursor coordinate (i.e. relative to actual game map)
+        Supports snap-to-grid
+        """
+        self.position_capture_request = True
+        self.position_capture_function = func
 
     def post_to_text_caret(self, fun_name, *args):
         # post copy to text editor if set. don't overlap the text editor with usable controls!
@@ -53,17 +65,16 @@ class MouseController(object):
     def mouse_click(self, pos, typ, button):
         self.interaction_this_click = False
         if self.game.state == MAIN_GAME or self.game.state == EDITOR:
-            self.button_to_click = None
+
+            if self.position_capture_request:
+                self.position_capture_request = False
+                self.position_capture_function(self.calc_cursor_coord(pos, typ, button))
+
             if not self.interaction_this_click:
                 self.check_button_click(pos, typ, button)
 
             if not self.interaction_this_click:
                 self.check_list_event(pos, typ, button)
-            # if not self.interaction_this_click:
-            #     self.check_list_and_button_click(pos, typ, button)
-
-            # if self.button_to_click:
-            #     self.button_to_click.perf_function()
 
             if not self.interaction_this_click:
                 if self.game.state == EDITOR:
