@@ -66,7 +66,8 @@ class Button(object):
             self._vertex_list = pyglet.graphics.vertex_list(8, 'v2i', 'c3B')
         else:
             self._vertex_list = self._sprite_batch.add(8, pyglet.gl.GL_QUADS, self._sprite_group, 'v2i', 'c3B')
-        self._redraw()
+        if self._visible:
+            self._redraw()
 
         self.priority = False
 
@@ -146,15 +147,19 @@ class Button(object):
             return
         if self.text_states:
             self._text = self.text_states[self.text_states_toggle]
-        if self._text_layout is not None:
-            # delete to remove from batch
-            self._text_layout.delete()
-        self._text_layout = pyglet.text.Label(text=self._text, font_name=FONT, font_size=self._font_size,
-                                              color=(200, 200, 200, 255), x=self._pos[0], y=self._pos[1],
-                                              width=self._size[0], height=self._size[1], anchor_x='left',
-                                              anchor_y='bottom', align='center', multiline=True, batch=self._text_batch,
-                                              group=self._text_group)
-        self._text_layout.content_valign = 'center'
+        if self._text_layout is None:
+            self._text_layout = pyglet.text.Label(text=self._text, font_name=FONT, font_size=self._font_size,
+                                                  color=(200, 200, 200, 255), x=self._pos[0], y=self._pos[1],
+                                                  width=self._size[0], height=self._size[1], anchor_x='left',
+                                                  anchor_y='bottom', align='center', multiline=True,
+                                                  batch=self._text_batch, group=self._text_group)
+            self._text_layout.content_valign = 'center'
+        else:
+            self._text_layout.begin_update()
+            self._text_layout.text = self._text
+            self._text_layout.set_style('font_size', self._font_size)
+            self._text_layout.width, self._text_layout.height = self._size
+            self._text_layout.end_update()
 
     def _update_colors(self):
         if not self._visible:
