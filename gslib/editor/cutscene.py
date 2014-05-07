@@ -83,9 +83,6 @@ class CutsceneEditor(object):
 
         self.playing = False
 
-        self.map_click_handler = None
-        self.object_click_handler = None
-
         self.highlighted = []
 
         # hide by default
@@ -100,19 +97,6 @@ class CutsceneEditor(object):
     buttons = property(_get_buttons)
     lists = property(_get_lists)
 
-    def handle_object_click(self, o_name):
-        return
-        if self.object_click_handler:
-            self.object_click_handler(o_name)
-            return True
-        return False
-
-    def handle_map_click(self, pos):
-        return
-        if self.map_click_handler:
-            self.map_click_handler(pos)
-            return True
-        return False
 
     def toggle_visible(self):
         for ce in self.static_buttons + self.static_lists + self.dyn_buttons + self.dyn_lists:
