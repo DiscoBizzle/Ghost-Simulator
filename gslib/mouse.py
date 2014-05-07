@@ -45,6 +45,7 @@ class MouseController(object):
                     self.position_capture_request = True # allow capture of next click too
                     return
                 func(pos)
+                self.interaction_this_click = True
             self.position_capture_function = f
         else:
             def f(pos, typp, buttonn):
@@ -53,6 +54,7 @@ class MouseController(object):
                     return
                 n_pos = self.calc_cursor_coord(pos, typp, button)
                 func(n_pos)
+                self.interaction_this_click = True
             self.position_capture_function = f
 
     def post_to_text_caret(self, fun_name, *args):
