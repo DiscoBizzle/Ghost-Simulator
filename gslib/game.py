@@ -37,22 +37,21 @@ class Game(pyglet.event.EventDispatcher):
 
         TODO = []
         TODO.append("character pathe-ing")
-        TODO.append("triggers/functions to handle move-to-position (after pathing)")
+        TODO.append("triggers/functions to start cutscene (both real loss-of-control and just as scripted movement")
+        TODO.append("add new cutscenes to list without editing .json (easy! use InputBox!)")
 
-        TODO.append("click-to-edit text box - perhaps attached as a button function")
-        TODO.append("then add character renaming/re-aging to map_edit (and able to edit speed by clicking the value")
+        TODO.append("optimize map drawing: combine all sky layers, combine all ground layers")
+        TODO.append("optimize map drawing: use just one texture for all mid layer static_objects")
+        TODO.append("optimize map drawing: batch static_objects")
 
-        TODO.append("REDUNDANT? game_object.py set_colorkey pyglet port (use rgba spritesheet or write code to do magic)")
-        TODO.append("OPTIONAL create own Rect class for complete removal of pygame")
+        TODO.append("add character renaming/re-aging to map_edit")
 
-        TODO.append("implement pyglet camera")
+        TODO.append("implement pyglet camera (include zoom!)")
         TODO.append("implement field of view slider (after pyglet camera implemented)")
 
         TODO.append("keybind menu in alphabetical order")
-        TODO.append("add sound/music volume to options saving")
 
         TODO.append("design more sprites and make default characters (in character_objects)")
-        TODO.append("add foreground layer to maps - then make characters appear *through* the foreground")
 
         TODO.append("make it possible to cancel trigger creation")
         TODO.append("handle deletion of target of trigger")
