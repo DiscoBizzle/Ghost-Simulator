@@ -27,6 +27,9 @@ class Trigger(object):
         if not hasattr(self, 'func_type'):
             self.func_type = None
 
+        if not hasattr(self, 'conditional'):
+            self.conditional = False
+
         if object_refs[0] is None:  # set objects to list for reasons of editor making new trigger at runtime
             self.object_references = []
             self.objects = []
@@ -43,8 +46,6 @@ class Trigger(object):
                 self.add_action(a)
 
         self.legend = (u'Object 1', u'Object 2')
-        if not hasattr(self, 'conditional'):
-            self.conditional = False
 
     def add_action(self, action):
         if action is None:

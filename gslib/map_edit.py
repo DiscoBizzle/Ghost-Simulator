@@ -323,6 +323,8 @@ class Editor(object):
     def enter_edit_mode(self):
         if not self.save_state is None:
             save_load.restore_save_state(self.game, self.game.map, self.save_state)
+            # refresh all things that refer to specific entities that have been re-created
+            self.drop_lists['view_triggers'].refresh()
 
     def exit_edit_mode(self):
         self.save_state = save_load.create_save_state(self.game.map)

@@ -157,12 +157,14 @@ def load_map(game, map_name):
 
 
 def restore_save_state(game, m, state_dict):
-    m.objects = {}
+    m.objects.clear() # empties the dict, but preserves its place in memory (prevents breaking references to it)
     for o_name, o_dict in state_dict[u'objects'].iteritems():
         m.objects[o_name] = load_object(game, o_dict)
 
-    m.triggers = {}
-    for t_name, t_dict in state_dict[u'triggers'].iteritems():
-        m.triggers[t_name] = load_trigger(m, t_dict)
-
     game.gather_buttons_and_drop_lists_and_objects()
+
+    m.triggers.clear() # empties the dict, but preserves its place in memory (prevents breaking references to it)
+    for t_name, t_dict in state_dict[u'triggers'].iteritems():
+        m.triggers[t_name] = load_trigger(game, t_dict)
+
+    # game.gather_buttons_and_drop_lists_and_objects()

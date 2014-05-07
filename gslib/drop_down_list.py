@@ -88,7 +88,11 @@ class DropDownList(object):
             b.priority = n
     open = property(get_open, set_open)
 
-    def refresh(self):  # call if the list changes
+    def refresh(self, new_items=None):  # call if the list changes
+        if not new_items is None:
+            self.items = new_items
+            self.selected = None
+            self.selected_name = "<None>"
         self.drop_buttons = []
         self.drop_buttons.append(button.Button(self, list_func(self, None), size=self.size, font_size=self.font_size,
                                                visible=False, enabled=False, text=u"<None>",
