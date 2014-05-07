@@ -1,5 +1,6 @@
 import os.path
 import sys
+import pyglet
 
 def fallback_files(target, required, *fnames):
     for fname in fnames:
@@ -91,3 +92,7 @@ FONT = ['Helvetica']
 DEFAULT_OPTIONS = {'FOV': True, 'VOF': False, 'torch': False, 'menu_scale': False, 'vsync': False,
                    'sound_volume': INITIAL_SOUND_VOLUME, 'music_volume': INITIAL_MUSIC_VOLUME,
                    'fullscreen': False, 'resolution': (GAME_WIDTH, GAME_HEIGHT), 'VOF_opacity': 128}
+
+MOUSE_LEFT = pyglet.window.mouse.LEFT
+MOUSE_RIGHT = pyglet.window.mouse.RIGHT
+MOUSE_MIDDLE = pyglet.window.mouse.MIDDLE

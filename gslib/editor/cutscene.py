@@ -107,6 +107,7 @@ class CutsceneEditor(object):
         return False
 
     def handle_map_click(self, pos):
+        return
         if self.map_click_handler:
             self.map_click_handler(pos)
             return True
@@ -229,8 +230,9 @@ class CutsceneEditor(object):
         def pick_coords_fun(ev, attr):
             def finish_coords_click(pos):
                 self.highlighted.remove(str(ev) + '-' + attr)
-                self.map_click_handler = None
-                dest = self.game.mouse_controller.calc_cursor_coord(pos, 'down')
+                # self.map_click_handler = None
+                # dest = self.game.mouse_controller.calc_cursor_coord(pos, 'down')
+                dest = pos
                 dest = (dest[0] - 12, dest[1])
                 setattr(ev, attr, dest)
                 self.select_cutscene_action()
@@ -238,10 +240,11 @@ class CutsceneEditor(object):
             # unclicking?
             if (str(ev) + '-' + attr) in self.highlighted:
                 self.highlighted.remove(str(ev) + '-' + attr)
-                self.map_click_handler = None
+                # self.map_click_handler = None
             else:
                 self.highlighted.append(str(ev) + '-' + attr)
-                self.map_click_handler = finish_coords_click
+                # self.map_click_handler = finish_coords_click
+                self.game.mouse_controller.pick_position(finish_coords_click)
 
         def incredifun(thing, attr, fun):
             def clicky():

@@ -1,7 +1,7 @@
 import character
 from gslib.constants import *
 from gslib import rect
-
+import pyglet
 
 class MouseController(object):
     def __init__(self, game):
@@ -31,14 +31,29 @@ class MouseController(object):
                 func(obj)
             self.object_capture_function = f
 
-    def pick_position(self, func):
+    def pick_position(self, func, typ='down', button=MOUSE_LEFT, relative_to_map=True):
         """
         Pass in a function to receive picked position (x, y) as sole argument
-        Returns cursor coordinate (i.e. relative to actual game map)
-        Supports snap-to-grid
+        if relative_to_map=True: Returns cursor coordinate (i.e. relative to actual game map) (Supports snap-to-grid)
+        checks if typ (up or down) and button(left, right, middle) are correct. Set button=MOUSE_LEFT etc.
         """
         self.position_capture_request = True
-        self.position_capture_function = func
+
+        if not relative_to_map:
+            def f(pos, typp, buttonn):
+                if not typp == typ or not button == buttonn: # dont capture wrong type of click (i.e. down instead of up)
+                    self.position_capture_request = True # allow capture of next click too
+                    return
+                func(pos)
+            self.position_capture_function = f
+        else:
+            def f(pos, typp, buttonn):
+                if not typp == typ or not button == buttonn: # dont capture wrong type of click (i.e. down instead of up)
+                    self.position_capture_request = True # allow capture of next click too
+                    return
+                n_pos = self.calc_cursor_coord(pos, typp, button)
+                func(n_pos)
+            self.position_capture_function = f
 
     def post_to_text_caret(self, fun_name, *args):
         # post copy to text editor if set. don't overlap the text editor with usable controls!
@@ -66,15 +81,15 @@ class MouseController(object):
         self.interaction_this_click = False
         if self.game.state == MAIN_GAME or self.game.state == EDITOR:
 
-            if self.position_capture_request:
-                self.position_capture_request = False
-                self.position_capture_function(self.calc_cursor_coord(pos, typ, button))
-
             if not self.interaction_this_click:
                 self.check_button_click(pos, typ, button)
 
             if not self.interaction_this_click:
                 self.check_list_event(pos, typ, button)
+
+            if self.position_capture_request:
+                self.position_capture_request = False
+                self.position_capture_function(pos, typ, button)
 
             if not self.interaction_this_click:
                 if self.game.state == EDITOR:
