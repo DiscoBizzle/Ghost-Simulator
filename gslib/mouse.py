@@ -87,7 +87,7 @@ class MouseController(object):
             if not self.interaction_this_click:
                 self.check_list_event(pos, typ, button)
 
-            if self.position_capture_request:
+            if not self.interaction_this_click and self.position_capture_request:
                 self.position_capture_request = False
                 self.position_capture_function(pos, typ, button)
 
