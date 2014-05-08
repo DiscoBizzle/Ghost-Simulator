@@ -1,6 +1,17 @@
 import os.path
 import sys
-import pyglet
+
+__all__ = ['STARTUP', 'MAIN_MENU', 'MAIN_GAME', 'CUTSCENE', 'GAME_OVER', 'SKILLS_SCREEN', 'CREDITS', 'OPTIONS_MENU',
+           'KEYBIND_MENU', 'KEYBIND_CAPTURE', 'EDITOR', 'TICKS_PER_SEC', 'GAME_WIDTH', 'GAME_HEIGHT', 'LEVEL_WIDTH',
+           'LEVEL_HEIGHT', 'TILE_SIZE', 'SPRITE_WIDTH', 'SPRITE_HEIGHT', 'SPRITE_COLL_WIDTH', 'SPRITE_COLL_HEIGHT',
+           'SELECTION_TOLERANCE', 'UP', 'RIGHT', 'DOWN', 'LEFT', 'ANIM_UPIDLE', 'ANIM_RIGHTIDLE', 'ANIM_DOWNIDLE',
+           'ANIM_LEFTIDLE', 'ANIM_UPWALK', 'ANIM_RIGHTWALK', 'ANIM_DOWNWALK', 'ANIM_LEFTWALK', 'TICKS_PER_FRAME',
+           'TICKS_PER_CHAR', 'TB_INACTIVE', 'TB_STARTING', 'TB_WRITING', 'TB_ACTIVE', 'TB_CLOSING', 'TB_OPEN_SPEED',
+           'MAX_FEAR', 'START_FEAR', 'FEAR_PER_STEP', 'FEAR_PER_TICK', 'POSSESSION_RANGE', 'FEAR_COLLECTION_RADIUS',
+           'MUSIC_DIR', 'SOUND_DIR', 'VIDEO_DIR', 'CHARACTER_DIR', 'TILES_DIR', 'CREDITS_FILE', 'SKILLS_FILE',
+           'KEYMAP_FILE', 'OPTIONS_FILE', 'SAVE_DIR', 'LEARNT_SKILL_COLOR', 'CAN_BE_LEARNT_COLOR', 'UNLEARNABLE_COLOR',
+           'INITIAL_SOUND_VOLUME', 'INITIAL_MUSIC_VOLUME', 'FONT', 'DEFAULT_OPTIONS']
+
 
 def fallback_files(target, required, *fnames):
     for fname in fnames:
@@ -92,7 +103,3 @@ FONT = ['Helvetica']
 DEFAULT_OPTIONS = {'FOV': True, 'VOF': False, 'torch': False, 'menu_scale': False, 'vsync': False,
                    'sound_volume': INITIAL_SOUND_VOLUME, 'music_volume': INITIAL_MUSIC_VOLUME,
                    'fullscreen': False, 'resolution': (GAME_WIDTH, GAME_HEIGHT), 'VOF_opacity': 128}
-
-MOUSE_LEFT = pyglet.window.mouse.LEFT
-MOUSE_RIGHT = pyglet.window.mouse.RIGHT
-MOUSE_MIDDLE = pyglet.window.mouse.MIDDLE

@@ -1,5 +1,7 @@
 from __future__ import division, print_function
 
+import os.path
+
 from pyglet import image
 
 from gslib import rect
@@ -54,7 +56,7 @@ class GameObject(object):
         self.scream_thresh = 50
 
         #variables for animation
-        self.sprite_sheet = pyglet.image.load(os.path.join(CHARACTER_DIR, sprite_sheet))
+        self.sprite_sheet = image.load(os.path.join(CHARACTER_DIR, sprite_sheet))
         self._animation_state = 0
         self.sprite_height = sprite_height
         self.sprite_width = sprite_width

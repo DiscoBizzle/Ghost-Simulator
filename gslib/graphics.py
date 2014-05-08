@@ -3,6 +3,8 @@ try:
 except ImportError:
     from io import BytesIO
 
+import os.path
+
 import pyglet.image
 
 from gslib.constants import *

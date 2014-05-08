@@ -1,3 +1,5 @@
+import os.path
+
 from gslib import drop_down_list
 from gslib import button
 from gslib import character_objects
