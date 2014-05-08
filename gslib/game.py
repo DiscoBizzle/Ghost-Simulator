@@ -260,7 +260,7 @@ class Game(pyglet.event.EventDispatcher):
                     for obj in self.objects.itervalues():
                         obj.update(dt)
 
-                for i, p in enumerate(self.touching):
+                for p in self.touching:
                     if not p in self.last_touching:  # detect on touch
                         if p[0].has_touched_function:
                             for f in p[0].has_touched_function:
@@ -269,7 +269,7 @@ class Game(pyglet.event.EventDispatcher):
                             for f in p[1].is_touched_function:
                                 f(p[0])
 
-                for i, p in enumerate(self.last_touching):
+                for p in self.last_touching:
                     if not p in self.touching:  # detect on un-touch
                         if p[0].has_untouched_function:
                             for f in p[0].has_untouched_function:
