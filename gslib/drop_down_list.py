@@ -21,7 +21,10 @@ def list_func(owner, val):
             owner.selected = None
         else:
             owner.selected_name = str(val)
-            owner.selected = owner.items[val]
+            if isinstance(owner.items, list):
+                owner.selected = val
+            else:
+                owner.selected = owner.items[val]
         if owner.function:
             owner.function()
     return func
@@ -29,7 +32,7 @@ def list_func(owner, val):
 
 class DropDownList(object):
     def __init__(self, owner, items, function=None, pos=(50, 50), size=(100, 20), visible=True, enabled=True, colour=(120, 0, 0),
-                 border_colour=(120, 50, 80), border_width=2, text=None, font_size=10, labels='dictkey', **kwargs):
+                 border_colour=(120, 50, 80), border_width=2, text=None, font_size=10, labels='dictkey', order=(0, 0), **kwargs):
         self._pos = pos
 
         self._size = size
@@ -43,6 +46,8 @@ class DropDownList(object):
         self.labels = labels
         self.priority = False
         self._open = False
+
+        self.order = order
 
         for arg in kwargs:  # allows for additional arbitrary arguments to be passed in, useful for more complicated functions
             setattr(self, arg, kwargs[arg])
@@ -99,17 +104,24 @@ class DropDownList(object):
                                                border_colour=self._border_colour, border_width=self.border_width,
                                                colour=self.colour))
 
-        for k, v in self.items.iteritems():
-            if self.labels == 'classname':
-                t = v.__class__.__name__
-                t += ': '
-                t += unicode(k)
-            else:
-                t = unicode(k)
-            self.drop_buttons.append(button.Button(self, list_func(self, k), size=self.size, font_size=self.font_size,
-                                                   visible=False, enabled=False, text=t,
+        if isinstance(self.items, list):
+            for i in self.items:
+                self.drop_buttons.append(button.Button(self, list_func(self, i), size=self.size, font_size=self.font_size,
+                                                   visible=False, enabled=False, text=str(i),
                                                    border_colour=self._border_colour, border_width=self.border_width,
                                                    colour=self.colour))
+        else:
+            for k, v in self.items.iteritems():
+                if self.labels == 'classname':
+                    t = v.__class__.__name__
+                    t += ': '
+                    t += unicode(k)
+                else:
+                    t = unicode(k)
+                self.drop_buttons.append(button.Button(self, list_func(self, k), size=self.size, font_size=self.font_size,
+                                                       visible=False, enabled=False, text=t,
+                                                       border_colour=self._border_colour, border_width=self.border_width,
+                                                       colour=self.colour))
         if self.open:
             self.update_buttons()
 
@@ -201,3 +213,9 @@ class DropDownList(object):
                 b.border_colour = self.high_border_colour
             if b.colour != self.high_colour:
                 b.colour = self.high_colour
+
+    def set_to_default(self):
+        self.set_to_value(None)
+
+    def set_to_value(self, value):
+        list_func(self, value)()
