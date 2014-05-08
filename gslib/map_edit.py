@@ -11,10 +11,6 @@ from gslib.constants import *
 from gslib.editor import cutscene
 
 
-def none():
-    pass
-
-
 def set_fear_button(editor, fear):
     def func():
         editor.set_fear(fear)
@@ -93,7 +89,7 @@ class Cursor(game_object.GameObject):
         self.current_speed = 0
         self.normal_speed = 0
 
-        self.update = none
+        self.update = lambda: None
 
         self.sprite = sprite
         self.is_cursor = True
