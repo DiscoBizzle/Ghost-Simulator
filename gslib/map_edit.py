@@ -58,7 +58,6 @@ def set_function(editor, module):
 
 class IntEdit(object):
     def __init__(self, editor, pos, name):
-        self._pos = pos
         self.name = name
         self.buttons = {}
         self.buttons[name + '_label'] = button.DefaultButton(self, None, pos=(0, 0), size=(100, 20), text=name)
@@ -67,19 +66,19 @@ class IntEdit(object):
         self.buttons[name + '_decrement'] = button.DefaultButton(self, change_object_value(editor, name, -1), pos=(0, 0),
                                                                  size=(30, 30), text="-")
         self.buttons[name + '_value'] = button.DefaultButton(self, None, pos=(0, 0), size=(30, 30), text="0")
-        self.set_pos(pos)
+        self.pos = pos
 
-    def get_pos(self):
+    @property
+    def pos(self):
         return self._pos
 
-    def set_pos(self, pos):
+    @pos.setter
+    def pos(self, pos):
         self.buttons[self.name + '_label'].pos = (pos[0], pos[1] + 35)
         self.buttons[self.name + '_increment'].pos = (pos[0] + 70, pos[1])
         self.buttons[self.name + '_decrement'].pos = pos
         self.buttons[self.name + '_value'].pos = (pos[0] + 35, pos[1])
         self._pos = pos
-
-    pos = property(get_pos, set_pos)
 
 
 class Cursor(game_object.GameObject):
