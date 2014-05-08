@@ -1,9 +1,14 @@
+from __future__ import division, print_function
+
+from pyglet import image
+
 from gslib import rect
+from gslib import sprite
 from gslib.constants import *
 
 
 class GameObject(object):
-    def __init__(self, game_class, x, y, w, h, sprite_sheet):
+    def __init__(self, game_class, x, y, w, h, sprite_sheet, sprite_width, sprite_height):
         """
         To add an object to a map:
         map.objects['object name'] = object
@@ -27,10 +32,8 @@ class GameObject(object):
         """
         self.game_class = game_class
 
-
-        self.states = {}
-        self.states['state1'] = {'max_speed': 1, 'fear_radius': 50}
-        self.states['state2'] = {'max_speed': 5, 'fear_radius': 150}
+        self.states = {'state1': {'max_speed': 1, 'fear_radius': 50},
+                       'state2': {'max_speed': 5, 'fear_radius': 150}}
         self._state_index = 'state1'
 
         self._coord = (x, y)  # top left
@@ -51,17 +54,13 @@ class GameObject(object):
         self.scream_thresh = 50
 
         #variables for animation
-        self.sprite_sheet = sprite_sheet
-        self._animation_state = ANIM_DOWNIDLE
-        self.frame_count = 0
-        self._current_frame = 0
-        self.max_frames = 3
-        self.sprite_width = SPRITE_WIDTH
-        self.sprite_height = SPRITE_HEIGHT
-        self.frame_rect = rect.Rect((self.current_frame * self.sprite_width, self.animation_state * self.sprite_height),
-                                    (self.sprite_width, self.sprite_height))
-        # print('TODO: game_object.py set_colorkey pyglet port (use rgba spritesheet or write code to do magic)')
-        #self.sprite_sheet.set_colorkey((255, 0, 255))
+        self.sprite_sheet = pyglet.image.load(os.path.join(CHARACTER_DIR, sprite_sheet))
+        self._animation_state = 0
+        self.sprite_height = sprite_height
+        self.sprite_width = sprite_width
+        self._animations = []
+        self.sprite = None
+        self._create_animations()
 
         #trigger functions
         self.has_touched_function = []
@@ -95,6 +94,7 @@ class GameObject(object):
     def set_coord(self, new):
         self._coord = new
         self.rect = rect.Rect(self._coord, self._dimensions)
+        self.sprite.position = new
     coord = property(get_coord, set_coord)
 
     def get_dimensions(self):
@@ -104,22 +104,14 @@ class GameObject(object):
         self.rect = rect.Rect(self._coord, self._dimensions)
     dimensions = property(get_dimensions, set_dimensions)
 
-    def get_current_frame(self):
-        return self._current_frame
-
-    def set_current_frame(self, val):
-        self._current_frame = val
-        self.frame_rect = rect.Rect((self._current_frame * self.sprite_width, self._animation_state * self.sprite_height),
-                                    (self.sprite_width, self.sprite_height))
-    current_frame = property(get_current_frame, set_current_frame)
-
     def get_animation_state(self):
         return self._animation_state
 
     def set_animation_state(self, val):
+        if val == self._animation_state:
+            return
         self._animation_state = val
-        self.frame_rect = rect.Rect((self._current_frame * self.sprite_width, self._animation_state * self.sprite_height),
-                                    (self.sprite_width, self.sprite_height))
+        self.sprite.image = self._animations[self._animation_state]
     animation_state = property(get_animation_state, set_animation_state)
 
     def update(self, dt):
@@ -144,7 +136,7 @@ class GameObject(object):
             self.move()
             # self.rect = pygame.Rect(self.coord, self.dimensions)
         self.apply_fear()
-        self.animate()
+        self._update_animation()
 
     def check_distance(self, other, distance):  # centre to centre distance is checked
         if self.get_distance_squared(other) < distance**2:
@@ -153,8 +145,8 @@ class GameObject(object):
             return False
 
     def get_distance_squared(self, other):
-        x = self.coord[0] + self.dimensions[0]/2.0 - (other.coord[0] + other.dimensions[0]/2.0)
-        y = self.coord[1] + self.dimensions[1]/2.0 - (other.coord[1] + other.dimensions[1]/2.0)
+        x = self.coord[0] + self.dimensions[0] / 2 - (other.coord[0] + other.dimensions[0] / 2)
+        y = self.coord[1] + self.dimensions[1] / 2 - (other.coord[1] + other.dimensions[1] / 2)
         return x**2 + y**2
 
     def apply_fear(self):
@@ -269,33 +261,31 @@ class GameObject(object):
             self.coord = pro_pos
         return collision
 
-    def animate(self):
-        self.frame_count += 1
-        if (self.frame_count % TICKS_PER_FRAME) == 0:
-            self.current_frame += 1
-
-        if self.current_frame > self.max_frames:
-            self.current_frame = 0
-
+    def _update_animation(self):
         if self.velocity[1] == 0 and self.velocity[0] == 0:
             if self.animation_state == ANIM_DOWNWALK:
                 self.animation_state = ANIM_DOWNIDLE
-            if self.animation_state == ANIM_RIGHTWALK:
+            elif self.animation_state == ANIM_RIGHTWALK:
                 self.animation_state = ANIM_RIGHTIDLE
-            if self.animation_state == ANIM_UPWALK:
+            elif self.animation_state == ANIM_UPWALK:
                 self.animation_state = ANIM_UPIDLE
-            if self.animation_state == ANIM_LEFTWALK:
+            elif self.animation_state == ANIM_LEFTWALK:
                 self.animation_state = ANIM_LEFTIDLE
         else:
             if self.velocity[1] < 0:
                 self.animation_state = ANIM_DOWNWALK
             elif self.velocity[1] > 0:
                 self.animation_state = ANIM_UPWALK
-
-            if self.velocity[0] > 0:
+            elif self.velocity[0] > 0:
                 self.animation_state = ANIM_RIGHTWALK
             elif self.velocity[0] < 0:
                 self.animation_state = ANIM_LEFTWALK
 
-        # self.frame_rect = pygame.Rect(self.current_frame * SPRITE_WIDTH, self.animation_state * SPRITE_HEIGHT,
-        #                               SPRITE_WIDTH, SPRITE_HEIGHT)
+    def _create_animations(self):
+        seq_cols = self.sprite_sheet.width // self.sprite_width
+        seq_rows = self.sprite_sheet.height // self.sprite_height
+        seq = image.ImageGrid(self.sprite_sheet, seq_rows, seq_cols)
+        for i in range(seq_rows):
+            self._animations.append(image.Animation.from_image_sequence(
+                seq[i * seq_cols:(i + 1) * seq_cols], (1 / TICKS_PER_SEC) * TICKS_PER_FRAME, True))
+        self.sprite = sprite.Sprite(self._animations[self._animation_state], x=self._coord[0], y=self._coord[1])

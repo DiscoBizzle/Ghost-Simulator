@@ -179,7 +179,7 @@ def save_this(obj):
 
 
 class Character(GameObject):
-    def __init__(self, game_class, x, y, w, h, stats, sprite_sheet='DudeSheet.png'):
+    def __init__(self, game_class, x, y, w, h, stats, **kwargs):
         """
         Characters have various functions to determine their behaviour when things happen.
         self.feared_function - when the character is scared
@@ -190,7 +190,7 @@ class Character(GameObject):
         Make these functions in character_functions_dir
          - Function should take in any parameters and return a function.
         """
-        GameObject.__init__(self, game_class, x, y, w, h, pyglet.image.load(os.path.join(CHARACTER_DIR, sprite_sheet)).get_texture())
+        super(Character, self).__init__(game_class, x, y, w, h, **kwargs)
         if stats:
             self.fears = stats['fears']
             self.scared_of = stats['scared_of']

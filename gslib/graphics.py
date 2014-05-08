@@ -211,24 +211,14 @@ class Graphics(object):
         self.game.screen_objects_to_draw += priority_buttons
 
     def draw_objects(self):
-        sort_objs = sorted(self.game.objects.values() + self.game.map.static_objects, key=(lambda obj: -obj.coord[1]))
-        for o in sort_objs:  # self.game.objects:
-            if isinstance(o, player.Player): #o == self.game.player1:
+        for o in sorted(self.game.objects.values() + self.game.map.static_objects, key=(lambda obj: -obj.coord[1])):
+            if isinstance(o, player.Player):
                 if o.possessing:
                     continue
 
-            if hasattr(o, 'is_cursor'):
-                object_sprite = o.sprite
-            elif hasattr(o, 'sprite'):
-                object_sprite = o.sprite
-            else:
-                texture = o.sprite_sheet.get_region(o.frame_rect.x, o.frame_rect.y, o.sprite_width, o.sprite_height)
-                object_sprite = sprite.Sprite(texture)
             x = o.coord[0]
             y = o.coord[1]
-
-            # object_sprite.set_position(x, y)
-            object_sprite.x, object_sprite.y = x, y
+            object_sprite = o.sprite
             self.game.world_objects_to_draw.append(object_sprite)
 
             for s, p in o.flair.itervalues():

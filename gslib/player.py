@@ -1,18 +1,17 @@
-import pyglet.image
+from pyglet import image
 
 from gslib import rect
+from gslib import sprite
 from gslib.constants import *
 from gslib.game_object import GameObject
 
+
 class Player(GameObject):
     def __init__(self, game_class, x, y, w, h, sprite_sheet_address):
-        sprite_sheet = pyglet.image.load(os.path.join(CHARACTER_DIR, sprite_sheet_address)).get_texture()
-        GameObject.__init__(self, game_class, x, y, w, h, sprite_sheet)
+        super(Player, self).__init__(game_class, x, y, w, h, sprite_sheet=sprite_sheet_address, sprite_width=16,
+                                     sprite_height=32)
 
         self.direction = DOWN
-        self.animation_state = ANIM_DOWNIDLE
-        self.frame_rect = rect.Rect((self.current_frame * SPRITE_WIDTH, self.animation_state * SPRITE_HEIGHT),
-                                    (SPRITE_WIDTH, SPRITE_HEIGHT))
 
         self._fear = START_FEAR
         self.fears = ['player']
@@ -29,7 +28,6 @@ class Player(GameObject):
         self.normal_speed = 5
 
         self.collision_weight = 0
-
 
     def get_fear(self):
         return self._fear
@@ -54,7 +52,7 @@ class Player(GameObject):
         # set current speed, then call parent update (handles movement and animation
         self.current_speed = self.normal_speed
 
-        GameObject.update(self, dt)
+        super(Player, self).update(dt)
 
         # velocity is set by parent update function
 
@@ -115,4 +113,3 @@ class Player(GameObject):
             f(self)
         # self.possessing.unpossessed_function()
         self.possessing = False
-
