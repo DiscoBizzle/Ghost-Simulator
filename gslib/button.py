@@ -71,43 +71,52 @@ class Button(object):
 
         self.priority = False
 
-    def _set_pos(self, pos):
-        if pos == self._pos:
-            return
+    @property
+    def pos(self):
+        return self._pos
+
+    @pos.setter
+    def pos(self, pos):
         if pos[0] >= 0 and pos[1] >= 0:
             self._pos = pos
             self._update_position()
         else:
             pass
             # raise Exception('Negative button position')
-    pos = property(lambda self: self._pos, _set_pos)
 
     text = create_text_property('text')
     font_size = create_text_property('font_size')
     text_states_toggle = create_text_property('text_states_toggle')
 
-    def _set_border_width(self, border_width):
-        if border_width == self._border_width:
-            return
+    @property
+    def border_width(self):
+        return self._border_width
+
+    @border_width.setter
+    def border_width(self, border_width):
         if self.border_width < 0:
-            raise Exception('Negative button border width')
+            raise ValueError('Negative button border width')
         self._border_width = border_width
         self._update_position()
-    border_width = property(lambda self: self._border_width, _set_border_width)
 
-    def _set_size(self, size):
-        if size == self._size:
-            return
+    @property
+    def size(self):
+        return self._size
+
+    @size.setter
+    def size(self, size):
         if not (self.size[0] > 0 and self.size[1] > 0):
-            raise Exception('Negative button size')
+            raise ValueError('Negative button size')
         self._size = size
         self._update_text()
         self._update_position()
-    size = property(lambda self: self._size, _set_size)
 
-    def _set_visible(self, visible):
-        if visible == self._visible:
-            return
+    @property
+    def visible(self):
+        return self._visible
+
+    @visible.setter
+    def visible(self, visible):
         self._visible = visible
         if not visible:
             self._vertex_list.vertices[:] = [0] * 16
@@ -117,25 +126,28 @@ class Button(object):
                 self._text_layout = None
         else:
             self._redraw()
-    visible = property(lambda self: self._visible, _set_visible)
 
-    def _set_color(self, color):
-        if color == self._color:
-            return
+    @property
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, color):
         if not valid_colour(self.colour):
-            raise Exception('Invalid button colour')
+            raise ValueError('Invalid button colour')
         self._color = color
         self._update_colors()
-    colour = property(lambda self: self._color, _set_color)
 
-    def _set_border_colour(self, border_colour):
-        if border_colour == self._border_color:
-            return
-        if not valid_colour(self.border_colour):
-            raise Exception('Invalid button border colour')
-        self._border_color = border_colour
+    @property
+    def border_color(self):
+        return self._border_color
+
+    @border_color.setter
+    def border_color(self, border_color):
+        if not valid_colour(border_color):
+            raise ValueError('Invalid button border colour')
+        self._border_color = border_color
         self._update_colors()
-    border_colour = property(lambda self: self._border_color, _set_border_colour)
 
     def _redraw(self):
         self._update_text()
