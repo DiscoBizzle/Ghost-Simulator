@@ -134,6 +134,8 @@ class Editor(object):
         self.drop_lists['view_triggers'] = drop_down_list.DropDownList(self, self.game.map.triggers,
                                                                        self.display_trigger, pos=(440, self.game.dimensions[1] - 20),
                                                                        labels='classname', size=(300, 20))
+        self.buttons['delete_trigger'] = button.DefaultButton(self, self.delete_selected_trigger, pos=(320, self.game.dimensions[1] - 40), size=(120, 20),
+                                                                   text="Delete Trigger")
         self.trigger_display_colours = ((120, 0, 0), (0, 120, 0), (0, 0, 120), (120, 120, 0), (120, 0, 120), (0, 120, 120), (120, 120, 120))
         self.trigger_display_circles = []
         self.trigger_display_text = []
@@ -332,6 +334,16 @@ class Editor(object):
     def delete_selected_object(self):
         del self.game.map.objects[self.object_to_edit_name]
         self.game.gather_buttons_and_drop_lists_and_objects()
+
+    def delete_selected_trigger(self):
+        if not self.drop_lists['view_triggers'].selected is None:
+            del self.game.map.triggers[self.drop_lists['view_triggers'].selected_name]
+            self.drop_lists['view_triggers'].selected.__del__() # TODO work out why del <thing> doesn't work here
+            # del self.drop_lists['view_triggers'].selected
+
+            self.drop_lists['view_triggers'].selected = None
+            self.drop_lists['view_triggers'].selected_name = "<None>"
+            self.drop_lists['view_triggers'].refresh()
 
     def save_map(self):
         save_load.save_map(self.game.map)

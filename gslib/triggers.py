@@ -73,6 +73,11 @@ class Trigger(object):
 
         return save_dict
 
+    def __del__(self):
+        if len(self.objects) >= 2:
+            o_funcs = getattr(self.objects[-2], self.func_type)
+            o_funcs.remove(self.perf_actions)
+
 
 class TriggerZone(Trigger):
     def __init__(self, game, object_refs, actions=None):
@@ -156,6 +161,7 @@ class IsTouchedConditional(Trigger):
         Trigger.__init__(self, game, (toucher, touched, target), actions=actions)
 
         self.legend = (u'Toucher', u'Touched', u'Target')
+
 
 # Game events that can call functions: TODO add the rest of these with both conditional and unconditional
 # - feared_function - executed every tick when the character is scared
