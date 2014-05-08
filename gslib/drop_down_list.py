@@ -1,17 +1,28 @@
+from weakref import WeakKeyDictionary
+
 from gslib import button
 from gslib.constants import *
 
+class RedrawOnChange(object):
+    """Descriptor class to force redraw when changed.
 
-def create_property(var):  # creates a member variable that redraws the button when changed.
-    def _setter(self, val):
-        setattr(self, '_' + var, val)
-        self.update_buttons()
-        # self.redraw()
+    See http://tinyurl.com/PyDescriptors"""
+    def __init__(self):
+        # use WeakKeyDictionary so that we don't hold refs to instances
+        # that have gone away
+        self.data = WeakKeyDictionary()
 
-    def _getter(self):
-        return getattr(self, '_' + var)
+    def __get__(self, instance, owner):
+        return self.data.get(instance, None)
 
-    return property(_getter, _setter)
+    def __set__(self, instance, value):
+        self.data[instance] = value
+        # probably should do something cleverer here but fuck it.
+        try:
+            instance.update_buttons()
+            # instance.redraw()
+        except:
+            pass
 
 
 def list_func(owner, val):
@@ -28,33 +39,40 @@ def list_func(owner, val):
 
 
 class DropDownList(object):
+
+    visible = RedrawOnChange()
+    size = RedrawOnChange()
+    colour = RedrawOnChange()
+    border_colour = RedrawOnChange()
+    border_width = RedrawOnChange()
+    text = RedrawOnChange()
+    font_size = RedrawOnChange()
+    selected_name = RedrawOnChange()
+    pos = RedrawOnChange()
+
     def __init__(self, owner, items, function=None, pos=(50, 50), size=(100, 20), visible=True, enabled=True, colour=(120, 0, 0),
                  border_colour=(120, 50, 80), border_width=2, text=None, font_size=10, labels='dictkey', **kwargs):
-        self._pos = pos
-
-        self._size = size
-        self._colour = colour
-        self._visible = visible
-        self._border_colour = border_colour
-        self._border_width = border_width
-        self._text = text
-        self._font_size = font_size
+        self.pos = pos
+        self.size = size
+        self.colour = colour
+        self.visible = visible
+        self.border_colour = border_colour
+        self.border_width = border_width
+        self.text = text
+        self.font_size = font_size
         self.enabled = enabled  # whether button can be activated, visible or not
         self.labels = labels
         self.priority = False
         self._open = False
 
-        for arg in kwargs:  # allows for additional arbitrary arguments to be passed in, useful for more complicated functions
-            setattr(self, arg, kwargs[arg])
-
         self.owner = owner  # container that created the button, allows for the button function to interact with its creator
 
         self.items = items
-        self._selected_name = "<None>"
+        self.selected_name = "<None>"
         self.selected = None
         self.main_button = button.Button(self, None, pos=pos, size=size, font_size=font_size, visible=visible,
                                          text=u"<None>",
-                                         border_colour=self._border_colour, border_width=self.border_width,
+                                         border_colour=self.border_colour, border_width=self.border_width,
                                          colour=self.colour)
         self.drop_buttons = []
         self.refresh()
@@ -66,38 +84,28 @@ class DropDownList(object):
 
         self.update_buttons()
         # self.redraw()
-         ## TODO make lists add their buttons to the buttons in owner container when open, allows for easier priority detection
+        ## TODO make lists add their buttons to the buttons in owner container when open, allows for easier priority detection
 
-    # all below variables affect the button surface, so make them properties to redraw on change
-    visible = create_property('visible')
-    size = create_property('size')
-    colour = create_property('colour')
-    border_colour = create_property('border_colour')
-    border_width = create_property('border_width')
-    text = create_property('text')
-    font_size = create_property('font_size')
-    selected_name = create_property('selected_name')
-    pos = create_property('pos')
-
-    def get_open(self):
+    @property
+    def open(self):
         return self._open
-    def set_open(self, n):
-        self._open = n
-        self.priority = n
+
+    @open.setter
+    def open(self, value):
+        self._open = value
+        self.priority = value
         for b in self.drop_buttons:
-            b.priority = n
-    open = property(get_open, set_open)
+            b.priority = value
 
     def refresh(self, new_items=None):  # call if the list changes
-        if not new_items is None:
+        if new_items is not None:
             self.items = new_items
             self.selected = None
             self.selected_name = "<None>"
-        self.drop_buttons = []
-        self.drop_buttons.append(button.Button(self, list_func(self, None), size=self.size, font_size=self.font_size,
+        self.drop_buttons = [button.Button(self, list_func(self, None), size=self.size, font_size=self.font_size,
                                                visible=False, enabled=False, text=u"<None>",
-                                               border_colour=self._border_colour, border_width=self.border_width,
-                                               colour=self.colour))
+                                               border_colour=self.border_colour, border_width=self.border_width,
+                                               colour=self.colour)]
 
         for k, v in self.items.iteritems():
             if self.labels == 'classname':
@@ -108,7 +116,7 @@ class DropDownList(object):
                 t = unicode(k)
             self.drop_buttons.append(button.Button(self, list_func(self, k), size=self.size, font_size=self.font_size,
                                                    visible=False, enabled=False, text=t,
-                                                   border_colour=self._border_colour, border_width=self.border_width,
+                                                   border_colour=self.border_colour, border_width=self.border_width,
                                                    colour=self.colour))
         if self.open:
             self.update_buttons()
