@@ -4,8 +4,9 @@ from gslib import character_objects
 from gslib import cutscene
 from gslib import maps
 from gslib import character_functions
-from gslib import triggers
 from gslib.constants import *
+from gslib import rect
+from gslib.editor import trigger_edit
 
 
 def save_cutscene_as_dict(cs):
@@ -69,10 +70,10 @@ def create_save_state(m):
 character_type_map = {'Dude': character_objects.Dude,
                       'SmallDoor': character_objects.SmallDoor}
 
-trigger_type_map = {'OnHarvest': triggers.OnHarvest,
-                    'OnHarvestConditional': triggers.OnHarvestConditional,
-                    'IsTouched': triggers.IsTouched,
-                    'IsTouchedConditional': triggers.IsTouchedConditional}
+# trigger_type_map = {'OnHarvest': triggers.OnHarvest,
+#                     'OnHarvestConditional': triggers.OnHarvestConditional,
+#                     'IsTouched': triggers.IsTouched,
+#                     'IsTouchedConditional': triggers.IsTouchedConditional}
 
 
 function_type_map = {'has_touched_function': u'has_touched_functions',
@@ -107,8 +108,17 @@ def load_trigger(game, d):
     obj_refs = d[u'object_references']
     actions = json.loads(d[u'actions'])
 
-    actions_funcs = [triggers.trigger_functions_dict[a] for a in actions]
-    new_trig = trigger_type_map[d[u'trigger_type']](game, *obj_refs, actions=actions_funcs)
+    interaction_type = d[u'interaction_type']
+    conditional = d[u'conditional']
+
+    zones = []
+    for tup_string in d[u'zones']:
+        tup = json.loads(tup_string)
+        z = rect.Rect((tup[0], tup[1]), (tup[2], tup[3]))
+        zones.append(z)
+
+    action_funcs = [trigger_edit.trigger_functions_dict[a] for a in actions]
+    new_trig = trigger_edit.Trigger(game, obj_refs, action_funcs, zones, interaction_type, conditional)
     return new_trig
 
 

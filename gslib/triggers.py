@@ -106,10 +106,19 @@ class TriggerZone(Trigger):
         self.zone = rect.Rect(self._pos, self._size)
 
     def check_entry(self, prev_pos, obj):
+        if self.conditional:
+            if not obj == self.objects[0]:
+                return False
         p = obj.coord
         if self.zone.collidepoint(p): # if is now in zone
             if not self.zone.collidepoint(prev_pos): # if wasnt in zone previously
                 self.perf_actions(obj)
+
+
+class TriggerZoneConditional(TriggerZone):
+    def __init__(self, game, object_refs, actions=None):
+        self.conditional = True
+        super(TriggerZoneConditional, self).__init__(game, object_refs, actions)
 
 ################################################################################
 ### triggers - links character objects

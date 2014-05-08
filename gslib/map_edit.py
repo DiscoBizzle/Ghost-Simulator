@@ -7,6 +7,7 @@ from gslib import triggers
 from gslib import text
 from gslib import character_functions
 from gslib import save_load
+from gslib.editor import trigger_edit
 from gslib.constants import *
 from gslib.editor import cutscene
 
@@ -161,6 +162,11 @@ class Editor(object):
                                                                       size=(300, 20))
         # self.new_trigger_objects = []
         self.trigger_prototype = None
+
+        self.trigger_editor = trigger_edit.TriggerEditor(self.game)
+
+        self.buttons = dict(self.buttons.items() + self.trigger_editor.buttons.items())
+        self.drop_lists = dict(self.drop_lists.items() + self.trigger_editor.drop_lists.items())
 
         ###################################################################
         # Edit object
