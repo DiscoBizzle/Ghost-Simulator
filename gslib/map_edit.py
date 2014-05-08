@@ -341,8 +341,7 @@ class Editor(object):
             self.drop_lists['view_triggers'].selected.__del__() # TODO work out why del <thing> doesn't work here
             # del self.drop_lists['view_triggers'].selected
 
-            self.drop_lists['view_triggers'].selected = None
-            self.drop_lists['view_triggers'].selected_name = "<None>"
+            drop_down_list.list_func(self.drop_lists['view_triggers'], None)()
             self.drop_lists['view_triggers'].refresh()
 
     def save_map(self):
