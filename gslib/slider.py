@@ -26,14 +26,14 @@ class Slider(object):
         Create function in class that creates the slider and pass it in as second argument.
     """
 
-    def __init__(self, owner, func, pos=(0, 0), range=(0, 100), value=50, size=(100, 20), back_colour=(120, 0, 0),
-                 fore_colour=(0, 120, 0), order=(0, 0), enabled=True, visible=True, sprite_batch=None, sprite_group=None):
+    def __init__(self, owner, func, pos=(0, 0), range=(0, 100), value=50, size=(100, 20), back_color=(120, 0, 0),
+                 fore_color=(0, 120, 0), order=(0, 0), enabled=True, visible=True, sprite_batch=None, sprite_group=None):
 
         self.owner = owner
         self.min, self.max = range
         self._value = value
-        self._fore_colour = fore_colour
-        self._back_colour = back_colour
+        self._fore_color = fore_color
+        self._back_color = back_color
         self._size = size
         self._visible = visible
         self.enabled = enabled
@@ -64,8 +64,8 @@ class Slider(object):
         self._redraw()
     value = property(get_value, set_value)
 
-    fore_colour = create_property('fore_colour')
-    back_colour = create_property('back_colour')
+    fore_color = create_property('fore_color')
+    back_color = create_property('back_color')
     size = create_property('size')
     pos = create_property('pos')
 
@@ -82,7 +82,7 @@ class Slider(object):
     def _redraw(self):
         if not self._visible:
             return
-        colors = (self.back_colour * 4 + self.fore_colour * 4)
+        colors = (self.back_color * 4 + self.fore_color * 4)
         colors = list(colors)
         colors[9:12] = [min(int(x * 1.5), 255) for x in colors[9:12]]
         colors[21:24] = [min(int(x * 1.5), 255) for x in colors[21:24]]

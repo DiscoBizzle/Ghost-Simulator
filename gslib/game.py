@@ -134,8 +134,8 @@ class Game(pyglet.event.EventDispatcher):
 
         self.game_buttons = {
             'change_map': button.Button(self, self.change_map, pos=(0, 0), size=(20, 20), visible=True,
-                                        text=u'M', border_colour=(120, 50, 80), border_width=3,
-                                        colour=(120, 0, 0), enabled=True)}
+                                        text=u'M', border_color=(120, 50, 80), border_width=3,
+                                        color=(120, 0, 0), enabled=True)}
 
         # self.toPossess = None
         self.selected_object = None

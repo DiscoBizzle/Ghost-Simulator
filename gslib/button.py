@@ -5,11 +5,11 @@ import pyglet
 from gslib.constants import *
 
 
-def valid_colour(colour):
-    if len(colour) != 3:
+def valid_color(color):
+    if len(color) != 3:
         return False
 
-    for i in colour:
+    for i in color:
         if i < 0 or i > 255:
             return False
     return True
@@ -39,13 +39,13 @@ class Button(object):
     """
 
     def __init__(self, owner, function=None, pos=(50, 50), order=(0, 0), size=(100, 100), visible=True, enabled=True,
-                 colour=(0, 0, 0), border_colour=(0, 0, 0), border_width=2, text=u'', font_size=10, text_states=None,
+                 color=(0, 0, 0), border_color=(0, 0, 0), border_width=2, text=u'', font_size=10, text_states=None,
                  sprite_batch=None, sprite_group=None, text_batch=None, text_group=None):
         self._pos = pos
         self._size = size
-        self._color = colour
+        self._color = color
         self._visible = visible
-        self._border_color = border_colour
+        self._border_color = border_color
         self._border_width = border_width
         self._text = text
         self._font_size = font_size
@@ -133,8 +133,8 @@ class Button(object):
 
     @color.setter
     def color(self, color):
-        if not valid_colour(self.colour):
-            raise ValueError('Invalid button colour')
+        if not valid_color(self.color):
+            raise ValueError('Invalid button color')
         self._color = color
         self._update_colors()
 
@@ -144,8 +144,8 @@ class Button(object):
 
     @border_color.setter
     def border_color(self, border_color):
-        if not valid_colour(border_color):
-            raise ValueError('Invalid button border colour')
+        if not valid_color(border_color):
+            raise ValueError('Invalid button border color')
         self._border_color = border_color
         self._update_colors()
 
@@ -231,5 +231,5 @@ class Button(object):
 
 class DefaultButton(Button):
     def __init__(self, owner, function, pos, text="", size=(100, 20), **kwargs):
-        super(DefaultButton, self).__init__(owner, function, size=size, pos=pos, border_colour=(120, 50, 80),
-                                            border_width=3, colour=(120, 0, 0), text=text, **kwargs)
+        super(DefaultButton, self).__init__(owner, function, size=size, pos=pos, border_color=(120, 50, 80),
+                                            border_width=3, color=(120, 0, 0), text=text, **kwargs)

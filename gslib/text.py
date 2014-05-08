@@ -13,13 +13,13 @@ def new(font=FONT, font_size=36, text='no text', centered=False, width=None, hei
     label.content_valign = 'center'
     return label
 
-def speech_bubble(text, width, text_colour=(0, 0, 0)):
+def speech_bubble(text, width, text_color=(0, 0, 0)):
     font = pygame.font.SysFont('helvetica', 14)
 
     text_left = 20
     text_top = 20
     lines = text_wrap(text, font, width-text_left*2)
-    t = font.render(lines[0], True, text_colour)
+    t = font.render(lines[0], True, text_color)
     size = (width, 2*text_top + len(lines) * t.get_height())
 
     surf = pygame.Surface(size)
@@ -30,7 +30,7 @@ def speech_bubble(text, width, text_colour=(0, 0, 0)):
 
 
     for i, l in enumerate(lines):
-        t = font.render(l, True, text_colour)
+        t = font.render(l, True, text_color)
         surf.blit(t, (surf.get_width()/2 - t.get_width()/2, text_top + i * t.get_height()))
 
     surf.set_colorkey((255, 0, 255))

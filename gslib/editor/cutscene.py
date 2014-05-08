@@ -272,7 +272,7 @@ class CutsceneEditor(object):
                                                          text="Pick", size=(50, 20)))
                     else:
                         add_control(button.Button(self, incredifun(ev, k, obj_ref_sel_fun), get_pos(50), text="Pick",
-                                                  size=(50, 20), colour=(0, 120, 0), border_colour=(0, 200, 0),
+                                                  size=(50, 20), color=(0, 120, 0), border_color=(0, 200, 0),
                                                   border_width=3))
                 elif v == 'coords':
                     add_control(button.DefaultButton(self, None, get_pos(add_x=100), text=str(getattr(ev, k)),
@@ -283,7 +283,7 @@ class CutsceneEditor(object):
                                                          text="Pick", size=(50, 20)))
                     else:
                         add_control(button.Button(self, incredifun(ev, k, pick_coords_fun), get_pos(50), text="Pick",
-                                                  size=(50, 20), colour=(0, 120, 0), border_colour=(0, 200, 0),
+                                                  size=(50, 20), color=(0, 120, 0), border_color=(0, 200, 0),
                                                   border_width=3))
                 else:
                     print("!!! Cutscene action editor doesn't know what a '" + v + "' is")
@@ -372,10 +372,10 @@ class CutsceneEditor(object):
             self.stop_button.enabled = True
 
             # highlight the only shit that still works
-            self.play_and_run_button.colour = (0, 120, 0)
-            self.play_and_run_button.border_colour = (0, 200, 0)
-            self.stop_button.colour = (120, 120, 0)
-            self.stop_button.border_colour = (200, 200, 0)
+            self.play_and_run_button.color = (0, 120, 0)
+            self.play_and_run_button.border_color = (0, 200, 0)
+            self.stop_button.color = (120, 120, 0)
+            self.stop_button.border_color = (200, 200, 0)
 
             # actually start cutscene
             self.main_editor.exit_edit_mode()  # save game state
@@ -397,13 +397,13 @@ class CutsceneEditor(object):
             for x in self.buttons + self.dyn_buttons + self.lists + self.dyn_lists:
                 x.enabled = True
 
-            # restore colour of play controls back to normal
-            self.play_button.colour = (120, 0, 0)
-            self.play_button.border_colour = (120, 50, 80)
-            self.play_and_run_button.colour = (120, 0, 0)
-            self.play_and_run_button.border_colour = (120, 50, 80)
-            self.stop_button.colour = (120, 0, 0)
-            self.stop_button.border_colour = (120, 50, 80)
+            # restore color of play controls back to normal
+            self.play_button.color = (120, 0, 0)
+            self.play_button.border_color = (120, 50, 80)
+            self.play_and_run_button.color = (120, 0, 0)
+            self.play_and_run_button.border_color = (120, 50, 80)
+            self.stop_button.color = (120, 0, 0)
+            self.stop_button.border_color = (120, 50, 80)
 
             # actually stop cutscene
             self.main_editor.enter_edit_mode()  # load game state

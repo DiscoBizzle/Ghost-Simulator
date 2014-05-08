@@ -42,21 +42,21 @@ class DropDownList(object):
 
     visible = RedrawOnChange()
     size = RedrawOnChange()
-    colour = RedrawOnChange()
-    border_colour = RedrawOnChange()
+    color = RedrawOnChange()
+    border_color = RedrawOnChange()
     border_width = RedrawOnChange()
     text = RedrawOnChange()
     font_size = RedrawOnChange()
     selected_name = RedrawOnChange()
     pos = RedrawOnChange()
 
-    def __init__(self, owner, items, function=None, pos=(50, 50), size=(100, 20), visible=True, enabled=True, colour=(120, 0, 0),
-                 border_colour=(120, 50, 80), border_width=2, text=None, font_size=10, labels='dictkey', **kwargs):
+    def __init__(self, owner, items, function=None, pos=(50, 50), size=(100, 20), visible=True, enabled=True, color=(120, 0, 0),
+                 border_color=(120, 50, 80), border_width=2, text=None, font_size=10, labels='dictkey', **kwargs):
         self.pos = pos
         self.size = size
-        self.colour = colour
+        self.color = color
         self.visible = visible
-        self.border_colour = border_colour
+        self.border_color = border_color
         self.border_width = border_width
         self.text = text
         self.font_size = font_size
@@ -72,15 +72,15 @@ class DropDownList(object):
         self.selected = None
         self.main_button = button.Button(self, None, pos=pos, size=size, font_size=font_size, visible=visible,
                                          text=u"<None>",
-                                         border_colour=self.border_colour, border_width=self.border_width,
-                                         colour=self.colour)
+                                         border_color=self.border_color, border_width=self.border_width,
+                                         color=self.color)
         self.drop_buttons = []
         self.refresh()
 
         self.function = function
 
-        self.high_colour = (0, 120, 0)
-        self.high_border_colour = (0, 200, 0)
+        self.high_color = (0, 120, 0)
+        self.high_border_color = (0, 200, 0)
 
         self.update_buttons()
         # self.redraw()
@@ -104,8 +104,8 @@ class DropDownList(object):
             self.selected_name = "<None>"
         self.drop_buttons = [button.Button(self, list_func(self, None), size=self.size, font_size=self.font_size,
                                                visible=False, enabled=False, text=u"<None>",
-                                               border_colour=self.border_colour, border_width=self.border_width,
-                                               colour=self.colour)]
+                                               border_color=self.border_color, border_width=self.border_width,
+                                               color=self.color)]
 
         for k, v in self.items.iteritems():
             if self.labels == 'classname':
@@ -116,22 +116,22 @@ class DropDownList(object):
                 t = unicode(k)
             self.drop_buttons.append(button.Button(self, list_func(self, k), size=self.size, font_size=self.font_size,
                                                    visible=False, enabled=False, text=t,
-                                                   border_colour=self.border_colour, border_width=self.border_width,
-                                                   colour=self.colour))
+                                                   border_color=self.border_color, border_width=self.border_width,
+                                                   color=self.color))
         if self.open:
             self.update_buttons()
 
     def update_buttons(self):
         self.main_button.text = self.selected_name
-        self.main_button.colour = self.colour
-        self.main_button.border_colour = self.border_colour
+        self.main_button.color = self.color
+        self.main_button.border_color = self.border_color
         self.main_button.size = self.size
         self.main_button.visible = self.visible
         self.main_button.font_size = self.font_size
         self.main_button.pos = self.pos
         for i, b in enumerate(self.drop_buttons):
-            b.colour = self.colour
-            b.border_colour = self.border_colour
+            b.color = self.color
+            b.border_color = self.border_color
             b.size = self.size
             b.visible = self.visible
             b.font_size = self.font_size
@@ -199,13 +199,13 @@ class DropDownList(object):
         # highlight the moused-over button
 
         for b in self.drop_buttons:
-            if b.colour != self.colour:
-                b.colour = self.colour
-            if b.border_colour != self.border_colour:
-                b.border_colour = self.border_colour
+            if b.color != self.color:
+                b.color = self.color
+            if b.border_color != self.border_color:
+                b.border_color = self.border_color
         if h_ind > 0:
             b = self.drop_buttons[h_ind - 1]
-            if b.border_colour != self.high_border_colour:
-                b.border_colour = self.high_border_colour
-            if b.colour != self.high_colour:
-                b.colour = self.high_colour
+            if b.border_color != self.high_border_color:
+                b.border_color = self.high_border_color
+            if b.color != self.high_color:
+                b.color = self.high_color

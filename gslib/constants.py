@@ -80,9 +80,9 @@ KEYMAP_FILE = fallback_files("keymap file", True, "keymap.txt", os.path.join(sys
 OPTIONS_FILE = fallback_files("options file", False, "options.txt", os.path.join(sys.prefix, 'gs-data', 'options.txt'))
 SAVE_DIR = fallback_files("save dir", True, "save", os.path.join(sys.prefix, 'gs-save'))
 
-LEARNT_SKILL_COLOUR = (0, 150, 0)
-CAN_BE_LEARNT_COLOUR = (0, 0, 150)
-UNLEARNABLE_COLOUR = (150, 0, 0)
+LEARNT_SKILL_COLOR = (0, 150, 0)
+CAN_BE_LEARNT_COLOR = (0, 0, 150)
+UNLEARNABLE_COLOR = (150, 0, 0)
 
 INITIAL_SOUND_VOLUME = 1.0
 INITIAL_MUSIC_VOLUME = 1.0
