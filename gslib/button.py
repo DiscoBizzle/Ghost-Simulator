@@ -218,6 +218,6 @@ class Button(object):
 
 
 class DefaultButton(Button):
-    def __init__(self, owner, function, pos, text="", size=(100, 20), **kwargs):
+    def __init__(self, owner, function, pos=(0, 0), text="", size=(100, 20), **kwargs):
         super(DefaultButton, self).__init__(owner, function, size=size, pos=pos, border_colour=(120, 50, 80),
                                             border_width=3, colour=(120, 0, 0), text=text, **kwargs)
