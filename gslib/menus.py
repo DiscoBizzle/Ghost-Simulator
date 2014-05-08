@@ -31,8 +31,8 @@ class Menu(object):
         self._enabled = False
 
         self.buttons['menu_scale_display'] = button.Button(self, order=(-1, 0), visible=False,
-                                                           border_colour=(120, 50, 80), border_width=3,
-                                                           colour=(120, 0, 0), size=(200, 50), pos=(60, 40),
+                                                           border_color=(120, 50, 80), border_width=3,
+                                                           color=(120, 0, 0), size=(200, 50), pos=(60, 40),
                                                            sprite_batch=self.sprite_batch, text_batch=self.text_batch)
         self.sliders['menu_scale'] = slider.Slider(self, (lambda _: self.arrange_buttons()), range=(1.0, 5.0 / frac),
                                                    order=(-1, 1), value=1.0 / frac, size=(200, 50),
@@ -131,7 +131,7 @@ class MainMenu(Menu):
     def __init__(self, game, button_size):
         super(MainMenu, self).__init__(game, button_size)
 
-        common = dict(border_colour=(120, 50, 80), border_width=3, colour=(120, 0, 0), sprite_batch=self.sprite_batch,
+        common = dict(border_color=(120, 50, 80), border_width=3, color=(120, 0, 0), sprite_batch=self.sprite_batch,
                       text_batch=self.text_batch)
 
         self.buttons['main_game'] = button.Button(self, self.go_to_main_game, order=(0, 0), text=u'Start Game',
@@ -162,7 +162,7 @@ class OptionsMenu(Menu):
     def __init__(self, game, button_size):
         super(OptionsMenu, self).__init__(game, button_size)
 
-        common = dict(border_colour=(120, 50, 80), border_width=3, colour=(120, 0, 0), sprite_batch=self.sprite_batch,
+        common = dict(border_color=(120, 50, 80), border_width=3, color=(120, 0, 0), sprite_batch=self.sprite_batch,
                       text_batch=self.text_batch)
 
         self.buttons['FOV'] = button.Button(self, self.fov_toggle, order=(0, 0),
@@ -287,21 +287,21 @@ class SkillsMenu(Menu):
         temp_order = 0
         for skill in self.game.skills_dict:
             if skill in self.game.players['player1'].skills_learnt:
-                skill_colour = LEARNT_SKILL_COLOUR
+                skill_color = LEARNT_SKILL_COLOR
             elif self.game.skills_dict[skill].can_be_learnt(self.game.players['player1']):
-                skill_colour = CAN_BE_LEARNT_COLOUR
+                skill_color = CAN_BE_LEARNT_COLOR
             else:
-                skill_colour = UNLEARNABLE_COLOUR
+                skill_color = UNLEARNABLE_COLOR
             f = lambda skill2=skill: self.learn_skill(skill2)
             self.buttons[skill] = button.Button(self, f,
                                                 text=skill + " cost:" + str(self.game.skills_dict[skill].cost),
-                                                border_colour=(120, 50, 80), border_width=3, colour=skill_colour,
+                                                border_color=(120, 50, 80), border_width=3, color=skill_color,
                                                 order=(temp_order, 0), sprite_batch=self.sprite_batch,
                                                 text_batch=self.text_batch)
             self.buttons[skill + "_description"] = button.Button(self, None,
                                                                  text=self.game.skills_dict[skill].description,
-                                                                 border_colour=(120, 50, 80), border_width=3,
-                                                                 colour=(30, 120, 140), order=(temp_order, 1),
+                                                                 border_color=(120, 50, 80), border_width=3,
+                                                                 color=(30, 120, 140), order=(temp_order, 1),
                                                                  sprite_batch=self.sprite_batch,
                                                                  text_batch=self.text_batch)
             temp_order += 1
@@ -314,29 +314,29 @@ class SkillsMenu(Menu):
         for skill in self.buttons:
             if self.buttons[skill].order[0] != -1 and self.buttons[skill].order[1] == 0:
                 if skill in self.game.players['player1'].skills_learnt:
-                    skill_colour = LEARNT_SKILL_COLOUR
+                    skill_color = LEARNT_SKILL_color
                 elif self.game.skills_dict[skill].can_be_learnt(self.game.players['player1']):
-                    skill_colour = CAN_BE_LEARNT_COLOUR
+                    skill_color = CAN_BE_LEARNT_color
                 else:
-                    skill_colour = UNLEARNABLE_COLOUR
-                self.buttons[skill].colour = skill_colour
+                    skill_color = UNLEARNABLE_color
+                self.buttons[skill].color = skill_color
 
 
 class KeyBindMenu(Menu):
     def __init__(self, game, button_size):
         super(KeyBindMenu, self).__init__(game, button_size)
-        self.border_colour = (120, 50, 80)
-        self.colour = (120, 0, 0)
+        self.border_color = (120, 50, 80)
+        self.color = (120, 0, 0)
 
-        self.active_border_colour = (50, 120, 80)
-        self.active_colour = (0, 120, 0)
+        self.active_border_color = (50, 120, 80)
+        self.active_color = (0, 120, 0)
 
         self.create_buttons()
 
         self.arrange_buttons()
 
     def create_buttons(self):
-        common = dict(border_colour=self.border_colour, border_width=3, colour=self.colour,
+        common = dict(border_color=self.border_color, border_width=3, color=self.color,
                       sprite_batch=self.sprite_batch, text_batch=self.text_batch)
         ord = 0
         self.buttons['load'] = button.Button(self, self.load, order=(ord, 0), text=u'Load', **common)
@@ -361,8 +361,8 @@ class KeyBindMenu(Menu):
         def func():
             self.game.action_to_rebind = action_name
             self.game.state = KEYBIND_CAPTURE
-            self.buttons[action_name + ' key'].colour = self.active_colour
-            self.buttons[action_name + ' key'].border_colour = self.active_border_colour
+            self.buttons[action_name + ' key'].color = self.active_color
+            self.buttons[action_name + ' key'].border_color = self.active_border_color
         return func
 
     def save(self):

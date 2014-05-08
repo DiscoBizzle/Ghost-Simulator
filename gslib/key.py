@@ -109,8 +109,8 @@ class KeyController(object):
         else:
             self.key_map[action] = new_key
 
-        self.game.keybind_menu.buttons[action + ' key'].colour = self.game.keybind_menu.colour
-        self.game.keybind_menu.buttons[action + ' key'].border_colour = self.game.keybind_menu.border_colour
+        self.game.keybind_menu.buttons[action + ' key'].color = self.game.keybind_menu.color
+        self.game.keybind_menu.buttons[action + ' key'].border_color = self.game.keybind_menu.border_color
         self.game.keybind_menu.buttons[action + ' key'].text = Pkey.symbol_string(new_key)
 
         self.keys[new_key] = False

@@ -1,3 +1,5 @@
+import os.path
+
 import gslib.character_functions as fear_functions
 from gslib import character
 from gslib.character import Character

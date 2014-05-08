@@ -31,7 +31,7 @@ class MouseController(object):
                 func(obj)
             self.object_capture_function = f
 
-    def pick_position(self, func, typ='down', button=MOUSE_LEFT, relative_to_map=True):
+    def pick_position(self, func, typ='down', button=pyglet.window.mouse.LEFT, relative_to_map=True):
         """
         Pass in a function to receive picked position (x, y) as sole argument
         if relative_to_map=True: Returns cursor coordinate (i.e. relative to actual game map) (Supports snap-to-grid)

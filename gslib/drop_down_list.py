@@ -1,17 +1,8 @@
+from weakref import WeakKeyDictionary
+
 from gslib import button
+from gslib.utils import ExecOnChange, exec_on_change_meta
 from gslib.constants import *
-
-
-def create_property(var):  # creates a member variable that redraws the button when changed.
-    def _setter(self, val):
-        setattr(self, '_' + var, val)
-        self.update_buttons()
-        # self.redraw()
-
-    def _getter(self):
-        return getattr(self, '_' + var)
-
-    return property(_getter, _setter)
 
 
 def list_func(owner, val):
@@ -31,85 +22,83 @@ def list_func(owner, val):
 
 
 class DropDownList(object):
-    def __init__(self, owner, items, function=None, pos=(50, 50), size=(100, 20), visible=True, enabled=True, colour=(120, 0, 0),
-                 border_colour=(120, 50, 80), border_width=2, text=None, font_size=10, labels='dictkey', order=(0, 0), **kwargs):
-        self._pos = pos
 
-        self._size = size
-        self._colour = colour
-        self._visible = visible
-        self._border_colour = border_colour
-        self._border_width = border_width
-        self._text = text
-        self._font_size = font_size
+    __metaclass__ = exec_on_change_meta(["update_buttons"])
+
+    visible = ExecOnChange
+    size = ExecOnChange
+    color = ExecOnChange
+    border_color = ExecOnChange
+    border_width = ExecOnChange
+    text = ExecOnChange
+    font_size = ExecOnChange
+    selected_name = ExecOnChange
+    pos = ExecOnChange
+
+    def __init__(self, owner, items, function=None, pos=(50, 50), size=(100, 20), visible=True, enabled=True, color=(120, 0, 0),
+                 border_color=(120, 50, 80), border_width=2, text=None, font_size=10, labels='dictkey', order=(0, 0), **kwargs):
+        self.pos = pos
+        self.size = size
+        self.color = color
+        self.visible = visible
+        self.border_color = border_color
+        self.border_width = border_width
+        self.text = text
+        self.font_size = font_size
         self.enabled = enabled  # whether button can be activated, visible or not
         self.labels = labels
         self.priority = False
         self._open = False
 
         self.order = order
-
-        for arg in kwargs:  # allows for additional arbitrary arguments to be passed in, useful for more complicated functions
-            setattr(self, arg, kwargs[arg])
-
         self.owner = owner  # container that created the button, allows for the button function to interact with its creator
 
         self.items = items
-        self._selected_name = "<None>"
+        self.selected_name = "<None>"
         self.selected = None
         self.main_button = button.Button(self, None, pos=pos, size=size, font_size=font_size, visible=visible,
                                          text=u"<None>",
-                                         border_colour=self._border_colour, border_width=self.border_width,
-                                         colour=self.colour)
+                                         border_color=self.border_color, border_width=self.border_width,
+                                         color=self.color)
         self.drop_buttons = []
         self.refresh()
 
         self.function = function
 
-        self.high_colour = (0, 120, 0)
-        self.high_border_colour = (0, 200, 0)
+        self.high_color = (0, 120, 0)
+        self.high_border_color = (0, 200, 0)
 
         self.update_buttons()
         # self.redraw()
-         ## TODO make lists add their buttons to the buttons in owner container when open, allows for easier priority detection
+        ## TODO make lists add their buttons to the buttons in owner container when open, allows for easier priority detection
 
-    # all below variables affect the button surface, so make them properties to redraw on change
-    visible = create_property('visible')
-    size = create_property('size')
-    colour = create_property('colour')
-    border_colour = create_property('border_colour')
-    border_width = create_property('border_width')
-    text = create_property('text')
-    font_size = create_property('font_size')
-    selected_name = create_property('selected_name')
-    pos = create_property('pos')
-
-    def get_open(self):
+    @property
+    def open(self):
         return self._open
-    def set_open(self, n):
-        self._open = n
-        self.priority = n
+
+    @open.setter
+    def open(self, value):
+        self._open = value
+        self.priority = value
         for b in self.drop_buttons:
-            b.priority = n
-    open = property(get_open, set_open)
+            b.priority = value
 
     def refresh(self, new_items=None):  # call if the list changes
-        if not new_items is None:
+        if new_items is not None:
             self.items = new_items
             self.selected = None
             self.selected_name = "<None>"
-        self.drop_buttons = []
-        self.drop_buttons.append(button.Button(self, list_func(self, None), size=self.size, font_size=self.font_size,
+        self.drop_buttons = [button.Button(self, list_func(self, None), size=self.size, font_size=self.font_size,
                                                visible=False, enabled=False, text=u"<None>",
-                                               border_colour=self._border_colour, border_width=self.border_width,
-                                               colour=self.colour))
+                                               border_color=self.border_color, border_width=self.border_width,
+                                               color=self.color)]
 
         if isinstance(self.items, list):
             for i in self.items:
                 self.drop_buttons.append(button.Button(self, list_func(self, i), size=self.size, font_size=self.font_size,
                                                    visible=False, enabled=False, text=str(i),
-                                                   border_colour=self._border_colour, border_width=self.border_width,
-                                                   colour=self.colour))
+                                                   border_color=self.border_color, border_width=self.border_width,
+                                                   color=self.color))
         else:
             for k, v in self.items.iteritems():
                 if self.labels == 'classname':
@@ -120,22 +109,22 @@ class DropDownList(object):
                     t = unicode(k)
                 self.drop_buttons.append(button.Button(self, list_func(self, k), size=self.size, font_size=self.font_size,
                                                        visible=False, enabled=False, text=t,
-                                                       border_colour=self._border_colour, border_width=self.border_width,
-                                                       colour=self.colour))
+                                                       border_color=self.border_color, border_width=self.border_width,
+                                                       color=self.color))
         if self.open:
             self.update_buttons()
 
     def update_buttons(self):
         self.main_button.text = self.selected_name
-        self.main_button.colour = self.colour
-        self.main_button.border_colour = self.border_colour
+        self.main_button.color = self.color
+        self.main_button.border_color = self.border_color
         self.main_button.size = self.size
         self.main_button.visible = self.visible
         self.main_button.font_size = self.font_size
         self.main_button.pos = self.pos
         for i, b in enumerate(self.drop_buttons):
-            b.colour = self.colour
-            b.border_colour = self.border_colour
+            b.color = self.color
+            b.border_color = self.border_color
             b.size = self.size
             b.visible = self.visible
             b.font_size = self.font_size
@@ -203,19 +192,13 @@ class DropDownList(object):
         # highlight the moused-over button
 
         for b in self.drop_buttons:
-            if b.colour != self.colour:
-                b.colour = self.colour
-            if b.border_colour != self.border_colour:
-                b.border_colour = self.border_colour
+            if b.color != self.color:
+                b.color = self.color
+            if b.border_color != self.border_color:
+                b.border_color = self.border_color
         if h_ind > 0:
             b = self.drop_buttons[h_ind - 1]
-            if b.border_colour != self.high_border_colour:
-                b.border_colour = self.high_border_colour
-            if b.colour != self.high_colour:
-                b.colour = self.high_colour
-
-    def set_to_default(self):
-        self.set_to_value(None)
-
-    def set_to_value(self, value):
-        list_func(self, value)()
+            if b.border_color != self.high_border_color:
+                b.border_color = self.high_border_color
+            if b.color != self.high_color:
+                b.color = self.high_color

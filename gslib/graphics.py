@@ -3,6 +3,8 @@ try:
 except ImportError:
     from io import BytesIO
 
+import os.path
+
 import pyglet.image
 
 from gslib.constants import *
@@ -21,14 +23,14 @@ def new_rect_sprite():
     return sprite.Sprite(rect_tex)
 
 circle_tex = None
-def draw_circle(r, colour):
+def draw_circle(r, color):
     global circle_tex
     if circle_tex is None:
         circle_tex = textures.get(os.path.join(CHARACTER_DIR, 'circle_solid.png'))
     sprit = sprite.Sprite(circle_tex)
     sprit.scale_x = 2*r / 1024.0
     sprit.scale_y = 2*r / 1024.0
-    sprit.color_rgba = colour + (120,)
+    sprit.color_rgba = color + (120,)
     return sprit
 
 
@@ -80,7 +82,7 @@ class Graphics(object):
         self.game_over_txt2.y = (self.game.dimensions[1] - self.game_over_txt2.content_height -
                                  self.game_over_txt1.content_height) / 2
         self.game.screen_objects_to_draw.append(self.game_over_txt2)
-    
+
     def main_game_draw(self):
         # this runs faster than game update. animation can be done here with no problems.
         if self.game.state != CUTSCENE:
@@ -193,7 +195,7 @@ class Graphics(object):
             else:
                 self.game.screen_objects_to_draw.append(button)
         self.game.screen_objects_to_draw += priority_buttons
-            
+
     def draw_drop_lists(self):
         priority_buttons = []
         for l in dict(self.game.drop_lists, **self.game.editor.get_lists() if self.game.state == EDITOR else {}).itervalues():
@@ -316,11 +318,11 @@ class Graphics(object):
         ppos = (self.game.players['player1'].coord[0] + self.game.players['player1'].dimensions[0] / 2, self.game.players['player1'].coord[1] + self.game.players['player1'].dimensions[1] / 2)
 
         self.light_surf.fill((0, 0, 0, 0))
-    
+
         hole = pygame.Rect((ppos[0] - self.light_size[0]/2 - self.game.camera_coords[0], ppos[1] - self.light_size[1]/2 - self.game.camera_coords[1]), self.light_size)
 
         self.clip_area = hole
-    
+
         pygame.draw.rect(self.light_surf, (0, 0, 0, 255), pygame.Rect((0, 0), (self.game.dimensions[0], hole.top)))
         pygame.draw.rect(self.light_surf, (0, 0, 0, 255), pygame.Rect((0, 0), (hole.left, self.game.dimensions[1])))
         pygame.draw.rect(self.light_surf, (0, 0, 0, 255), pygame.Rect((hole.right, 0), (self.game.dimensions[0], self.game.dimensions[1])))

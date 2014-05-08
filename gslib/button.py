@@ -2,30 +2,18 @@ from __future__ import division, print_function
 
 import pyglet
 
+from gslib.utils import ExecOnChange, exec_on_change_meta
 from gslib.constants import *
 
 
-def valid_colour(colour):
-    if len(colour) != 3:
+def valid_color(color):
+    if len(color) != 3:
         return False
 
-    for i in colour:
+    for i in color:
         if i < 0 or i > 255:
             return False
     return True
-
-
-def create_text_property(var):  # creates a member variable that redraws the text when changed.
-    def _setter(self, val):
-        old_val = getattr(self, '_' + var)
-        if val != old_val:
-            setattr(self, '_' + var, val)
-            self._update_text()
-
-    def _getter(self):
-        return getattr(self, '_' + var)
-
-    return property(_getter, _setter)
 
 
 class Button(object):
@@ -38,19 +26,25 @@ class Button(object):
         Create function in class that creates the button and pass it in as second argument.
     """
 
+    __metaclass__ = exec_on_change_meta(["_update_text"])
+
+    text = ExecOnChange
+    font_size = ExecOnChange
+    text_states_toggle = ExecOnChange
+
     def __init__(self, owner, function=None, pos=(50, 50), order=(0, 0), size=(100, 100), visible=True, enabled=True,
-                 colour=(0, 0, 0), border_colour=(0, 0, 0), border_width=2, text=u'', font_size=10, text_states=None,
+                 color=(0, 0, 0), border_color=(0, 0, 0), border_width=2, text=u'', font_size=10, text_states=None,
                  sprite_batch=None, sprite_group=None, text_batch=None, text_group=None):
         self._pos = pos
         self._size = size
-        self._color = colour
+        self._color = color
         self._visible = visible
-        self._border_color = border_colour
+        self._border_color = border_color
         self._border_width = border_width
-        self._text = text
-        self._font_size = font_size
+        self.text = text
+        self.font_size = font_size
         self.text_states = text_states
-        self._text_states_toggle = False
+        self.text_states_toggle = False
         self.enabled = enabled  # whether button can be activated, visible or not
         self._sprite_batch = sprite_batch
         self._sprite_group = sprite_group
@@ -66,48 +60,53 @@ class Button(object):
             self._vertex_list = pyglet.graphics.vertex_list(8, 'v2i', 'c3B')
         else:
             self._vertex_list = self._sprite_batch.add(8, pyglet.gl.GL_QUADS, self._sprite_group, 'v2i', 'c3B')
-        if self._visible:
+        if self.visible:
             self._redraw()
 
         self.priority = False
 
-    def _set_pos(self, pos):
-        if pos == self._pos:
-            return
+    @property
+    def pos(self):
+        return self._pos
+
+    @pos.setter
+    def pos(self, pos):
         if pos[0] >= 0 and pos[1] >= 0:
             self._pos = pos
             self._update_position()
         else:
             pass
             # raise Exception('Negative button position')
-    pos = property(lambda self: self._pos, _set_pos)
 
-    text = create_text_property('text')
-    font_size = create_text_property('font_size')
-    text_states_toggle = create_text_property('text_states_toggle')
+    @property
+    def border_width(self):
+        return self._border_width
 
-    def _set_border_width(self, border_width):
-        if border_width == self._border_width:
-            return
+    @border_width.setter
+    def border_width(self, border_width):
         if self.border_width < 0:
-            raise Exception('Negative button border width')
+            raise ValueError('Negative button border width')
         self._border_width = border_width
         self._update_position()
-    border_width = property(lambda self: self._border_width, _set_border_width)
 
-    def _set_size(self, size):
-        if size == self._size:
-            return
+    @property
+    def size(self):
+        return self._size
+
+    @size.setter
+    def size(self, size):
         if not (self.size[0] > 0 and self.size[1] > 0):
-            raise Exception('Negative button size')
+            raise ValueError('Negative button size')
         self._size = size
         self._update_text()
         self._update_position()
-    size = property(lambda self: self._size, _set_size)
 
-    def _set_visible(self, visible):
-        if visible == self._visible:
-            return
+    @property
+    def visible(self):
+        return self._visible
+
+    @visible.setter
+    def visible(self, visible):
         self._visible = visible
         if not visible:
             self._vertex_list.vertices[:] = [0] * 16
@@ -117,25 +116,28 @@ class Button(object):
                 self._text_layout = None
         else:
             self._redraw()
-    visible = property(lambda self: self._visible, _set_visible)
 
-    def _set_color(self, color):
-        if color == self._color:
-            return
-        if not valid_colour(self.colour):
-            raise Exception('Invalid button colour')
+    @property
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, color):
+        if not valid_color(self.color):
+            raise ValueError('Invalid button color')
         self._color = color
         self._update_colors()
-    colour = property(lambda self: self._color, _set_color)
 
-    def _set_border_colour(self, border_colour):
-        if border_colour == self._border_color:
-            return
-        if not valid_colour(self.border_colour):
-            raise Exception('Invalid button border colour')
-        self._border_color = border_colour
+    @property
+    def border_color(self):
+        return self._border_color
+
+    @border_color.setter
+    def border_color(self, border_color):
+        if not valid_color(border_color):
+            raise ValueError('Invalid button border color')
+        self._border_color = border_color
         self._update_colors()
-    border_colour = property(lambda self: self._border_color, _set_border_colour)
 
     def _redraw(self):
         self._update_text()
@@ -143,7 +145,7 @@ class Button(object):
         self._update_colors()
 
     def _update_text(self):
-        if not self._visible:
+        if not self.visible:
             return
         if self.text_states:
             self._text = self.text_states[self.text_states_toggle]
@@ -162,7 +164,7 @@ class Button(object):
             self._text_layout.end_update()
 
     def _update_colors(self):
-        if not self._visible:
+        if not self.visible:
             return
         colors = (self._border_color * 4 + self._color * 4)
         colors = list(colors)
@@ -171,7 +173,7 @@ class Button(object):
         self._vertex_list.colors[:] = colors
 
     def _update_position(self):
-        if not self._visible:
+        if not self.visible:
             return
         # TODO: make faster by only changing the verticies that need it
         self._text_layout.x, self._text_layout.y = self.pos
@@ -195,8 +197,8 @@ class Button(object):
         return False
 
     def check_clicked_no_function(self, click_pos):
-        x, y = self._pos
-        w, h = self._size
+        x, y = self.pos
+        w, h = self.size
 
         if x <= click_pos[0] < x + w and y <= click_pos[1] < y + h:
             if self.enabled:
@@ -211,13 +213,13 @@ class Button(object):
         self.text_states_toggle = not self.text_states_toggle
 
     def draw(self):
-        if not self._visible:
+        if not self.visible:
             return
         self._vertex_list.draw(pyglet.gl.GL_QUADS)
         self._text_layout.draw()
 
 
 class DefaultButton(Button):
-    def __init__(self, owner, function, pos=(0, 0), text="", size=(100, 20), **kwargs):
-        super(DefaultButton, self).__init__(owner, function, size=size, pos=pos, border_colour=(120, 50, 80),
-                                            border_width=3, colour=(120, 0, 0), text=text, **kwargs)
+    def __init__(self, owner, function, pos=(0, 0), text=u"", size=(100, 20), **kwargs):
+        super(DefaultButton, self).__init__(owner, function, size=size, pos=pos, border_color=(120, 50, 80),
+                                            border_width=3, color=(120, 0, 0), text=text, **kwargs)

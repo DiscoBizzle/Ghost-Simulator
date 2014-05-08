@@ -1,3 +1,5 @@
+import os.path
+
 from gslib import drop_down_list
 from gslib import button
 from gslib import character_objects
@@ -10,10 +12,6 @@ from gslib import save_load
 from gslib.editor import trigger_edit
 from gslib.constants import *
 from gslib.editor import cutscene
-
-
-def none():
-    pass
 
 
 def set_fear_button(editor, fear):
@@ -63,7 +61,6 @@ def set_function(editor, module):
 
 class IntEdit(object):
     def __init__(self, editor, pos, name):
-        self._pos = pos
         self.name = name
         self.buttons = {}
         self.buttons[name + '_label'] = button.DefaultButton(self, None, pos=(0, 0), size=(100, 20), text=name)
@@ -72,19 +69,19 @@ class IntEdit(object):
         self.buttons[name + '_decrement'] = button.DefaultButton(self, change_object_value(editor, name, -1), pos=(0, 0),
                                                                  size=(30, 30), text="-")
         self.buttons[name + '_value'] = button.DefaultButton(self, None, pos=(0, 0), size=(30, 30), text="0")
-        self.set_pos(pos)
+        self.pos = pos
 
-    def get_pos(self):
+    @property
+    def pos(self):
         return self._pos
 
-    def set_pos(self, pos):
+    @pos.setter
+    def pos(self, pos):
         self.buttons[self.name + '_label'].pos = (pos[0], pos[1] + 35)
         self.buttons[self.name + '_increment'].pos = (pos[0] + 70, pos[1])
         self.buttons[self.name + '_decrement'].pos = pos
         self.buttons[self.name + '_value'].pos = (pos[0] + 35, pos[1])
         self._pos = pos
-
-    pos = property(get_pos, set_pos)
 
 
 class Cursor(game_object.GameObject):
@@ -94,7 +91,7 @@ class Cursor(game_object.GameObject):
         self.current_speed = 0
         self.normal_speed = 0
 
-        self.update = none
+        self.update = lambda: None
 
         self.sprite = sprite
         self.is_cursor = True
@@ -137,7 +134,7 @@ class Editor(object):
                                                                        labels='classname', size=(300, 20))
         self.buttons['delete_trigger'] = button.DefaultButton(self, self.delete_selected_trigger, pos=(320, self.game.dimensions[1] - 40), size=(120, 20),
                                                                    text="Delete Trigger")
-        self.trigger_display_colours = ((120, 0, 0), (0, 120, 0), (0, 0, 120), (120, 120, 0), (120, 0, 120), (0, 120, 120), (120, 120, 120))
+        self.trigger_display_colors = ((120, 0, 0), (0, 120, 0), (0, 0, 120), (120, 120, 0), (120, 0, 120), (0, 120, 120), (120, 120, 120))
         self.trigger_display_circles = []
         self.trigger_display_text = []
         self.trigger_to_edit = None
@@ -178,10 +175,10 @@ class Editor(object):
         self.show_fears_checklist = False
         self.show_scared_of_checklist = False
 
-        self.colour = (120, 0, 0)
-        self.border_colour = (120, 50, 80)
-        self.high_colour = (0, 120, 0)
-        self.high_border_colour = (0, 200, 0)
+        self.color = (120, 0, 0)
+        self.border_color = (120, 50, 80)
+        self.high_color = (0, 120, 0)
+        self.high_border_color = (0, 200, 0)
 
         self.possible_fears = [u'player']
         self.get_fears_from_file()
@@ -358,7 +355,7 @@ class Editor(object):
             self.show_function_edit = not self.show_function_edit
         else:
             self.show_function_edit = state
-        self.toggle_button_colour(self.buttons['function_edit_toggle'], self.show_function_edit)
+        self.toggle_button_color(self.buttons['function_edit_toggle'], self.show_function_edit)
         for n in self.function_edit_buttons:
             self.buttons[n].visible = self.show_function_edit
             self.buttons[n].enabled = self.show_function_edit
@@ -369,15 +366,15 @@ class Editor(object):
     def toggle_fears_checklist(self):  # flip between checklists, or just show/hide one
         self.show_fears_checklist = not self.show_fears_checklist
         self.show_scared_of_checklist = False
-        self.toggle_button_colour(self.buttons['scared_of_checklist_toggle'], self.show_scared_of_checklist)
-        self.toggle_button_colour(self.buttons['fears_checklist_toggle'], self.show_fears_checklist)
+        self.toggle_button_color(self.buttons['scared_of_checklist_toggle'], self.show_scared_of_checklist)
+        self.toggle_button_color(self.buttons['fears_checklist_toggle'], self.show_fears_checklist)
         self.display_fears_checklist()
 
     def toggle_scared_of_checklist(self):  # flip between checklists, or just show/hide one
         self.show_scared_of_checklist = not self.show_scared_of_checklist
         self.show_fears_checklist = False
-        self.toggle_button_colour(self.buttons['scared_of_checklist_toggle'], self.show_scared_of_checklist)
-        self.toggle_button_colour(self.buttons['fears_checklist_toggle'], self.show_fears_checklist)
+        self.toggle_button_color(self.buttons['scared_of_checklist_toggle'], self.show_scared_of_checklist)
+        self.toggle_button_color(self.buttons['fears_checklist_toggle'], self.show_fears_checklist)
         self.display_fears_checklist()
 
     def display_fears_checklist(self):
@@ -390,30 +387,30 @@ class Editor(object):
                 self.buttons[f].enabled = False
             if self.show_fears_checklist:  # highlight those that are in o.fears
                 if f in self.object_to_edit.fears:
-                    self.toggle_button_colour(self.buttons[f], 1)
+                    self.toggle_button_color(self.buttons[f], 1)
                 else:
-                    self.toggle_button_colour(self.buttons[f], 0)
+                    self.toggle_button_color(self.buttons[f], 0)
             elif self.show_scared_of_checklist:  # highlight those that are in o.scared_of
                 if f in self.object_to_edit.scared_of:
-                    self.toggle_button_colour(self.buttons[f], 1)
+                    self.toggle_button_color(self.buttons[f], 1)
                 else:
-                    self.toggle_button_colour(self.buttons[f], 0)
+                    self.toggle_button_color(self.buttons[f], 0)
 
-    def toggle_button_colour(self, b, setting=None):
-        if setting is None:  # flip colour
-            if b.colour == self.colour:
-                b.colour = self.high_colour
-                b.border_colour = self.high_border_colour
+    def toggle_button_color(self, b, setting=None):
+        if setting is None:  # flip color
+            if b.color == self.color:
+                b.color = self.high_color
+                b.border_color = self.high_border_color
             else:
-                b.colour = self.colour
-                b.border_colour = self.border_colour
-        else:  # set to high colour if setting is not False or 0
-            if setting and b.colour != self.high_colour:  # only update colour if needed, more efficient
-                b.colour = self.high_colour
-                b.border_colour = self.high_border_colour
-            elif not setting and b.colour != self.colour:
-                b.colour = self.colour
-                b.border_colour = self.border_colour
+                b.color = self.color
+                b.border_color = self.border_color
+        else:  # set to high color if setting is not False or 0
+            if setting and b.color != self.high_color:  # only update color if needed, more efficient
+                b.color = self.high_color
+                b.border_color = self.high_border_color
+            elif not setting and b.color != self.color:
+                b.color = self.color
+                b.border_color = self.border_color
 
     def handle_object_click(self, o_name):
         self.object_to_edit_selected(o_name)
@@ -437,8 +434,8 @@ class Editor(object):
         else:
             self.show_fears_checklist = False
             self.show_scared_of_checklist = False
-            self.toggle_button_colour(self.buttons['scared_of_checklist_toggle'], 0)
-            self.toggle_button_colour(self.buttons['fears_checklist_toggle'], 0)
+            self.toggle_button_color(self.buttons['scared_of_checklist_toggle'], 0)
+            self.toggle_button_color(self.buttons['fears_checklist_toggle'], 0)
             for v in self.object_edit_buttons:
                 self.buttons[v].visible = False
                 self.buttons[v].enabled = False
@@ -456,7 +453,7 @@ class Editor(object):
                                                    size=(100, 20), text=f, visible=False, enabled=False)
 
     def set_fear(self, fear):  # adds/removes either fears or scared_ofs on button click
-        self.toggle_button_colour(self.buttons[fear])
+        self.toggle_button_color(self.buttons[fear])
         if self.show_fears_checklist:
             if fear in self.object_to_edit.fears:
                 self.object_to_edit.fears.remove(fear)
@@ -496,7 +493,7 @@ class Editor(object):
             for i, o_name in enumerate(t.object_references):
                 if o_name is None:
                     continue
-                circ = graphics.draw_circle(25, self.trigger_display_colours[i])
+                circ = graphics.draw_circle(25, self.trigger_display_colors[i])
                 # circ.set_position(o.coord[0], o.coord[1])
                 te = self.create_text_sprite(t.legend[i])  # font.render(t.legend[i], True, (255, 255, 255))
                 # t.set_position(o.coord[0, o.coord[1]])

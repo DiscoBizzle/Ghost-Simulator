@@ -1,5 +1,7 @@
 from __future__ import division, print_function
 
+import os.path
+
 from pyglet import image
 
 from gslib import rect
@@ -54,7 +56,7 @@ class GameObject(object):
         self.scream_thresh = 50
 
         #variables for animation
-        self.sprite_sheet = pyglet.image.load(os.path.join(CHARACTER_DIR, sprite_sheet))
+        self.sprite_sheet = image.load(os.path.join(CHARACTER_DIR, sprite_sheet))
         self._animation_state = 0
         self.sprite_height = sprite_height
         self.sprite_width = sprite_width
@@ -81,38 +83,44 @@ class GameObject(object):
         self.cutscene_controlling = None
 
 
-    def get_state_index(self):
+    @property
+    def state_index(self):
         return self._state_index
-    def set_state_index(self, index):
+
+    @state_index.setter
+    def state_index(self, index):
         self._state_index = index
         for k, v in self.states[index].iteritems():
             setattr(self, k, v)
-    state_index = property(get_state_index, set_state_index)
 
-    def get_coord(self):
+    @property
+    def coord(self):
         return self._coord
-    def set_coord(self, new):
+
+    @coord.setter
+    def coord(self, new):
         self._coord = new
-        self.rect = rect.Rect(self._coord, self._dimensions)
+        self.rect = rect.Rect(self.coord, self.dimensions)
         self.sprite.position = new
-    coord = property(get_coord, set_coord)
 
-    def get_dimensions(self):
+
+    @property
+    def dimensions(self):
         return self._dimensions
-    def set_dimensions(self, new):
-        self._dimensions = new
-        self.rect = rect.Rect(self._coord, self._dimensions)
-    dimensions = property(get_dimensions, set_dimensions)
 
-    def get_animation_state(self):
+    @dimensions.setter
+    def dimensions(self, new):
+        self._dimensions = new
+        self.rect = rect.Rect(self.coord, self.dimensions)
+
+    @property
+    def animation_state(self):
         return self._animation_state
 
-    def set_animation_state(self, val):
-        if val == self._animation_state:
-            return
+    @animation_state.setter
+    def animation_state(self, val):
         self._animation_state = val
         self.sprite.image = self._animations[self._animation_state]
-    animation_state = property(get_animation_state, set_animation_state)
 
     def update(self, dt):
         if self.cutscene_controlling:
