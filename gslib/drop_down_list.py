@@ -1,28 +1,8 @@
 from weakref import WeakKeyDictionary
 
 from gslib import button
+from gslib.utils import ExecOnChange, exec_on_change_meta
 from gslib.constants import *
-
-class RedrawOnChange(object):
-    """Descriptor class to force redraw when changed.
-
-    See http://tinyurl.com/PyDescriptors"""
-    def __init__(self):
-        # use WeakKeyDictionary so that we don't hold refs to instances
-        # that have gone away
-        self.data = WeakKeyDictionary()
-
-    def __get__(self, instance, owner):
-        return self.data.get(instance, None)
-
-    def __set__(self, instance, value):
-        self.data[instance] = value
-        # probably should do something cleverer here but fuck it.
-        try:
-            instance.update_buttons()
-            # instance.redraw()
-        except:
-            pass
 
 
 def list_func(owner, val):
@@ -40,15 +20,17 @@ def list_func(owner, val):
 
 class DropDownList(object):
 
-    visible = RedrawOnChange()
-    size = RedrawOnChange()
-    color = RedrawOnChange()
-    border_color = RedrawOnChange()
-    border_width = RedrawOnChange()
-    text = RedrawOnChange()
-    font_size = RedrawOnChange()
-    selected_name = RedrawOnChange()
-    pos = RedrawOnChange()
+    __metaclass__ = exec_on_change_meta(["update_buttons"])
+
+    visible = ExecOnChange
+    size = ExecOnChange
+    color = ExecOnChange
+    border_color = ExecOnChange
+    border_width = ExecOnChange
+    text = ExecOnChange
+    font_size = ExecOnChange
+    selected_name = ExecOnChange
+    pos = ExecOnChange
 
     def __init__(self, owner, items, function=None, pos=(50, 50), size=(100, 20), visible=True, enabled=True, color=(120, 0, 0),
                  border_color=(120, 50, 80), border_width=2, text=None, font_size=10, labels='dictkey', **kwargs):

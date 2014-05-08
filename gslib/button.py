@@ -2,6 +2,7 @@ from __future__ import division, print_function
 
 import pyglet
 
+from gslib.utils import ExecOnChange, exec_on_change_meta
 from gslib.constants import *
 
 
@@ -15,19 +16,6 @@ def valid_color(color):
     return True
 
 
-def create_text_property(var):  # creates a member variable that redraws the text when changed.
-    def _setter(self, val):
-        old_val = getattr(self, '_' + var)
-        if val != old_val:
-            setattr(self, '_' + var, val)
-            self._update_text()
-
-    def _getter(self):
-        return getattr(self, '_' + var)
-
-    return property(_getter, _setter)
-
-
 class Button(object):
     """
     Basic example:
@@ -38,6 +26,12 @@ class Button(object):
         Create function in class that creates the button and pass it in as second argument.
     """
 
+    __metaclass__ = exec_on_change_meta(["_update_text"])
+
+    text = ExecOnChange
+    font_size = ExecOnChange
+    text_states_toggle = ExecOnChange
+
     def __init__(self, owner, function=None, pos=(50, 50), order=(0, 0), size=(100, 100), visible=True, enabled=True,
                  color=(0, 0, 0), border_color=(0, 0, 0), border_width=2, text=u'', font_size=10, text_states=None,
                  sprite_batch=None, sprite_group=None, text_batch=None, text_group=None):
@@ -47,10 +41,10 @@ class Button(object):
         self._visible = visible
         self._border_color = border_color
         self._border_width = border_width
-        self._text = text
-        self._font_size = font_size
+        self.text = text
+        self.font_size = font_size
         self.text_states = text_states
-        self._text_states_toggle = False
+        self.text_states_toggle = False
         self.enabled = enabled  # whether button can be activated, visible or not
         self._sprite_batch = sprite_batch
         self._sprite_group = sprite_group
@@ -66,7 +60,7 @@ class Button(object):
             self._vertex_list = pyglet.graphics.vertex_list(8, 'v2i', 'c3B')
         else:
             self._vertex_list = self._sprite_batch.add(8, pyglet.gl.GL_QUADS, self._sprite_group, 'v2i', 'c3B')
-        if self._visible:
+        if self.visible:
             self._redraw()
 
         self.priority = False
@@ -83,10 +77,6 @@ class Button(object):
         else:
             pass
             # raise Exception('Negative button position')
-
-    text = create_text_property('text')
-    font_size = create_text_property('font_size')
-    text_states_toggle = create_text_property('text_states_toggle')
 
     @property
     def border_width(self):
@@ -155,7 +145,7 @@ class Button(object):
         self._update_colors()
 
     def _update_text(self):
-        if not self._visible:
+        if not self.visible:
             return
         if self.text_states:
             self._text = self.text_states[self.text_states_toggle]
@@ -174,7 +164,7 @@ class Button(object):
             self._text_layout.end_update()
 
     def _update_colors(self):
-        if not self._visible:
+        if not self.visible:
             return
         colors = (self._border_color * 4 + self._color * 4)
         colors = list(colors)
@@ -183,7 +173,7 @@ class Button(object):
         self._vertex_list.colors[:] = colors
 
     def _update_position(self):
-        if not self._visible:
+        if not self.visible:
             return
         # TODO: make faster by only changing the verticies that need it
         self._text_layout.x, self._text_layout.y = self.pos
@@ -207,8 +197,8 @@ class Button(object):
         return False
 
     def check_clicked_no_function(self, click_pos):
-        x, y = self._pos
-        w, h = self._size
+        x, y = self.pos
+        w, h = self.size
 
         if x <= click_pos[0] < x + w and y <= click_pos[1] < y + h:
             if self.enabled:
@@ -223,7 +213,7 @@ class Button(object):
         self.text_states_toggle = not self.text_states_toggle
 
     def draw(self):
-        if not self._visible:
+        if not self.visible:
             return
         self._vertex_list.draw(pyglet.gl.GL_QUADS)
         self._text_layout.draw()
