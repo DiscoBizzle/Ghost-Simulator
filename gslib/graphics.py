@@ -192,14 +192,6 @@ class Graphics(object):
 
                 self.game.world_objects_to_draw.append(r)
 
-        for c, o in self.game.editor.trigger_display_circles:
-            c.set_position(o.coord[0] + o.sprite_width/2 - c.width/2,
-                           o.coord[1] + o.sprite_height/2 - c.height/2)
-            self.game.world_objects_to_draw.append(c)
-        for t, o in self.game.editor.trigger_display_text:
-            # t.x, t.y = o.coord[0] + o.sprite_width/2 - t.width/2, o.coord[1] + c.height/2 - t.height/2
-            t.x, t.y = o.coord[0], o.coord[1] + c.height
-            self.game.world_objects_to_draw.append(t)
 
     def draw_buttons(self):
         priority_buttons = []

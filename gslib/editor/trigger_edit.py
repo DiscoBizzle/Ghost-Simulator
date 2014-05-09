@@ -33,6 +33,19 @@ def conditional_action(desired_interacters):
     return check_interacter
 
 
+def highlight_button(b, up):
+    low = (120, 0, 0)
+    low_border = (120, 50, 80)
+    high = (0, 120, 0)
+    high_border = (0, 200, 0)
+
+    if up:
+        b.color = high
+        b.border_color = high_border
+    else:
+        b.color = low
+        b.border_color = low_border
+
 class Trigger(object):
     def __init__(self, game, object_refs=None, actions=None, zones=None, interaction_type=None):
         self.game = game
@@ -176,6 +189,8 @@ class TriggerEditor(object):
         self._pos = (0, 0)
         self.pos = (400, self.game.dimensions[1] - 300)
 
+        self.enabled = False
+
         self.create_elements()
 
     @property
@@ -187,12 +202,28 @@ class TriggerEditor(object):
         self._pos = p
         self.update_element_positions()
 
+    def toggle_self(self, value=None):
+        if value is None:
+            self.enabled = not self.enabled
+        else:
+            self.enabled = value
+        for k, v in self.buttons.iteritems():
+            if not k == 'toggle_trigger_editor':
+                v.visible = self.enabled
+                v.enabled = self.enabled
+
+        for v in self.drop_lists.itervalues():
+            v.visible = self.enabled
+            v.enabled = self.enabled
+
     def update_element_positions(self):
         size = (120, 20)
         vert_spacing = 5
         horizontal_spacing = 5
         p1 = self.pos[1] - size[1] # pos of TriggerEditor is then top-left of first button
         for b in self.buttons.itervalues():
+            if b.text == "Trigger Editor":
+                continue
             pos = (self.pos[0] + b.order[1] * (size[0] + horizontal_spacing), p1 - b.order[0] * (size[1] + vert_spacing))
             b.pos = pos
             b.size = size
@@ -205,6 +236,8 @@ class TriggerEditor(object):
     def create_elements(self):
         self.buttons = {}
         self.drop_lists = {}
+
+        self.buttons['toggle_trigger_editor'] = button.DefaultButton(self, self.toggle_self, text="Trigger Editor", pos=(0, self.game.dimensions[1] - 40))
 
         db = button.DefaultButton
 
@@ -238,6 +271,7 @@ class TriggerEditor(object):
         self.drop_lists['actions'] = dl(self, {}, self.delete_action, order=(7, 2))
 
         self.update_element_positions()
+        self.toggle_self(False)
 
     def create_new_trigger(self):
         trig = Trigger(self.game)
@@ -295,8 +329,10 @@ class TriggerEditor(object):
         def choose(o_name):
             trig.add_interactee(o_name)
             self.drop_lists['interactees'].refresh()
+            highlight_button(self.buttons['pick_interactee'], False)
 
         self.game.mouse_controller.pick_object(choose)
+        highlight_button(self.buttons['pick_interactee'], True)
 
     def create_new_zone(self):
         trig = self.drop_lists['triggers'].selected
@@ -347,8 +383,10 @@ class TriggerEditor(object):
             zone.bottomleft = pos
             self.drop_lists['zones'].refresh()
             self.drop_lists['zones'].set_to_value(zone)
+            highlight_button(self.buttons['zone_bottomleft'], False)
 
         self.game.mouse_controller.pick_position(set_bottomleft)
+        highlight_button(self.buttons['zone_bottomleft'], True)
 
     def zone_topright(self):
         zone = self.drop_lists['zones'].selected
@@ -361,8 +399,10 @@ class TriggerEditor(object):
             zone.size = (w, h)
             self.drop_lists['zones'].refresh()
             self.drop_lists['zones'].set_to_value(zone)
+            highlight_button(self.buttons['zone_topright'], False)
 
         self.game.mouse_controller.pick_position(set_topright)
+        highlight_button(self.buttons['zone_topright'], True)
 
     def pick_target(self):
         trig = self.drop_lists['triggers'].selected
@@ -372,8 +412,10 @@ class TriggerEditor(object):
         def choose(target):
             trig.add_target(target)
             self.drop_lists['targets'].refresh() # update contents of list
+            highlight_button(self.buttons['pick_target'], False)
 
         self.game.mouse_controller.pick_object(choose)
+        highlight_button(self.buttons['pick_target'], True)
 
     def delete_target(self):
         target = self.drop_lists['targets'].selected
@@ -395,8 +437,10 @@ class TriggerEditor(object):
         def choose(o_name):
             trig.add_conditional(o_name)
             self.drop_lists['conditionals'].refresh()
+            highlight_button(self.buttons['pick_conditional'], False)
 
         self.game.mouse_controller.pick_object(choose)
+        highlight_button(self.buttons['pick_conditional'], True)
 
     def delete_conditional(self):
         trig = self.drop_lists['triggers'].selected
