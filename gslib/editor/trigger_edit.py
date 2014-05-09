@@ -137,7 +137,7 @@ class Trigger(object):
 
         save_dict[u'interaction_type'] = self.interaction_type
 
-        zones = [json.dumps(z.to_json()) for z in self.zones]
+        zones = [json.dumps(z.to_tuple()) for z in self.zones]
         save_dict[u'zones'] = zones
 
         return save_dict

@@ -25,6 +25,12 @@ class Rect(object):
     def __nonzero__(self):
         return self.w != 0 and self.h != 0
 
+    def __str__(self):
+        return "({0.x}, {0.y}), ({0.w}, {0.h})".format(self)
+
+    def to_tuple(self):
+        return (self.x, self.y), (self.w, self.h)
+
     @property
     def x(self):
         return self.left
@@ -350,9 +356,3 @@ class Rect(object):
             if self.colliderect(v):
                 res.append((k, v))
         return res
-
-    def __str__(self):
-        return "({0.x}, {0.y}), ({0.w}, {0.h})".format(self)
-
-    def to_json(self):
-        return (self.x, self.y), (self.w, self.h)
