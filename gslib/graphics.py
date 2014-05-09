@@ -176,6 +176,22 @@ class Graphics(object):
                 self.game.world_objects_to_draw.append(layer_sprite)
 
     def draw_editor(self):
+        trig = self.game.editor.trigger_editor.drop_lists['triggers'].selected
+        if not trig is None:
+            zone = self.game.editor.trigger_editor.drop_lists['zones'].selected
+            for z in trig.zones:
+                r = new_rect_sprite()
+                r.scale_x = z.width
+                r.scale_y = z.height
+                r.x = z.x
+                r.y = z.y
+                r.color_rgba = (135, 206, 250, 50)
+                if not zone is None:
+                    if z == zone:
+                        r.color_rgba = (65, 105, 225, 100)
+
+                self.game.world_objects_to_draw.append(r)
+
         for c, o in self.game.editor.trigger_display_circles:
             c.set_position(o.coord[0] + o.sprite_width/2 - c.width/2,
                            o.coord[1] + o.sprite_height/2 - c.height/2)

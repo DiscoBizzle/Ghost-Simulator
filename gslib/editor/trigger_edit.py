@@ -170,6 +170,8 @@ class TriggerEditor(object):
         self.drop_lists = {}
 
         self.trigger_to_edit = None
+        self.display_zones = []
+        self.display_circles = []
 
         self._pos = (0, 0)
         self.pos = (400, self.game.dimensions[1] - 300)
@@ -325,8 +327,6 @@ class TriggerEditor(object):
             self.buttons['delete_zone'].enabled = True
             self.buttons['delete_zone'].visible = True
 
-        self.display_zone(zone)
-
     def delete_selected_zone(self):
         zone = self.drop_lists['zones'].selected
         trig = self.drop_lists['triggers'].selected
@@ -345,7 +345,6 @@ class TriggerEditor(object):
 
         def set_bottomleft(pos):
             zone.bottomleft = pos
-            self.display_zone(zone)
             self.drop_lists['zones'].refresh()
             self.drop_lists['zones'].set_to_value(zone)
 
@@ -360,7 +359,6 @@ class TriggerEditor(object):
             w = pos[0] - zone.x
             h = pos[1] - zone.y
             zone.size = (w, h)
-            self.display_zone(zone)
             self.drop_lists['zones'].refresh()
             self.drop_lists['zones'].set_to_value(zone)
 
@@ -433,9 +431,6 @@ class TriggerEditor(object):
         self.drop_lists['actions'].refresh()
         self.drop_lists['actions'].set_to_default()
 
-
-    def display_zone(self, zone):
-        pass
 
     def display_objects(self, objects):
         pass
