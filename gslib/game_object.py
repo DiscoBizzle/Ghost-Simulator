@@ -284,13 +284,13 @@ class GameObject(object):
             elif self.animation_state == ANIM_LEFTWALK:
                 self.animation_state = ANIM_LEFTIDLE
         else:
-            if self.velocity[1] < 0:
+            if self.velocity[1] < 0 and self.animation_state != ANIM_DOWNWALK:
                 self.animation_state = ANIM_DOWNWALK
-            elif self.velocity[1] > 0:
+            elif self.velocity[1] > 0 and self.animation_state != ANIM_UPWALK:
                 self.animation_state = ANIM_UPWALK
-            elif self.velocity[0] > 0:
+            elif self.velocity[0] > 0 and self.animation_state != ANIM_RIGHTWALK:
                 self.animation_state = ANIM_RIGHTWALK
-            elif self.velocity[0] < 0:
+            elif self.velocity[0] < 0 and self.animation_state != ANIM_LEFTWALK:
                 self.animation_state = ANIM_LEFTWALK
 
     def _create_animations(self):
