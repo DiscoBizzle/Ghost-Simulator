@@ -55,7 +55,7 @@ class Rect(object):
 
     @right.setter
     def right(self, value):
-        self.left = value - self.height
+        self.left = value - self.width
 
     @property
     def topleft(self):
@@ -221,9 +221,9 @@ class Rect(object):
     def clip_ip(self, other):
         """Same as clip, but in-place."""
         if self.right > other.right:
-            self.width = self.right - other.right
+            self.width -= self.right - other.right
         if self.top > other.top:
-            self.height = self.top - other.top
+            self.height -= self.top - other.top
         if self.left < other.left:
             self.width -= other.left - self.left
             self.left = other.left
@@ -353,3 +353,6 @@ class Rect(object):
 
     def __str__(self):
         return "({0.x}, {0.y}), ({0.w}, {0.h})".format(self)
+
+    def to_json(self):
+        return (self.x, self.y), (self.w, self.h)

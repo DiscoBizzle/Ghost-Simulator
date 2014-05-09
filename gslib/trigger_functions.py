@@ -24,3 +24,10 @@ def red_square_trigger(targets):
             target.flair['fear_harvested'] = (sprite, (-5, target.dimensions[1] + 5))
     func.__name__ = 'red_square_trigger'
     return func
+
+def activate_trigger(targets):
+    def func(interactee, interacter):
+        for target in targets:
+            target.activate()
+    func.__name__ = 'activate_trigger'
+    return func

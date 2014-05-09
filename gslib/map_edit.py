@@ -42,7 +42,6 @@ def change_object_value(editor, which, increment):
             if editor.object_to_edit.collision_weight < 0:
                 editor.object_to_edit.collision_weight = 0
             editor.buttons['collision_weight_value'].text = str(editor.object_to_edit.collision_weight)
-
     return func
 
 
@@ -124,41 +123,12 @@ class Editor(object):
         self.object_prototype = None
 
         ###################################################################
-        # View/Edit existing Trigger
+        # Trigger Editor
         ###################################################################
 
-        self.buttons['view_triggers_label'] = button.DefaultButton(self, None, pos=(320, self.game.dimensions[1] - 20), size=(120, 20),
-                                                                   text="Current Triggers")
-        self.drop_lists['view_triggers'] = drop_down_list.DropDownList(self, self.game.map.triggers,
-                                                                       self.display_trigger, pos=(440, self.game.dimensions[1] - 20),
-                                                                       labels='classname', size=(300, 20))
-        self.buttons['delete_trigger'] = button.DefaultButton(self, self.delete_selected_trigger, pos=(320, self.game.dimensions[1] - 40), size=(120, 20),
-                                                                   text="Delete Trigger")
         self.trigger_display_colors = ((120, 0, 0), (0, 120, 0), (0, 0, 120), (120, 120, 0), (120, 0, 120), (0, 120, 120), (120, 120, 120))
         self.trigger_display_circles = []
         self.trigger_display_text = []
-        self.trigger_to_edit = None
-
-
-        self.drop_lists['add_actions'] = drop_down_list.DropDownList(self, triggers.trigger_functions_dict,
-                                                                     self.add_action_to_trigger, pos=(440, self.game.dimensions[1] - 50),
-                                                                     size=(300, 20))
-
-        ###################################################################
-        # Create new Trigger
-        ###################################################################
-
-        self.possible_triggers = triggers.possible_triggers
-        # self.possible_triggers = {'Flip State On Harvest': triggers.FlipStateOnHarvest,
-        #                           'Flip State When Touched (Conditional)': triggers.FlipStateWhenTouchedConditional,
-        #                           'Flip State When UnTouched (Conditional)': triggers.FlipStateWhenUnTouchedConditional}
-        self.buttons['new_trigger_label'] = button.DefaultButton(self, None, pos=(760, self.game.dimensions[1] - 20), size=(100, 20),
-                                                                 text="New trigger")
-        self.drop_lists['new_triggers'] = drop_down_list.DropDownList(self, self.possible_triggers,
-                                                                      self.new_trigger, pos=(860, self.game.dimensions[1] - 20),
-                                                                      size=(300, 20))
-        # self.new_trigger_objects = []
-        self.trigger_prototype = None
 
         self.trigger_editor = trigger_edit.TriggerEditor(self.game)
 
@@ -329,7 +299,7 @@ class Editor(object):
         if not self.save_state is None:
             save_load.restore_save_state(self.game, self.game.map, self.save_state)
             # refresh all things that refer to specific entities that have been re-created
-            self.drop_lists['view_triggers'].refresh()
+            self.drop_lists['triggers'].refresh()
 
     def exit_edit_mode(self):
         self.save_state = save_load.create_save_state(self.game.map)
@@ -432,6 +402,7 @@ class Editor(object):
                 self.drop_lists[v].visible = True
                 self.drop_lists[v].enabled = True
         else:
+            self.object_to_edit = None
             self.show_fears_checklist = False
             self.show_scared_of_checklist = False
             self.toggle_button_color(self.buttons['scared_of_checklist_toggle'], 0)

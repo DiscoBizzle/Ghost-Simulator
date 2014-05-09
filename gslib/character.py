@@ -253,7 +253,6 @@ class Character(GameObject):
                 if self.fear_timer:
                     for f in self.feared_function:
                         f()
-                    # self.feared_function()
                     self.fear_timer -= 1
 
             else:
@@ -285,6 +284,9 @@ class Character(GameObject):
 
         save_dict[u'object_type'] = self.__class__.__name__
         return save_dict
+
+    def activate(self):
+        pass
 
 
 if __name__ == "__main__":

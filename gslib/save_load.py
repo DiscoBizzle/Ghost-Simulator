@@ -54,11 +54,11 @@ def save_map(m):
 def create_save_state(m):
     obj_dict = {}
     for k, v in m.objects.iteritems():
-        obj_dict[str(k)] = v.create_save_dict()#create_save_char(v)
+        obj_dict[str(k)] = v.create_save_dict()
 
     trig_dict = {}
     for k, v in m.triggers.iteritems():
-        trig_dict[str(k)] = v.create_save_dict() #create_save_trigger(v)
+        trig_dict[str(k)] = v.create_save_dict()
 
     file_dict = {}
     file_dict[u'objects'] = obj_dict
@@ -105,20 +105,22 @@ def load_object(game, d):
 
 
 def load_trigger(game, d):
-    obj_refs = d[u'object_references']
-    actions = json.loads(d[u'actions'])
-
-    interaction_type = d[u'interaction_type']
-    conditional = d[u'conditional']
-
-    zones = []
-    for tup_string in d[u'zones']:
-        tup = json.loads(tup_string)
-        z = rect.Rect((tup[0], tup[1]), (tup[2], tup[3]))
-        zones.append(z)
-
-    action_funcs = [trigger_edit.trigger_functions_dict[a] for a in actions]
-    new_trig = trigger_edit.Trigger(game, obj_refs, action_funcs, zones, interaction_type, conditional)
+    # obj_refs = d[u'object_references']
+    # actions = json.loads(d[u'actions'])
+    #
+    # interaction_type = d[u'interaction_type']
+    # conditional = d[u'conditional']
+    #
+    # zones = []
+    # for tup_string in d[u'zones']:
+    #     tup = json.loads(tup_string)
+    #     z = rect.Rect((tup[0], tup[1]), (tup[2], tup[3]))
+    #     zones.append(z)
+    #
+    # action_funcs = [trigger_edit.trigger_functions_dict[a] for a in actions]
+    # new_trig = trigger_edit.Trigger(game, obj_refs, action_funcs, zones, interaction_type, conditional)
+    new_trig = trigger_edit.Trigger(game)
+    new_trig.load_from_dict(d)
     return new_trig
 
 
@@ -167,13 +169,14 @@ def load_map(game, map_name):
 
 
 def restore_save_state(game, m, state_dict):
+    m.triggers.clear() # empties the dict, but preserves its place in memory (prevents breaking references to it)
     m.objects.clear() # empties the dict, but preserves its place in memory (prevents breaking references to it)
+
     for o_name, o_dict in state_dict[u'objects'].iteritems():
         m.objects[o_name] = load_object(game, o_dict)
 
     game.gather_buttons_and_drop_lists_and_objects()
 
-    m.triggers.clear() # empties the dict, but preserves its place in memory (prevents breaking references to it)
     for t_name, t_dict in state_dict[u'triggers'].iteritems():
         m.triggers[t_name] = load_trigger(game, t_dict)
 

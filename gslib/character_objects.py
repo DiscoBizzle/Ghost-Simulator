@@ -43,6 +43,9 @@ class SmallDoor(Character):
         self._animations += seq[::6]
         self.sprite = sprite.Sprite(self._animations[self._animation_state])
 
+    def activate(self):
+        self.state_index = str((int(self.state_index) + 1) % len(self.states))
+
 
 class Dude(Character):
     def __init__(self, game_class, x=0, y=0, stats=None):

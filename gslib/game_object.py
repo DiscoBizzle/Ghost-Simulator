@@ -197,6 +197,7 @@ class GameObject(object):
 
 
     def move(self):
+        prev_pos = self.coord
         self.remove_self_from_touching_list()
 
         x_ticks, y_ticks = abs(self.velocity[0]), abs(self.velocity[1])
@@ -209,6 +210,9 @@ class GameObject(object):
             if y_ticks > 0:
                 self.movePx(0, move_y_per_tick)
                 y_ticks -= 1
+
+        for t in self.game_class.map.triggers.itervalues():
+            t.check_zone_entry(self, prev_pos)
 
     def movePx(self, x_dir, y_dir):
         self.remove_self_from_touching_list()

@@ -50,6 +50,8 @@ class DropDownList(object):
         self.priority = False
         self._open = False
 
+        self.function = function
+
         self.order = order
         self.owner = owner  # container that created the button, allows for the button function to interact with its creator
 
@@ -61,9 +63,10 @@ class DropDownList(object):
                                          border_color=self.border_color, border_width=self.border_width,
                                          color=self.color)
         self.drop_buttons = []
+
+        self.first_time = True
         self.refresh()
 
-        self.function = function
 
         self.high_color = (0, 120, 0)
         self.high_border_color = (0, 200, 0)
@@ -84,10 +87,9 @@ class DropDownList(object):
             b.priority = value
 
     def refresh(self, new_items=None):  # call if the list changes
-        if new_items is not None:
+        if not new_items is None:
             self.items = new_items
-            self.selected = None
-            self.selected_name = "<None>"
+
         self.drop_buttons = [button.Button(self, list_func(self, None), size=self.size, font_size=self.font_size,
                                                visible=False, enabled=False, text=u"<None>",
                                                border_color=self.border_color, border_width=self.border_width,
@@ -111,6 +113,12 @@ class DropDownList(object):
                                                        visible=False, enabled=False, text=t,
                                                        border_color=self.border_color, border_width=self.border_width,
                                                        color=self.color))
+
+        if not self.first_time: # prevent self.function() being run before the owner of this list is fully initialised
+            self.set_to_default()
+        else:
+            self.first_time = False
+
         if self.open:
             self.update_buttons()
 
@@ -202,3 +210,9 @@ class DropDownList(object):
                 b.border_color = self.high_border_color
             if b.color != self.high_color:
                 b.color = self.high_color
+
+    def set_to_default(self):
+        self.set_to_value(None)
+
+    def set_to_value(self, value):
+        list_func(self, value)()
