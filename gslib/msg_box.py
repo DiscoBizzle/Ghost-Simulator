@@ -33,7 +33,7 @@ class MessageBox(object):
 class InfoBox(MessageBox):
 
     def __init__(self, game, text, on_hide_fun=None):
-        MessageBox.__init__(self, game, text, on_hide_fun)
+        super(InfoBox, self).__init__(game, text, on_hide_fun)
         self.ok_button = button.DefaultButton(self, self.hide, (500, 220), text="OK", size=(100, 60))
         self.buttons.append(self.ok_button)
 
@@ -41,7 +41,7 @@ class InfoBox(MessageBox):
 class QuestionBox(MessageBox):
 
     def __init__(self, game, text, on_complete_fun=None, on_yes_fun=None, on_no_fun=None):
-        MessageBox.__init__(self, game, text, None)
+        super(QuestionBox, self).__init__(game, text, None)
         self.yes_button = button.DefaultButton(self, self.hide, (350, 220), text="Yes", size=(100, 60))
         self.no_button = button.DefaultButton(self, self.hide, (550, 220), text="No", size=(100, 60))
         self.buttons += [self.yes_button, self.no_button]
@@ -63,15 +63,13 @@ class QuestionBox(MessageBox):
         if self.on_complete_fun is not None:
             self.on_complete_fun(False)
 
-    def hide(self):
-        MessageBox.hide(self)
 
 
 class InputBox(InfoBox):
 
     def __init__(self, game, text, start_input, on_finish_input_fun=None):
-        InfoBox.__init__(self, game, text, None)
-        self.on_finish_input_fin = on_finish_input_fun
+        super(InputBox, self).__init__(game, text, None)
+        self.on_finish_input_fun = on_finish_input_fun
 
         self.input = start_input
         self.text_document = pyglet.text.document.FormattedDocument()
@@ -83,17 +81,17 @@ class InputBox(InfoBox):
         self.text_caret.select_paragraph(0, 0)
 
     def show(self):
-        InfoBox.show(self)
+        super(InputBox, self).show()
         self.game.text_caret = self.text_caret
 
     def hide(self):
-        InfoBox.hide(self)
+        super(InputBox, self).hide()
         self.game.text_caret = None
-        if self.on_finish_input_fin is not None:
-            self.on_finish_input_fin(self.input)
+        if self.on_finish_input_fun is not None:
+            self.on_finish_input_fun(self.input)
 
     def draw(self):
-        InfoBox.draw(self)
+        super(InputBox, self).draw()
         self.game.screen_objects_to_draw.append(self.text_layout)
 
     def update(self):
