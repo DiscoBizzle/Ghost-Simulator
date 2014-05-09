@@ -1,19 +1,8 @@
 from __future__ import division, print_function
 
+from gslib.utils import ExecOnChange, exec_on_change_meta
+
 import pyglet
-
-
-def create_property(var):  # creates a member variable that redraws the button when changed.
-    def _setter(self, val):
-        old_val = getattr(self, '_' + var)
-        if old_val != val:
-            setattr(self, '_' + var, val)
-            self._redraw()
-
-    def _getter(self):
-        return getattr(self, '_' + var)
-
-    return property(_getter, _setter)
 
 
 class Slider(object):
@@ -26,24 +15,30 @@ class Slider(object):
         Create function in class that creates the slider and pass it in as second argument.
     """
 
+    __metaclass__ = exec_on_change_meta(["redraw"])
+    fore_color = ExecOnChange
+    back_color = ExecOnChange
+    size = ExecOnChange
+    pos = ExecOnChange
+
     def __init__(self, owner, func, pos=(0, 0), range=(0, 100), value=50, size=(100, 20), back_color=(120, 0, 0),
                  fore_color=(0, 120, 0), order=(0, 0), enabled=True, visible=True, sprite_batch=None, sprite_group=None):
 
         self.owner = owner
         self.min, self.max = range
-        self._value = value
-        self._fore_color = fore_color
-        self._back_color = back_color
-        self._size = size
         self._visible = visible
+        self._value = value
+        self.fore_color = fore_color
+        self.back_color = back_color
+        self.size = size
         self.enabled = enabled
-        self._pos = pos
-        self._sprite_batch = sprite_batch
-        self._sprite_group = sprite_group
-        if self._sprite_batch is None:
-            self._vertex_list = pyglet.graphics.vertex_list(8, 'v2i', 'c3B')
+        self.pos = pos
+        self.sprite_batch = sprite_batch
+        self.sprite_group = sprite_group
+        if self.sprite_batch is None:
+            self.vertex_list = pyglet.graphics.vertex_list(8, 'v2i', 'c3B')
         else:
-            self._vertex_list = self._sprite_batch.add(8, pyglet.gl.GL_QUADS, self._sprite_group, 'v2i', 'c3B')
+            self.vertex_list = self.sprite_batch.add(8, pyglet.gl.GL_QUADS, self.sprite_group, 'v2i', 'c3B')
 
         self.order = order
 
@@ -51,42 +46,41 @@ class Slider(object):
 
         self.func = func
 
-        self._redraw()
+        self.redraw()
 
-    def get_value(self):
+    @property
+    def value(self):
         return self._value
-    def set_value(self, val):
+
+    @value.setter
+    def value(self, val):
         self._value = val
         if self._value > self.max:
             self._value = self.max
         if self._value < self.min:
             self._value = self.min
-        self._redraw()
-    value = property(get_value, set_value)
+        self.redraw()
 
-    fore_color = create_property('fore_color')
-    back_color = create_property('back_color')
-    size = create_property('size')
-    pos = create_property('pos')
+    @property
+    def visible(self):
+        return self._visible
 
-    def _set_visible(self, visible):
-        if visible == self._visible:
-            return
+    @visible.setter
+    def visible(self, visible):
         self._visible = visible
         if not visible:
-            self._vertex_list.vertices[:] = [0] * 16
+            self.vertex_list.vertices[:] = [0] * 16
         else:
-            self._redraw()
-    visible = property(lambda self: self._visible, _set_visible)
+            self.redraw()
 
-    def _redraw(self):
-        if not self._visible:
+    def redraw(self):
+        if not self.visible:
             return
         colors = (self.back_color * 4 + self.fore_color * 4)
         colors = list(colors)
         colors[9:12] = [min(int(x * 1.5), 255) for x in colors[9:12]]
         colors[21:24] = [min(int(x * 1.5), 255) for x in colors[21:24]]
-        self._vertex_list.colors[:] = colors
+        self.vertex_list.colors[:] = colors
 
         length = self.size[0] * ((self.value - self.min) / (self.max - self.min))
 
@@ -101,7 +95,7 @@ class Slider(object):
             self.pos[0] + length, self.pos[1] + self.size[1],
             self.pos[0], self.pos[1] + self.size[1]]
 
-        self._vertex_list.vertices[:] = map(int, back_rect + fore_rect)
+        self.vertex_list.vertices[:] = map(int, back_rect + fore_rect)
 
     def check_clicked(self, pos, typ):
         if not self.enabled:
@@ -124,4 +118,4 @@ class Slider(object):
             self.func(self.value)
 
     def draw(self):
-        self._vertex_list.draw(pyglet.gl.GL_QUADS)
+        self.vertex_list.draw(pyglet.gl.GL_QUADS)
