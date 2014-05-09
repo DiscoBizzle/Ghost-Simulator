@@ -119,6 +119,8 @@ class GameObject(object):
 
     @animation_state.setter
     def animation_state(self, val):
+        if self._animation_state == val:
+            return
         self._animation_state = val
         self.sprite.image = self._animations[self._animation_state]
 
@@ -284,13 +286,13 @@ class GameObject(object):
             elif self.animation_state == ANIM_LEFTWALK:
                 self.animation_state = ANIM_LEFTIDLE
         else:
-            if self.velocity[1] < 0 and self.animation_state != ANIM_DOWNWALK:
+            if self.velocity[1] < 0:
                 self.animation_state = ANIM_DOWNWALK
-            elif self.velocity[1] > 0 and self.animation_state != ANIM_UPWALK:
+            elif self.velocity[1] > 0:
                 self.animation_state = ANIM_UPWALK
-            elif self.velocity[0] > 0 and self.animation_state != ANIM_RIGHTWALK:
+            elif self.velocity[0] > 0:
                 self.animation_state = ANIM_RIGHTWALK
-            elif self.velocity[0] < 0 and self.animation_state != ANIM_LEFTWALK:
+            elif self.velocity[0] < 0:
                 self.animation_state = ANIM_LEFTWALK
 
     def _create_animations(self):
