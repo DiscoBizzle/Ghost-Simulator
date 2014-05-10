@@ -294,6 +294,9 @@ class GameObject(object):
                         if not (self, o) in self.game_class.touching:
                             self.game_class.touching.append((self, o))  # (toucher, touchee)
 
+                        if collision:
+                            break
+
         if not collision:
             self.coord = pro_pos
         return collision
