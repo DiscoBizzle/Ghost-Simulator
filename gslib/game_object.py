@@ -113,10 +113,6 @@ class GameObject(object):
 
         self.cutscene_controlling = None
 
-        self.in_grid = False
-        self.moved = False
-
-
     @property
     def state_index(self):
         return self._state_index
@@ -136,8 +132,7 @@ class GameObject(object):
         self._coord = new
         self.rect = rect.Rect(self.coord, self.dimensions)
         self.sprite.position = new
-        self.moved = True
-
+        self.game_class.object_collision_lookup.update_for(self)
 
     @property
     def dimensions(self):
@@ -281,25 +276,13 @@ class GameObject(object):
                             collision = True
                             # print('collision!')
 
-        # do we need to check for collision against other objects?
-        need_full_collision = False
-        i = self.coord[0] // TILE_SIZE
-        j = self.coord[1] // TILE_SIZE
-        to_search = []
-        for ni in range(i - 1, i + 2):
-            for nj in range(j - 1, j + 2):
-                if 0 <= ni < LEVEL_WIDTH // TILE_SIZE and 0 <= nj < LEVEL_HEIGHT // TILE_SIZE:
-                    if len(self.game_class.lazy_grid[nj][ni]) > 0:
-                        to_search += self.game_class.lazy_grid[nj][ni]
-                        need_full_collision = True
-                        break
+        search_rect = pro_rect.union(self.rect)
 
         # collision against other objects
-        #for o in self.game_class.objects.itervalues():
-        for o in set(to_search):
+        for o in set(self.game_class.object_collision_lookup.candidates_for(search_rect)):
             if not o is self:
                 if o.collision_weight and self.collision_weight:  # check if obj collides at all
-                    if pro_rect.colliderect(o.rect):
+                    if pro_rect.colliderect(o.rect) and not self.rect.colliderect(o.rect):
 
                         if 1 + self.collision_weight < o.collision_weight:  # check if obj can be pushed by self
                             collision = True
@@ -314,6 +297,7 @@ class GameObject(object):
 
         if not collision:
             self.coord = pro_pos
+
         return collision
 
     def _update_animation(self):

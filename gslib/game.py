@@ -5,6 +5,7 @@ import pyglet
 import random
 
 from gslib import button
+from gslib import collision
 from gslib import credits
 from gslib import graphics
 from gslib import joy
@@ -75,6 +76,8 @@ class Game(pyglet.event.EventDispatcher):
 
         self.window = GameWindow(self, width=self.options['resolution'][0], height=self.options['resolution'][1],
                                  resizable=True, vsync=self.options['vsync'], fullscreen=self.options['fullscreen'])
+
+        self.object_collision_lookup = collision.ObjectCollisionLookup(self)
 
         # enable alpha-blending
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
@@ -190,8 +193,6 @@ class Game(pyglet.event.EventDispatcher):
 
         self.fears_dict = self.map.fears_dict
 
-        self.lazy_grid = None
-
     @property
     def dimensions(self):
         return self.window.get_size()
@@ -262,45 +263,7 @@ class Game(pyglet.event.EventDispatcher):
                 if self.map.active_cutscene is not None and not self.map.active_cutscene.done:
                     self.map.active_cutscene.update()
 
-                #if not self.lazy_grid:
-                # reset lazy object collision grid
-                self.lazy_grid = [[[] for x in range(0, self.map.grid_width)] for y in range(0, self.map.grid_height)]
-
-                # update lazy object collision grid
-                for obj in self.objects.itervalues():
-                    b_x = obj.coord[0] // TILE_SIZE
-                    b_y = obj.coord[1] // TILE_SIZE
-                    for ny in range(b_y - 2, b_y + 2):
-                        for nx in range(b_x - 2, b_x + 2):
-                            if 0 <= nx < LEVEL_WIDTH // TILE_SIZE and 0 <= ny < LEVEL_HEIGHT // TILE_SIZE:
-                                self.lazy_grid[ny][nx].append(obj)
-                                obj.in_grid = True
-
-                """else:
-                    # update lazy object collision grid
-                    for obj in self.objects.itervalues():
-                        if obj.moved:
-                            # remove from old squares
-                            if obj.in_grid:
-                                b_x = obj.last_coord[0] // TILE_SIZE
-                                b_y = obj.last_coord[1] // TILE_SIZE
-                                for ny in range(b_y - 1, b_y + 2):
-                                    for nx in range(b_x - 1, b_x + 2):
-                                        if 0 <= nx < LEVEL_WIDTH // TILE_SIZE and 0 <= ny < LEVEL_HEIGHT // TILE_SIZE:
-                                            self.lazy_grid[ny][nx].remove(obj)
-                            # add to new squares
-                            b_x = obj.coord[0] // TILE_SIZE
-                            b_y = obj.coord[1] // TILE_SIZE
-                            for ny in range(b_y - 1, b_y + 2):
-                                for nx in range(b_x - 1, b_x + 2):
-                                    if 0 <= nx < LEVEL_WIDTH // TILE_SIZE and 0 <= ny < LEVEL_HEIGHT // TILE_SIZE:
-                                        self.lazy_grid[ny][nx].append(obj)
-                            obj.in_grid = True"""
-
-                # move new to old
-                for obj in self.objects.itervalues():
-                    obj.last_coord = obj.coord
-                    obj.moved = False
+                self.object_collision_lookup.update_all()
 
                 if self.state != EDITOR or self.force_run_objects:  # pause game while in edit mode
                     for obj in self.objects.itervalues():
