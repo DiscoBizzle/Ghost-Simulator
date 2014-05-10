@@ -1,6 +1,7 @@
 .idea/
 dist/
 build/
+patches/
 MANIFEST
 *.pyc
 Thumbs.db
