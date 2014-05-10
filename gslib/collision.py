@@ -30,8 +30,8 @@ class ObjectCollisionLookup(object):
         if self.grid and obj.collision_weight != 0:
             b_x = obj.coord[0] // TILE_SIZE
             b_y = obj.coord[1] // TILE_SIZE
-            for ny in range(b_y - 2, b_y + 2):
-                for nx in range(b_x - 2, b_x + 2):
+            for ny in range(b_y - 1, b_y + 2):
+                for nx in range(b_x - 1, b_x + 2):
                     if 0 <= nx < LEVEL_WIDTH // TILE_SIZE and 0 <= ny < LEVEL_HEIGHT // TILE_SIZE:
                         self.grid[ny][nx].append(obj)
                         #obj.in_grid = True
