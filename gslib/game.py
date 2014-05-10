@@ -190,6 +190,8 @@ class Game(pyglet.event.EventDispatcher):
 
         self.fears_dict = self.map.fears_dict
 
+        self.lazy_grid = None
+
     @property
     def dimensions(self):
         return self.window.get_size()
@@ -259,6 +261,18 @@ class Game(pyglet.event.EventDispatcher):
 
                 if self.map.active_cutscene is not None and not self.map.active_cutscene.done:
                     self.map.active_cutscene.update()
+
+                # reset lazy object collision grid
+                self.lazy_grid = [[False for x in range(0, self.map.grid_width)] for y in range(0, self.map.grid_height)]
+
+                # update lazy object collision grid
+                for obj in self.objects.itervalues():
+                    b_x = obj.coord[0] // TILE_SIZE
+                    b_y = obj.coord[1] // TILE_SIZE
+                    for ny in range(b_y, b_y + 2):
+                        for nx in range(b_x, b_x + 2):
+                            if 0 <= nx < LEVEL_WIDTH // TILE_SIZE and 0 <= ny < LEVEL_HEIGHT // TILE_SIZE:
+                                self.lazy_grid[ny][nx] = True
 
                 if self.state != EDITOR or self.force_run_objects:  # pause game while in edit mode
                     for obj in self.objects.itervalues():

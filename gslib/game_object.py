@@ -174,7 +174,7 @@ class GameObject(object):
             self.velocity = (v_x, v_y)
 
         if not self.velocity == (0, 0):
-            self.move()
+            self.move(self.velocity[0], self.velocity[1])
             # self.rect = pygame.Rect(self.coord, self.dimensions)
         # self.apply_fear()
         self.get_feared()
@@ -220,28 +220,84 @@ class GameObject(object):
         for i in to_remove:
             self.game_class.touching.remove(i)
 
-
-    def move(self):
+    def move(self, v_x, v_y):
         prev_pos = self.coord
+        pro_pos = (self.coord[0] + v_x, self.coord[1] + v_y)
+
         self.remove_self_from_touching_list()
 
-        x_ticks, y_ticks = abs(self.velocity[0]), abs(self.velocity[1])
-        move_x_per_tick, move_y_per_tick = 1 if self.velocity[0] > 0 else -1, 1 if self.velocity[1] > 0 else -1
+        collision = False
+        obj_collision = False
 
+        x_ticks, y_ticks = abs(v_x), abs(v_y)
+        move_x_per_tick, move_y_per_tick = 1 if v_x > 0 else -1, 1 if v_y > 0 else -1
+
+        # call .movepx for each tick (for map tile collision)
+        x_travelled = 0
+        y_travelled = 0
+        a_collision = False
         while x_ticks > 0 or y_ticks > 0:
             if x_ticks > 0:
-                self.movePx(move_x_per_tick, 0)
+                a_collision = self.movePx(x_travelled + move_x_per_tick, y_travelled)
                 x_ticks -= 1
+                if not a_collision:
+                    x_travelled += move_x_per_tick
+
             if y_ticks > 0:
-                self.movePx(0, move_y_per_tick)
+                a_collision = self.movePx(x_travelled, y_travelled + move_y_per_tick)
                 y_ticks -= 1
+                if not a_collision:
+                    y_travelled += move_y_per_tick
+            collision = collision or a_collision
+
+        pro_pos = (self.coord[0] + x_travelled, self.coord[1] + y_travelled)
+        pro_rect = rect.Rect(pro_pos, self.dimensions)
+
+        v_x = x_travelled
+        v_y = y_travelled
+
+        # do we need to check for collision against other objects?
+        need_full_collision = False
+        i = self.coord[0] // TILE_SIZE
+        j = self.coord[1] // TILE_SIZE
+        for ni in range(i, i + 2):
+            for nj in range(j, j + 2):
+                if 0 <= ni < LEVEL_WIDTH // TILE_SIZE and 0 <= nj < LEVEL_HEIGHT // TILE_SIZE:
+                    if self.game_class.lazy_grid[nj][ni]:
+                        need_full_collision = True
+                        break
+
+        # collision against other objects
+        obj_collision = False
+        if need_full_collision:
+            for o in self.game_class.objects.itervalues():
+                if not o is self:
+                    if o.collision_weight and self.collision_weight:  # check if obj collides at all
+                        if pro_rect.colliderect(o.rect):
+
+                            if self.collision_weight < o.collision_weight:  # check if obj can be pushed by self
+                                obj_collision = True
+                            else:  # push object
+                                temp = o.collision_weight
+                                o.collision_weight = self.collision_weight - o.collision_weight  # allows to push chain of objs
+                                obj_collision = o.move(v_x, v_y)  # collision of self is dependent on whether obj collided
+                                o.collision_weight = temp
+
+                            if not (self, o) in self.game_class.touching:
+                                self.game_class.touching.append((self, o))  # (toucher, touchee)
+
+                            if obj_collision:
+                                break
 
         for t in self.game_class.map.triggers.itervalues():
             t.check_zone_entry(self, prev_pos)
 
-    def movePx(self, x_dir, y_dir):
-        self.remove_self_from_touching_list()
+        if not obj_collision:
+            self.coord = pro_pos
 
+        return collision or obj_collision
+
+    def movePx(self, x_dir, y_dir):
         collision = False
 
         # collide againt map boundaries
@@ -257,7 +313,7 @@ class GameObject(object):
         # NOTE: assumes largest object w/ collision is 64x64 (i.e. 2x2 tiles)
 
         if pro_pos[0] >= 0 and pro_pos[1] >= 0:
-            i = pro_pos[0] // TILE_SIZE  # get the index of the upper left tile
+            i = pro_pos[0] // TILE_SIZE  # get the index of the lower left tile
             j = pro_pos[1] // TILE_SIZE
         else:
             i = 0
@@ -277,28 +333,6 @@ class GameObject(object):
                             collision = True
                             # print('collision!')
 
-        # collision against other objects
-        for o in self.game_class.objects.itervalues():
-            if not o is self:
-                if o.collision_weight and self.collision_weight:  # check if obj collides at all
-                    if pro_rect.colliderect(o.rect):
-
-                        if self.collision_weight < o.collision_weight:  # check if obj can be pushed by self
-                            collision = True
-                        else:  # push object
-                            temp = o.collision_weight
-                            o.collision_weight = self.collision_weight - o.collision_weight  # allows to push chain of objs
-                            collision = o.movePx(x_dir, y_dir)  # collsion of self is dependent on whether obj collided
-                            o.collision_weight = temp
-
-                        if not (self, o) in self.game_class.touching:
-                            self.game_class.touching.append((self, o))  # (toucher, touchee)
-
-                        if collision:
-                            break
-
-        if not collision:
-            self.coord = pro_pos
         return collision
 
     def _update_animation(self):
