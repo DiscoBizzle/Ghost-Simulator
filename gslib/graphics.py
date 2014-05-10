@@ -198,15 +198,10 @@ class Graphics(object):
 
 
     def draw_buttons(self):
-        priority_buttons = []
         for button in dict(self.game.buttons, **self.game.editor.get_buttons() if self.game.state == EDITOR else {}).itervalues():
             if not button.visible:
                 continue
-            if button.priority:
-                priority_buttons.append(button)
-            else:
-                self.game.screen_objects_to_draw.append(button)
-        self.game.screen_objects_to_draw += priority_buttons
+            self.game.screen_objects_to_draw.append(button)
 
     def draw_drop_lists(self):
         priority_buttons = []
@@ -218,7 +213,7 @@ class Graphics(object):
             if not l.open:
                 continue
             for b in l.drop_buttons:
-                if b.priority:
+                if l.open:
                     priority_buttons.append(b)
                 else:
                     self.game.screen_objects_to_draw.append(b)

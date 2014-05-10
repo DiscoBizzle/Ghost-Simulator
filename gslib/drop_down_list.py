@@ -47,8 +47,7 @@ class DropDownList(object):
         self.font_size = font_size
         self.enabled = enabled  # whether button can be activated, visible or not
         self.labels = labels
-        self.priority = False
-        self._open = False
+        self.open = False
 
         self.function = function
 
@@ -73,18 +72,6 @@ class DropDownList(object):
 
         self.update_buttons()
         # self.redraw()
-        ## TODO make lists add their buttons to the buttons in owner container when open, allows for easier priority detection
-
-    @property
-    def open(self):
-        return self._open
-
-    @open.setter
-    def open(self, value):
-        self._open = value
-        self.priority = value
-        for b in self.drop_buttons:
-            b.priority = value
 
     def refresh(self, new_items=None):  # call if the list changes
         if not new_items is None:

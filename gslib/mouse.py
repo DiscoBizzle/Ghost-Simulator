@@ -164,8 +164,7 @@ class MouseController(object):
             for button in dict(self.game.buttons, **self.game.editor.get_buttons() if self.game.state == EDITOR else {}).itervalues():
                 if button.check_clicked_no_function(pos):
                     to_click = button
-                    if button.priority:
-                        break
+
         if to_click:
             self.interaction_this_click = True
             # self.button_to_click = to_click

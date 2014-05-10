@@ -63,8 +63,6 @@ class Button(object):
         if self.visible:
             self._redraw()
 
-        self.priority = False
-
     @property
     def pos(self):
         return self._pos
