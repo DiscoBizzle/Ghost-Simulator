@@ -22,6 +22,15 @@ def new_rect_sprite():
         rect_tex = pyglet.image.SolidColorImagePattern((255, 255, 255, 255)).create_image(1, 1).get_texture()
     return sprite.Sprite(rect_tex)
 
+def create_rect_sprite(rec, rgba):
+    r = new_rect_sprite()
+    r.scale_x = rec.width
+    r.scale_y = rec.height
+    r.x = rec.x
+    r.y = rec.y
+    r.color_rgba = rgba
+    return r
+
 circle_tex = None
 def draw_circle(r, color):
     global circle_tex
@@ -180,15 +189,10 @@ class Graphics(object):
         if not trig is None:
             zone = self.game.editor.trigger_editor.drop_lists['zones'].selected
             for z in trig.zones:
-                r = new_rect_sprite()
-                r.scale_x = z.width
-                r.scale_y = z.height
-                r.x = z.x
-                r.y = z.y
-                r.color_rgba = (135, 206, 250, 50)
+                r = create_rect_sprite(z, (135, 206, 250, 50))
                 if not zone is None:
                     if z == zone:
-                        r.color_rgba = (65, 105, 225, 100)
+                        r = create_rect_sprite(z, (65, 105, 225, 100))
 
                 self.game.world_objects_to_draw.append(r)
 

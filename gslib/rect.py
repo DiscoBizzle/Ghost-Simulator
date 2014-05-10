@@ -16,8 +16,11 @@ class Rect(object):
         self.width, self.height = size
 
     def __eq__(self, other):
-        return (self.bottomright == other.bottomright and
-                self.size == other.size)
+        if not isinstance(other, Rect):
+            return False
+        else:
+            return (self.bottomright == other.bottomright and
+                    self.size == other.size)
 
     def __ne__(self, other):
         return not (self == other)

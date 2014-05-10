@@ -84,10 +84,11 @@ class MouseController(object):
         if self.game.state == MAIN_GAME or self.game.state == EDITOR:
 
             if not self.interaction_this_click:
-                self.check_button_click(pos, typ, button)
+                self.check_list_event(pos, typ, button)
 
             if not self.interaction_this_click:
-                self.check_list_event(pos, typ, button)
+                self.check_button_click(pos, typ, button)
+
 
             if not self.interaction_this_click and self.position_capture_request:
                 self.position_capture_request = False
@@ -181,7 +182,7 @@ class MouseController(object):
         for v in dict(self.game.drop_lists, **self.game.editor.get_lists() if self.game.state == EDITOR else {}).itervalues():
             if v.check_click_within_area(pos):
                 to_click = v
-                if hasattr(v, 'priority') and v.priority:
+                if v.open:
                     break
         if to_click:
             if self.game.state == EDITOR:
