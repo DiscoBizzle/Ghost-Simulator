@@ -14,6 +14,15 @@ from gslib.constants import *
 from gslib.editor import cutscene
 
 
+def get_fears_from_file():  # load all possible fears from file, without descriptions
+    possible_fears = []
+    f = open(os.path.join(CHARACTER_DIR, "fear_description.txt"), 'r')
+    for l in f:
+        fear = l[:l.find(':')].decode('utf-8')
+        if not fear in possible_fears:
+            possible_fears.append(fear)
+    return possible_fears
+
 def set_fear_button(editor, fear):
     def func():
         editor.set_fear(fear)
@@ -146,8 +155,8 @@ class Editor(object):
         self.high_color = (0, 120, 0)
         self.high_border_color = (0, 200, 0)
 
-        self.possible_fears = [u'player']
-        self.get_fears_from_file()
+        self.possible_fears = get_fears_from_file()
+        self.possible_fears.append(u'player')
 
         self.int_edits = {}
 
@@ -414,22 +423,15 @@ class Editor(object):
         self.toggle_button_color(self.buttons[fear])
         if self.show_fears_checklist:
             if fear in self.object_to_edit.fears:
-                self.object_to_edit.fears.remove(fear)
+                self.object_to_edit.remove(fear)
             else:
-                self.object_to_edit.fears.append(fear)
+                self.object_to_edit.append(fear)
 
         elif self.show_scared_of_checklist:
             if fear in self.object_to_edit.scared_of:
-                self.object_to_edit.scared_of.remove(fear)
+                self.object_to_edit.remove(fear)
             else:
-                self.object_to_edit.scared_of.append(fear)
-
-    def get_fears_from_file(self):  # load all possible fears from file, without descriptions
-        f = open(os.path.join(CHARACTER_DIR, "fear_description.txt"), 'r')
-        for l in f:
-            fear = l[:l.find(':')].decode('utf-8')
-            if not fear in self.possible_fears:
-                self.possible_fears.append(fear)
+                self.object_to_edit.append(fear)
 
     def update_object_prototype(self):
         if self.drop_lists['pick_object'].selected:

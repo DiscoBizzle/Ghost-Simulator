@@ -1,6 +1,7 @@
 import os
 import json
 from gslib import character_objects
+from gslib import game_object
 from gslib import cutscene
 from gslib import maps
 from gslib import character_functions
@@ -99,26 +100,15 @@ def load_object(game, d):
                         function_type = afd[function_type_map[k]]
                         attr.append(function_type[f](new_obj))
         elif k != u'object_type':
+            if k == u'fears':
+                fears = json.loads(v)
+                new_obj.fears.extend(fears)
             setattr(new_obj, k, json.loads(v))
 
     return new_obj
 
 
 def load_trigger(game, d):
-    # obj_refs = d[u'object_references']
-    # actions = json.loads(d[u'actions'])
-    #
-    # interaction_type = d[u'interaction_type']
-    # conditional = d[u'conditional']
-    #
-    # zones = []
-    # for tup_string in d[u'zones']:
-    #     tup = json.loads(tup_string)
-    #     z = rect.Rect((tup[0], tup[1]), (tup[2], tup[3]))
-    #     zones.append(z)
-    #
-    # action_funcs = [trigger_edit.trigger_functions_dict[a] for a in actions]
-    # new_trig = trigger_edit.Trigger(game, obj_refs, action_funcs, zones, interaction_type, conditional)
     new_trig = trigger_edit.Trigger(game)
     new_trig.load_from_dict(d)
     return new_trig
@@ -157,6 +147,12 @@ def load_map(game, map_name):
     cutscenes_file = map_dict[u'cutscenes_file']
     new_map = maps.Map(name, tileset, map_file, cutscenes_file, game)
 
+    prev_map = None
+    if not game.map is None:
+        prev_map = game.map
+    game.map = new_map
+
+    new_map.reset_fears_dict()
     for o_name, o_dict in map_dict[u'objects'].iteritems():
         new_map.objects[o_name] = load_object(game, o_dict)
 
@@ -165,6 +161,8 @@ def load_map(game, map_name):
 
     new_map.cutscenes = load_cutscenes(game, new_map, cutscenes_file)
 
+    if not prev_map is None:
+        game.map = prev_map
     return new_map
 
 

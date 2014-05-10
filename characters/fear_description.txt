@@ -11,6 +11,7 @@ double-barrelled: Terrifying. Probably owns a mansion and big scary dogs.
 dogs: Woof woof. Bark bark. Arrrroooooo?
 dogs: Comprehensive wetware solution for converting food and attention into barks and urine.
 dogs: This one time I was out back and there was this strange scuffling sound. I creeped towards the noise, only to see some sort of brown smelly thing panting and digging into the ground, presumably for buried treasure. Scientists have theorized the dog year to man year mismatch is the prime cause of such behaviour, as these creatures are still stuck in the Gold Rush period and have not yet realized that the only things that are yellow you can find underground anymore are yellow crayons, green crayons that have rusted, and the remains of the Great Asbestos Burying of 1959. I went back inside and had a wank for a while. It was nice, but nothing special.
+doors:
 enclosed spaces:
 fear itself:
 guns: I am a big man, yes I am, and I've got a big gun.

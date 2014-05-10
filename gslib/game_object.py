@@ -7,6 +7,37 @@ from pyglet import image
 from gslib import rect
 from gslib import sprite
 from gslib.constants import *
+import collections
+
+class FearsList(collections.MutableSequence):
+    def __init__(self, owner, *args):
+        self.owner = owner
+        self.list = list()
+        self.extend(list(args))
+
+    def __len__(self):
+        return len(self.list)
+
+    def __getitem__(self, item):
+        return self.list[item]
+
+    def __delitem__(self, key):
+        self.owner.game_class.map.fears_dict[key].remove(self.owner)
+        del self.list[key]
+
+    def __setitem__(self, key, value):
+        self.owner.game_class.map.fears_dict[self.list[key]].remove(self.owner)
+        if not self.owner in self.owner.game_class.map.fears_dict[value]:
+            self.owner.game_class.map.fears_dict[value].append(self.owner)
+        self.list[key] = value
+
+    def insert(self, index, value):
+        if not self.owner in self.owner.game_class.map.fears_dict[value]:
+            self.owner.game_class.map.fears_dict[value].append(self.owner)
+        self.list.insert(index, value)
+
+    def __str__(self):
+        return str(self.list)
 
 
 class GameObject(object):
@@ -47,7 +78,7 @@ class GameObject(object):
         self.feared_speed = 0
         self.fear_radius = 50
         self.scared_of = []
-        self.fears = []
+        self.fears = FearsList(self)
         self.rect = rect.Rect(self.coord, self.dimensions)
         self.update_timer = 40
         self.fear_timer = 0
@@ -145,7 +176,8 @@ class GameObject(object):
         if not self.velocity == (0, 0):
             self.move()
             # self.rect = pygame.Rect(self.coord, self.dimensions)
-        self.apply_fear()
+        # self.apply_fear()
+        self.get_feared()
         self._update_animation()
 
     def check_distance(self, other, distance):  # centre to centre distance is checked
@@ -159,35 +191,26 @@ class GameObject(object):
         y = self.coord[1] + self.dimensions[1] / 2 - (other.coord[1] + other.dimensions[1] / 2)
         return x**2 + y**2
 
-    def apply_fear(self):
+    def get_feared(self):
         if not hasattr(self, 'possessing'):  # checks if object is not a player as can't import player module
             self.fear = 0
-        for o in self.game_class.objects.itervalues():
-            if hasattr(o, 'possessing'):  # checks if object is a player as can't import player module
-                if o.possessing:
-                    continue
-            else:
-                o.get_feared_by(self)
 
-                if o.fear >= o.scream_thresh:
-                    if o.scream_timer <= 0:
-                        self.game_class.sound_handler.play_sound('scream')
-                        o.scream_timer = 120
-                    else:
-                        o.scream_timer -= 1
-
-    def get_feared_by(self, other):
-        # fear_level = 0
-        if len(self.scared_of) == 0 or len(other.fears) == 0:
+        if len(self.scared_of) == 0:
             return
-        if self.check_distance(other, self.fear_radius):
-            for fear in other.fears:
-                if fear in self.scared_of:
+
+        for s in self.scared_of:
+            for other in self.game_class.fears_dict[s]:
+                if self.check_distance(other, self.fear_radius):
                     self.fear += 50
                     self.fear_timer = 5
                     self.feared_by_obj = other
                     self.feared_from_pos = other.coord
 
+                    if self.fear >= self.scream_thresh:
+                        self.game_class.sound_handler.play_sound('scream')
+                        self.scream_timer = 120
+                    else:
+                        self.scream_timer -= 1
 
     def remove_self_from_touching_list(self):
         to_remove = []

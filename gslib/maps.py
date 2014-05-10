@@ -8,6 +8,7 @@ import pyglet.image
 from gslib import rect
 from gslib import static_object
 from gslib.constants import *
+import map_edit
 
 
 def open_map_json(map_filename):
@@ -176,6 +177,7 @@ class Map(object):
 
         self.grid = {}
 
+
         for layer_name, layer in tile_type_grid.iteritems():
             self.grid[layer_name] = []
 
@@ -193,3 +195,10 @@ class Map(object):
         self.active_cutscene = None
 
         self.triggers = {}
+
+        self.fears_dict = {}
+
+    def reset_fears_dict(self):
+        self.fears_dict = {'player': []} # dictionary to keep track of what objects have which .fears
+        for f in map_edit.get_fears_from_file():
+            self.fears_dict[f] = []

@@ -192,12 +192,12 @@ class Character(GameObject):
         """
         super(Character, self).__init__(game_class, x, y, w, h, **kwargs)
         if stats:
-            self.fears = stats['fears']
-            self.scared_of = stats['scared_of']
+            for f in stats['fears']:
+                self.fears.append(f)
+            for f in stats['scared_of']:
+                self.scared_of.append(f)
             # self.scared_of.append(u'player')
-        else:
-            self.fears = []
-            self.scared_of = []
+
         self.stats = stats
         self.info_sheet = draw_info_sheet(self.stats)
         # self.sprite = pygame.image.load(os.path.join(CHARACTER_DIR, 'Sprite_top.png'))
@@ -280,6 +280,8 @@ class Character(GameObject):
                         save_dict[s] = json.dumps(t_list)
                         continue
 
+            if s == u'fears':
+                o = list(o)
             save_dict[s] = json.dumps(o)
 
         save_dict[u'object_type'] = self.__class__.__name__

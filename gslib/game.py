@@ -125,6 +125,8 @@ class Game(pyglet.event.EventDispatcher):
         self.keybind_menu = menus.KeyBindMenu(self, (190, 40))
         self.action_to_rebind = None
 
+        self.map = None
+
         self.map_dict = {'level3': save_load.load_map(self, 'level3'),
                          'level2': save_load.load_map(self, 'level2'),
                          'martin': save_load.load_map(self, 'martin')}
@@ -185,6 +187,8 @@ class Game(pyglet.event.EventDispatcher):
         self.update_exception_hook = (None, None)
 
         self.state = MAIN_MENU
+
+        self.fears_dict = self.map.fears_dict
 
     @property
     def dimensions(self):
@@ -360,6 +364,7 @@ class Game(pyglet.event.EventDispatcher):
         # self.objects = dict(self.players.items() + self.map.objects.items())
         self.gather_buttons_and_drop_lists_and_objects()
         self.graphics.clip_area = Rect((0, 0), (self.dimensions[0], self.dimensions[1]))
+        self.fears_dict = self.map.fears_dict
 
     def quit_game(self):
         self.window.dispatch_event('on_close')

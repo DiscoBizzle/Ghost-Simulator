@@ -21,7 +21,7 @@ class SmallDoor(Character):
         self.normal_speed = 0
 
         self.scared_of = []
-        self.fears = ['doors']
+        self.fears.append('doors')
 
         self.states = {'0': {'animation_state': 0, 'collision_weight': 0},
                        '1': {'animation_state': 2, 'collision_weight': 100}}
