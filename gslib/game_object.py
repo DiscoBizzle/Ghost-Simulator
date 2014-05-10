@@ -207,7 +207,7 @@ class GameObject(object):
                     self.feared_from_pos = other.coord
 
                     if self.fear >= self.scream_thresh:
-                        self.game_class.sound_handler.play_sound('scream')
+                        # self.game_class.sound_handler.play_sound('scream')
                         self.scream_timer = 120
                     else:
                         self.scream_timer -= 1
