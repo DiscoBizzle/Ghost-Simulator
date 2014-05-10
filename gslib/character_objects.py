@@ -55,6 +55,8 @@ class Dude(Character):
             stat = stats
         super(Dude, self).__init__(game_class, x, y, 16, 16, stat, sprite_sheet='DudeSheet.png', sprite_width=16,
                                    sprite_height=32)
-        self.normal_speed = 0
+        self.normal_speed = 1
+        # self.fears = []
+        # self.scared_of = []
 
         self.direction = DOWN

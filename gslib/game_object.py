@@ -178,9 +178,14 @@ class GameObject(object):
 
     def get_feared_by(self, other):
         # fear_level = 0
-        if self.check_distance(other, self.fear_radius):
-            for fear in other.fears:
-                if fear in self.scared_of:
+        if len(self.scared_of) == 0 or len(other.fears) == 0:
+            return
+        check_dist = None
+        for fear in other.fears:
+            if fear in self.scared_of:
+                if check_dist is None:
+                    check_dist = self.check_distance(other, self.fear_radius)
+                if check_dist:
                     # fear_level += 50
                     self.fear += 50
                     self.fear_timer = 5
