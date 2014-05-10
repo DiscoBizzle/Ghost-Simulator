@@ -8,18 +8,14 @@ class ObjectCollisionLookup(object):
         self.game = game
 
     def candidates_for(self, search_rect):
-        i = search_rect.left // TILE_SIZE
-        j = search_rect.bottom // TILE_SIZE
-        candidates = []
+        ni = search_rect.left // TILE_SIZE
+        nj = search_rect.bottom // TILE_SIZE
 
-        for ni in range(i, i + 2):
-            for nj in range(j, j + 2):
-                if 0 <= ni < LEVEL_WIDTH // TILE_SIZE and 0 <= nj < LEVEL_HEIGHT // TILE_SIZE:
-                    if len(self.grid[nj][ni]) > 0:
-                        if rect.Rect((ni * TILE_SIZE, nj * TILE_SIZE), (TILE_SIZE, TILE_SIZE)).colliderect(search_rect):
-                            candidates += self.grid[nj][ni]
+        if 0 <= ni < LEVEL_WIDTH // TILE_SIZE and 0 <= nj < LEVEL_HEIGHT // TILE_SIZE:
+            if len(self.grid[nj][ni]) > 0:
+                return set(self.grid[nj][ni])
 
-        return set(candidates)
+        return set()
 
     def update_all(self):
         #if not self.lazy_grid:
@@ -28,36 +24,10 @@ class ObjectCollisionLookup(object):
 
         # update lazy object collision grid
         for obj in self.game.objects.itervalues():
-            self.update_for(obj)
-
-        """else:
-            # update lazy object collision grid
-            for obj in self.objects.itervalues():
-                if obj.moved:
-                    # remove from old squares
-                    if obj.in_grid:
-                        b_x = obj.last_coord[0] // TILE_SIZE
-                        b_y = obj.last_coord[1] // TILE_SIZE
-                        for ny in range(b_y - 1, b_y + 2):
-                            for nx in range(b_x - 1, b_x + 2):
-                                if 0 <= nx < LEVEL_WIDTH // TILE_SIZE and 0 <= ny < LEVEL_HEIGHT // TILE_SIZE:
-                                    self.lazy_grid[ny][nx].remove(obj)
-                    # add to new squares
-                    b_x = obj.coord[0] // TILE_SIZE
-                    b_y = obj.coord[1] // TILE_SIZE
-                    for ny in range(b_y - 1, b_y + 2):
-                        for nx in range(b_x - 1, b_x + 2):
-                            if 0 <= nx < LEVEL_WIDTH // TILE_SIZE and 0 <= ny < LEVEL_HEIGHT // TILE_SIZE:
-                                self.lazy_grid[ny][nx].append(obj)
-                    obj.in_grid = True
-
-        # move new to old
-        for obj in self.objects.itervalues():
-            obj.last_coord = obj.coord
-            obj.moved = False"""
+            self._update_for(obj)
 
     def _update_for(self, obj):
-        if self.grid:
+        if self.grid and obj.collision_weight != 0:
             b_x = obj.coord[0] // TILE_SIZE
             b_y = obj.coord[1] // TILE_SIZE
             for ny in range(b_y - 2, b_y + 2):
