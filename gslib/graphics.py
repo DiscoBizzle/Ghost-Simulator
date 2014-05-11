@@ -213,7 +213,7 @@ class Graphics(object):
             if not l.open:
                 continue
             for b in l.drop_buttons:
-                if l.open:
+                if l.open and l.__class__.__name__ != "List":
                     priority_buttons.append(b)
                 else:
                     self.game.screen_objects_to_draw.append(b)

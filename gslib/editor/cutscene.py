@@ -1,5 +1,7 @@
 import collections
 
+import pyglet.window.key as Pkey
+
 from gslib import button
 from gslib import cutscene
 from gslib import drop_down_list
@@ -165,35 +167,28 @@ class CutsceneEditor(object):
             elif isinstance(x, button.Button):
                 self.dyn_buttons.append(x)
             add_control.control_i += 1
-            x.priority = True
             return x
 
         add_control.control_i = 0
 
         def int_dec_fun(ev, attr):
-            setattr(ev, attr, getattr(ev, attr) - 1)
+            dec = 1
+            if self.game.key_controller.keys[Pkey.LSHIFT] or self.game.key_controller.keys[Pkey.RSHIFT]:
+                dec = 10
+            if self.game.key_controller.keys[Pkey.LCTRL] or self.game.key_controller.keys[Pkey.RCTRL]:
+                dec = 50
+            setattr(ev, attr, getattr(ev, attr) - dec)
 
         def int_inc_fun(ev, attr):
-            setattr(ev, attr, getattr(ev, attr) + 1)
+            inc = 1
+            if self.game.key_controller.keys[Pkey.LSHIFT] or self.game.key_controller.keys[Pkey.RSHIFT]:
+                inc = 10
+            if self.game.key_controller.keys[Pkey.LCTRL] or self.game.key_controller.keys[Pkey.RCTRL]:
+                inc = 50
+            setattr(ev, attr, getattr(ev, attr) + inc)
 
-        def wait_group_dec_fun(ev, attr):
-            wg = getattr(ev, attr)
-            if wg is not None:
-                if wg == 1:
-                    wg = None
-                else:
-                    wg -= 1
-            setattr(ev, attr, wg)
-
-        def wait_group_inc_fun(ev, attr):
-            wg = getattr(ev, attr)
-            if wg is None:
-                wg = 1
-            elif wg == 0:
-                pass
-            else:
-                wg += 1
-            setattr(ev, attr, wg)
+        def bool_toggle_fun(ev, attr):
+            setattr(ev, attr, not getattr(ev, attr))
 
         def obj_ref_sel_fun(ev, attr):
             def finish_obj_click(o_name):
@@ -241,20 +236,9 @@ class CutsceneEditor(object):
             get_pos.row = 0
             get_pos.x_pos = 0
 
-            container = button.DefaultButton(self, None, pos=(930, 160), size=(1280 - 930, 100))
-            add_control(container)
-            container.priority = False
-
             for k, v in ev.get_editor().iteritems():
                 add_control(button.DefaultButton(self, None, get_pos(add_x=80), text=k, size=(80, 20)))
-                if v == 'wait_group':
-                    add_control(button.DefaultButton(self, incredifun(ev, k, wait_group_dec_fun),
-                                                     get_pos(), text="-", size=(20, 20)))
-                    add_control(button.DefaultButton(self, None, get_pos(add_x=50), text=str(getattr(ev, k)),
-                                                     size=(50, 20)))
-                    add_control(button.DefaultButton(self, incredifun(ev, k, wait_group_inc_fun),
-                                                     get_pos(), text="+", size=(20, 20)))
-                elif v == 'int':
+                if v == 'int':
                     add_control(button.DefaultButton(self, incredifun(ev, k, int_dec_fun),
                                                      get_pos(), text="-", size=(20, 20)))
                     add_control(button.DefaultButton(self, None, get_pos(add_x=50), text=str(getattr(ev, k)),
@@ -285,6 +269,14 @@ class CutsceneEditor(object):
                         add_control(button.Button(self, incredifun(ev, k, pick_coords_fun), get_pos(50), text="Pick",
                                                   size=(50, 20), color=(0, 120, 0), border_color=(0, 200, 0),
                                                   border_width=3))
+                elif v == 'bool':
+                    if getattr(ev, k):
+                        add_control(button.Button(self, incredifun(ev, k, bool_toggle_fun), get_pos(50),
+                                                  text=u"\u2713", color=(0, 120, 0), border_color=(0, 200, 0),
+                                                  size=(50, 20), border_width=3))
+                    else:
+                        add_control(button.DefaultButton(self, incredifun(ev, k, bool_toggle_fun), get_pos(50),
+                                                         text="x", size=(50, 20)))
                 else:
                     print("!!! Cutscene action editor doesn't know what a '" + v + "' is")
 
