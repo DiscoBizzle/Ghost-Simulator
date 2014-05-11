@@ -10,7 +10,7 @@ __all__ = ['STARTUP', 'MAIN_MENU', 'MAIN_GAME', 'CUTSCENE', 'GAME_OVER', 'SKILLS
            'MAX_FEAR', 'START_FEAR', 'FEAR_PER_STEP', 'FEAR_PER_TICK', 'POSSESSION_RANGE', 'FEAR_COLLECTION_RADIUS',
            'MUSIC_DIR', 'SOUND_DIR', 'VIDEO_DIR', 'CHARACTER_DIR', 'TILES_DIR', 'CREDITS_FILE', 'SKILLS_FILE',
            'KEYMAP_FILE', 'OPTIONS_FILE', 'SAVE_DIR', 'LEARNT_SKILL_COLOR', 'CAN_BE_LEARNT_COLOR', 'UNLEARNABLE_COLOR',
-           'INITIAL_SOUND_VOLUME', 'INITIAL_MUSIC_VOLUME', 'FONT', 'DEFAULT_OPTIONS']
+           'INITIAL_SOUND_VOLUME', 'INITIAL_MUSIC_VOLUME', 'FONT', 'DEFAULT_OPTIONS', 'DIALOGUE_DIR']
 
 
 def fallback_files(target, required, *fnames):
@@ -90,6 +90,7 @@ SKILLS_FILE = fallback_files("skills file", True, "skills.json", os.path.join(sy
 KEYMAP_FILE = fallback_files("keymap file", True, "keymap.txt", os.path.join(sys.prefix, 'gs-data', 'keymap.txt'))
 OPTIONS_FILE = fallback_files("options file", False, "options.txt", os.path.join(sys.prefix, 'gs-data', 'options.txt'))
 SAVE_DIR = fallback_files("save dir", True, "save", os.path.join(sys.prefix, 'gs-save'))
+DIALOGUE_DIR = fallback_files("dialogue dir", True, "story", os.path.join(sys.prefix, 'gs-story'))
 
 LEARNT_SKILL_COLOR = (0, 150, 0)
 CAN_BE_LEARNT_COLOR = (0, 0, 150)

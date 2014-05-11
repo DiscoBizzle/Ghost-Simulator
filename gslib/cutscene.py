@@ -1,3 +1,6 @@
+from gslib import dialogue
+
+
 class Error(Exception):
     """Cutscene exception"""
     pass
@@ -223,5 +226,43 @@ class WalkToAction(ControllingCutsceneAction):
                            min(self.speed, max(-self.speed, p_end[1] - p_start[1])))
 
 
+class DialogueAction(CutsceneAction):
+
+    def __init__(self, g, m, l):
+        super(DialogueAction, self).__init__(g, m, l)
+        self.dialogue_file = self.property('dialogue_file', 'dialogue_file', default=None)
+        self.from_heading = self.property('from_heading', 'dialogue_heading', default=None)
+        self.player = None
+        self.done = False
+
+    def update_again(self):
+        return not self.done
+
+    def restart(self):
+        self.player = None
+        self.done = False
+
+    def _finished(self):
+        self.player = None
+        self.done = True
+
+    def update(self):
+        if self.done:
+            return
+
+        if self.player is None:
+            if self.dialogue_file is None:
+                raise Error("DialogueAction: You must select a dialogue_file.")
+            if self.from_heading is None:
+                raise Error("DialogueAction: You must select a heading to play from.")
+
+            try:
+                self.player = dialogue.DialoguePlayer(self.game, dialogue.load_dialogue(self.dialogue_file),
+                                                      self.from_heading, self._finished)
+                self.player.play()
+            except Exception as e:
+                raise Error(str(e))
+
+
 possible_actions = {'Sleep': SleepAction, 'Walk To': WalkToAction, 'Disable AI': DisableAIAction,
-                    'Enable AI': EnableAIAction}
+                    'Enable AI': EnableAIAction, 'Dialogue': DialogueAction}

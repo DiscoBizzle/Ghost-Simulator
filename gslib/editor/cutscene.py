@@ -1,8 +1,10 @@
 import collections
+import os
 
 import pyglet.window.key as Pkey
 
 from gslib import button
+from gslib import constants
 from gslib import cutscene
 from gslib import dialogue
 from gslib import drop_down_list
@@ -87,6 +89,8 @@ class CutsceneEditor(object):
         self.playing = False
 
         self.highlighted = []
+
+        self.hint = None
 
         # hide by default
         #self.toggle_visible()
@@ -219,8 +223,14 @@ class CutsceneEditor(object):
                 self.highlighted.append(str(ev) + '-' + attr)
                 self.game.mouse_controller.pick_position(finish_coords_click)
 
-        def incredifun(thing, attr, fun):
+        def drop_down_fun(ev, attr):
+            # wow such hack
+            s = getattr(self, self.hint).selected
+            setattr(ev, attr, s)
+
+        def incredifun(thing, attr, fun, hint=None):
             def clicky():
+                self.hint = hint
                 fun(thing, attr)
                 self.select_cutscene_action()    # re-render controls
                 self.refresh_cutscene_actions()  # re-render action descriptions
@@ -278,6 +288,36 @@ class CutsceneEditor(object):
                     else:
                         add_control(button.DefaultButton(self, incredifun(ev, k, bool_toggle_fun), get_pos(50),
                                                          text="x", size=(50, 20)))
+                elif v == 'dialogue_file':
+                    files = os.listdir(constants.DIALOGUE_DIR)
+                    fd = {}
+                    for f in files:
+                        fd[f] = f
+                    # hack!
+                    self.dfc = add_control(drop_down_list.DropDownList(self, fd, incredifun(ev, k, drop_down_fun, 'dfc'),
+                                                                       get_pos(250), size=(250, 20)))
+                    if getattr(ev, k) is not None:
+                        temp = self.dfc.function
+                        self.dfc.function = None
+                        drop_down_list.list_func(self.dfc, getattr(ev, k))()
+                        self.dfc.function = temp
+                elif v == 'dialogue_heading':
+                    # woo assumptions
+                    dd = {}
+                    try:
+                        d = dialogue.load_dialogue(getattr(ev, 'dialogue_file'))
+                        for dk in d.keys():
+                            dd[dk] = dk
+                    except:
+                        pass
+                    # hack!
+                    self.dhc = add_control(drop_down_list.DropDownList(self, dd, incredifun(ev, k, drop_down_fun, 'dhc'),
+                                                                       get_pos(250), size=(250, 20)))
+                    if getattr(ev, k) is not None:
+                        temp = self.dhc.function
+                        self.dhc.function = None
+                        drop_down_list.list_func(self.dhc, getattr(ev, k))()
+                        self.dhc.function = temp
                 else:
                     print("!!! Cutscene action editor doesn't know what a '" + v + "' is")
 
@@ -397,6 +437,9 @@ class CutsceneEditor(object):
             self.play_and_run_button.border_color = (120, 50, 80)
             self.stop_button.color = (120, 0, 0)
             self.stop_button.border_color = (120, 50, 80)
+
+            # stop any dialogue that's playing
+            self.game.text_box = None
 
             # actually stop cutscene
             self.main_editor.enter_edit_mode()  # load game state

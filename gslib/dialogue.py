@@ -1,4 +1,7 @@
 import collections
+import os
+
+import pyglet.window.key as Pkey
 
 from gslib.constants import *
 from gslib import graphics
@@ -48,6 +51,8 @@ class DialoguePlayer(object):
                     # simple dialogue!
                     SimpleDialogue(self.game, l, self._play_line).show()
 
+                self.lines = self.lines[1:]
+
             elif len(self.dialogue[self.heading].keys()) > 1 and not self.choice_made:
                 # choice time!
                 ChoiceDialogue(self.game, self.dialogue[self.heading].keys(), self._play_choice).show()
@@ -65,7 +70,7 @@ def load_dialogue(filename):
     d = collections.OrderedDict({"# None": []})
 
     # First pass - organize lines by heading
-    with open(filename, 'r') as f:
+    with open(os.path.join(DIALOGUE_DIR, filename), 'r') as f:
         lines = f.readlines()
 
         # filter blank lines
@@ -100,7 +105,7 @@ def load_dialogue(filename):
     # Second pass - find & collate dialogue branches.
     d2 = collections.OrderedDict()
     for heading, lines in d.iteritems():
-        new_lines = []
+        new_lines = {}
 
         choice_name = None  # Non-choice lines are represented with the None choice.
         choice_lines_so_far = []
@@ -110,7 +115,7 @@ def load_dialogue(filename):
             if l.lstrip()[:2] == '* ':
                 # push old choice (iff non-empty)
                 if len(choice_lines_so_far) > 0:
-                    new_lines.append((choice_name, choice_lines_so_far))
+                    new_lines[choice_name] = choice_lines_so_far
                 # switch to new choice
                 choice_name = l.lstrip()[2:]
                 choice_lines_so_far = []
@@ -119,10 +124,10 @@ def load_dialogue(filename):
 
         # add the last one (iff non-empty)
         if len(choice_lines_so_far) > 0:
-            new_lines.append((choice_name, choice_lines_so_far))
+            new_lines[choice_name] = choice_lines_so_far
 
         # add heading (iff non-empty)
-        if len(new_lines) > 0:
+        if len(new_lines.keys()) > 0:
             d2[heading] = new_lines
 
     return d2
@@ -135,9 +140,11 @@ class SimpleDialogue(object):
         self.message = message
 
         self.background = graphics.create_rect_sprite(rect.Rect((0, 0), (1280, 160)), (70, 80, 65, 200))
-        self.text_layout = text.new(FONT, text=message, width=1180, height=180)
+        self.text_layout = text.new(FONT, font_size=20, text=message, width=1180, height=180)
         self.text_layout.x = 50
         self.text_layout.y = 20
+
+        self.wait_up = False
 
     def show(self):
         self.game.text_box = self
@@ -155,9 +162,14 @@ class SimpleDialogue(object):
         self.game.screen_objects_to_draw.append(self.text_layout)
 
     def update(self):
-        pass
+        if self.game.key_controller.keys[Pkey.ENTER]:
+            self.wait_up = True
+        if self.wait_up and not self.game.key_controller.keys[Pkey.ENTER]:
+            self.hide()
 
 
 # TODO
 class ChoiceDialogue(SimpleDialogue):
-    pass
+
+    def __init__(self, g, choices, o_c_f):
+        raise Error("ChoiceDialogue is not implemented yet!")
