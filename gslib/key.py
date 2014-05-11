@@ -64,13 +64,6 @@ class KeyController(object):
                 self.game.state = CUTSCENE
         if self.keys[self.key_map['Skill Screen']] and (self.game.state == MAIN_MENU or self.game.state == MAIN_GAME):
             self.game.state = SKILLS_SCREEN
-        if self.keys[Pkey.T] and (self.game.state == MAIN_MENU or self.game.state == MAIN_GAME or self.game.state == TEXTBOX_TEST):
-            self.game.state = TEXTBOX_TEST
-            if self.game.text_box_test.state == TB_ACTIVE:
-                self.game.text_box_test.state = TB_CLOSING
-            elif self.game.text_box_test.state == TB_INACTIVE:
-                self.game.text_box_test.state = TB_STARTING
-            print(self.game.text_box_test.state)
 
         if self.game.state == MAIN_GAME or self.game.state == EDITOR:
             self.game.show_fears = self.keys[self.key_map['Show Fears']]
