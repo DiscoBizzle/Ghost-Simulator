@@ -289,7 +289,7 @@ class GameObject(object):
                         else:  # push object
                             temp = o.collision_weight
                             o.collision_weight = (self.collision_weight - o.collision_weight) or -1  # allows to push chain of objs
-                            collision = o.movePx(x_dir, y_dir)  # collsion of self is dependent on whether obj collided
+                            collision = collision or o.movePx(x_dir, y_dir)  # collsion of self is dependent on whether obj collided
                             o.collision_weight = temp
 
                         if not (self, o) in self.game_class.touching:
