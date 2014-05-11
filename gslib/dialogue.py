@@ -6,6 +6,61 @@ from gslib import rect
 from gslib import text
 
 
+class Error(Exception):
+    pass
+
+
+class DialoguePlayer(object):
+
+    def __init__(self, game, dialogue_, from_heading, done_func):
+        self.game = game
+        self.dialogue = dialogue_
+        self.heading = from_heading
+        self.lines = dialogue_[from_heading][None]
+        self.done_func = done_func
+
+        self.choice_made = False
+        self.done = False
+
+    def play(self):
+        self._play_line()
+
+    def _play_choice(self, choice_name):
+        self.lines = self.dialogue[self.heading][choice_name]
+        self.choice_made = True
+
+    def _play_line(self):
+        if self.done:
+            return
+
+        try:
+            if len(self.lines) > 0:
+                l = self.lines[0]
+
+                if l.startswith('GOTO'):
+                    self.heading = l.split(' ', num=1)[1]
+                    self.lines = self.dialogue[self.heading][None]
+                    self.choice_made = False
+                elif l.startswith('PLAY'):
+                    self.game.map.active_cutscene = self.game.map.cutscenes[l.split(' ', num=1)[1]]
+                    self.game.map.active_cutscene.restart()
+                else:
+                    # simple dialogue!
+                    SimpleDialogue(self.game, l, self._play_line).show()
+
+            elif len(self.dialogue[self.heading].keys()) > 1 and not self.choice_made:
+                # choice time!
+                ChoiceDialogue(self.game, self.dialogue[self.heading].keys(), self._play_choice).show()
+                pass
+
+            else:
+                self.done_func()
+                self.done = True
+
+        except Exception as e:
+            raise Error(str(e))
+
+
 def load_dialogue(filename):
     d = collections.OrderedDict({"# None": []})
 
@@ -102,3 +157,7 @@ class SimpleDialogue(object):
     def update(self):
         pass
 
+
+# TODO
+class ChoiceDialogue(SimpleDialogue):
+    pass

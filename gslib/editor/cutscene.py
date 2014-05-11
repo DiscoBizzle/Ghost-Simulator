@@ -4,6 +4,7 @@ import pyglet.window.key as Pkey
 
 from gslib import button
 from gslib import cutscene
+from gslib import dialogue
 from gslib import drop_down_list
 from gslib import msg_box
 from gslib import list_box
@@ -353,7 +354,7 @@ class CutsceneEditor(object):
 
     def play_cutscene_and_run(self):
         if self.selected_cutscene:
-            self.game.update_exception_hook = (cutscene.Error, self.cutscene_play_exception)
+            self.game.update_exception_hook = ((cutscene.Error, dialogue.Error), self.cutscene_play_exception)
 
             # disable main editor controls
             self.main_editor.disable_main_editor()
