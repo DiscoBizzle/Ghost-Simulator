@@ -269,8 +269,11 @@ class Graphics(object):
             self.game.screen_objects_to_draw.append(sp)
 
     def draw_world_objects(self):  # stuff relative to camera
+        pyglet.gl.glPushMatrix()
+        pyglet.gl.glTranslatef(-self.game.camera_coords[0], -self.game.camera_coords[1], 0)
         for f in self.game.world_objects_to_draw:
-            self.blit_camera(f)
+            f.draw()
+        pyglet.gl.glPopMatrix()
         self.game.world_objects_to_draw = []
 
     def draw_screen_objects(self):  # stuff relative to screen
@@ -279,21 +282,6 @@ class Graphics(object):
                 print(self.game.screen_objects_to_draw)
             f.draw()
         self.game.screen_objects_to_draw = []
-
-    def blit_camera(self, sprite):
-        # TODO: use built-in pyglet camera stuff
-        old_x = sprite.x
-        old_y = sprite.y
-        # if hasattr(sprite, 'set_position'):
-        #     sprite.set_position(old_x - self.game.camera_coords[0], old_y - self.game.camera_coords[1])
-        #     sprite.draw()
-        #     sprite.set_position(old_x, old_y)
-        # else:
-        sprite.x -= self.game.camera_coords[0]
-        sprite.y -= self.game.camera_coords[1]
-        sprite.draw()
-        sprite.x = old_x
-        sprite.y = old_y
 
     def draw_cutscene(self):
         if self.game.cutscene_started and hasattr(self, 'movie_player'):
