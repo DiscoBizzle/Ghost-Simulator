@@ -247,6 +247,8 @@ class Game(pyglet.event.EventDispatcher):
         if self.cursor:
             self.objects['cursor'] = self.cursor
 
+        self.fears_dict = self.map.fears_dict
+
     def update(self, dt):
         try:
             # this is fixed timestep, 30 FPS. if game runs slower, we lag.

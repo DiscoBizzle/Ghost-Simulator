@@ -423,15 +423,15 @@ class Editor(object):
         self.toggle_button_color(self.buttons[fear])
         if self.show_fears_checklist:
             if fear in self.object_to_edit.fears:
-                self.object_to_edit.remove(fear)
+                self.object_to_edit.fears.remove(fear)
             else:
-                self.object_to_edit.append(fear)
+                self.object_to_edit.fears.append(fear)
 
         elif self.show_scared_of_checklist:
             if fear in self.object_to_edit.scared_of:
-                self.object_to_edit.remove(fear)
+                self.object_to_edit.scared_of.remove(fear)
             else:
-                self.object_to_edit.append(fear)
+                self.object_to_edit.scared_of.append(fear)
 
     def update_object_prototype(self):
         if self.drop_lists['pick_object'].selected:

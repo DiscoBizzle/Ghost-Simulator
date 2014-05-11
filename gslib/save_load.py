@@ -169,6 +169,7 @@ def load_map(game, map_name):
 def restore_save_state(game, m, state_dict):
     m.triggers.clear() # empties the dict, but preserves its place in memory (prevents breaking references to it)
     m.objects.clear() # empties the dict, but preserves its place in memory (prevents breaking references to it)
+    m.reset_fears_dict()
 
     for o_name, o_dict in state_dict[u'objects'].iteritems():
         m.objects[o_name] = load_object(game, o_dict)
