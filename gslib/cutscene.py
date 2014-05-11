@@ -98,22 +98,24 @@ class Cutscene(object):
         self.tick += 1
 
 
-class TestAction(CutsceneAction):
+class SleepAction(CutsceneAction):
 
     def __init__(self, g, m, l):
         CutsceneAction.__init__(self, g, m, l)
-        self.ticks_remaining = 30
-        self.obj_ref = self.property('obj_ref', 'obj_ref', default='<None>')
-        self.pos = self.property('pos', 'coords', default=(0, 0))
+        self.ticks = self.property('ticks', 'int', default=20)
+        self.ticks_remaining = self.ticks
+
+    def describe(self):
+        return super(SleepAction, self).describe() + str(self.ticks) + " ticks"
+
+    def restart(self):
+        self.ticks_remaining = self.ticks
 
     def update_again(self):
-        return self.ticks_remaining >= 0
+        return self.ticks_remaining > 0
 
     def update(self):
         self.ticks_remaining -= 1
-
-    def restart(self):
-        self.ticks_remaining = 30
 
 
 class ControllingCutsceneAction(CutsceneAction):
@@ -134,11 +136,59 @@ class ControllingCutsceneAction(CutsceneAction):
                 raise Error("Action not configured. You need to set .what on:\n" + self.describe())
             else:
                 raise Error("Couldn't find thing named '" + self.what + "' in the current map\n" + self.describe())
-        self.get_ref().cutscene_controlling = self
+        self.get_ref().cutscene_controlling.append(self)
 
     def unhook(self):
-        if self.valid_ref() and self.map.objects[self.what].cutscene_controlling == self:
-            self.get_ref().cutscene_controlling = None
+        if self.valid_ref() and self in self.get_ref().cutscene_controlling:
+            self.get_ref().cutscene_controlling.remove(self)
+
+    def game_object_hook(self, o):
+        pass
+
+
+class ToggleAIAction(ControllingCutsceneAction):
+
+    def __init__(self, g, m, l, toggle_dir):
+        super(ToggleAIAction, self).__init__(g, m, l)
+        self.done = False
+        self.toggle_dir = toggle_dir
+
+    def describe(self):
+        return super(ToggleAIAction, self).describe() + self.what
+
+    def update_again(self):
+        return not self.done
+
+    def update(self):
+        if not self.done:
+            # stand still!
+            self.get_ref().velocity = (0, 0)
+
+            # if any player is possessing this, kick 'em out.
+            for p in self.game.players:
+                if p.possessing == self.get_ref():
+                    p.toggle_possess()
+
+            if not self.toggle_dir:
+                self.hook()
+            else:
+                self.get_ref().cutscene_controlling = []
+            self.done = True
+
+    def restart(self):
+        self.done = False
+
+
+class DisableAIAction(ToggleAIAction):
+
+    def __init__(self, g, m, l):
+        super(DisableAIAction, self).__init__(g, m, l, False)
+
+
+class EnableAIAction(ToggleAIAction):
+
+    def __init__(self, g, m, l):
+        super(EnableAIAction, self).__init__(g, m, l, True)
 
 
 class WalkToAction(ControllingCutsceneAction):
@@ -173,4 +223,5 @@ class WalkToAction(ControllingCutsceneAction):
                            min(self.speed, max(-self.speed, p_end[1] - p_start[1])))
 
 
-possible_actions = {'Test Action': TestAction, 'Walk To': WalkToAction}
+possible_actions = {'Sleep': SleepAction, 'Walk To': WalkToAction, 'Disable AI': DisableAIAction,
+                    'Enable AI': EnableAIAction}

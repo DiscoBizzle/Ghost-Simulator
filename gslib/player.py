@@ -112,4 +112,4 @@ class Player(GameObject):
         for f in self.possessing.unpossessed_function:
             f(self)
         # self.possessing.unpossessed_function()
-        self.possessing = False
+        self.possessing = None

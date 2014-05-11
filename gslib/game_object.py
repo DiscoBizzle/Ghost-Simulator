@@ -111,7 +111,7 @@ class GameObject(object):
         self.flair = {}
         self.collision_weight = 1  # set to 0 for no collision, can only push things that are lighter, or same weight
 
-        self.cutscene_controlling = None
+        self.cutscene_controlling = []
 
     @property
     def state_index(self):
@@ -156,7 +156,8 @@ class GameObject(object):
 
     def update(self, dt):
         if self.cutscene_controlling:
-            self.cutscene_controlling.game_object_hook(self)
+            for cc in self.cutscene_controlling:
+                cc.game_object_hook(self)
         else:
             v_x, v_y = 0, 0
             if self.move_down:
