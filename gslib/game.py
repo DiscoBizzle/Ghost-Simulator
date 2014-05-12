@@ -247,6 +247,9 @@ class Game(pyglet.event.EventDispatcher):
         self.ticks_clock_display.draw()
         self.draw_clock_display.draw()
 
+    def on_resize(self, width, height):
+        self.update_camera()
+
     def gather_buttons_and_drop_lists_and_objects(self):
         self.buttons = dict(self.game_buttons.items())
         self.drop_lists = dict(self.game_drop_lists.items())
@@ -263,7 +266,7 @@ class Game(pyglet.event.EventDispatcher):
             # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
             #self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
             self.ticks_clock.tick()
-            self.camera_coords = self.calc_camera_coord()
+            self.update_camera()
             #self.walrus.walrusss(self.dimensions[0], self.dimensions[1])
 
             if self.state == MAIN_GAME or self.state == EDITOR:
@@ -309,8 +312,7 @@ class Game(pyglet.event.EventDispatcher):
         except self.update_exception_hook[0] as exception:
             self.update_exception_hook[1](exception)
 
-
-    def calc_camera_coord(self):
+    def update_camera(self):
         avg_pos = [0, 0]
         c = 0
         for p in self.players.itervalues():
@@ -340,7 +342,7 @@ class Game(pyglet.event.EventDispatcher):
         if avg_pos[1] < self.dimensions[1]/2 - pad[2] or LEVEL_HEIGHT < self.dimensions[1] - pad[2] - pad[3]:
             coord = (coord[0], -pad[2])
 
-        return coord
+        self.camera_coords = coord
 
     def say_fears(self):
         for o in self.objects.itervalues():
