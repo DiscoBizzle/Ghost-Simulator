@@ -228,6 +228,10 @@ class CutsceneEditor(object):
             s = getattr(self, self.hint).selected
             setattr(ev, attr, s)
 
+        def drop_down_fun2(ev, attr):
+            s = getattr(ev, 'drop_friend_' + attr).selected
+            setattr(ev, attr, s)
+
         def incredifun(thing, attr, fun, hint=None):
             def clicky():
                 self.hint = hint
@@ -320,6 +324,23 @@ class CutsceneEditor(object):
                             drop_down_list.list_func(self.dhc, None)()
                             setattr(ev, k, None)
                     self.dhc.function = incredifun(ev, k, drop_down_fun, 'dhc')
+                elif v == 'string_drop_down':
+                    dd = collections.OrderedDict()
+                    try:
+                        l = ev.get_autocomplete(k)
+                        for dkey in l:
+                            dd[dkey] = dkey
+                    except:
+                        pass
+                    ddl = add_control(drop_down_list.DropDownList(self, dd, None, get_pos(250), size=(250, 20)))
+                    setattr(ev, 'drop_friend_' + k, ddl)
+                    if getattr(ev, k) is not None:
+                        try:
+                            ddl.set_to_value(getattr(ev, k))
+                        except:
+                            ddl.set_to_default()
+                            setattr(ev, k, None)
+                    ddl.function = incredifun(ev, k, drop_down_fun2)
                 else:
                     print("!!! Cutscene action editor doesn't know what a '" + v + "' is")
 

@@ -226,6 +226,34 @@ class WalkToAction(ControllingCutsceneAction):
                            min(self.speed, max(-self.speed, p_end[1] - p_start[1])))
 
 
+class ChangeObjectStateAction(ControllingCutsceneAction):
+
+    def __init__(self, g, m, l):
+        super(ChangeObjectStateAction, self).__init__(g, m, l)
+        self.state = self.property('state', 'string_drop_down')
+        self.done = False
+
+    def describe(self):
+        return super(ChangeObjectStateAction, self).describe() + self.what + " -> " + str(self.state)
+
+    def restart(self):
+        self.done = False
+
+    def update(self):
+        if not self.done:
+            self.get_ref().state_index = self.state
+            self.done = True
+
+    def update_again(self):
+        return not self.done
+
+    def get_autocomplete(self, var):
+        if var == 'state':
+            return self.get_ref().states.keys()
+        else:
+            return []
+
+
 class DialogueAction(CutsceneAction):
 
     def __init__(self, g, m, l):
@@ -265,4 +293,5 @@ class DialogueAction(CutsceneAction):
 
 
 possible_actions = {'Sleep': SleepAction, 'Walk To': WalkToAction, 'Disable AI': DisableAIAction,
-                    'Enable AI': EnableAIAction, 'Dialogue': DialogueAction}
+                    'Enable AI': EnableAIAction, 'Dialogue': DialogueAction,
+                    'Change Object State': ChangeObjectStateAction}
