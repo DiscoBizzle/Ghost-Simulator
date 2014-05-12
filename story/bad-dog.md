@@ -20,13 +20,23 @@ Player: That is very unfortunate.
 
 Count: Yes! Yes, it is!!!
 
+GOTO ### br0
+
+### br0
+
 * The dog... hacked your phone?
 
 Count: Yes, well, it is a **ghost** dog, so all bets are off.
 
+DROP
+
 * How is the phone a problem exactly?
 
-Count: I always check it whenever it rings. It's some of that Pavlovian Training gubbins or whatever. I'd put it on vibrate but the tone of this game is poor enough as it is.
+Count: I always check it whenever it rings. It's some of that Pavlovian Training gubbins or whatever. 
+
+Count: I'd put it on vibrate but the tone of this game is poor enough as it is.
+
+DROP
 
 * How much piss are we talking about here?
 
@@ -36,27 +46,51 @@ Player: So not so much piss at all.
 
 Count: Well no, but ideally in an indoors location what you are looking for is in fact a complete absence of piss.
 
+DROP
+
 * Why should I help you?
 
-Count: You're a young ghost without your skill tree fully specced out, yes? Well, I reckon I can spare a point or two for a young get-goer such as yourself, provided you _go_ and _get_ that dog.
+Count: You're a young ghost without your skill tree fully specced out, yes? 
+
+Count: Well, I reckon I can spare a point or two for a young get-goer such as yourself, provided you _go_ and _get_ that dog.
+
+GOTO ### br1
+
+### br1
 
 * I see you have a cage over there.
 
-Count: Ah yes, well spotted. See, I used to have a friend what was a bird and he was in the cage. Now he is not. Then this damn dog turned up and I thought this could be the perfect solution. Some feathers, a beak; who could tell the difference?
+Count: Ah yes, well spotted. See, I used to have a friend what was a bird and he was in the cage. Now he is not. 
 
-* I think dogs should be allowed to live as who they are, and not birds.
+Count: Then this damn dog turned up and I thought this could be the perfect solution. 
+
+Count: Some feathers, a beak; who could tell the difference?
+
+SUB
+
+** I think dogs should be allowed to live as who they are, and not birds.
 
 Count: There are some skill points in it for you. And I promise I'll take him out for w- er, flys regularly.
+
+SUB
+
+** Can we skip the whole cage part?
+
+Count: Oh, I suppose so. I will accept the head of the dog cleanly separated from the body as proof you have completed this quest. 
+
+Count: **Cleanly** separated, mind, I'm not cruel.
+
+DROP
 
 * So what are dogs scared of?
 
 Count: I don't know. Click on him and read the thing, you lazy bugger.
 
-* Can we skip the whole cage part?
+DROP
 
-Count: Oh, I suppose so. I will accept the head of the dog cleanly separated from the body as proof you have completed this quest. 
+* Sounds legit. I'll just get on with it, then.
 
-Count: **Cleanly** separated, mind, I'm not cruel.
+END
 
 
 ## the doge is dazed

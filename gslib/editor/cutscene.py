@@ -304,7 +304,7 @@ class CutsceneEditor(object):
                     self.dfc.function = incredifun(ev, k, drop_down_fun, 'dfc')
                 elif v == 'dialogue_heading':
                     # woo assumptions
-                    dd = {}
+                    dd = collections.OrderedDict()
                     try:
                         d = dialogue.load_dialogue(getattr(ev, 'dialogue_file'))
                         for dk in d.keys():
