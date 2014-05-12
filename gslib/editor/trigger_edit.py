@@ -243,8 +243,10 @@ class TriggerEditor(object):
 
         dl = drop_down_list.DropDownList
 
+        dls = drop_down_list.DropDownListSlider
+
         self.buttons['create_new_trigger'] = db(self, self.create_new_trigger, text="New Trigger", order=(0, 0))
-        self.drop_lists['triggers'] = dl(self, self.game.map.triggers, self.select_trigger, order=(0, 1))
+        self.drop_lists['triggers'] = dls(self, self.game.map.triggers, self.select_trigger, max_display=4, order=(0, 1))
         self.buttons['delete_trigger'] = db(self, self.delete_selected_trigger, text="Delete Trigger", order=(0, 2))
 
         self.buttons['interaction_type_label'] = db(self, None, text="Interaction Type", order=(1, 0))

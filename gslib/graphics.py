@@ -217,6 +217,9 @@ class Graphics(object):
                     priority_buttons.append(b)
                 else:
                     self.game.screen_objects_to_draw.append(b)
+
+            if hasattr(l, 'slider'):
+                self.game.screen_objects_to_draw.append(l.slider)
         self.game.screen_objects_to_draw += priority_buttons
 
     def draw_objects(self):

@@ -22,7 +22,8 @@ class Slider(object):
     pos = ExecOnChange
 
     def __init__(self, owner, func, pos=(0, 0), range=(0, 100), value=50, size=(100, 20), back_color=(120, 0, 0),
-                 fore_color=(0, 120, 0), order=(0, 0), enabled=True, visible=True, sprite_batch=None, sprite_group=None):
+                 fore_color=(0, 120, 0), order=(0, 0), enabled=True, visible=True, sprite_batch=None, sprite_group=None,
+                 horizontal=True):
 
         self.owner = owner
         self.min, self.max = range
@@ -45,6 +46,8 @@ class Slider(object):
         self.is_clicked = False
 
         self.func = func
+
+        self.horizontal = horizontal
 
         self.redraw()
 
@@ -82,18 +85,27 @@ class Slider(object):
         colors[21:24] = [min(int(x * 1.5), 255) for x in colors[21:24]]
         self.vertex_list.colors[:] = colors
 
-        length = self.size[0] * ((self.value - self.min) / (self.max - self.min))
 
         back_rect = [
             self.pos[0], self.pos[1],
             self.pos[0] + self.size[0], self.pos[1],
             self.pos[0] + self.size[0], self.pos[1] + self.size[1],
             self.pos[0], self.pos[1] + self.size[1]]
-        fore_rect = [
-            self.pos[0], self.pos[1],
-            self.pos[0] + length, self.pos[1],
-            self.pos[0] + length, self.pos[1] + self.size[1],
-            self.pos[0], self.pos[1] + self.size[1]]
+
+        if self.horizontal:
+            length = self.size[0] * ((self.value - self.min) / (self.max - self.min))
+            fore_rect = [
+                self.pos[0], self.pos[1],
+                self.pos[0] + length, self.pos[1],
+                self.pos[0] + length, self.pos[1] + self.size[1],
+                self.pos[0], self.pos[1] + self.size[1]]
+        else:
+            height = self.size[1] * ((self.value - self.min) / (self.max - self.min))
+            fore_rect = [
+                self.pos[0], self.pos[1] + self.size[1] - height,
+                self.pos[0] + self.size[0], self.pos[1] + self.size[1] - height,
+                self.pos[0] + self.size[0], self.pos[1] + self.size[1],
+                self.pos[0], self.pos[1] + self.size[1]]
 
         self.vertex_list.vertices[:] = map(int, back_rect + fore_rect)
 
@@ -107,15 +119,20 @@ class Slider(object):
 
         if typ == 'up':
             self.is_clicked = False
-            return
+            return False
 
         if typ == 'down' and abs(click_pos[0] - (self.pos[0] + w)) < w and abs(click_pos[1] - (self.pos[1] + h)) < h:
             self.is_clicked = True
 
         if self.is_clicked:
-            frac = (click_pos[0] - self.pos[0]) / self.size[0]
+            if self.horizontal:
+                frac = (click_pos[0] - self.pos[0]) / self.size[0]
+            else:
+                frac = (self.pos[1] + self.size[1] - click_pos[1]) / self.size[1] # measured from top
             self.value = self.min + (self.max - self.min) * frac
             self.func(self.value)
+            return True
+        return False
 
     def draw(self):
         self.vertex_list.draw(pyglet.gl.GL_QUADS)

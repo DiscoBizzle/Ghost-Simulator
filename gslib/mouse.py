@@ -175,8 +175,6 @@ class MouseController(object):
             #     self.interaction_this_click = True
 
     def check_list_event(self, pos, typ, button=None):
-        if typ == 'up':
-            return
         to_click = None
         for v in dict(self.game.drop_lists, **self.game.editor.get_lists() if self.game.state == EDITOR else {}).itervalues():
             if v.check_click_within_area(pos):

@@ -2,6 +2,7 @@ from weakref import WeakKeyDictionary
 
 from gslib import button
 from gslib.utils import ExecOnChange, exec_on_change_meta
+from gslib import slider
 from gslib.constants import *
 
 
@@ -143,7 +144,7 @@ class DropDownList(object):
             return True
         return False
 
-    def check_clicked(self, click_pos):  # show/hide list on click
+    def check_clicked(self, click_pos, typ='down'):  # show/hide list on click
         pos = self.pos
         w, h = self.size
         w /= 2
@@ -161,15 +162,19 @@ class DropDownList(object):
         if not self.open:
             return
 
-        b = False
+        c = False
         for b in self.drop_buttons:
             if b.check_clicked(click_pos):
-                b = True
-        return b
+                c = True
+        return c
 
     def handle_mouse_motion(self, event_pos):
         pos = self.pos
         w, h = self.size
+
+        if hasattr(self, 'slider'):
+            w += self.slider.size[1]
+
         w /= 2
 
         eh = pos[1] + h - event_pos[1]
@@ -186,20 +191,81 @@ class DropDownList(object):
 
         # highlight the moused-over button
 
+        high_b = None
         for b in self.drop_buttons:
             if b.color != self.color:
                 b.color = self.color
             if b.border_color != self.border_color:
                 b.border_color = self.border_color
-        if h_ind > 0:
-            b = self.drop_buttons[h_ind - 1]
-            if b.border_color != self.high_border_color:
-                b.border_color = self.high_border_color
-            if b.color != self.high_color:
-                b.color = self.high_color
+
+            if b.check_clicked_no_function(event_pos):
+                high_b = b
+
+        if high_b:
+            if high_b.border_color != self.high_border_color:
+                high_b.border_color = self.high_border_color
+            if high_b.color != self.high_color:
+                high_b.color = self.high_color
 
     def set_to_default(self):
         self.set_to_value(None)
 
     def set_to_value(self, value):
         list_func(self, value)()
+
+
+class DropDownListSlider(DropDownList):
+    def __init__(self, owner, items, function=None, max_display=6, *args,  **kwargs):
+        self.max_display = max_display
+        self.slider = slider.Slider(self, None, horizontal=False)
+
+        super(DropDownListSlider, self).__init__(owner, items, function, *args, **kwargs)
+
+    def refresh(self, new_items=None):
+        super(DropDownListSlider, self).refresh(new_items)
+
+        n_display = min(self.max_display, len(self.drop_buttons))
+        n_display += 1
+        height = n_display * self.size[1]
+
+        pos = self.pos[0] + self.size[0], self.pos[1] - height
+        self.slider = slider.Slider(self, self.set_scroll, pos=pos, size=(20, height), horizontal=False)
+        self.slider.value = 0
+
+    def update_buttons(self):
+        super(DropDownListSlider, self).update_buttons()
+        self.slider.visible = self.open and len(self.drop_buttons) > self.max_display
+        self.slider.enabled = self.open and len(self.drop_buttons) > self.max_display
+        self.slider.value = 0
+
+    def set_scroll(self, value):
+        if not self.open:
+            return
+        n_scroll = len(self.drop_buttons) - self.max_display
+        if n_scroll < 0:
+            return
+
+        slider_range = (self.slider.max - self.slider.min)
+        range_per_button = slider_range // n_scroll
+        button_n = value // range_per_button # 1 indexed, 0 = show 0th drop button (no scroll)
+
+        for i, b in enumerate(self.drop_buttons):
+            if i < button_n or i >= n_scroll + button_n:
+                b.visible = False
+                b.enabled = False
+            else:
+                j = i - button_n
+                b.pos = self.pos[0], self.pos[1] - (j + 1) * self.size[1]
+                b.visible = True
+                b.enabled = True
+
+    def check_click_within_area(self, click_pos):
+        list_bool = super(DropDownListSlider, self).check_click_within_area(click_pos)
+        slider_bool = self.slider.pos[0] < click_pos[0] < self.slider.pos[0] + self.slider.size[0] and \
+                    self.slider.pos[1] < click_pos[1] < self.slider.pos[1] + self.slider.size[1]
+        return list_bool or slider_bool
+
+    def handle_event(self, pos, typ, butt=None):
+        slider_bool = self.slider.check_clicked(pos, typ)
+        list_bool = super(DropDownListSlider, self).handle_event(pos, typ, butt)
+        return list_bool or slider_bool
