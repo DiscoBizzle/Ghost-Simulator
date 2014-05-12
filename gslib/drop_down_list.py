@@ -171,18 +171,18 @@ class DropDownList(object):
     def handle_mouse_motion(self, event_pos):
         pos = self.pos
         w, h = self.size
-
-        if hasattr(self, 'slider'):
-            w += self.slider.size[1]
-
         w /= 2
 
         eh = pos[1] + h - event_pos[1]
         h_ind = eh / h
 
+        n_drop_button = len(self.drop_buttons)
+        if hasattr(self, 'slider'):
+            n_drop_button = self.max_display + 1
+
         # if move off edge, close list
         # if move off bottom or top, close list
-        if abs(event_pos[0] - (pos[0] + w)) > w or h_ind > len(self.drop_buttons) or h_ind < 0:
+        if abs(event_pos[0] - (pos[0] + w)) > w or h_ind > n_drop_button or h_ind < 0:
             self.open = not self.open
             for b in self.drop_buttons:
                 b.visible = not b.visible
@@ -216,41 +216,48 @@ class DropDownList(object):
 
 class DropDownListSlider(DropDownList):
     def __init__(self, owner, items, function=None, max_display=6, *args,  **kwargs):
-        self.max_display = max_display
+        self.max_display = max_display - 1
         self.slider = slider.Slider(self, None, horizontal=False)
 
         super(DropDownListSlider, self).__init__(owner, items, function, *args, **kwargs)
 
     def refresh(self, new_items=None):
-        super(DropDownListSlider, self).refresh(new_items)
-
         n_display = min(self.max_display, len(self.drop_buttons))
         n_display += 1
         height = n_display * self.size[1]
 
-        pos = self.pos[0] + self.size[0], self.pos[1] - height
+        pos = self.pos[0] + self.size[0] - self.slider.size[0], self.pos[1] - height
         self.slider = slider.Slider(self, self.set_scroll, pos=pos, size=(20, height), horizontal=False)
         self.slider.value = 0
+        self.set_scroll(0)
+
+        super(DropDownListSlider, self).refresh(new_items)
 
     def update_buttons(self):
         super(DropDownListSlider, self).update_buttons()
         self.slider.visible = self.open and len(self.drop_buttons) > self.max_display
         self.slider.enabled = self.open and len(self.drop_buttons) > self.max_display
-        self.slider.value = 0
+        self.set_scroll(self.slider.value)
+
+        if len(self.drop_buttons) > self.max_display:
+            for b in self.drop_buttons:
+                b.size = b.size[0] - self.slider.size[0], b.size[1]
 
     def set_scroll(self, value):
         if not self.open:
             return
         n_scroll = len(self.drop_buttons) - self.max_display
-        if n_scroll < 0:
+        if n_scroll <= 0:
             return
 
         slider_range = (self.slider.max - self.slider.min)
         range_per_button = slider_range // n_scroll
         button_n = value // range_per_button # 1 indexed, 0 = show 0th drop button (no scroll)
+        if button_n == n_scroll:
+            button_n -= 1
 
         for i, b in enumerate(self.drop_buttons):
-            if i < button_n or i >= n_scroll + button_n:
+            if i < button_n or i > self.max_display + button_n:
                 b.visible = False
                 b.enabled = False
             else:
