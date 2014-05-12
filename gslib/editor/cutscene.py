@@ -294,13 +294,14 @@ class CutsceneEditor(object):
                     for f in files:
                         fd[f] = f
                     # hack!
-                    self.dfc = add_control(drop_down_list.DropDownList(self, fd, incredifun(ev, k, drop_down_fun, 'dfc'),
-                                                                       get_pos(250), size=(250, 20)))
+                    self.dfc = add_control(drop_down_list.DropDownList(self, fd, None, get_pos(250), size=(250, 20)))
                     if getattr(ev, k) is not None:
-                        temp = self.dfc.function
-                        self.dfc.function = None
-                        drop_down_list.list_func(self.dfc, getattr(ev, k))()
-                        self.dfc.function = temp
+                        try:
+                            drop_down_list.list_func(self.dfc, getattr(ev, k))()
+                        except:
+                            drop_down_list.list_func(self.dfc, None)()
+                            setattr(ev, k, None)
+                    self.dfc.function = incredifun(ev, k, drop_down_fun, 'dfc')
                 elif v == 'dialogue_heading':
                     # woo assumptions
                     dd = {}
@@ -311,13 +312,14 @@ class CutsceneEditor(object):
                     except:
                         pass
                     # hack!
-                    self.dhc = add_control(drop_down_list.DropDownList(self, dd, incredifun(ev, k, drop_down_fun, 'dhc'),
-                                                                       get_pos(250), size=(250, 20)))
+                    self.dhc = add_control(drop_down_list.DropDownList(self, dd, None, get_pos(250), size=(250, 20)))
                     if getattr(ev, k) is not None:
-                        temp = self.dhc.function
-                        self.dhc.function = None
-                        drop_down_list.list_func(self.dhc, getattr(ev, k))()
-                        self.dhc.function = temp
+                        try:
+                            drop_down_list.list_func(self.dhc, getattr(ev, k))()
+                        except:
+                            drop_down_list.list_func(self.dhc, None)()
+                            setattr(ev, k, None)
+                    self.dhc.function = incredifun(ev, k, drop_down_fun, 'dhc')
                 else:
                     print("!!! Cutscene action editor doesn't know what a '" + v + "' is")
 

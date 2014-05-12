@@ -113,8 +113,8 @@ def load_dialogue(filename):
         for l in lines:
             # New choice?
             if l.lstrip()[:2] == '* ':
-                # push old choice (iff non-empty)
-                if len(choice_lines_so_far) > 0:
+                # push old choice (if a choice, only do so if non-empty)
+                if choice_name is None or len(choice_lines_so_far) > 0:
                     new_lines[choice_name] = choice_lines_so_far
                 # switch to new choice
                 choice_name = l.lstrip()[2:]
@@ -122,8 +122,8 @@ def load_dialogue(filename):
             else:
                 choice_lines_so_far.append(l.lstrip())
 
-        # add the last one (iff non-empty)
-        if len(choice_lines_so_far) > 0:
+        # add the last one (if a choice, only do so if non-empty)
+        if choice_name is None or len(choice_lines_so_far) > 0:
             new_lines[choice_name] = choice_lines_so_far
 
         # add heading (iff non-empty)
@@ -139,10 +139,11 @@ class SimpleDialogue(object):
         self.on_complete_fun = on_complete_fun
         self.message = message
 
-        self.background = graphics.create_rect_sprite(rect.Rect((0, 0), (1280, 160)), (70, 80, 65, 200))
-        self.text_layout = text.new(FONT, font_size=20, text=message, width=1180, height=180)
+        self.background = graphics.create_rect_sprite(rect.Rect((0, 0), (1280, 200)), (70, 80, 65, 200))
+        self.text_layout = text.new(FONT, font_size=26, text=message, width=1180, height=175)
+        self.text_layout.content_valign = 'top'
         self.text_layout.x = 50
-        self.text_layout.y = 20
+        self.text_layout.y = 0
 
         self.wait_up = False
 

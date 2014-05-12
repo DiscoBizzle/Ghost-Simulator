@@ -12,7 +12,9 @@ Count: It's this damn dog. It's pissing everywhere and making a fool out of me. 
 
 Player: It's only a dog.
 
-Count: Indeed, and that is the crux of the problem. It's rigged up my ghost-iPhone so that every time I go to pick up the thing and kick seven shades out of it I get a phone call that turns out to just be pictures of this dog looking cute and like something that you would not want to kick seven shades out of.
+Count: Indeed, and that is the crux of the problem. 
+
+Count: It's rigged up my ghost-iPhone so that every time I go to pick up the thing and kick seven shades out of it I get a phone call that turns out to just be pictures of this dog looking cute and like something that you would not want to kick seven shades out of.
 
 Player: That is very unfortunate.
 
