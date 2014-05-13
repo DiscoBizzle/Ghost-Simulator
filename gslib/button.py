@@ -108,7 +108,7 @@ class Button(object):
         self._visible = visible
         if not visible:
             self._vertex_list.vertices[:] = [0] * 16
-            if self._text_layout is not None:
+            if self._text_layout is not None and self._text_batch is not None:
                 # delete to remove from batch
                 self._text_layout.delete()
                 self._text_layout = None
