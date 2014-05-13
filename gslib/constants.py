@@ -10,7 +10,7 @@ __all__ = ['STARTUP', 'MAIN_MENU', 'MAIN_GAME', 'CUTSCENE', 'GAME_OVER', 'SKILLS
            'MAX_FEAR', 'START_FEAR', 'FEAR_PER_STEP', 'FEAR_PER_TICK', 'POSSESSION_RANGE', 'FEAR_COLLECTION_RADIUS',
            'MUSIC_DIR', 'SOUND_DIR', 'VIDEO_DIR', 'CHARACTER_DIR', 'TILES_DIR', 'CREDITS_FILE', 'SKILLS_FILE',
            'KEYMAP_FILE', 'OPTIONS_FILE', 'SAVE_DIR', 'LEARNT_SKILL_COLOR', 'CAN_BE_LEARNT_COLOR', 'UNLEARNABLE_COLOR',
-           'INITIAL_SOUND_VOLUME', 'INITIAL_MUSIC_VOLUME', 'FONT', 'DEFAULT_OPTIONS', 'DIALOGUE_DIR']
+           'INITIAL_SOUND_VOLUME', 'INITIAL_MUSIC_VOLUME', 'FONT', 'DEFAULT_OPTIONS', 'DIALOGUE_DIR', 'SLEEP_TARGET']
 
 
 def fallback_files(target, required, *fnames):
@@ -35,6 +35,7 @@ KEYBIND_CAPTURE = 9
 EDITOR = 10
 
 TICKS_PER_SEC = 35
+SLEEP_TARGET = 100
 
 GAME_WIDTH = 1280
 GAME_HEIGHT = 720
@@ -103,4 +104,5 @@ FONT = ['Helvetica']
 
 DEFAULT_OPTIONS = {'FOV': True, 'VOF': False, 'torch': False, 'menu_scale': False, 'vsync': False,
                    'sound_volume': INITIAL_SOUND_VOLUME, 'music_volume': INITIAL_MUSIC_VOLUME,
-                   'fullscreen': False, 'resolution': (GAME_WIDTH, GAME_HEIGHT), 'VOF_opacity': 128}
+                   'fullscreen': False, 'resolution': (GAME_WIDTH, GAME_HEIGHT), 'VOF_opacity': 128,
+                   'scheduler_frequency': 100}
