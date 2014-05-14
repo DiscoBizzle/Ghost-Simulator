@@ -78,7 +78,7 @@ class Graphics(object):
 
     def main_game_draw(self):
         # this runs faster than game update. animation can be done here with no problems.
-        if self.game.state != CUTSCENE:
+        if self.game.state != MOVIE:
             self.game.window.clear()
 
         if self.game.state == STARTUP:
@@ -121,8 +121,8 @@ class Graphics(object):
             self.game.options_menu.draw()
         elif self.game.state == KEYBIND_MENU or self.game.state == KEYBIND_CAPTURE:
             self.game.keybind_menu.draw()
-        elif self.game.state == CUTSCENE:
-            self.draw_cutscene()
+        elif self.game.state == MOVIE:
+            self.game.movie_player.draw()
 
         if self.game.options['FOV']:
             self.draw_world_objects()
@@ -271,30 +271,6 @@ class Graphics(object):
                 print(self.game.screen_objects_to_draw)
             f.draw()
         self.game.screen_objects_to_draw = []
-
-    def draw_cutscene(self):
-        if self.game.cutscene_started and hasattr(self, 'movie_player'):
-            if not self.movie_player.playing:
-                self.game.state = self.game.last_state
-                self.game.cutscene_started = False
-            else:
-                self.movie_player.get_texture().blit(0, 0, width=self.game.dimensions[0], height=self.game.dimensions[1])
-                # print self.game.dimensions[0]
-                # print self.game.dimensions[1]
-        else:
-            try:
-                video_source = pyglet.media.load(self.game.cutscene_next)
-                self.movie_player = pyglet.media.Player()
-                #w, h = self.movie_player.get_size()
-                #self.movie_player.eos_action = self.movie_player.EOS_LOOP
-                #video_source.video_format.width = video_source.video_format.width * 2
-                #video_source.video_format.height = video_source.video_format.height * 2
-                self.movie_player.queue(video_source)
-                self.movie_player.play()
-                self.game.cutscene_started = True
-            except IOError:
-                print(u"Video not found: " + self.game.cutscene_next)
-                self.game.state = self.game.last_state
 
     def draw_torch(self):
         raise Exception("graphics.draw_torch() not ported to pyglet.")

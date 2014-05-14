@@ -10,6 +10,7 @@ from gslib import credits
 from gslib import graphics
 from gslib import joy
 from gslib import menus
+from gslib import movie
 from gslib import player
 from gslib import skills
 from gslib import sound
@@ -90,8 +91,8 @@ class Game(pyglet.event.EventDispatcher):
         self.main_menu = menus.MainMenu(self, (161, 100))
         self._state = STARTUP
         self.last_state = None
-        self.cutscene_started = False
-        self.cutscene_next = os.path.join(VIDEO_DIR, "default.mpg")
+        self.movie_next = "default.mpg"
+        self.movie_player = movie.MoviePlayer()
         self.game_running = True
         self.graphics = graphics.Graphics(self)
         self.window.set_caption("Ghost Simulator v. 0.000000001a")
@@ -225,6 +226,8 @@ class Game(pyglet.event.EventDispatcher):
         elif self.last_state == CREDITS:
             self.credits.stop()
             self.credits.remove_handlers(self)
+        elif self.last_state == MOVIE:
+            self.movie_player.remove_handlers(self)
         if state == MAIN_GAME:
             if self.sound_handler.music_playing is not None:
                 if self.sound_handler.music_playing.name != 'transylvania':
@@ -234,9 +237,15 @@ class Game(pyglet.event.EventDispatcher):
         elif state == CREDITS:
             self.credits.push_handlers(self)
             self.credits.start()
+        elif state == MOVIE:
+            self.movie_player.push_handlers(self)
+            self.movie_player.start(self.movie_next)
 
     def on_credits_end(self):
         self.state = MAIN_MENU
+
+    def on_movie_end(self):
+        self.state = self.last_state
 
     # pyglet event
     def on_draw(self):

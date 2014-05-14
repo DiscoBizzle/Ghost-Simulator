@@ -57,11 +57,10 @@ class KeyController(object):
             self.game.state = KEYBIND_MENU
             return
 
-        if self.keys[Pkey.ESCAPE] and self.game.state != CUTSCENE:
+        if self.keys[Pkey.ESCAPE]:
             self.game.state = MAIN_MENU
         if self.keys[Pkey.M]:
-            if self.game.state == MAIN_MENU or self.game.state == MAIN_GAME:
-                self.game.state = CUTSCENE
+            self.game.state = MOVIE
         if self.keys[self.key_map['Skill Screen']] and (self.game.state == MAIN_MENU or self.game.state == MAIN_GAME):
             self.game.state = SKILLS_SCREEN
 
