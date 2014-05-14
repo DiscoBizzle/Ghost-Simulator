@@ -224,7 +224,6 @@ class Game(pyglet.event.EventDispatcher):
         if self.last_state == EDITOR:
             self.editor.exit_edit_mode()
         elif self.last_state == CREDITS:
-            self.credits.stop()
             self.credits.remove_handlers(self)
         elif self.last_state == MOVIE:
             self.movie_player.remove_handlers(self)
