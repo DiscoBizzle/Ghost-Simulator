@@ -18,10 +18,10 @@ from gslib import mouse
 from gslib import text
 from gslib import map_edit
 from gslib import save_load
-from gslib import options
 from gslib import walrus
 from gslib.rect import Rect
 from gslib.constants import *
+from gslib import options, window
 
 
 class Game(pyglet.event.EventDispatcher):
@@ -70,12 +70,9 @@ class Game(pyglet.event.EventDispatcher):
 
         self.TODO = TODO
 
-        self.options = options.Options(DEFAULT_OPTIONS)
-
-        self.options.load_options()
-
-        self.window = GameWindow(self, width=self.options['resolution'][0], height=self.options['resolution'][1],
-                                 resizable=True, vsync=self.options['vsync'], fullscreen=self.options['fullscreen'])
+        # TODO: kill these attribs and make everything use the globals instead
+        self.options = options
+        self.window = window
 
         self.object_collision_lookup = collision.ObjectCollisionLookup(self)
 
@@ -387,30 +384,3 @@ class Game(pyglet.event.EventDispatcher):
         self.window.dispatch_event('on_close')
 
 Game.register_event_type('on_state_change')
-
-
-class GameWindow(pyglet.window.Window):
-    def __init__(self, game, *args, **kwargs):
-        super(GameWindow, self).__init__(*args, **kwargs)
-        self.game = game
-        self.game.options.push_handlers(self)
-
-    # disable the default pyglet key press handler
-    def on_key_press(self, symbol, modifiers):
-        pass
-
-    def on_resize(self, width, height):
-        super(GameWindow, self).on_resize(width, height)
-        self.game.options['resolution'] = (width, height)
-
-    def on_option_change(self, k, old_value, new_value):
-        if k == 'vsync':
-            self.set_vsync(new_value)
-        elif k == 'fullscreen':
-            self.set_fullscreen(fullscreen=new_value)
-            self.game.options['resolution'] = self.get_size()
-        elif k == 'resolution':
-            if self.fullscreen:
-                self.set_fullscreen(width=new_value[0], height=new_value[1])
-            else:
-                self.set_size(*new_value)
