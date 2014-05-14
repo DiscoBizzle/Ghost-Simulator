@@ -57,4 +57,9 @@ class Sound(object):
         handler.volume = self.game.options['sound_volume']
         handler.name = name
         self.sound_playing.add(handler)
-        handler.push_handlers(on_eos=(lambda: self.sound_playing.remove(handler)))
+        handler.push_handlers(on_eos=(lambda: self.sound_eos(handler)))
+
+    def sound_eos(self, handler):
+        # pop handlers so handler can be garbage collected
+        handler.pop_handlers()
+        self.sound_playing.remove(handler)
