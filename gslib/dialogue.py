@@ -4,7 +4,7 @@ import os
 import pyglet.window.key as Pkey
 
 from gslib.constants import *
-from gslib import graphics
+from gslib import primitives
 from gslib import rect
 from gslib import text
 
@@ -172,7 +172,7 @@ class SimpleDialogue(object):
         self.on_complete_fun = on_complete_fun
         self.message = message
 
-        self.background = graphics.create_rect_sprite(rect.Rect((0, 0), (1280, 200)), (70, 80, 65, 200))
+        self.background = primitives.RectPrimitive(x=0, y=0, width=1280, height=200, color=(70, 80, 65), opacity=200)
 
         self.text_layout = None
         self._update_text()

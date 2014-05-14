@@ -1,5 +1,5 @@
 __author__ = 'Martin'
-from gslib import graphics
+from gslib import primitives
 
 
 # IMPORTANT: Name these functions with 'trigger' in the name, for reasons of saving.
@@ -17,10 +17,7 @@ def red_square_trigger(targets):
             target.fear = 0
             target.fainted = True
 
-            sprite = graphics.new_rect_sprite()
-            sprite.scale_x = 10
-            sprite.scale_y = 10
-            sprite.color_rgb = (120, 0, 0)
+            sprite = primitives.RectPrimitive(width=10, height=10, color=(120, 0, 0))
             target.flair['fear_harvested'] = (sprite, (-5, target.dimensions[1] + 5))
     func.__name__ = 'red_square_trigger'
     return func

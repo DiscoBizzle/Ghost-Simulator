@@ -6,7 +6,7 @@ import pyglet
 from gslib import character_functions
 from gslib.game_object import GameObject
 from gslib import cutscene
-from gslib import graphics
+from gslib import primitives
 from gslib import sprite
 from gslib import text
 from gslib import textures
@@ -155,10 +155,9 @@ def draw_info_sheet(stats):
     # age_text.y = name_text.y - name_text.content_height
 
     # draw background
-    background_sprite = graphics.new_rect_sprite()
-    background_sprite.color_rgb = GREY
-    background_sprite.scale_x = w + name_text.content_width + border * 2
-    background_sprite.scale_y = h + 2 * border  # - name_text.content_height - age_text.content_height - 3 * border
+    background_sprite = primitives.RectPrimitive(width=w + name_text.content_width + border * 2,
+                                                 height=h + 2 * border,  # - name_text.content_height - age_text.content_height - 3 * border
+                                                 color=GREY)
 
     sprites.append(background_sprite)
     sprites.append(im_sprite)

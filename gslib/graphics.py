@@ -12,24 +12,8 @@ from gslib import player
 from gslib import sprite
 from gslib import textures
 from gslib import text
+from gslib import primitives
 
-import time
-
-rect_tex = None
-def new_rect_sprite():
-    global rect_tex
-    if rect_tex is None:
-        rect_tex = pyglet.image.SolidColorImagePattern((255, 255, 255, 255)).create_image(1, 1).get_texture()
-    return sprite.Sprite(rect_tex)
-
-def create_rect_sprite(rec, rgba):
-    r = new_rect_sprite()
-    r.scale_x = rec.width
-    r.scale_y = rec.height
-    r.x = rec.x
-    r.y = rec.y
-    r.color_rgba = rgba
-    return r
 
 circle_tex = None
 def draw_circle(r, color):
@@ -189,10 +173,10 @@ class Graphics(object):
         if not trig is None:
             zone = self.game.editor.trigger_editor.drop_lists['zones'].selected
             for z in trig.zones:
-                r = create_rect_sprite(z, (135, 206, 250, 50))
+                r = primitives.RectPrimitive(rect=z, color=(135, 206, 250), opacity=50)
                 if not zone is None:
                     if z == zone:
-                        r = create_rect_sprite(z, (65, 105, 225, 100))
+                        r = primitives.RectPrimitive(rect=z, color=(65, 105, 225), opacity=100)
 
                 self.game.world_objects_to_draw.append(r)
 
@@ -263,15 +247,14 @@ class Graphics(object):
     def draw_fear_bar(self):
         nplayers = len(self.game.players)
         self.game.screen_objects_to_draw.append(self.fear_text)
-        w = GAME_WIDTH - self.fear_text.content_width
+        w = self.game.dimensions[0] - self.fear_text.content_width
         h = 32
         for i, p in enumerate(self.game.players.itervalues()):
-            sp = new_rect_sprite()
-            sp.scale_x = w * p.fear/float(MAX_FEAR)
-            sp.scale_y = h
-            sp.x = self.fear_text.content_width
-            sp.y = h*i
-            sp.color_rgb = (255, 0, 0)
+            sp = primitives.RectPrimitive(x=self.fear_text.content_width,
+                                          y=h * i,
+                                          width=w * (p.fear / float(MAX_FEAR)),
+                                          height=h,
+                                          color=(255, 0, 0))
             self.game.screen_objects_to_draw.append(sp)
 
     def draw_world_objects(self):  # stuff relative to camera
