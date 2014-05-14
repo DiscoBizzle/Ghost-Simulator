@@ -98,7 +98,7 @@ class Game(pyglet.event.EventDispatcher):
 
         self.sound_handler = sound.Sound(self)
 
-        self.credits = credits.Credits(self)
+        self.credits = credits.Credits()
         self.options_menu = menus.OptionsMenu(self, (200, 50))
 
         self.camera_coords = (0, 0)
@@ -224,6 +224,7 @@ class Game(pyglet.event.EventDispatcher):
             self.editor.exit_edit_mode()
         elif self.last_state == CREDITS:
             self.credits.stop()
+            self.credits.remove_handlers(self)
         if state == MAIN_GAME:
             if self.sound_handler.music_playing is not None:
                 if self.sound_handler.music_playing.name != 'transylvania':
@@ -231,7 +232,11 @@ class Game(pyglet.event.EventDispatcher):
         elif state == EDITOR:
             self.editor.enter_edit_mode()
         elif state == CREDITS:
+            self.credits.push_handlers(self)
             self.credits.start()
+
+    def on_credits_end(self):
+        self.state = MAIN_MENU
 
     # pyglet event
     def on_draw(self):

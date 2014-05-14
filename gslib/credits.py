@@ -1,9 +1,10 @@
-from __future__ import division, print_function
+from __future__ import absolute_import, division, print_function
 
 import collections
 
 import pyglet
 
+from gslib import window
 from gslib.constants import *
 
 
@@ -23,8 +24,8 @@ def parse_credits_file(fname):
     return res
 
 
-class Credits(object):
-    def __init__(self, game, color=(255, 255, 255, 255), size=20, speed=1):
+class Credits(pyglet.event.EventDispatcher):
+    def __init__(self, color=(255, 255, 255, 255), size=20, speed=1):
         """Display a credits screen for game.
 
         Arguments:
@@ -34,7 +35,6 @@ class Credits(object):
             - speed: number of pixels it moves up every 1/60 of a second
         """
         self.credits = parse_credits_file(CREDITS_FILE)
-        self.game = game
         self.color = color
         self.font_size = size
         self.speed = speed
@@ -49,26 +49,35 @@ class Credits(object):
             text += '\n'
 
         self.text_label = pyglet.text.Label(text, FONT, self.font_size, color=self.color,
-                                            width=self.game.dimensions[0], batch=self.batch, multiline=True)
+                                            width=window.width, batch=self.batch, multiline=True)
 
     def draw(self):
         self.batch.draw()
 
     def update(self, dt):
-        self.text_label.y = self.v_offset
         self.v_offset += self.speed
-        if self.v_offset > self.text_label.content_height + self.game.dimensions[1]:
-            self.game.state = MAIN_MENU
-            self.v_offset = 0
+        self.text_label.y = self.v_offset
+        if self.v_offset > self.text_label.content_height + window.height:
+            self.stop()
 
     def start(self):
-        self.on_resize(*self.game.dimensions)
+        self.on_resize(*window.get_size())
+        self.text_label.y = self.v_offset
         pyglet.clock.schedule_interval(self.update, 1 / 60)
-        self.game.window.push_handlers(self)
+        window.push_handlers(self)
 
     def stop(self):
-        self.game.window.remove_handlers(self)
+        self.v_offset = 0
+        window.remove_handlers(self)
         pyglet.clock.unschedule(self.update)
+        self.dispatch_event('on_credits_end')
 
     def on_resize(self, width, height):
         self.text_label.x = (width - self.text_label.content_width) // 2
+
+    def on_key_press(self, symbol, modifiers):
+        if symbol == pyglet.window.key.ESCAPE:
+            self.stop()
+            return pyglet.event.EVENT_HANDLED
+
+Credits.register_event_type('on_credits_end')
