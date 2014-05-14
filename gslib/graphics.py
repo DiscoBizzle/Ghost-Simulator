@@ -19,7 +19,7 @@ circle_tex = None
 def draw_circle(r, color):
     global circle_tex
     if circle_tex is None:
-        circle_tex = textures.get(os.path.join(CHARACTER_DIR, 'circle_solid.png'))
+        circle_tex = textures.get(os.path.join(SPRITES_DIR, 'circle_solid.png'))
     sprit = sprite.Sprite(circle_tex)
     sprit.scale_x = 2*r / 1024.0
     sprit.scale_y = 2*r / 1024.0
@@ -35,12 +35,12 @@ class Graphics(object):
         self.game = game
         #self.surface = pygame.display.set_mode(self.game.dimensions, pygame.RESIZABLE)
 
-        self.field = sprite.Sprite(pyglet.image.load(os.path.join(TILES_DIR, 'field.png')).get_texture())
+        self.field = sprite.Sprite(pyglet.image.load(os.path.join(SPRITES_DIR, 'field.png')).get_texture())
         self.field.opacity = self.game.options['VOF_opacity']
         #self.field.scale_x = self.game.dimensions[0] / self.field.image.width
         #self.field.scale_y = self.game.dimensions[1] / self.field.image.height
 
-        self.light = sprite.Sprite(pyglet.image.load(os.path.join(TILES_DIR, 'light.png')).get_texture())
+        self.light = sprite.Sprite(pyglet.image.load(os.path.join(SPRITES_DIR, 'light.png')).get_texture())
         self.light.scale_x = self.light.scale_y = (200.0 / self.light.image.height)
         self.light_size = (self.light.width, self.light.height)
 

@@ -16,7 +16,7 @@ from gslib.editor import cutscene
 
 def get_fears_from_file():  # load all possible fears from file, without descriptions
     possible_fears = []
-    f = open(os.path.join(CHARACTER_DIR, "fear_description.txt"), 'r')
+    f = open(os.path.join(DATA_DIR, "fear_description.txt"), 'r')
     for l in f:
         fear = l[:l.find(':')].decode('utf-8')
         if not fear in possible_fears:

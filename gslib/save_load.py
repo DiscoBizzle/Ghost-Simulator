@@ -47,7 +47,7 @@ def save_map(m):
     file_dict[u'map_file'] = m._map_file.replace('\\', '/')
     file_dict[u'cutscenes_file'] = m._cutscenes_file.replace('\\', '/')
 
-    with open(os.path.join(SAVE_DIR, str(m._name + '_save.dat')), 'w') as f:
+    with open(os.path.join(MAPS_DIR, str(m._name + '_data.json')), 'w') as f:
         json.dump(file_dict, f)
     f.close()
 
@@ -137,7 +137,7 @@ def load_cutscenes(game_, map_, cutscenes_file):
 
 
 def load_map(game, map_name):
-    with open(os.path.join(SAVE_DIR, str(map_name + '_save.dat')), 'r') as f:
+    with open(os.path.join(MAPS_DIR, str(map_name + '_data.json')), 'r') as f:
         map_dict = json.load(f)
     f.close()
 

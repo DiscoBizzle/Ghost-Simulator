@@ -21,7 +21,7 @@ def test():
     pygame.font.init()
     random.seed()
     screen = pygame.display.set_mode((800, 800))
-    char = Character(None, 0, 0, 16, 32, gen_character({'image_name': os.path.join(CHARACTER_DIR, 'Sprite_front.png')}))
+    char = Character(None, 0, 0, 16, 32, gen_character({'image_name': os.path.join(CHARACTERS_DIR, 'Sprite_front.png')}))
     screen.blit(char.info_sheet, (0, 0))
     screen.blit(char.sprite, (char.info_sheet.get_width() + 10, 0))
     pygame.display.update()
@@ -31,7 +31,7 @@ def test():
 
 
 def fill_background(surface, border_size):
-    border = pygame.image.load(os.path.join(TILES_DIR, 'info_sheet_border_tile.png'))
+    border = pygame.image.load(os.path.join(SPRITES_DIR, 'info_sheet_border_tile.png'))
     border = pygame.transform.scale(border, (border_size, border_size))
     bw = border.get_width()
     bh = border.get_height()
@@ -44,7 +44,7 @@ def fill_background(surface, border_size):
 
 
 def load_stats(fname):
-    f = open(os.path.join(CHARACTER_DIR, fname))
+    f = open(os.path.join(CHARACTERS_DIR, fname))
     age = f.readline().strip()
     age = int(age)
 
@@ -83,7 +83,7 @@ def gen_character(stats=None):
     stats.setdefault('scared_of', gen_fears())
     stats.setdefault('gender', random.choice(('m', 'f')))
     stats.setdefault('name', gen_name(stats['gender']))
-    stats.setdefault('image_name', os.path.join(CHARACTER_DIR, 'Sprite_front.png'))
+    stats.setdefault('image_name', os.path.join(CHARACTERS_DIR, 'Sprite_front.png'))
     return stats
 
 
@@ -98,11 +98,11 @@ def choose_n_lines(n, fname):
 
 
 def gen_bio():
-    return u' '.join(choose_n_lines(3, os.path.join(CHARACTER_DIR, "bio.txt")))
+    return u' '.join(choose_n_lines(3, os.path.join(DATA_DIR, "bio.txt")))
 
 
 def gen_fears():
-    f = choose_n_lines(random.randrange(1, 4), os.path.join(CHARACTER_DIR, "fear_description.txt"))
+    f = choose_n_lines(random.randrange(1, 4), os.path.join(DATA_DIR, "fear_description.txt"))
     fears = []
     for i in f:
         name = i[:i.find(':')]
@@ -110,13 +110,13 @@ def gen_fears():
     return fears
 
 def gen_name(gender):
-    fname = os.path.join(CHARACTER_DIR, "first_names_{}.txt".format(gender))
+    fname = os.path.join(DATA_DIR, "first_names_{}.txt".format(gender))
 
     first_name = choose_n_lines(1, fname)[0]
-    second_name = choose_n_lines(1, os.path.join(CHARACTER_DIR, "second_names.txt"))[0]
+    second_name = choose_n_lines(1, os.path.join(DATA_DIR, "second_names.txt"))[0]
 
     while random.random() > 0.9:
-        second_name = u"{}-{}".format(second_name, choose_n_lines(1, os.path.join(CHARACTER_DIR, "second_names.txt"))[0])
+        second_name = u"{}-{}".format(second_name, choose_n_lines(1, os.path.join(DATA_DIR, "second_names.txt"))[0])
 
     return u"{} {}".format(first_name, second_name)
 
@@ -220,7 +220,7 @@ class Character(GameObject):
 
     def get_stats(self, name):
         name = name
-        image = os.path.join(CHARACTER_DIR, name) + '_front.png'
+        image = os.path.join(CHARACTERS_DIR, name) + '_front.png'
         age, bio, self.fears = load_stats(name)
         return {'name': name, 'age': age, 'image_name': image, 'bio': bio}
 

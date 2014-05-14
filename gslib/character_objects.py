@@ -30,7 +30,7 @@ class SmallDoor(Character):
         self.possessed_function = [character_functions.flip_state(self)]
         self.unpossessed_function = [character_functions.flip_state(self)]
 
-        self.stats = {'image_name': os.path.join(CHARACTER_DIR, 'small_door_sheet.png'), 'name': u'Small Door', 'age': random.randint(0, 500)}
+        self.stats = {'image_name': os.path.join(CHARACTERS_DIR, 'small_door_sheet.png'), 'name': u'Small Door', 'age': random.randint(0, 500)}
         self.info_sheet = character.draw_info_sheet(self.stats)
 
     def _update_animation(self):

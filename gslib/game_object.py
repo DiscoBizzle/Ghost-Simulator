@@ -87,7 +87,7 @@ class GameObject(object):
         self.scream_thresh = 50
 
         #variables for animation
-        self.sprite_sheet = image.load(os.path.join(CHARACTER_DIR, sprite_sheet))
+        self.sprite_sheet = image.load(os.path.join(CHARACTERS_DIR, sprite_sheet))
         self._animation_state = 0
         self.sprite_height = sprite_height
         self.sprite_width = sprite_width
