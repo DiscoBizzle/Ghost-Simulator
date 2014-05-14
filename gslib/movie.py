@@ -21,7 +21,7 @@ class MoviePlayer(pyglet.event.EventDispatcher):
             return
         self._player = pyglet.media.Player()
         self._player.queue(video_source)
-        self._player.push_handlers(on__eos=self.stop)
+        self._player.push_handlers(on_eos=self.stop)
         self._player.play()
         window.push_handlers(self)
 
@@ -29,7 +29,7 @@ class MoviePlayer(pyglet.event.EventDispatcher):
         window.remove_handlers(self)
         if self._player is not None:
             self._player.pause()
-            self._player.remove_handlers(on__eos=self.stop)
+            self._player.remove_handlers(on_eos=self.stop)
             self._player = None
         self.dispatch_event('on_movie_end')
 
