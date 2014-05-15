@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function
+
 import io
 import os.path
 
@@ -416,7 +418,7 @@ class Editor(object):
     def create_checklist_buttons(self):  # puts a button for each fear into the buttons dict
         ndown = 6
         for i, f in enumerate(self.possible_fears):
-            pos = ((i / ndown) * 105, self.game.dimensions[1] - 200 - (i % ndown) * 25)
+            pos = ((i // ndown) * 105, self.game.dimensions[1] - 200 - (i % ndown) * 25)
             self.buttons[f] = button.DefaultButton(self, set_fear_button(self, f), pos=pos,
                                                    size=(100, 20), text=f, visible=False, enabled=False)
 

@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function
+
 from gslib import button
 from gslib.utils import ExecOnChange, exec_on_change_meta
 
@@ -114,8 +116,8 @@ class List(object):
     def check_clicked(self, click_pos):  # show/hide list on click
         pos = self.pos
         w, h = self.size
-        w /= 2
-        h /= 2
+        w //= 2
+        h //= 2
 
         if abs(click_pos[0] - (pos[0] + w)) < w and abs(click_pos[1] - (pos[1] + h)) < h:
             self.update_buttons()
@@ -130,10 +132,10 @@ class List(object):
     def handle_mouse_motion(self, event_pos):
         pos = self.pos
         w, h = self.size
-        w /= 2
+        w //= 2
 
         eh = pos[1] + h - event_pos[1]
-        h_ind = eh / h
+        h_ind = eh // h
 
         # highlight the moused-over button
         for b in self.drop_buttons:

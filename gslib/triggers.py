@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function
+
 # from gslib import character_functions
 from gslib import trigger_functions
 from gslib import rect

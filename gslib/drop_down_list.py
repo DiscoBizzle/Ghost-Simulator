@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function
+
 from weakref import WeakKeyDictionary
 
 from gslib import button
@@ -147,8 +149,8 @@ class DropDownList(object):
     def check_clicked(self, click_pos, typ='down'):  # show/hide list on click
         pos = self.pos
         w, h = self.size
-        w /= 2
-        h /= 2
+        w //= 2
+        h //= 2
 
         if abs(click_pos[0] - (pos[0] + w)) < w and abs(click_pos[1] - (pos[1] + h)) < h:
             self.open = not self.open
@@ -171,10 +173,10 @@ class DropDownList(object):
     def handle_mouse_motion(self, event_pos):
         pos = self.pos
         w, h = self.size
-        w /= 2
+        w //= 2
 
         eh = pos[1] + h - event_pos[1]
-        h_ind = eh / h
+        h_ind = eh // h
 
         n_drop_button = len(self.drop_buttons)
         if hasattr(self, 'slider'):

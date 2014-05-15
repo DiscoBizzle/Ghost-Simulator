@@ -1,7 +1,4 @@
-try:
-    from cStringIO import StringIO as BytesIO
-except ImportError:
-    from io import BytesIO
+from __future__ import absolute_import, division, print_function
 
 import os.path
 
@@ -21,8 +18,8 @@ def draw_circle(r, color):
     if circle_tex is None:
         circle_tex = textures.get(os.path.join(SPRITES_DIR, 'circle_solid.png'))
     sprit = sprite.Sprite(circle_tex)
-    sprit.scale_x = 2*r / 1024.0
-    sprit.scale_y = 2*r / 1024.0
+    sprit.scale_x = 2 * r / 1024
+    sprit.scale_y = 2 * r / 1024
     sprit.color_rgba = color + (120,)
     return sprit
 
@@ -37,11 +34,11 @@ class Graphics(object):
 
         self.field = sprite.Sprite(pyglet.image.load(os.path.join(SPRITES_DIR, 'field.png')).get_texture())
         self.field.opacity = self.game.options['VOF_opacity']
-        self.field.scale_x = float(self.game.dimensions[0]) / self.field.image.width
-        self.field.scale_y = float(self.game.dimensions[1]) / self.field.image.height
+        self.field.scale_x = self.game.dimensions[0] / self.field.image.width
+        self.field.scale_y = self.game.dimensions[1] / self.field.image.height
 
         self.light = sprite.Sprite(pyglet.image.load(os.path.join(SPRITES_DIR, 'light.png')).get_texture())
-        self.light.scale_x = self.light.scale_y = (200.0 / self.light.image.height)
+        self.light.scale_x = self.light.scale_y = 200 / self.light.image.height
         self.light_size = (self.light.width, self.light.height)
 
         #font = pygame.font.SysFont(FONT, 20)
@@ -68,17 +65,17 @@ class Graphics(object):
             self.field.opacity = value
 
     def on_resize(self, width, height):
-        self.field.scale_x = float(width) / self.field.image.width
-        self.field.scale_y = float(height) / self.field.image.height
+        self.field.scale_x = width / self.field.image.width
+        self.field.scale_y = height / self.field.image.height
 
     def draw_game_over(self):
-        self.game_over_txt1.x = (self.game.dimensions[0] - self.game_over_txt1.content_width) / 2
-        self.game_over_txt1.y = (self.game.dimensions[1] - self.game_over_txt1.content_height) / 2
+        self.game_over_txt1.x = (self.game.dimensions[0] - self.game_over_txt1.content_width) // 2
+        self.game_over_txt1.y = (self.game.dimensions[1] - self.game_over_txt1.content_height) // 2
         self.game.screen_objects_to_draw.append(self.game_over_txt1)
 
-        self.game_over_txt2.x = (self.game.dimensions[0] - self.game_over_txt2.content_width) / 2
+        self.game_over_txt2.x = (self.game.dimensions[0] - self.game_over_txt2.content_width) // 2
         self.game_over_txt2.y = (self.game.dimensions[1] - self.game_over_txt2.content_height -
-                                 self.game_over_txt1.content_height) / 2
+                                 self.game_over_txt1.content_height) // 2
         self.game.screen_objects_to_draw.append(self.game_over_txt2)
 
     def main_game_draw(self):
@@ -226,14 +223,14 @@ class Graphics(object):
             self.game.world_objects_to_draw.append(object_sprite)
 
             for s, p in o.flair.itervalues():
-                s.set_position(x + p[0] + object_sprite.width / 2, y + p[1] + object_sprite.height / 2)
+                s.set_position(x + p[0] + object_sprite.width // 2, y + p[1] + object_sprite.height // 2)
                 self.game.world_objects_to_draw.append(s)
 
             if o == self.game.selected_object:
                 r = o.highlight_radius
                 sprit = draw_circle(r, (200, 0, 0))
-                sprit.x = o.coord[0] + o.sprite_width/2 - r
-                sprit.y = o.coord[1] + o.sprite_height/2 - r
+                sprit.x = o.coord[0] + o.sprite_width // 2 - r
+                sprit.y = o.coord[1] + o.sprite_height // 2 - r
                 self.game.world_objects_to_draw.append(sprit)
 
     def draw_character_stats(self):
@@ -257,7 +254,7 @@ class Graphics(object):
         for i, p in enumerate(self.game.players.itervalues()):
             sp = primitives.RectPrimitive(x=self.fear_text.content_width,
                                           y=h * i,
-                                          width=w * (p.fear / float(MAX_FEAR)),
+                                          width=w * (p.fear / MAX_FEAR),
                                           height=h,
                                           color=(255, 0, 0))
             self.game.screen_objects_to_draw.append(sp)

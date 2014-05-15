@@ -10,6 +10,7 @@
 # - has_touched_function - when the character touches an object; accepts input of of object that it touches
 # - has_untouched_function - when the character untouches an object; accepts input of of object that it untouches
 
+from __future__ import absolute_import, division, print_function
 
 # these are needed so you can access the functions easily elsewhere
 from gslib.character_functions_dir.become_unpossessed_functions import *

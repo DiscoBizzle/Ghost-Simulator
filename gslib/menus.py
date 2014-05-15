@@ -1,9 +1,11 @@
+from __future__ import absolute_import, division, print_function
+
 import pyglet
 
 from gslib import button
 from gslib import slider
 from gslib.constants import *
-import text
+from gslib import text
 
 
 class Menu(object):
@@ -14,14 +16,14 @@ class Menu(object):
         self.button_size = button_size
         self.original_button_size = button_size
         mi = min(button_size[0], button_size[1])
-        frac = 8.0/mi
+        frac = 8 / mi
         self.frac = frac
         self.min_button_size = (button_size[0] * frac, button_size[1] * frac)
         self.base_font_size = 14
         self.font_size = self.base_font_size
         self.hori_offset = 60
         self.vert_offset = 40 + button_size[1] + 10
-        self.buttons_per_column = ((self.game.dimensions[1] - self.vert_offset) / (self.button_size[1]+20)) - 1
+        self.buttons_per_column = ((self.game.dimensions[1] - self.vert_offset) // (self.button_size[1] + 20)) - 1
 
         # TODO: use only one batch with OrderedGroups
         # requires changes to group equality and hash functions to be efficient
@@ -34,8 +36,8 @@ class Menu(object):
                                                            border_color=(120, 50, 80), border_width=3,
                                                            color=(120, 0, 0), size=(200, 50), pos=(60, 40),
                                                            sprite_batch=self.sprite_batch, text_batch=self.text_batch)
-        self.sliders['menu_scale'] = slider.Slider(self, (lambda _: self.arrange_buttons()), range=(1.0, 5.0 / frac),
-                                                   order=(-1, 1), value=1.0 / frac, size=(200, 50),
+        self.sliders['menu_scale'] = slider.Slider(self, (lambda _: self.arrange_buttons()), range=(1, 5 / frac),
+                                                   order=(-1, 1), value=1 / frac, size=(200, 50),
                                                    pos=(60 + 200 + 20, 40), visible=False,
                                                    enabled=self.game.options['menu_scale'],
                                                    sprite_batch=self.sprite_batch)
@@ -87,9 +89,9 @@ class Menu(object):
         if self.game.options['menu_scale']:
             self.set_menu_scale(self.sliders['menu_scale'].value)
         else:
-            self.set_menu_scale(1.0/self.frac)
+            self.set_menu_scale(1 / self.frac)
 
-        self.buttons_per_column = int(((self.game.dimensions[1] - self.vert_offset) / (self.button_size[1]+20))) #- 1
+        self.buttons_per_column = (self.game.dimensions[1] - self.vert_offset) // (self.button_size[1] + 20) #- 1
 
         self.vert_offset = 50 #+ self.game_class.options['menu_scale'] * self.buttons['menu_scale_display'].size[1]
 
@@ -98,14 +100,16 @@ class Menu(object):
                 continue
             button.size = self.button_size
             button.font_size = self.font_size
-            button.pos = (self.hori_offset + (button.order[1] + int(button.order[0]/self.buttons_per_column)*2)*(self.button_size[0]+20), self.game.dimensions[1] - (self.button_size[1] + self.vert_offset + (button.order[0]%self.buttons_per_column)*(self.button_size[1]+10)))
+            button.pos = (self.hori_offset + (button.order[1] + (button.order[0] // self.buttons_per_column) * 2) * (self.button_size[0] + 20),
+                          self.game.dimensions[1] - (self.button_size[1] + self.vert_offset + (button.order[0] % self.buttons_per_column) * (self.button_size[1] + 10)))
             if button.text_states:
                 button.text = button.text_states[button.text_states_toggle]
         for slider in self.sliders.itervalues():
             if slider.order[0] == -1:
                 continue
             slider.size = self.button_size
-            slider.pos = (self.hori_offset + (slider.order[1] + int(slider.order[0]/self.buttons_per_column)*2)*(self.button_size[0]+20), self.game.dimensions[1] - (self.button_size[1] + self.vert_offset + (slider.order[0]%self.buttons_per_column)*(self.button_size[1]+10)))
+            slider.pos = (self.hori_offset + (slider.order[1] + (slider.order[0] // self.buttons_per_column) * 2) * (self.button_size[0] + 20),
+                          self.game.dimensions[1] - (self.button_size[1] + self.vert_offset + (slider.order[0] % self.buttons_per_column) * (self.button_size[1] + 10)))
 
     def set_menu_scale(self, value):
         self.button_size = (self.min_button_size[0] * value, self.min_button_size[1] * value)

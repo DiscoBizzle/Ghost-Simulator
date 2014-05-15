@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function
+
 import io
 import json
 import collections
@@ -9,7 +11,6 @@ import pyglet.image
 from gslib import rect
 from gslib import static_object
 from gslib.constants import *
-import map_edit
 
 
 def open_map_json(map_filename):
@@ -199,6 +200,7 @@ class Map(object):
         self.fears_dict = {}
 
     def reset_fears_dict(self):
+        from gslib import map_edit
         self.fears_dict = {'player': []} # dictionary to keep track of what objects have which .fears
         for f in map_edit.get_fears_from_file():
             self.fears_dict[f] = []

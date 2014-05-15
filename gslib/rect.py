@@ -1,3 +1,4 @@
+from __future__ import absolute_import, division, print_function
 
 
 class Rect(object):
@@ -140,19 +141,19 @@ class Rect(object):
 
     @property
     def centerx(self):
-        return self.bottom + self.width/2
+        return self.bottom + self.width // 2
 
     @centerx.setter
     def centerx(self, value):
-        self.left = value - self.width/2
+        self.left = value - self.width // 2
 
     @property
     def centery(self):
-        return self.bottom + self.height/2
+        return self.bottom + self.height // 2
 
     @centery.setter
     def centery(self, value):
-        self.bottom = value - self.height/2
+        self.bottom = value - self.height // 2
 
     @property
     def size(self):
@@ -197,8 +198,8 @@ class Rect(object):
         """Same as inflate, but in-place."""
         self.width += x
         self.height += y
-        self.left -= x/2
-        self.bottom -= y/2
+        self.left -= x // 2
+        self.bottom -= y // 2
 
     def inflate(self, x, y):
         """Return a new Rect with size changed by (x, y), with center unmoved."""
@@ -284,10 +285,10 @@ class Rect(object):
     def fit_ip(self, other):
         """Same as fit, but in-place."""
         if self.height > other.height:
-            self.width = self.width * other.height / self.height
+            self.width = self.width * other.height // self.height
             self.height = other.height
         if self.width > other.width:
-            self.height = self.height * other.width / self.width
+            self.height = self.height * other.width // self.width
             self.width = other.width
 
         self.clamp_ip(other)

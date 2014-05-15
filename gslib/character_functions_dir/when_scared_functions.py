@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function
+
 __author__ = 'Martin'
 
 import random
@@ -45,7 +47,7 @@ def run_away_straight(obj):
             else:
                 ang = -90.0
         else:
-            ang = math.atan(vec[1]/float(vec[0])) * 180 / math.pi
+            ang = math.atan(vec[1] / vec[0]) * 180 / math.pi
 
         if vec[0] < 0:
             ang += 180.0

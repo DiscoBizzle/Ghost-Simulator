@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function
+
 __author__ = 'Martin'
 
 ################################################################################
@@ -8,7 +10,7 @@ def im_possessed(obj):
     def func(possessor):
         return
         surf = text.speech_bubble("I'm possessed!", 150)
-        pos = (obj.dimensions[0]/2,  - surf.get_height())
+        pos = (obj.dimensions[0] // 2,  - surf.get_height())
         obj.flair['possessed'] = (surf, pos)
     func.__name__ = 'im_possessed'
     return func

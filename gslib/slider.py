@@ -1,4 +1,4 @@
-from __future__ import division, print_function
+from __future__ import absolute_import, division, print_function
 
 from gslib.utils import ExecOnChange, exec_on_change_meta
 
@@ -114,8 +114,8 @@ class Slider(object):
             return
         click_pos = pos
         w, h = self.size
-        w /= 2
-        h /= 2
+        w //= 2
+        h //= 2
 
         if typ == 'up':
             self.is_clicked = False

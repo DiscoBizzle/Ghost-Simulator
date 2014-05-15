@@ -1,5 +1,4 @@
-import os
-import os.path
+from __future__ import absolute_import, division, print_function
 
 import pyglet
 import random
@@ -19,7 +18,7 @@ from gslib import mouse
 from gslib import text
 from gslib import map_edit
 from gslib import save_load
-from gslib import walrus
+# from gslib import walrus
 from gslib.rect import Rect
 from gslib.constants import *
 from gslib import options, window
@@ -149,7 +148,7 @@ class Game(pyglet.event.EventDispatcher):
 
         self.show_fears = False
         self.show_ranges = False
-        self.walrus = walrus.MetaWalrus()
+        # self.walrus = walrus.MetaWalrus()
 
         self.key_controller.load()
 
@@ -339,26 +338,26 @@ class Game(pyglet.event.EventDispatcher):
             avg_pos[0] += p.coord[0]
             avg_pos[1] += p.coord[1]
 
-        avg_pos = (avg_pos[0] / c, avg_pos[1] / c)
+        avg_pos = (avg_pos[0] // c, avg_pos[1] // c)
         # coord = (self.player1.coord[0] - (self.dimensions[0]/2), self.player1.coord[1] - (self.dimensions[1]/2))
-        coord = (avg_pos[0] - (self.dimensions[0]/2), avg_pos[1] - (self.dimensions[1]/2))
+        coord = (avg_pos[0] - (self.dimensions[0] // 2), avg_pos[1] - (self.dimensions[1] // 2))
 
         pad = self.camera_padding
 
         # bottom
-        if avg_pos[1] > LEVEL_HEIGHT - self.dimensions[1]/2 + pad[3]:
+        if avg_pos[1] > LEVEL_HEIGHT - self.dimensions[1] // 2 + pad[3]:
             coord = (coord[0], LEVEL_HEIGHT - self.dimensions[1] + pad[3])
 
         # right
-        if avg_pos[0] > LEVEL_WIDTH - self.dimensions[0]/2 + pad[1]:
+        if avg_pos[0] > LEVEL_WIDTH - self.dimensions[0] // 2 + pad[1]:
             coord = (LEVEL_WIDTH - self.dimensions[0] + pad[1], coord[1])
 
         # left
-        if avg_pos[0] < self.dimensions[0]/2 - pad[0] or LEVEL_WIDTH < self.dimensions[0] - pad[0] - pad[1]:
+        if avg_pos[0] < self.dimensions[0] // 2 - pad[0] or LEVEL_WIDTH < self.dimensions[0] - pad[0] - pad[1]:
             coord = (-pad[0], coord[1])
 
         # top
-        if avg_pos[1] < self.dimensions[1]/2 - pad[2] or LEVEL_HEIGHT < self.dimensions[1] - pad[2] - pad[3]:
+        if avg_pos[1] < self.dimensions[1] // 2 - pad[2] or LEVEL_HEIGHT < self.dimensions[1] - pad[2] - pad[3]:
             coord = (coord[0], -pad[2])
 
         self.camera_coords = coord
@@ -384,12 +383,12 @@ class Game(pyglet.event.EventDispatcher):
             if isinstance(o, player.Player):
                 r = o.fear_collection_radius
                 sprit = graphics.draw_circle(r, (64, 224, 208))
-                sprit.set_position(o.coord[0] + o.sprite_width/2 - r, o.coord[1] + o.sprite_height/2 - r)
+                sprit.set_position(o.coord[0] + o.sprite_width // 2 - r, o.coord[1] + o.sprite_height // 2 - r)
                 self.world_objects_to_draw.append(sprit)
             else:
                 r = o.fear_radius
                 sprit = graphics.draw_circle(r, (75, 0, 130))
-                sprit.set_position(o.coord[0] + o.dimensions[0]/2 - r, o.coord[1] + o.dimensions[0]/2 - r)
+                sprit.set_position(o.coord[0] + o.dimensions[0] // 2 - r, o.coord[1] + o.dimensions[0] // 2 - r)
                 self.world_objects_to_draw.append(sprit)
 
     def change_map(self):
