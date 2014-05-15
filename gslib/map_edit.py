@@ -1,3 +1,4 @@
+import io
 import os.path
 
 from gslib import drop_down_list
@@ -16,11 +17,11 @@ from gslib.editor import cutscene
 
 def get_fears_from_file():  # load all possible fears from file, without descriptions
     possible_fears = []
-    f = open(os.path.join(DATA_DIR, "fear_description.txt"), 'r')
-    for l in f:
-        fear = l[:l.find(':')].decode('utf-8')
-        if not fear in possible_fears:
-            possible_fears.append(fear)
+    with io.open(os.path.join(DATA_DIR, "fear_description.txt"), 'rt', encoding='utf-8') as f:
+        for l in f:
+            fear = l[:l.find(':')]
+            if not fear in possible_fears:
+                possible_fears.append(fear)
     return possible_fears
 
 def set_fear_button(editor, fear):

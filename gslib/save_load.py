@@ -1,3 +1,4 @@
+import io
 import os
 import json
 from gslib import character_objects
@@ -22,9 +23,8 @@ def save_cutscenes(cutscenes, filename):
     for cn, c in cutscenes.iteritems():
         cutscenes_dict[c.name] = save_cutscene_as_dict(c)
 
-    with open(filename.replace('\\', '/'), 'w') as f:
-        json.dump(cutscenes_dict, f)
-    f.close()
+    with io.open(filename.replace('\\', '/'), 'wt', encoding='utf-8') as f:
+        f.write(unicode(json.dumps(cutscenes_dict, ensure_ascii=False)))
 
 
 def save_map(m):
@@ -47,9 +47,8 @@ def save_map(m):
     file_dict[u'map_file'] = m._map_file.replace('\\', '/')
     file_dict[u'cutscenes_file'] = m._cutscenes_file.replace('\\', '/')
 
-    with open(os.path.join(MAPS_DIR, str(m._name + '_data.json')), 'w') as f:
-        json.dump(file_dict, f)
-    f.close()
+    with io.open(os.path.join(MAPS_DIR, str(m._name + '_data.json')), 'wt', encoding='utf-8') as f:
+        f.write(unicode(json.dumps(file_dict, ensure_ascii=False)))
 
 
 def create_save_state(m):
@@ -125,9 +124,8 @@ def load_cutscene_from_dict(game_, map_, name, d):
 
 
 def load_cutscenes(game_, map_, cutscenes_file):
-    with open(cutscenes_file.replace('\\', '/'), 'r') as f:
+    with io.open(cutscenes_file.replace('\\', '/'), 'rt', encoding='utf-8') as f:
         file_dict = json.load(f)
-    f.close()
 
     cutscenes = {}
     for k, v in file_dict.iteritems():
@@ -137,9 +135,8 @@ def load_cutscenes(game_, map_, cutscenes_file):
 
 
 def load_map(game, map_name):
-    with open(os.path.join(MAPS_DIR, str(map_name + '_data.json')), 'r') as f:
+    with io.open(os.path.join(MAPS_DIR, str(map_name + '_data.json')), 'rt', encoding='utf-8') as f:
         map_dict = json.load(f)
-    f.close()
 
     name = map_dict[u'name']
     tileset = map_dict[u'tileset']

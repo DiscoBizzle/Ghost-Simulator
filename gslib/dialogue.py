@@ -1,4 +1,5 @@
 import collections
+import io
 import os
 
 import pyglet.window.key as Pkey
@@ -103,7 +104,7 @@ def load_dialogue(filename):
     d = collections.OrderedDict({"# None": []})
 
     # First pass - organize lines by heading
-    with open(os.path.join(DIALOGUE_DIR, filename), 'r') as f:
+    with io.open(os.path.join(DIALOGUE_DIR, filename), 'rt', encoding='utf-8') as f:
         lines = f.readlines()
 
         # filter blank lines

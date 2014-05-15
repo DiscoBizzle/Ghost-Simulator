@@ -1,3 +1,4 @@
+import io
 import random
 import os.path
 
@@ -44,21 +45,21 @@ def fill_background(surface, border_size):
 
 
 def load_stats(fname):
-    f = open(os.path.join(CHARACTERS_DIR, fname))
-    age = f.readline().strip()
-    age = int(age)
+    with io.open(os.path.join(CHARACTERS_DIR, fname), 'rt', encoding='utf-8') as f:
+        age = f.readline().strip()
+        age = int(age)
 
-    bio = u''
-    fears = []
-    start_bio = False
-    for l in f:
-        if l.strip() == '#':
-            start_bio = True
-        else:
-            if start_bio:
-                bio += l.decode('utf-8')
+        bio = u''
+        fears = []
+        start_bio = False
+        for l in f:
+            if l.strip() == '#':
+                start_bio = True
             else:
-                fears.append(l.strip().decode('utf-8'))
+                if start_bio:
+                    bio += l
+                else:
+                    fears.append(l.strip())
 
     print(fears)
     return age, bio, fears
@@ -89,11 +90,11 @@ def gen_character(stats=None):
 
 def choose_n_lines(n, fname):
     res = []
-    with open(fname) as f:
+    with io.open(fname, 'rt', encoding='utf-8') as f:
         lines = f.readlines()
         for i in range(n):
             ix = random.randrange(len(lines))
-            res.append(lines.pop(ix).strip().decode('utf-8'))
+            res.append(lines.pop(ix).strip())
     return res
 
 

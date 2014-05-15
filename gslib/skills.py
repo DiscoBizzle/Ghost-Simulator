@@ -1,3 +1,4 @@
+import io
 import json
 
 from gslib.constants import *
@@ -20,7 +21,8 @@ class Skill(object):
 
 
 def load_skill_dict():
-    raw_skill_dict = json.load(open(SKILLS_FILE))
+    with io.open(SKILLS_FILE, 'rt', encoding='utf-8') as f:
+        raw_skill_dict = json.load(f)
     skill_dict = {}
     for key in raw_skill_dict:
         skill_dict[key] = Skill(key, raw_skill_dict[key]['prereqs'], raw_skill_dict[key]['effects'],

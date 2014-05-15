@@ -1,3 +1,5 @@
+import io
+
 import pyglet
 import pyglet.window.key as Pkey
 
@@ -109,40 +111,36 @@ class KeyController(object):
         self.game.action_to_rebind = None
 
     def save(self):
-        f = open(KEYMAP_FILE, 'w')
-        for player, p_map in self.player_map.iteritems():
-            for k, v in p_map.iteritems():
-                name = 'Player ' + str(player) + ' ' + k
-                f.write(name + ';' + str(v) + '\n')
+        with io.open(KEYMAP_FILE, 'wt', encoding='utf-8') as f:
+            for player, p_map in self.player_map.iteritems():
+                for k, v in p_map.iteritems():
+                    name = 'Player ' + str(player) + ' ' + k
+                    f.write(u"{};{}\n".format(name, v))
 
-        f.write('#\n')
-        for k, v in self.key_map.iteritems():
-            f.write(k + ';' + str(v) + '\n')
-
-        f.close()
+            f.write(u'#\n')
+            for k, v in self.key_map.iteritems():
+                f.write(u"{};{}\n".format(k, v))
 
     def load(self):
-        f = open(KEYMAP_FILE, 'r')
-        game_options = False
-        for l in f:
-            if '#' in l:
-                game_options = True
-                continue
-            if game_options:
-                semi = l.find(';')
-                name = l[:semi]
-                val = int(l[semi+1:])
-                self.key_map[name] = val
-                self.game.keybind_menu.buttons[name + ' key'].text = Pkey.symbol_string(val)
-            else:
-                semi = l.find(';')
-                name = l[:semi]
-                val = int(l[semi+1:])
-                self.game.keybind_menu.buttons[name + ' key'].text = Pkey.symbol_string(val)
-                player_n = int(name[7])
-                name = name[9:]
-                self.player_map[str(player_n)][name] = val
-            if not val in self.keys:
-                self.keys[val] = False
-
-        f.close()
+        with io.open(KEYMAP_FILE, 'rt', encoding='utf-8') as f:
+            game_options = False
+            for l in f:
+                if '#' in l:
+                    game_options = True
+                    continue
+                if game_options:
+                    semi = l.find(';')
+                    name = l[:semi]
+                    val = int(l[semi+1:])
+                    self.key_map[name] = val
+                    self.game.keybind_menu.buttons[name + ' key'].text = Pkey.symbol_string(val)
+                else:
+                    semi = l.find(';')
+                    name = l[:semi]
+                    val = int(l[semi+1:])
+                    self.game.keybind_menu.buttons[name + ' key'].text = Pkey.symbol_string(val)
+                    player_n = int(name[7])
+                    name = name[9:]
+                    self.player_map[str(player_n)][name] = val
+                if not val in self.keys:
+                    self.keys[val] = False

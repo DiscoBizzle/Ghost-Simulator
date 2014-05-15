@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function
 
+import io
 import collections
 
 import pyglet
@@ -16,11 +17,11 @@ def parse_credits_file(fname):
     from a comma-separated list of people by a colon.
     """
     res = collections.defaultdict(list)
-    with open(fname) as f:
+    with io.open(fname, 'rt', encoding='utf-8') as f:
         for line in f:
             key, names = line.split(":", 1)
-            names = [n.strip().decode('utf-8') for n in names.split(",")]
-            res[key.decode('utf-8')].extend(names)
+            names = [n.strip() for n in names.split(",")]
+            res[key].extend(names)
     return res
 
 

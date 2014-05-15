@@ -1,5 +1,6 @@
 import ast
 import errno
+import io
 
 import pyglet
 
@@ -17,16 +18,16 @@ class Options(dict, pyglet.event.EventDispatcher):
 
     def save_options(self):
         try:
-            with open(OPTIONS_FILE, 'w') as f:
+            with io.open(OPTIONS_FILE, 'wt', encoding='utf-8') as f:
                 for option, val in self.iteritems():
-                    f.write(option + '=' + str(val) + '\n')
+                    f.write(u"{}={}\n".format(option, repr(val)))
         except IOError as e:
             #TODO: proper error handling
             raise
 
     def load_options(self):
         try:
-            with open(OPTIONS_FILE, 'r') as f:
+            with io.open(OPTIONS_FILE, 'rt', encoding='utf-8') as f:
                 for l in f:
                     try:
                         if '=' not in l:

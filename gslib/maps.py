@@ -1,3 +1,4 @@
+import io
 import json
 import collections
 
@@ -13,9 +14,8 @@ import map_edit
 
 def open_map_json(map_filename):
     try:
-        f = open(map_filename, 'r')
-        data = json.load(f)
-        f.close()
+        with io.open(map_filename, 'rt', encoding='utf-8') as f:
+            data = json.load(f)
     except IOError:
         raise Exception("Couldn't open map file \"" + map_filename + "\".")
 
