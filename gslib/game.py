@@ -176,7 +176,8 @@ class Game(pyglet.event.EventDispatcher):
         self.draw_clock_display = pyglet.clock.ClockDisplay(format='                                     fps:%(fps).2f',
                                                             clock=self.draw_clock)
 
-        pyglet.clock.schedule_interval(self.update, 1.0 / TICKS_PER_SEC)
+        pyglet.clock.schedule_once(self.update, TICK_DELAY)
+        self._last_update_delay = TICK_DELAY
 
         # improve timing (hack)
         self.scheduler_hint_fun = lambda dt: None
@@ -271,6 +272,14 @@ class Game(pyglet.event.EventDispatcher):
         self.fears_dict = self.map.fears_dict
 
     def update(self, dt):
+        # Calculate the next time to schedule the update call.
+        # (dt - self._last_update_delay) is how late we were.
+        # Schedule the next update to be TICK_DELAY minus how late we were last time
+        # bound to be between 0 and TICK_DELAY so we don't schedule in the past or too far in the future
+        next_delay = max(0, TICK_DELAY - max(0, (dt - self._last_update_delay)))
+        pyglet.clock.schedule_once(self.update, next_delay)
+        #print((dt, self._last_update_delay, next_delay))
+        self._last_update_delay = next_delay
         try:
             # this is fixed timestep, 30 FPS. if game runs slower, we lag.
             # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.

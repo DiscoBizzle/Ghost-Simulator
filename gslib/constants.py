@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function
+
 import os.path
 import sys
 
@@ -11,7 +13,7 @@ __all__ = ['STARTUP', 'MAIN_MENU', 'MAIN_GAME', 'MOVIE', 'GAME_OVER', 'SKILLS_SC
            'MUSIC_DIR', 'SOUND_DIR', 'VIDEO_DIR', 'CHARACTERS_DIR', 'SPRITES_DIR', 'CREDITS_FILE', 'SKILLS_FILE',
            'KEYMAP_FILE', 'OPTIONS_FILE', 'SAVE_DIR', 'LEARNT_SKILL_COLOR', 'CAN_BE_LEARNT_COLOR', 'UNLEARNABLE_COLOR',
            'INITIAL_SOUND_VOLUME', 'INITIAL_MUSIC_VOLUME', 'FONT', 'DEFAULT_OPTIONS', 'DIALOGUE_DIR', 'SLEEP_TARGET',
-           'MAPS_DIR', 'DATA_DIR']
+           'MAPS_DIR', 'DATA_DIR', 'TICK_DELAY']
 
 
 def fallback_files(target, required, *fnames):
@@ -35,7 +37,8 @@ KEYBIND_MENU = 8
 KEYBIND_CAPTURE = 9
 EDITOR = 10
 
-TICKS_PER_SEC = 35
+TICKS_PER_SEC = 30
+TICK_DELAY = 1 / 30
 SLEEP_TARGET = 100
 
 GAME_WIDTH = 1280
