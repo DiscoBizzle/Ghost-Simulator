@@ -37,8 +37,8 @@ class Graphics(object):
 
         self.field = sprite.Sprite(pyglet.image.load(os.path.join(SPRITES_DIR, 'field.png')).get_texture())
         self.field.opacity = self.game.options['VOF_opacity']
-        #self.field.scale_x = self.game.dimensions[0] / self.field.image.width
-        #self.field.scale_y = self.game.dimensions[1] / self.field.image.height
+        self.field.scale_x = float(self.game.dimensions[0]) / self.field.image.width
+        self.field.scale_y = float(self.game.dimensions[1]) / self.field.image.height
 
         self.light = sprite.Sprite(pyglet.image.load(os.path.join(SPRITES_DIR, 'light.png')).get_texture())
         self.light.scale_x = self.light.scale_y = (200.0 / self.light.image.height)
@@ -61,10 +61,15 @@ class Graphics(object):
         self.tile_sprite = {}
 
         self.game.options.push_handlers(self)
+        self.game.window.push_handlers(self)
 
     def on_option_change(self, key, old_value, value):
         if key == 'VOF_opacity':
             self.field.opacity = value
+
+    def on_resize(self, width, height):
+        self.field.scale_x = float(width) / self.field.image.width
+        self.field.scale_y = float(height) / self.field.image.height
 
     def draw_game_over(self):
         self.game_over_txt1.x = (self.game.dimensions[0] - self.game_over_txt1.content_width) / 2
