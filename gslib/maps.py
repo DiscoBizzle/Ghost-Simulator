@@ -85,16 +85,16 @@ def _produce_statics_for_mid_grids(mid_grid, tileset_seq, grid_width, grid_heigh
 
         for maybe_rect, maybe_friends in touching.iteritems():
             # horizontal touching!
-            if maybe_rect.inflate(2, 0).colliderect(r):
+            if rect.Rect(*maybe_rect).inflate(2, 0).colliderect(r):
                 eaten = (maybe_rect, maybe_friends)
                 break
 
         if eaten:
             del touching[maybe_rect]
             maybe_friends.append((x, y, d, t))
-            touching[maybe_rect.union(r)] = maybe_friends
+            touching[rect.Rect(*maybe_rect).union(r).to_tuple()] = maybe_friends
         else:
-            touching[r] = [(x, y, d, t)]
+            touching[r.to_tuple()] = [(x, y, d, t)]
 
     # TODO: tiles might not be joined optimally. e.g. consider block growing left and block
     #  growing right - even though they're touching, they started out not touching, so they
@@ -103,8 +103,9 @@ def _produce_statics_for_mid_grids(mid_grid, tileset_seq, grid_width, grid_heigh
     # produce StaticObjects from groups of touching tiles
     static_objects = []
     for k, v in touching.iteritems():
-        static_objects.append(static_object.StaticObject(k.x, k.y, k.width, k.height,
-                                                         _render_static(k, v, tileset_seq, grid_width, grid_height)))
+        r = rect.Rect(*k)
+        static_objects.append(static_object.StaticObject(r.x, r.y, r.width, r.height,
+                                                         _render_static(r, v, tileset_seq, grid_width, grid_height)))
 
     return static_objects
 

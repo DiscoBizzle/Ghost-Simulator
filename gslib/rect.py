@@ -12,6 +12,9 @@ class Rect(object):
      * __nonzero__ requires both height and width to be non-zero to return True
     """
 
+    # Rect is mutable and so not hashable
+    __hash__ = None
+
     def __init__(self, pos, size):
         self.left, self.bottom = pos
         self.width, self.height = size
