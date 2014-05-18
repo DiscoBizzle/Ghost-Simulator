@@ -6,7 +6,7 @@ import pyglet
 
 from gslib import collision
 from gslib import skills
-from gslib import map_edit
+from gslib.editor.main_editor import Editor
 from gslib import save_load
 
 # from gslib import walrus
@@ -149,7 +149,7 @@ class Game(pyglet.event.EventDispatcher):
         self.touching = []
         self.last_touching = []
 
-        self.editor = map_edit.Editor(self)
+        self.editor = Editor(self)
         self.force_run_objects = False
         self.cursor = None
         self.new_trigger_capture = False

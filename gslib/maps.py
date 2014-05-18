@@ -201,7 +201,7 @@ class Map(object):
         self.fears_dict = {}
 
     def reset_fears_dict(self):
-        from gslib import map_edit
+        from gslib.editor import main_editor
         self.fears_dict = {'player': []} # dictionary to keep track of what objects have which .fears
-        for f in map_edit.get_fears_from_file():
+        for f in main_editor.get_fears_from_file():
             self.fears_dict[f] = []
