@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function
 
 import pyglet
 
+from gslib import class_proxy
 from gslib.options_container import Options
 from gslib.constants import *
 
@@ -37,3 +38,6 @@ options.load_options()
 
 window = GameWindow(width=options['resolution'][0], height=options['resolution'][1], resizable=True,
                     vsync=options['vsync'], fullscreen=options['fullscreen'])
+
+game = class_proxy.Proxy()
+

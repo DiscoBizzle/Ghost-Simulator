@@ -21,7 +21,9 @@ from gslib import save_load
 # from gslib import walrus
 from gslib.rect import Rect
 from gslib.constants import *
+from gslib.class_proxy import Proxy
 from gslib import options, window
+import gslib
 
 
 class Game(pyglet.event.EventDispatcher):
@@ -35,6 +37,8 @@ class Game(pyglet.event.EventDispatcher):
     Objects will be drawn without having to add them to these lists.
     """
     def __init__(self):
+
+        Proxy.set_underlying_instance(gslib.game, self)
 
         TODO = []
         TODO.append("character pathe-ing")

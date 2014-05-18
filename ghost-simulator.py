@@ -8,7 +8,7 @@ pyglet.options['debug_gl'] = False
 #pyglet.options['vsync'] = False
 pyglet.options['shadow_window'] = False
 
-from gslib import game
+from gslib import game_app
 
 import time
 
@@ -39,7 +39,7 @@ def main():
     #     return 0.01
     #
     # pyglet.app.event_loop.idle = idle_fun
-    game.Game()
+    game_app.Game()
     pyglet.app.run()
 
 if __name__ == '__main__':
