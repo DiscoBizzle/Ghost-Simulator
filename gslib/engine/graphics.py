@@ -103,8 +103,8 @@ class Graphics(object):
             if self.game.show_ranges:
                 self.game.show_fear_ranges()
 
-            if self.game.text_box is not None:
-                self.game.text_box.draw()
+            if self.game.dialogue is not None:
+                self.game.dialogue.draw()
 
             if self.game.message_box is not None:
                 self.game.message_box.draw()

@@ -108,10 +108,6 @@ class Game(pyglet.event.EventDispatcher):
         self.skills_dict = skills.load_skill_dict()
         self.skill_menu = menus.SkillsMenu(self, (200, 150))
 
-        #self.text_box_test = text_box.TextBox("Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go. Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go. Mary had a little lamb whose fleece was white as snow and everywhere that mary went that lamb was sure to go.")
-
-        #self.text_box_test.create_background_surface()
-
         self.disp_object_stats = False
         self.object_stats = None
 
@@ -185,7 +181,7 @@ class Game(pyglet.event.EventDispatcher):
         self.message_box = None  # If set, a message box taking all focus is being displayed.
         self.text_caret = None   # If set, all keyboard input & copy of mouse events should be posted to this object.
 
-        self.text_box = None  # If set, dialogue is being played.
+        self.dialogue = None  # If set, dialogue is being played.
 
         self.update_exception_hook = (None, None)
 
@@ -316,8 +312,8 @@ class Game(pyglet.event.EventDispatcher):
                             for f in p[1].is_untouched_function:
                                 f(p[0])
 
-                if self.text_box is not None:
-                    self.text_box.update()
+                if self.dialogue is not None:
+                    self.dialogue.update()
 
                 if self.state == EDITOR:
                     self.editor.update()

@@ -187,12 +187,12 @@ class SimpleDialogue(object):
         self.text_layout.y = 0
 
     def show(self):
-        self.game.text_box = self
-        # TODO: update key.py etc to pass input only to game.text_box if game.text_box is not None
+        self.game.dialogue = self
+        # TODO: update key.py etc to pass input only to game.dialogue if game.dialogue is not None
         pass
 
     def hide(self):
-        self.game.text_box = None
+        self.game.dialogue = None
 
         if self.on_complete_fun is not None:
             self.on_complete_fun()

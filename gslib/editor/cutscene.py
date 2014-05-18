@@ -461,7 +461,7 @@ class CutsceneEditor(object):
             self.stop_button.border_color = (120, 50, 80)
 
             # stop any dialogue that's playing
-            self.game.text_box = None
+            self.game.dialogue = None
 
             # actually stop cutscene
             self.main_editor.enter_edit_mode()  # load game state
