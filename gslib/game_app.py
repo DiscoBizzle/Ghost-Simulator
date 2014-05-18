@@ -161,6 +161,8 @@ class Game(pyglet.event.EventDispatcher):
         self.objects = {}
         self.gather_buttons_and_drop_lists_and_objects()
 
+        self.highlighted_control = ""
+
         self.fps_clock = pyglet.clock.ClockDisplay()
         self.ticks_clock = pyglet.clock.Clock()
         self.ticks_clock_display = pyglet.clock.ClockDisplay(format='               ticks:%(fps).2f',
