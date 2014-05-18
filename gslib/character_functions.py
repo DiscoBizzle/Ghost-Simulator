@@ -13,11 +13,15 @@
 from __future__ import absolute_import, division, print_function
 
 # these are needed so you can access the functions easily elsewhere
+from gslib.character_functions_dir.become_possessed_functions import *
 from gslib.character_functions_dir.become_unpossessed_functions import *
 from gslib.character_functions_dir.has_touched_functions import *
-from gslib.character_functions_dir.become_possessed_functions import *
+from gslib.character_functions_dir.has_untouched_functions import *
+from gslib.character_functions_dir.is_touched_functions import *
+from gslib.character_functions_dir.is_untouched_functions import *
 from gslib.character_functions_dir.when_scared_functions import *
 from gslib.character_functions_dir.when_harvested_functions import *
+from gslib.character_functions_dir.idle_functions import *
 
 import pkgutil
 import importlib

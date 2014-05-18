@@ -8,13 +8,16 @@ from gslib import slider
 from gslib.constants import *
 
 
-def list_func(owner, val):
+def list_func(owner, val, text=None):
     def func():
         if val is None:
             owner.selected_name = "<None>"
             owner.selected = None
         else:
-            owner.selected_name = str(val)
+            if text is None:
+                owner.selected_name = str(val)
+            else:
+                owner.selected_name = text
             if isinstance(owner.items, list):
                 owner.selected = val
             else:
@@ -87,8 +90,12 @@ class DropDownList(object):
 
         if isinstance(self.items, list):
             for i in self.items:
-                self.drop_buttons.append(button.Button(self, list_func(self, i), size=self.size, font_size=self.font_size,
-                                                   visible=False, enabled=False, text=str(i),
+                if self.labels == 'func_name':
+                    t = i.func_name
+                else:
+                    t = str(i)
+                self.drop_buttons.append(button.Button(self, list_func(self, i, t), size=self.size, font_size=self.font_size,
+                                                   visible=False, enabled=False, text=t,
                                                    border_color=self.border_color, border_width=self.border_width,
                                                    color=self.color))
         else:
@@ -99,7 +106,7 @@ class DropDownList(object):
                     t += unicode(k)
                 else:
                     t = unicode(k)
-                self.drop_buttons.append(button.Button(self, list_func(self, k), size=self.size, font_size=self.font_size,
+                self.drop_buttons.append(button.Button(self, list_func(self, k, t), size=self.size, font_size=self.font_size,
                                                        visible=False, enabled=False, text=t,
                                                        border_color=self.border_color, border_width=self.border_width,
                                                        color=self.color))

@@ -126,8 +126,7 @@ class Editor(object):
         # Place new object
         ###################################################################
 
-        self.possible_characters = {'Small Door': character_objects.SmallDoor,
-                                    'Dude': character_objects.Dude}
+        self.possible_characters = character_objects.possible_characters
 
         self.buttons['pick_object_label'] = button.DefaultButton(self, None, pos=(100, self.game.dimensions[1] - 20), text="Place Object")
         self.drop_lists['pick_object'] = drop_down_list.DropDownList(self, self.possible_characters,

@@ -392,14 +392,18 @@ class Game(pyglet.event.EventDispatcher):
                 self.world_objects_to_draw.append(sprit)
 
     def change_map(self):
-        # self.map_index += 1
-        # self.map_index %= len(self.map_list)
         self.map_index = random.choice(self.map_dict.keys())
-        self.map = self.map_dict[self.map_index]
-        # self.objects = dict(self.players.items() + self.map.objects.items())
+        self.go_to_map(self.map_dict[self.map_index])
+
+    def go_to_map(self, m):
+        self.map = m
         self.gather_buttons_and_drop_lists_and_objects()
         self.graphics.clip_area = Rect((0, 0), (self.dimensions[0], self.dimensions[1]))
         self.fears_dict = self.map.fears_dict
+
+    def run_cutscene(self, c):
+        self.map.active_cutscene = c
+        c.restart()
 
     def quit_game(self):
         self.window.dispatch_event('on_close')

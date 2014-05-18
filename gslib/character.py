@@ -202,16 +202,18 @@ class Character(GameObject):
 
         self.stats = stats
         self.info_sheet = draw_info_sheet(self.stats)
-        # self.sprite = pygame.image.load(os.path.join(CHARACTER_DIR, 'Sprite_top.png'))
-        # self.sprite = pygame.transform.scale(self.sprite, self.dimensions).convert()
-        # self.sprite.set_colorkey((255, 0, 255))7
-        self.feared_function = [] # [character_functions.freeze(self)]
-        self.possessed_function = [] # [character_functions.im_possessed(self)]
-        self.unpossessed_function = [] # [character_functions.undo_im_possessed(self)]
-        self.harvested_function = [] # [character_functions.red_square(self)]
+
+        self.feared_function = []
+        self.possessed_function = []
+        self.unpossessed_function = []
+        self.harvested_function = []
+        self.idle_functions = []
         self.fainted = False
         self.feared_by_obj = None
         self.feared_from_pos = (0, 0)
+
+        self.patrol_path = []
+        self.patrol_index = 0
 
         self.possessed_by = []
 
@@ -219,7 +221,7 @@ class Character(GameObject):
         self._to_save = {'feared_function', 'possessed_function', 'unpossessed_function', 'harvested_function',
                          'has_touched_function', 'is_touched_function', 'has_untouched_function', 'is_untouched_function',
                          'stats', 'fears', 'scared_of', 'feared_speed', 'normal_speed',
-                         'states', 'coord', 'collision_weight'}
+                         'states', 'coord', 'collision_weight', 'idle_functions'}
 
     def get_stats(self, name):
         name = name
@@ -236,21 +238,14 @@ class Character(GameObject):
 
                 if self.update_timer >= 50 and not self.fear_timer:
                     self.update_timer = 0
-                    self.current_speed = random.randint(self.min_speed, self.normal_speed)
 
                     self.move_down = False
                     self.move_up = False
                     self.move_left = False
                     self.move_right = False
-                    if random.randint(0, 1):
-                        self.move_down = True
-                    else:
-                        self.move_up = True
 
-                    if random.randint(0, 1):
-                        self.move_right = True
-                    else:
-                        self.move_left = True
+                    for i in self.idle_functions:
+                        i()
 
                 if self.fear_timer:
                     for f in self.feared_function:

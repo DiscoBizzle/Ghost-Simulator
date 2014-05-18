@@ -39,7 +39,7 @@ def freeze(obj):
 
 def run_away_straight(obj):
     def func():
-        obj.current_speed = 10
+        obj.current_speed = obj.feared_speed
         vec = (obj.coord[0] - obj.feared_from_pos[0], obj.coord[1] - obj.feared_from_pos[1])
         if vec[0] == 0:
             if vec[1] >= 0:

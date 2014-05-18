@@ -4,6 +4,7 @@ from gslib import button
 from gslib import drop_down_list
 from gslib import rect
 from gslib import trigger_functions
+import inspect
 import json
 
 
@@ -27,9 +28,9 @@ for i, s in enumerate(dir(trigger_functions)):
 # decorator to make a called function conditional
 def conditional_action(desired_interacters):
     def check_interacter(func):
-        def new_func(interactee, interacter):
+        def new_func(interactee, interacter, options=None):
             if interacter in desired_interacters or len(desired_interacters) == 0:
-                func(interactee, interacter)
+                func(interactee, interacter, options)
         new_func.func_name = func.func_name
         return new_func
     return check_interacter
@@ -48,10 +49,15 @@ def highlight_button(b, up):
         b.color = low
         b.border_color = low_border
 
+
 class Trigger(object):
     def __init__(self, game, object_refs=None, actions=None, zones=None, interaction_type=None):
         self.game = game
         self.interaction_type = interaction_type
+
+        self.options = {} # saves the key of the desired option from the action_options_map under the relevant name
+        self.action_options_map = {'begin_cutscene_trigger': self.game.map.cutscenes,
+                                   'change_map_trigger': self.game.map_dict}
 
         if object_refs is None:
             self.object_references = {'targets': [], 'conditionals': [], 'interactees': []}
@@ -78,12 +84,21 @@ class Trigger(object):
         cond_act = conditional_action(conditional_objects)(act)
         self.actions.append(cond_act)
 
+
+        if not cond_act.func_name in self.options.keys() and cond_act.func_name in self.action_options_map.keys():
+            self.options[cond_act.func_name] = None
+
     def delete_action(self, action):
         self.actions.remove(action)
 
     def perf_actions(self, interactee, interacter): # called when triggered NOT by a zone
         for a in self.actions:
-            a(interactee, interacter)
+            if not a.func_name in self.options.keys(): # doesn't have options
+                a(interactee, interacter)
+            else:
+                opt_name = self.options[a.func_name] # the key associated with chosen (e.g. key of cutscene)
+                option = self.action_options_map[a.func_name][opt_name] # the value of above key
+                a(interactee, interacter, option)
 
     def add_zone(self, zone):
         self.zones.append(zone)
@@ -95,8 +110,7 @@ class Trigger(object):
         pos = interacter.coord
         for z in self.zones:
             if z.collidepoint(pos) and not z.collidepoint(prev_pos):
-                for a in self.actions:
-                    a(None, interacter) # no interactee exists
+                self.perf_actions(None, interacter)
                 return True
         return False
 
@@ -115,6 +129,16 @@ class Trigger(object):
     def add_interactee(self, interactee):
         self.object_references['interactees'].append(interactee)
         self.enable_for_objects()
+
+    def delete_interactee(self, interactee):
+        self.object_references['interactees'].remove(interactee)
+
+        interactee_obj = self.game.objects[interactee]
+        o_funcs = getattr(interactee_obj, self.interaction_type)
+        for fun in o_funcs:
+            if fun.func_name == 'perf_actions_interactee':
+                o_funcs.remove(fun)
+                return
 
     def set_interaction_type(self, typ):
         self.interaction_type = typ
@@ -142,9 +166,12 @@ class Trigger(object):
         zones = [json.dumps(z.to_tuple()) for z in self.zones]
         save_dict[u'zones'] = zones
 
+        save_dict[u'options'] = json.dumps(self.options)
+
         return save_dict
 
     def load_from_dict(self, d):
+        self.options = json.loads(d[u'options'])
         self.object_references = d[u'object_references']
 
         self.interaction_type = d[u'interaction_type']
@@ -194,6 +221,9 @@ class TriggerEditor(object):
         self.enabled = False
 
         self.create_elements()
+
+        self.action_options_map = {'begin_cutscene_trigger': self.game.map.cutscenes,
+                                   'change_map_trigger': self.game.map_dict}
 
     @property
     def pos(self):
@@ -251,11 +281,12 @@ class TriggerEditor(object):
         self.drop_lists['triggers'] = dls(self, self.game.map.triggers, self.select_trigger, max_display=4, order=(0, 1))
         self.buttons['delete_trigger'] = db(self, self.delete_selected_trigger, text="Delete Trigger", order=(0, 2))
 
-        self.buttons['interaction_type_label'] = db(self, None, text="Interaction Type", order=(1, 0))
+        self.buttons['interaction_type_label'] = db(self, None, text="Interaction Type:", order=(1, 0))
         self.drop_lists['interaction_type'] = dl(self, object_interaction_types, self.set_interaction_type, order=(1, 1))
 
         self.buttons['pick_interactee'] = db(self, self.pick_interactee, text="Pick Interactee", order=(2, 0))
-        self.drop_lists['interactees'] = dl(self, {}, text="<None>", order=(2, 1))
+        self.drop_lists['interactees'] = dl(self, {}, self.select_interactee, order=(2, 1))
+        self.buttons['delete_interactee'] = db(self, self.delete_interactee, text="Delete Target", order=(2, 2))
 
         self.buttons['new_zone'] = db(self, self.create_new_zone, text="New Zone", order=(3, 0))
         self.drop_lists['zones'] = dl(self, {}, self.select_zone, order=(3, 1))
@@ -265,14 +296,19 @@ class TriggerEditor(object):
         self.buttons['zone_topright'] = db(self, self.zone_topright, text="Select Top Right", order=(4, 2))
 
         self.buttons['pick_target'] = db(self, self.pick_target, text="Pick Target", order=(5, 0))
-        self.drop_lists['targets'] = dl(self, {}, self.delete_target, order=(5, 1))
+        self.drop_lists['targets'] = dl(self, {}, self.select_target, order=(5, 1))
+        self.buttons['delete_target'] = db(self, self.delete_target, text="Delete Target", order=(5, 2))
 
         self.buttons['pick_conditional'] = db(self, self.pick_conditional, text="Pick Conditional", order=(6, 0))
-        self.drop_lists['conditionals'] = dl(self, {}, self.delete_conditional, order=(6, 1))
+        self.drop_lists['conditionals'] = dl(self, {}, self.select_conditional, order=(6, 1))
+        self.buttons['delete_conditional'] = db(self, self.delete_conditional, text="Delete Conditional", order=(6, 2))
 
-        self.buttons['action_label'] = db(self, None, text="Action Add/Delete", order=(7, 0))
+        self.buttons['action_label'] = db(self, None, text="Action Edit:", order=(7, 0))
         self.drop_lists['new_action'] = dl(self, trigger_functions_dict, self.add_action, order=(7, 1))
-        self.drop_lists['actions'] = dl(self, {}, self.delete_action, order=(7, 2))
+        self.drop_lists['actions'] = dl(self, {}, self.select_action, order=(7, 2), labels='func_name')
+        self.buttons['delete_action'] = db(self, self.delete_action, text="Delete Action", order=(7, 3))
+        self.drop_lists['action_options'] = dl(self, {}, self.set_action_option, order=(7, 4), visible=False, enabled=False)
+
 
         self.update_element_positions()
         self.toggle_self(False)
@@ -297,13 +333,16 @@ class TriggerEditor(object):
             self.drop_lists['conditionals'].refresh([])
             self.drop_lists['actions'].refresh([])
             self.drop_lists['interactees'].refresh([])
+            self.drop_lists['action_options'].refresh([])
             return
 
+        self.drop_lists['interactees'].refresh(trig.object_references['interactees'])
         self.drop_lists['zones'].refresh(trig.zones)
         self.drop_lists['targets'].refresh(trig.object_references['targets'])
         self.drop_lists['conditionals'].refresh(trig.object_references['conditionals'])
         self.drop_lists['actions'].refresh(trig.actions)
-        self.drop_lists['interactees'].refresh(trig.object_references['interactees'])
+        self.drop_lists['new_action'].set_to_default()
+        self.drop_lists['action_options'].refresh([])
 
     def delete_selected_trigger(self):
         trig = self.drop_lists['triggers'].selected
@@ -337,6 +376,20 @@ class TriggerEditor(object):
 
         self.game.mouse_controller.pick_object(choose)
         highlight_button(self.buttons['pick_interactee'], True)
+
+    def select_interactee(self):
+        pass
+
+    def delete_interactee(self):
+        interactee = self.drop_lists['interactees'].selected
+        trig = self.drop_lists['triggers'].selected
+        if interactee is None or trig is None:
+            return
+
+        trig.delete_interactee(interactee)
+
+        self.drop_lists['interactees'].set_to_default()  # set list to None
+        self.drop_lists['interactees'].refresh() # update contents of list
 
     def create_new_zone(self):
         trig = self.drop_lists['triggers'].selected
@@ -421,6 +474,9 @@ class TriggerEditor(object):
         self.game.mouse_controller.pick_object(choose)
         highlight_button(self.buttons['pick_target'], True)
 
+    def select_target(self):
+        pass
+
     def delete_target(self):
         target = self.drop_lists['targets'].selected
         trig = self.drop_lists['triggers'].selected
@@ -446,6 +502,9 @@ class TriggerEditor(object):
         self.game.mouse_controller.pick_object(choose)
         highlight_button(self.buttons['pick_conditional'], True)
 
+    def select_conditional(self):
+        pass
+
     def delete_conditional(self):
         trig = self.drop_lists['triggers'].selected
         cond = self.drop_lists['conditionals'].selected
@@ -467,6 +526,20 @@ class TriggerEditor(object):
 
         self.drop_lists['actions'].refresh()
 
+    def select_action(self):
+        self.drop_lists['action_options'].visible = False
+        self.drop_lists['action_options'].enabled = False
+
+        if self.drop_lists['actions'].selected is None:
+            return
+
+        opt_type = self.drop_lists['actions'].selected.func_name
+        if opt_type in self.action_options_map.keys():
+            options = self.action_options_map[opt_type].keys()
+            self.drop_lists['action_options'].refresh(options)
+            self.drop_lists['action_options'].set_to_default()
+            self.drop_lists['action_options'].visible = True
+            self.drop_lists['action_options'].enabled = True
 
     def delete_action(self):
         act = self.drop_lists['actions'].selected
@@ -478,6 +551,17 @@ class TriggerEditor(object):
 
         self.drop_lists['actions'].refresh()
         self.drop_lists['actions'].set_to_default()
+
+    def set_action_option(self):
+        option = self.drop_lists['action_options'].selected
+        act = self.drop_lists['actions'].selected
+        trig = self.drop_lists['triggers'].selected
+        if act is None or trig is None:
+            return
+
+        act_name = act.func_name
+
+        trig.options[act_name] = option
 
 
     def display_objects(self, objects):
