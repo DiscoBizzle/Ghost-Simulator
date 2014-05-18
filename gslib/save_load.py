@@ -3,14 +3,12 @@ from __future__ import absolute_import, division, print_function
 import io
 import os
 import json
-from gslib import character_objects
-from gslib import game_object
+
 from gslib import cutscene
 from gslib import maps
-from gslib import character_functions
 from gslib.constants import *
-from gslib import rect
 from gslib.editor import trigger_edit
+from gslib.game_objects import character_objects, character_functions
 
 
 def save_cutscene_as_dict(cs):

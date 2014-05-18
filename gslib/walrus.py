@@ -2,14 +2,8 @@ import math
 import os.path
 import random
 
-from gslib import sprite
-from gslib import textures
+from gslib.engine import textures, sprite
 
-import walrus
-import walrus
-import walrus
-import walrus
-import walrus
 
 WALRUS = 18
 WALRUS20 = 20 * WALRUS

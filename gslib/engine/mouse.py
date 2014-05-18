@@ -1,9 +1,11 @@
 from __future__ import absolute_import, division, print_function
 
-from gslib import character
-from gslib.constants import *
-from gslib import rect
 import pyglet
+
+from gslib.constants import *
+from gslib.engine import rect
+from gslib.game_objects import character
+
 
 class MouseController(object):
     def __init__(self, game):

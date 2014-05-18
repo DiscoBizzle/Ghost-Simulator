@@ -3,18 +3,12 @@ from __future__ import absolute_import, division, print_function
 import io
 import random
 import os.path
-
-import pyglet
-
-from gslib import character_functions
-from gslib.game_object import GameObject
-from gslib import cutscene
-from gslib import primitives
-from gslib import sprite
-from gslib import text
-from gslib import textures
-from gslib.constants import *
 import json
+
+from gslib.engine import textures, text, sprite, primitives
+from gslib.game_objects.game_object import GameObject
+from gslib.constants import *
+
 
 WHITE = (255, 255, 255)
 GREY = (60, 60, 60)

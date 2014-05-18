@@ -3,15 +3,14 @@ from __future__ import absolute_import, division, print_function
 import os.path
 
 # import gslib.character_functions as fear_functions
-from gslib import character_functions
-from gslib import character
-from gslib.character import Character
+from gslib.game_objects.character import Character
 from gslib.constants import *
-from gslib import sprite
 from pyglet import image
 import random
 
 # Please make these only require game_class by default (for purposes of editor)
+from gslib.engine import sprite
+from gslib.game_objects import character, character_functions
 
 
 class SmallDoor(Character):

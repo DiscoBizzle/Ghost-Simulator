@@ -7,9 +7,7 @@ import os
 import pyglet.window.key as Pkey
 
 from gslib.constants import *
-from gslib import primitives
-from gslib import rect
-from gslib import text
+from gslib.engine import text, primitives
 
 
 class Error(Exception):

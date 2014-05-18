@@ -8,9 +8,9 @@ import pyglet
 import pyglet.gl
 import pyglet.image
 
-from gslib import rect
-from gslib import static_object
 from gslib.constants import *
+from gslib.engine import rect
+from gslib.game_objects import static_object
 
 
 def open_map_json(map_filename):

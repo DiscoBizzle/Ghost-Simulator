@@ -1,13 +1,13 @@
 from __future__ import absolute_import, division, print_function
 
 import os.path
+import collections
 
 from pyglet import image
 
-from gslib import rect
-from gslib import sprite
 from gslib.constants import *
-import collections
+from gslib.engine import sprite, rect
+
 
 class FearsList(collections.MutableSequence):
     def __init__(self, owner, *args):

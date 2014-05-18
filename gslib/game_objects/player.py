@@ -1,11 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
-from pyglet import image
-
-from gslib import rect
-from gslib import sprite
 from gslib.constants import *
-from gslib.game_object import GameObject
+from gslib.game_objects.game_object import GameObject
 
 
 class Player(GameObject):
@@ -72,6 +68,11 @@ class Player(GameObject):
         if self.possessing:
             self.coord = self.possessing.coord
             self.velocity = (0, 0)
+            if self.sprite.visible:
+                self.sprite.visible = False
+        else:
+            if not self.sprite.visible:
+                self.sprite.visible = True
 
     def harvest_fear(self):  # AKA OOGA BOOGA
         for o in self.game_class.objects.itervalues():

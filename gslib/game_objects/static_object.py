@@ -1,10 +1,8 @@
 from __future__ import absolute_import, division, print_function
 
-from gslib import rect
-from gslib import sprite
-
 
 # Static objects automatically created from touching mid layer sprites.
+from gslib.engine import sprite, rect
 
 
 class StaticObject(object):

@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function
+from gslib.engine import primitives
 
 __author__ = 'Martin'
-from gslib import primitives
 
 
 # IMPORTANT: Name these functions with 'trigger' in the name, for reasons of saving.

@@ -3,18 +3,13 @@ from __future__ import absolute_import, division, print_function
 import io
 import os.path
 
-from gslib import drop_down_list
-from gslib import button
-from gslib import character_objects
-from gslib import game_object
-from gslib import graphics
-from gslib import triggers
-from gslib import text
-from gslib import character_functions
 from gslib import save_load
 from gslib.editor import trigger_edit
 from gslib.constants import *
 from gslib.editor import cutscene
+from gslib.engine import text
+from gslib.game_objects import character_objects, character_functions, game_object
+from gslib.ui import button, drop_down_list
 
 
 def get_fears_from_file():  # load all possible fears from file, without descriptions

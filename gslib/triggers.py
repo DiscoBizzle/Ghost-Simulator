@@ -2,11 +2,12 @@ from __future__ import absolute_import, division, print_function
 
 # from gslib import character_functions
 from gslib import trigger_functions
-from gslib import rect
 import json
 
 
 # get all functions from trigger_functions module
+from gslib.engine import rect
+
 trigger_functions_dict = {}
 for i, s in enumerate(dir(trigger_functions)):
     f = getattr(trigger_functions, s)

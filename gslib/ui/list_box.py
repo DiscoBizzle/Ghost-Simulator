@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function
 
-from gslib import button
+from gslib.ui import button
 from gslib.utils import ExecOnChange, exec_on_change_meta
 
 

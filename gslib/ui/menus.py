@@ -2,10 +2,9 @@ from __future__ import absolute_import, division, print_function
 
 import pyglet
 
-from gslib import button
-from gslib import slider
 from gslib.constants import *
-from gslib import text
+from gslib.engine import text
+from gslib.ui import button, slider
 
 
 class Menu(object):

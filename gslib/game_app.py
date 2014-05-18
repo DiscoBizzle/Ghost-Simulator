@@ -1,29 +1,23 @@
 from __future__ import absolute_import, division, print_function
 
-import pyglet
 import random
 
-from gslib import button
+import pyglet
+
 from gslib import collision
-from gslib import credits
-from gslib import graphics
-from gslib import joy
-from gslib import menus
-from gslib import movie
-from gslib import player
 from gslib import skills
-from gslib import sound
-from gslib import key
-from gslib import mouse
-from gslib import text
 from gslib import map_edit
 from gslib import save_load
+
 # from gslib import walrus
-from gslib.rect import Rect
+from gslib.engine import mouse, key, graphics, text, movie, sound, joy
+from gslib.engine.rect import Rect
 from gslib.constants import *
 from gslib.class_proxy import Proxy
 from gslib import options, window
 import gslib
+from gslib.game_objects import player
+from gslib.ui import button, credits, menus
 
 
 class Game(pyglet.event.EventDispatcher):

@@ -5,13 +5,10 @@ import os
 
 import pyglet.window.key as Pkey
 
-from gslib import button
 from gslib import constants
 from gslib import cutscene
 from gslib import dialogue
-from gslib import drop_down_list
-from gslib import msg_box
-from gslib import list_box
+from gslib.ui import button, list_box, msg_box, drop_down_list
 
 
 class CutsceneEditor(object):

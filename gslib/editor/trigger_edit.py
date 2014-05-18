@@ -1,11 +1,10 @@
 from __future__ import absolute_import, division, print_function
 
-from gslib import button
-from gslib import drop_down_list
-from gslib import rect
-from gslib import trigger_functions
-import inspect
 import json
+
+from gslib import trigger_functions
+from gslib.engine import rect
+from gslib.ui import button, drop_down_list
 
 
 object_interaction_types = {'Have Fear Harvested': 'harvested_function',

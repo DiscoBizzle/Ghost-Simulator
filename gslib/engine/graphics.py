@@ -5,11 +5,7 @@ import os.path
 import pyglet.image
 
 from gslib.constants import *
-from gslib import player
-from gslib import sprite
-from gslib import textures
-from gslib import text
-from gslib import primitives
+from gslib.engine import textures, text, sprite, primitives
 
 
 circle_tex = None
@@ -213,10 +209,6 @@ class Graphics(object):
 
     def draw_objects(self):
         for o in sorted(self.game.objects.values() + self.game.map.static_objects, key=(lambda obj: -obj.coord[1])):
-            if isinstance(o, player.Player):
-                if o.possessing:
-                    continue
-
             x = o.coord[0]
             y = o.coord[1]
             object_sprite = o.sprite

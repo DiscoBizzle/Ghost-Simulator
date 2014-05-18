@@ -1,11 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
-from weakref import WeakKeyDictionary
-
-from gslib import button
+from gslib.ui import button, slider
 from gslib.utils import ExecOnChange, exec_on_change_meta
-from gslib import slider
-from gslib.constants import *
 
 
 def list_func(owner, val, text=None):
