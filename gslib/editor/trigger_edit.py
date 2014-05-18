@@ -97,6 +97,9 @@ class Trigger(object):
                 a(interactee, interacter)
             else:
                 opt_name = self.options[a.func_name] # the key associated with chosen (e.g. key of cutscene)
+                if opt_name is None:
+                    a(interactee, interacter)
+                    continue
                 option = self.action_options_map[a.func_name][opt_name] # the value of above key
                 a(interactee, interacter, option)
 
@@ -286,7 +289,7 @@ class TriggerEditor(object):
 
         self.buttons['pick_interactee'] = db(self, self.pick_interactee, text="Pick Interactee", order=(2, 0))
         self.drop_lists['interactees'] = dl(self, {}, self.select_interactee, order=(2, 1))
-        self.buttons['delete_interactee'] = db(self, self.delete_interactee, text="Delete Target", order=(2, 2))
+        self.buttons['delete_interactee'] = db(self, self.delete_interactee, text="Delete Interactee", order=(2, 2))
 
         self.buttons['new_zone'] = db(self, self.create_new_zone, text="New Zone", order=(3, 0))
         self.drop_lists['zones'] = dl(self, {}, self.select_zone, order=(3, 1))
