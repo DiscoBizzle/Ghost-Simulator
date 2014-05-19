@@ -94,7 +94,7 @@ class Game(pyglet.event.EventDispatcher):
         self.graphics = graphics.Graphics(self)
         self.window.set_caption("Ghost Simulator v. 0.000000001a")
 
-        self.sound_handler = sound.Sound(self)
+        self.sound_handler = sound.Sound()
 
         self.credits = credits.Credits()
         self.options_menu = menus.OptionsMenu(self, (200, 50))
