@@ -122,8 +122,8 @@ class Menu(object):
         self.buttons['menu_scale_display'].text = u"Menu scale: {}".format(
             round(self.button_size[0] / self.original_button_size[0], 2))
 
-    def on_option_change(self, k, old_value, new_value):
-        if k == 'menu_scale':
+    def on_option_change(self, key, value):
+        if key == 'menu_scale':
             self.arrange_buttons()
 
     def on_resize(self, width, height):
@@ -287,11 +287,9 @@ class OptionsMenu(Menu):
         self.update_button_text_and_slider_values()
         super(OptionsMenu, self).arrange_buttons()
 
-    def on_option_change(self, k, old_value, new_value):
-        if not self.enabled:
-            return
+    def on_option_change(self, key, value):
         self.update_button_text_and_slider_values()
-        super(OptionsMenu, self).on_option_change(k, old_value, new_value)
+        super(OptionsMenu, self).on_option_change(key, value)
 
 
 class SkillsMenu(Menu):

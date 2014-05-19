@@ -20,17 +20,17 @@ class GameWindow(pyglet.window.Window):
         super(GameWindow, self).on_resize(width, height)
         options['resolution'] = (width, height)
 
-    def on_option_change(self, k, old_value, new_value):
-        if k == 'vsync':
-            self.set_vsync(new_value)
-        elif k == 'fullscreen':
-            self.set_fullscreen(fullscreen=new_value)
+    def on_option_change(self, key, value):
+        if key == 'vsync':
+            self.set_vsync(value)
+        elif key == 'fullscreen':
+            self.set_fullscreen(fullscreen=value)
             options['resolution'] = self.get_size()
-        elif k == 'resolution':
+        elif key == 'resolution':
             if self.fullscreen:
-                self.set_fullscreen(width=new_value[0], height=new_value[1])
+                self.set_fullscreen(width=value[0], height=value[1])
             else:
-                self.set_size(*new_value)
+                self.set_size(*value)
 
 
 options = Options(DEFAULT_OPTIONS)
@@ -40,4 +40,3 @@ window = GameWindow(width=options['resolution'][0], height=options['resolution']
                     vsync=options['vsync'], fullscreen=options['fullscreen'])
 
 game = class_proxy.Proxy()
-

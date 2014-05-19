@@ -56,7 +56,7 @@ class Graphics(object):
         self.game.options.push_handlers(self)
         self.game.window.push_handlers(self)
 
-    def on_option_change(self, key, old_value, value):
+    def on_option_change(self, key, value):
         if key == 'VOF_opacity':
             self.field.opacity = value
 

@@ -21,13 +21,13 @@ class Sound(object):
 
         options.push_handlers(self)
 
-    def on_option_change(self, k, old_value, new_value):
-        if k == 'music_volume':
+    def on_option_change(self, key, value):
+        if key == 'music_volume':
             if self.music_playing is not None:
-                self.music_playing.volume = new_value
-        elif k == 'sound_volume':
+                self.music_playing.volume = value
+        elif key == 'sound_volume':
             for s in self.sound_playing:
-                s.volume = new_value
+                s.volume = value
 
     def load_all_sounds(self):
         sound_dict = {}

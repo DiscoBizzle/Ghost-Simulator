@@ -13,10 +13,10 @@ class Options(dict, pyglet.event.EventDispatcher):
 
     def __setitem__(self, key, value):
         old_value = self.get(key, None)
-        #print("option set: {} {} {}".format(key, old_value, value))
+        # print("option set: {} {} {}".format(key, old_value, value))
         super(Options, self).__setitem__(key, value)
         if value != old_value:
-            self.dispatch_event('on_option_change', key, old_value, value)
+            self.dispatch_event('on_option_change', key, value)
 
     def save_options(self):
         try:
