@@ -5,7 +5,7 @@ import os.path
 import pyglet.image
 
 from gslib.constants import *
-from gslib.engine import textures, text, sprite, primitives
+from gslib.engine import textures, text, sprite, primitives, rect
 
 
 circle_tex = None
@@ -267,20 +267,28 @@ class Graphics(object):
         self.game.screen_objects_to_draw = []
 
     def draw_torch(self):
-        raise Exception("graphics.draw_torch() not ported to pyglet.")
+        # TODO: do this in a sane/clever way
+        ppos = (self.game.players['player1'].coord[0] + self.game.players['player1'].dimensions[0] // 2,
+                self.game.players['player1'].coord[1] + self.game.players['player1'].dimensions[1] // 2)
 
-        ppos = (self.game.players['player1'].coord[0] + self.game.players['player1'].dimensions[0] / 2, self.game.players['player1'].coord[1] + self.game.players['player1'].dimensions[1] / 2)
+        hole = rect.Rect((ppos[0] - self.light_size[0] // 2 - self.game.camera_coords[0],
+                          ppos[1] - self.light_size[1] // 2 - self.game.camera_coords[1]), self.light_size)
 
-        self.light_surf.fill((0, 0, 0, 0))
+        self.light.position = hole.bottomleft
 
-        hole = pygame.Rect((ppos[0] - self.light_size[0]/2 - self.game.camera_coords[0], ppos[1] - self.light_size[1]/2 - self.game.camera_coords[1]), self.light_size)
+        self.game.screen_objects_to_draw.append(
+            primitives.RectPrimitive(x=0, y=0, width=hole.right, height=hole.bottom, color=(0, 0, 0), opacity=255))
 
-        self.clip_area = hole
+        self.game.screen_objects_to_draw.append(
+            primitives.RectPrimitive(x=hole.right, y=0, width=self.game.dimensions[0] - hole.right, height=hole.top,
+                                     color=(0, 0, 0), opacity=255))
 
-        pygame.draw.rect(self.light_surf, (0, 0, 0, 255), pygame.Rect((0, 0), (self.game.dimensions[0], hole.top)))
-        pygame.draw.rect(self.light_surf, (0, 0, 0, 255), pygame.Rect((0, 0), (hole.left, self.game.dimensions[1])))
-        pygame.draw.rect(self.light_surf, (0, 0, 0, 255), pygame.Rect((hole.right, 0), (self.game.dimensions[0], self.game.dimensions[1])))
-        pygame.draw.rect(self.light_surf, (0, 0, 0, 255), pygame.Rect((0, hole.bottom), (self.game.dimensions[0], self.game.dimensions[1])))
-        self.light_surf.blit(self.light, (hole.left, hole.top))
-        self.game.screen_objects_to_draw.append((self.light_surf, (0, 0)))
+        self.game.screen_objects_to_draw.append(
+            primitives.RectPrimitive(x=hole.left, y=hole.top, width=self.game.dimensions[0] - hole.left,
+                                     height=self.game.dimensions[1] - hole.top, color=(0, 0, 0), opacity=255))
 
+        self.game.screen_objects_to_draw.append(
+            primitives.RectPrimitive(x=0, y=hole.bottom, width=hole.left, height=self.game.dimensions[1] - hole.bottom,
+                                     color=(0, 0, 0), opacity=255))
+
+        self.game.screen_objects_to_draw.append(self.light)
