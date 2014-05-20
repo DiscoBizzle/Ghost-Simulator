@@ -173,7 +173,7 @@ class SimpleDialogue(object):
         self.on_complete_fun = on_complete_fun
         self.message = message
 
-        self.background = primitives.RectPrimitive(x=0, y=0, width=1280, height=200, color=(70, 80, 65), opacity=200)
+        self.background = primitives.RectPrimitive(x=0, y=0, width=1280, height=200, color=(70, 80, 65, 200))
 
         self.text_layout = None
         self._update_text()

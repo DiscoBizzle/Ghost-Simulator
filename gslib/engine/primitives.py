@@ -25,8 +25,7 @@ class PrimitiveGroup(pyglet.graphics.Group):
                 self.blend_dest == other.blend_dest)
 
     def __hash__(self):
-        return hash((self.__class__, self.parent,
-                     self.blend_src, self.blend_dest))
+        return hash((self.parent, self.blend_src, self.blend_dest))
 
 
 class Primitive(object):
@@ -36,13 +35,12 @@ class Primitive(object):
     num_verts = None
     mode = None
 
-    def __init__(self, x=0, y=0, color=(0, 0, 0), opacity=255, blend_src=GL_SRC_ALPHA,
-                 blend_dest=GL_ONE_MINUS_SRC_ALPHA, batch=None, group=None):
+    def __init__(self, x=0, y=0, color=(0, 0, 0, 255), blend_src=GL_SRC_ALPHA, blend_dest=GL_ONE_MINUS_SRC_ALPHA,
+                 batch=None, group=None):
         self._x = x
         self._y = y
 
         self._color = color
-        self._opacity = opacity
 
         self._batch = batch
         self._group = PrimitiveGroup(blend_src, blend_dest, group)
@@ -83,22 +81,13 @@ class Primitive(object):
         self._color = color
         self._update_colors()
 
-    @property
-    def opacity(self):
-        return self._opacity
-
-    @opacity.setter
-    def opacity(self, opacity):
-        self._opacity = opacity
-        self._update_colors()
-
     def draw(self):
         self._group.set_state_recursive()
         self._vertex_list.draw(self.mode)
         self._group.unset_state_recursive()
 
     def _update_colors(self):
-        self._vertex_list.colors[:] = ((self._color + (self._opacity,)) * self.num_verts)
+        self._vertex_list.colors[:] = (self._color * self.num_verts)
 
     def _move_x(self, dx):
         self._vertex_list.vertices[::2] = map(lambda x: x + dx, self._vertex_list.vertices[::2])
@@ -107,26 +96,29 @@ class Primitive(object):
         self._vertex_list.vertices[1::2] = map(lambda y: y + dy, self._vertex_list.vertices[1::2])
 
     def _update_verticies(self):
-        raise Exception("Not Implemented")
+        raise NotImplementedError()
 
 
 class RectPrimitive(Primitive):
 
     num_verts = 4
-    mode = GL_QUADS
 
-    def __init__(self, rect=None, width=0, height=0, **kwargs):
-        super(RectPrimitive, self).__init__(**kwargs)
+    def __init__(self, x=0, y=0, width=0, height=0, rect=None, filled=True, **kwargs):
+
+        if filled:
+            self.mode = GL_QUADS
+        else:
+            self.mode = GL_LINE_LOOP
 
         # passing in a Rect overrides x, y, width and height
         if rect is None:
             self._width = width
             self._height = height
         else:
-            self._x = rect.x
-            self._y = rect.y
+            x, y = rect.size
             self._width = rect.width
             self._height = rect.height
+        super(RectPrimitive, self).__init__(x=x, y=y, **kwargs)
 
         self._update_verticies()
 

@@ -141,10 +141,10 @@ class Graphics(object):
         if not trig is None:
             zone = self.game.editor.trigger_editor.drop_lists['zones'].selected
             for z in trig.zones:
-                r = primitives.RectPrimitive(rect=z, color=(135, 206, 250), opacity=50)
+                r = primitives.RectPrimitive(rect=z, color=(135, 206, 250, 50))
                 if not zone is None:
                     if z == zone:
-                        r = primitives.RectPrimitive(rect=z, color=(65, 105, 225), opacity=100)
+                        r = primitives.RectPrimitive(rect=z, color=(65, 105, 225, 100))
 
                 self.game.world_objects_to_draw.append(r)
 
@@ -218,7 +218,7 @@ class Graphics(object):
                                           y=h * i,
                                           width=w * (p.fear / MAX_FEAR),
                                           height=h,
-                                          color=(255, 0, 0))
+                                          color=(255, 0, 0, 255))
             self.game.screen_objects_to_draw.append(sp)
 
     def draw_world_objects(self):  # stuff relative to camera
@@ -247,18 +247,18 @@ class Graphics(object):
         self.light.position = hole.bottomleft
 
         self.game.screen_objects_to_draw.append(
-            primitives.RectPrimitive(x=0, y=0, width=hole.right, height=hole.bottom, color=(0, 0, 0), opacity=255))
+            primitives.RectPrimitive(x=0, y=0, width=hole.right, height=hole.bottom, color=(0, 0, 0, 255)))
 
         self.game.screen_objects_to_draw.append(
             primitives.RectPrimitive(x=hole.right, y=0, width=self.game.dimensions[0] - hole.right, height=hole.top,
-                                     color=(0, 0, 0), opacity=255))
+                                     color=(0, 0, 0, 255)))
 
         self.game.screen_objects_to_draw.append(
             primitives.RectPrimitive(x=hole.left, y=hole.top, width=self.game.dimensions[0] - hole.left,
-                                     height=self.game.dimensions[1] - hole.top, color=(0, 0, 0), opacity=255))
+                                     height=self.game.dimensions[1] - hole.top, color=(0, 0, 0, 255)))
 
         self.game.screen_objects_to_draw.append(
             primitives.RectPrimitive(x=0, y=hole.bottom, width=hole.left, height=self.game.dimensions[1] - hole.bottom,
-                                     color=(0, 0, 0), opacity=255))
+                                     color=(0, 0, 0, 255)))
 
         self.game.screen_objects_to_draw.append(self.light)

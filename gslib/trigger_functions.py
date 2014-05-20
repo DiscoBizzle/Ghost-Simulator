@@ -19,7 +19,7 @@ def red_square_trigger(targets):
             target.fear = 0
             target.fainted = True
 
-            sprite = primitives.RectPrimitive(width=10, height=10, color=(120, 0, 0))
+            sprite = primitives.RectPrimitive(width=10, height=10, color=(120, 0, 0, 255))
             target.flair['fear_harvested'] = (sprite, (-5, target.dimensions[1] + 5))
     func.__name__ = 'red_square_trigger'
     return func

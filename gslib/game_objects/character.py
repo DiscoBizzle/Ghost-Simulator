@@ -10,8 +10,8 @@ from gslib.game_objects.game_object import GameObject
 from gslib.constants import *
 
 
-WHITE = (255, 255, 255)
-GREY = (60, 60, 60)
+WHITE = (255, 255, 255, 255)
+GREY = (60, 60, 60, 255)
 
 def test():
     pygame.init()
