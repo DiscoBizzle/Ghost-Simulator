@@ -94,6 +94,9 @@ class KeyController(object):
             else:
                 p.possess_key_up = True
 
+        if self.keys[Pkey.F11]:
+            self.game.options['fullscreen'] = not self.game.options['fullscreen']
+
     def rebind(self, new_key):
         if new_key == Pkey.ESCAPE:
             self.game.action_to_rebind = None
