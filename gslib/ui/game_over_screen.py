@@ -31,6 +31,7 @@ class GameOverScreen(pyglet.event.EventDispatcher):
             (height - self._game_over_txt2.content_height - self._game_over_txt1.content_height) // 2
 
     def start(self):
+        self.on_resize(window.width, window.height)
         window.push_handlers(self)
 
     def stop(self):
