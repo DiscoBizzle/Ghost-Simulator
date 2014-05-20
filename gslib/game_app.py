@@ -121,7 +121,7 @@ class Game(pyglet.event.EventDispatcher):
         self.keybind_menu = menus.KeyBindMenu(self, (190, 40))
         self.action_to_rebind = None
 
-        self.map = None
+        self._map = None
 
         self.map_dict = {'level3': save_load.load_map(self, 'level3'),
                          'level2': save_load.load_map(self, 'level2'),
@@ -208,6 +208,17 @@ class Game(pyglet.event.EventDispatcher):
         self.last_state = self._state
         self._state = state
         self.dispatch_event('on_state_change', state)
+
+    @property
+    def map(self):
+        return self._map
+
+    @map.setter
+    def map(self, map):
+        if map == self._map:
+            return
+        self._map = map
+        self.dispatch_event('on_map_change', map)
 
     def update_scheduler_frequency(self):
         pyglet.clock.unschedule(self.scheduler_hint_fun)
@@ -330,9 +341,6 @@ class Game(pyglet.event.EventDispatcher):
                 if self.state == EDITOR:
                     self.editor.update()
 
-            elif self.state == CREDITS:
-                self.credits.update(dt)
-
         except self.update_exception_hook[0] as exception:
             self.update_exception_hook[1](exception)
 
@@ -404,7 +412,6 @@ class Game(pyglet.event.EventDispatcher):
     def go_to_map(self, m):
         self.map = m
         self.gather_buttons_and_drop_lists_and_objects()
-        self.graphics.clip_area = Rect((0, 0), (self.dimensions[0], self.dimensions[1]))
         self.fears_dict = self.map.fears_dict
 
     def run_cutscene(self, c):
@@ -415,3 +422,4 @@ class Game(pyglet.event.EventDispatcher):
         self.window.dispatch_event('on_close')
 
 Game.register_event_type('on_state_change')
+Game.register_event_type('on_map_change')

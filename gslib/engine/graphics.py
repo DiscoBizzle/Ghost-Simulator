@@ -38,12 +38,12 @@ class Graphics(object):
 
         self.fear_text = text.new(FONT, 20, u'FEAR')
 
-        self.last_map = None
         self.map_texture = {}
         self.tile_sprite = {}
 
         self.game.options.push_handlers(self)
         self.game.window.push_handlers(self)
+        self.game.push_handlers(self)
 
     def on_option_change(self, key, value):
         if key == 'VOF_opacity':
@@ -52,6 +52,9 @@ class Graphics(object):
     def on_resize(self, width, height):
         self.field.scale_x = width / self.field.image.width
         self.field.scale_y = height / self.field.image.height
+
+    def on_map_change(self, map):
+        self._draw_map(map)
 
     def main_game_draw(self):
         # this runs faster than game update. animation can be done here with no problems.
@@ -108,34 +111,22 @@ class Graphics(object):
         if self.game.options['VOF']:
             self.field.draw()
 
-    def _draw_map(self):
-        m = self.game.map
+    def _draw_map(self, m):
+        grid_size = TILE_SIZE
 
-        if self.last_map != m:
-            #print('Redrawing map...')
-            #start_time = time.clock()
+        self.map_texture = {}
+        self.tile_sprite = {}
 
-            grid_size = TILE_SIZE
+        for layer_name, layer in m.grid.iteritems():
+            self.map_texture[layer_name] = pyglet.image.Texture.create(grid_size * m.grid_width, grid_size * m.grid_height)
+            self.tile_sprite[layer_name] = sprite.Sprite(self.map_texture[layer_name])
 
-            self.map_texture = {}
-            self.tile_sprite = {}
-
-            for layer_name, layer in m.grid.iteritems():
-                self.map_texture[layer_name] = pyglet.image.Texture.create(grid_size * m.grid_width, grid_size * m.grid_height)
-                self.tile_sprite[layer_name] = sprite.Sprite(self.map_texture[layer_name])
-
-            for layer_name, layer_texture in self.map_texture.iteritems():
-                for y in range(m.grid_height):
-                    for x in range(m.grid_width):
-                        layer_texture.blit_into(m.tileset_seq[m.grid[layer_name][y][x].tileset_coord], x * grid_size, y * grid_size, 0)
-
-            self.last_map = m
-
-            #print('Map redraw complete (took ' + str(time.clock() - start_time) + 's)')
+        for layer_name, layer_texture in self.map_texture.iteritems():
+            for y in range(m.grid_height):
+                for x in range(m.grid_width):
+                    layer_texture.blit_into(m.tileset_seq[m.grid[layer_name][y][x].tileset_coord], x * grid_size, y * grid_size, 0)
 
     def draw_map_early(self):
-        self._draw_map()
-
         for layer_name, layer_sprite in self.tile_sprite.iteritems():
             if layer_name.startswith("ground"):
                 self.game.world_objects_to_draw.insert(0, layer_sprite)
