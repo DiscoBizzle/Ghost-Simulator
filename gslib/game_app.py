@@ -17,7 +17,7 @@ from gslib.class_proxy import Proxy
 from gslib import options, window
 import gslib
 from gslib.game_objects import player
-from gslib.ui import button, credits, menus
+from gslib.ui import button, credits, menus, game_over_screen
 
 
 class Game(pyglet.event.EventDispatcher):
@@ -98,6 +98,8 @@ class Game(pyglet.event.EventDispatcher):
 
         self.credits = credits.Credits()
         self.options_menu = menus.OptionsMenu(self, (200, 50))
+
+        self.game_over_screen = game_over_screen.GameOverScreen()
 
         self.camera_coords = (0, 0)
         self.camera_padding = (32, 32, 96, 32)  # left right up down
@@ -223,6 +225,8 @@ class Game(pyglet.event.EventDispatcher):
             self.credits.remove_handlers(self)
         elif self.last_state == MOVIE:
             self.movie_player.remove_handlers(self)
+        elif self.last_state == GAME_OVER:
+            self.game_over_screen.remove_handlers(self)
         if state == MAIN_GAME:
             if self.sound_handler.music_playing is not None:
                 if self.sound_handler.music_playing.name != 'transylvania':
@@ -235,12 +239,18 @@ class Game(pyglet.event.EventDispatcher):
         elif state == MOVIE:
             self.movie_player.push_handlers(self)
             self.movie_player.start(self.movie_next)
+        elif state == GAME_OVER:
+            self.game_over_screen.push_handlers(self)
+            self.game_over_screen.start()
 
     def on_credits_end(self):
         self.state = MAIN_MENU
 
     def on_movie_end(self):
         self.state = self.last_state
+
+    def on_game_over_close(self):
+        self.state = MAIN_MENU
 
     # pyglet event
     def on_draw(self):

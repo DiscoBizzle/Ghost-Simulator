@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function
 
 import os.path
 
-import pyglet.image
+import pyglet
 
 from gslib.constants import *
 from gslib.engine import textures, text, sprite, primitives, rect
@@ -26,7 +26,6 @@ class Graphics(object):
     """
     def __init__(self, game):
         self.game = game
-        #self.surface = pygame.display.set_mode(self.game.dimensions, pygame.RESIZABLE)
 
         self.field = sprite.Sprite(pyglet.image.load(os.path.join(SPRITES_DIR, 'field.png')).get_texture())
         self.field.opacity = self.game.options['VOF_opacity']
@@ -37,17 +36,7 @@ class Graphics(object):
         self.light.scale_x = self.light.scale_y = 200 / self.light.image.height
         self.light_size = (self.light.width, self.light.height)
 
-        #font = pygame.font.SysFont(FONT, 20)
-        #self.fear_size = font.size(u"FEAR")
-        #self.fear_txt = font.render(u"FEAR", True, (200, 200, 200)).convert_alpha()
-        #self.fear_surf = pygame.Surface((self.game.dimensions[0], 32)).convert_alpha()
         self.fear_text = text.new(FONT, 20, u'FEAR')
-
-        self.game_over_txt1 = pyglet.text.Label(u"GAME OVER", FONT, 80, color=(255, 255, 255, 255),
-                                                anchor_x='left', anchor_y='bottom', align='center')
-
-        self.game_over_txt2 = pyglet.text.Label(u"press esc scrub", FONT, 20, color=(255, 255, 255, 255),
-                                                anchor_x='left', anchor_y='bottom', align='center')
 
         self.last_map = None
         self.map_texture = {}
@@ -63,16 +52,6 @@ class Graphics(object):
     def on_resize(self, width, height):
         self.field.scale_x = width / self.field.image.width
         self.field.scale_y = height / self.field.image.height
-
-    def draw_game_over(self):
-        self.game_over_txt1.x = (self.game.dimensions[0] - self.game_over_txt1.content_width) // 2
-        self.game_over_txt1.y = (self.game.dimensions[1] - self.game_over_txt1.content_height) // 2
-        self.game.screen_objects_to_draw.append(self.game_over_txt1)
-
-        self.game_over_txt2.x = (self.game.dimensions[0] - self.game_over_txt2.content_width) // 2
-        self.game_over_txt2.y = (self.game.dimensions[1] - self.game_over_txt2.content_height -
-                                 self.game_over_txt1.content_height) // 2
-        self.game.screen_objects_to_draw.append(self.game_over_txt2)
 
     def main_game_draw(self):
         # this runs faster than game update. animation can be done here with no problems.
@@ -110,7 +89,7 @@ class Graphics(object):
                 self.game.message_box.draw()
 
         elif self.game.state == GAME_OVER:
-            self.draw_game_over()
+            self.game.game_over_screen.draw()
         elif self.game.state == CREDITS:
             self.game.credits.draw()
         elif self.game.state == SKILLS_SCREEN:
