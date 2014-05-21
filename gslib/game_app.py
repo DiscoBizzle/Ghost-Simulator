@@ -10,7 +10,7 @@ from gslib.editor.main_editor import Editor
 from gslib import save_load
 
 # from gslib import walrus
-from gslib.engine import mouse, key, graphics, text, movie, sound, joy
+from gslib.engine import mouse, key, graphics, movie, sound, joy, camera
 from gslib.constants import *
 from gslib.class_proxy import Proxy
 from gslib import options, window
@@ -73,6 +73,9 @@ class Game(pyglet.event.EventDispatcher):
 
         self.object_collision_lookup = collision.ObjectCollisionLookup(self)
 
+        self.camera_padding = (32, 32, 96, 32)  # left right up down
+        self.camera = camera.Camera(x=0, y=0)
+
         # enable alpha-blending
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
@@ -99,9 +102,6 @@ class Game(pyglet.event.EventDispatcher):
         self.options_menu = menus.OptionsMenu(self, (200, 50))
 
         self.game_over_screen = game_over_screen.GameOverScreen()
-
-        self.camera_coords = (0, 0)
-        self.camera_padding = (32, 32, 96, 32)  # left right up down
 
         self.players = {'player1': player.Player(self, TILE_SIZE * 6, TILE_SIZE * 2, 16, 16, 'GhostSheet.png'),
                         'player2': player.Player(self, 0, 0, 16, 16, 'TutorialGhost2.png')}
@@ -377,7 +377,7 @@ class Game(pyglet.event.EventDispatcher):
         if avg_pos[1] < self.dimensions[1] // 2 - pad[2] or LEVEL_HEIGHT < self.dimensions[1] - pad[2] - pad[3]:
             coord = (coord[0], -pad[2])
 
-        self.camera_coords = coord
+        self.camera.x, self.camera.y = coord
 
     def change_map(self):
         self.map_index = random.choice(self.map_dict.keys())

@@ -121,11 +121,10 @@ class MouseController(object):
 
     def calc_cursor_coord(self, pos, typ, button=None):
         if self.game.key_controller.keys[self.game.key_controller.key_map['Snap to Grid']]:
-            grid_x = (pos[0] + self.game.camera_coords[0]) // TILE_SIZE
-            grid_y = (pos[1] + self.game.camera_coords[1]) // TILE_SIZE
-            return grid_x * TILE_SIZE, grid_y * TILE_SIZE
+            grid_x, grid_y = self.game.camera.undo_camera(pos)
+            return (grid_x // TILE_SIZE) * TILE_SIZE, (grid_y // TILE_SIZE) * TILE_SIZE
         else:
-            return pos[0] + self.game.camera_coords[0], pos[1] + self.game.camera_coords[1]
+            return self.game.camera.undo_camera(pos)
 
     def check_object_click(self, pos, typ, button=None):
         if typ == 'down':
@@ -136,7 +135,7 @@ class MouseController(object):
                     continue
                 st = SELECTION_TOLERANCE
                 temp_rect = rect.Rect((o.coord[0] - st, o.coord[1] - st), (o.dimensions[0] + 2*st, o.dimensions[1] + 2*st))
-                if temp_rect.collidepoint((pos[0]+self.game.camera_coords[0], pos[1]+self.game.camera_coords[1])):
+                if temp_rect.collidepoint(self.game.camera.undo_camera(pos)):
 
                     if self.object_capture_request:
                         self.object_capture_request = False

@@ -5,7 +5,7 @@ import os.path
 import pyglet
 
 from gslib.constants import *
-from gslib.engine import textures, text, sprite, primitives, rect
+from gslib.engine import textures, text, sprite, primitives, rect, camera
 from gslib.game_objects.player import Player
 
 
@@ -41,6 +41,8 @@ class Graphics(object):
 
         self.map_texture = {}
         self.tile_sprite = {}
+
+        self.camera_group = camera.CameraGroup(self.game.camera)
 
         self.game.options.push_handlers(self)
         self.game.window.push_handlers(self)
@@ -203,11 +205,10 @@ class Graphics(object):
             self.game.screen_objects_to_draw.append(sp)
 
     def draw_world_objects(self):  # stuff relative to camera
-        pyglet.gl.glPushMatrix()
-        pyglet.gl.glTranslatef(-self.game.camera_coords[0], -self.game.camera_coords[1], 0)
+        self.camera_group.set_state_recursive()
         for f in self.game.world_objects_to_draw:
             f.draw()
-        pyglet.gl.glPopMatrix()
+        self.camera_group.unset_state_recursive()
         self.game.world_objects_to_draw = []
 
     def draw_screen_objects(self):  # stuff relative to screen
@@ -220,8 +221,9 @@ class Graphics(object):
         ppos = (self.game.players['player1'].coord[0] + self.game.players['player1'].dimensions[0] // 2,
                 self.game.players['player1'].coord[1] + self.game.players['player1'].dimensions[1] // 2)
 
-        hole = rect.Rect((ppos[0] - self.light_size[0] // 2 - self.game.camera_coords[0],
-                          ppos[1] - self.light_size[1] // 2 - self.game.camera_coords[1]), self.light_size)
+        hole = rect.Rect(
+            self.game.camera.apply_camera((ppos[0] - self.light_size[0] // 2, ppos[1] - self.light_size[1] // 2)),
+            self.light_size)
 
         self.light.position = hole.bottomleft
 
