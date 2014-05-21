@@ -6,6 +6,7 @@ import pyglet
 
 from gslib.constants import *
 from gslib.engine import textures, text, sprite, primitives, rect
+from gslib.game_objects.player import Player
 
 
 circle_tex = None
@@ -57,59 +58,40 @@ class Graphics(object):
         self._draw_map(map)
 
     def main_game_draw(self):
-        # this runs faster than game update. animation can be done here with no problems.
-        if self.game.state != MOVIE:
-            self.game.window.clear()
 
-        if self.game.state == STARTUP:
-            pass
-        elif self.game.state == MAIN_MENU:
-            self.game.main_menu.draw()
-        elif self.game.state == MAIN_GAME or self.game.state == EDITOR:
-            self.draw_map_early()
-            self.draw_objects()
-            self.draw_map_late()
-            if self.game.options['torch']:
-                self.draw_torch()
+        self.game.window.clear()
 
-            self.draw_buttons()
-            self.draw_drop_lists()
-            if self.game.state == EDITOR:
-                self.draw_editor()
+        self.draw_map_early()
+        self.draw_objects()
+        self.draw_map_late()
+        if self.game.options['torch']:
+            self.draw_torch()
 
-            self.draw_fear_bar()
-            self.draw_character_stats()
+        self.draw_buttons()
+        self.draw_drop_lists()
+        if self.game.state == EDITOR:
+            self.draw_editor()
 
-            if self.game.show_fears:
-                self.game.say_fears()
-            if self.game.show_ranges:
-                self.game.show_fear_ranges()
+        self.draw_fear_bar()
+        self.draw_character_stats()
 
-            if self.game.dialogue is not None:
-                self.game.dialogue.draw()
+        if self.game.show_fears:
+            self.say_fears()
+        if self.game.show_ranges:
+            self.show_fear_ranges()
 
-            if self.game.message_box is not None:
-                self.game.message_box.draw()
+        if self.game.dialogue is not None:
+            self.game.dialogue.draw()
 
-        elif self.game.state == GAME_OVER:
-            self.game.game_over_screen.draw()
-        elif self.game.state == CREDITS:
-            self.game.credits.draw()
-        elif self.game.state == SKILLS_SCREEN:
-            self.game.skill_menu.draw()
-        elif self.game.state == OPTIONS_MENU:
-            self.game.options_menu.draw()
-        elif self.game.state == KEYBIND_MENU or self.game.state == KEYBIND_CAPTURE:
-            self.game.keybind_menu.draw()
-        elif self.game.state == MOVIE:
-            self.game.movie_player.draw()
+        if self.game.message_box is not None:
+            self.game.message_box.draw()
 
         if self.game.options['FOV']:
             self.draw_world_objects()
             self.draw_screen_objects()
-
-        if self.game.options['VOF']:
-            self.field.draw()
+        else:
+            self.game.world_objects_to_draw = []
+            self.game.screen_objects_to_draw = []
 
     def _draw_map(self, m):
         grid_size = TILE_SIZE
@@ -147,7 +129,6 @@ class Graphics(object):
                         r = primitives.RectPrimitive(rect=z, color=(65, 105, 225, 100))
 
                 self.game.world_objects_to_draw.append(r)
-
 
     def draw_buttons(self):
         for button in dict(self.game.buttons, **self.game.editor.get_buttons() if self.game.state == EDITOR else {}).itervalues():
@@ -231,8 +212,6 @@ class Graphics(object):
 
     def draw_screen_objects(self):  # stuff relative to screen
         for f in self.game.screen_objects_to_draw:
-            if f is None:
-                print(self.game.screen_objects_to_draw)
             f.draw()
         self.game.screen_objects_to_draw = []
 
@@ -262,3 +241,32 @@ class Graphics(object):
                                      color=(0, 0, 0, 255)))
 
         self.game.screen_objects_to_draw.append(self.light)
+
+    def say_fears(self):
+        for o in self.game.objects.itervalues():
+            if isinstance(o, Player):
+                surf = text.speech_bubble("Oonce oonce oonce oonce!", 200)
+                pos = (o.coord[0] + o.dimensions[0], o.coord[1] - surf.get_height())
+                self.game.world_objects_to_draw.append((surf, pos))
+                continue
+
+            message = ''
+            for f in o.scared_of:
+                if f != 'player':
+                    message += f + '\n'
+            surf = text.speech_bubble(message, 300)
+            pos = (o.coord[0] + o.dimensions[0], o.coord[1] - surf.get_height())
+            self.game.world_objects_to_draw.append((surf, pos))
+
+    def show_fear_ranges(self):
+        for o in self.game.objects.itervalues():
+            if isinstance(o, Player):
+                r = o.fear_collection_radius
+                sprit = draw_circle(r, (64, 224, 208))
+                sprit.set_position(o.coord[0] + o.sprite_width // 2 - r, o.coord[1] + o.sprite_height // 2 - r)
+                self.game.world_objects_to_draw.append(sprit)
+            else:
+                r = o.fear_radius
+                sprit = draw_circle(r, (75, 0, 130))
+                sprit.set_position(o.coord[0] + o.dimensions[0] // 2 - r, o.coord[1] + o.dimensions[0] // 2 - r)
+                self.game.world_objects_to_draw.append(sprit)

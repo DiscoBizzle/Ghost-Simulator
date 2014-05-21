@@ -68,7 +68,8 @@ class Menu(object):
     def on_mouse_release(self, x, y, button, modifiers):
         self.mouse_event((x, y), 'up', button)
 
-    def draw(self):
+    def on_draw(self):
+        self.game.window.clear()
         self.sprite_batch.draw()
         self.text_batch.draw()
 

@@ -52,7 +52,8 @@ class Credits(pyglet.event.EventDispatcher):
         self.text_label = pyglet.text.Label(text, FONT, self.font_size, color=self.color,
                                             width=window.width, batch=self.batch, multiline=True)
 
-    def draw(self):
+    def on_draw(self):
+        window.clear()
         self.batch.draw()
 
     def update(self, dt):

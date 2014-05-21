@@ -46,7 +46,7 @@ class MoviePlayer(pyglet.event.EventDispatcher):
         self._playing = False
         self.dispatch_event('on_movie_end')
 
-    def draw(self):
+    def on_draw(self):
 
         # TODO: THIS IS A HACK TO WORK AROUND on_eos BEING BROKEN
         if not self._player.playing and self._playing:

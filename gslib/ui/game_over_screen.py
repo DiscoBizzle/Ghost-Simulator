@@ -18,7 +18,8 @@ class GameOverScreen(pyglet.event.EventDispatcher):
 
         self.on_resize(window.width, window.height)
 
-    def draw(self):
+    def on_draw(self):
+        window.clear()
         self._batch.draw()
 
     def on_resize(self, width, height):

@@ -11,7 +11,6 @@ from gslib import save_load
 
 # from gslib import walrus
 from gslib.engine import mouse, key, graphics, text, movie, sound, joy
-from gslib.engine.rect import Rect
 from gslib.constants import *
 from gslib.class_proxy import Proxy
 from gslib import options, window
@@ -267,7 +266,11 @@ class Game(pyglet.event.EventDispatcher):
     def on_draw(self):
         self.draw_clock.tick()
 
-        self.graphics.main_game_draw()
+        if self.state == MAIN_GAME or self.state == EDITOR:
+            self.graphics.main_game_draw()
+
+        if options['VOF']:
+            self.graphics.field.draw()
 
         self.fps_clock.draw()
         #self.walrus.walruss()
@@ -375,35 +378,6 @@ class Game(pyglet.event.EventDispatcher):
             coord = (coord[0], -pad[2])
 
         self.camera_coords = coord
-
-    def say_fears(self):
-        for o in self.objects.itervalues():
-            if isinstance(o, player.Player):
-                surf = text.speech_bubble("Oonce oonce oonce oonce!", 200)
-                pos = (o.coord[0] + o.dimensions[0], o.coord[1] - surf.get_height())
-                self.world_objects_to_draw.append((surf, pos))
-                continue
-
-            message = ''
-            for f in o.scared_of:
-                if f != 'player':
-                    message += f + '\n'
-            surf = text.speech_bubble(message, 300)
-            pos = (o.coord[0] + o.dimensions[0], o.coord[1] - surf.get_height())
-            self.world_objects_to_draw.append((surf, pos))
-
-    def show_fear_ranges(self):
-        for o in self.objects.itervalues():
-            if isinstance(o, player.Player):
-                r = o.fear_collection_radius
-                sprit = graphics.draw_circle(r, (64, 224, 208))
-                sprit.set_position(o.coord[0] + o.sprite_width // 2 - r, o.coord[1] + o.sprite_height // 2 - r)
-                self.world_objects_to_draw.append(sprit)
-            else:
-                r = o.fear_radius
-                sprit = graphics.draw_circle(r, (75, 0, 130))
-                sprit.set_position(o.coord[0] + o.dimensions[0] // 2 - r, o.coord[1] + o.dimensions[0] // 2 - r)
-                self.world_objects_to_draw.append(sprit)
 
     def change_map(self):
         self.map_index = random.choice(self.map_dict.keys())
