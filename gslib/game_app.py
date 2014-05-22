@@ -34,9 +34,7 @@ class Game(pyglet.event.EventDispatcher):
         Proxy.set_underlying_instance(gslib.game, self)
 
         TODO = []
-        TODO.append("character pathe-ing")
-        TODO.append("triggers/functions to start cutscene (both real loss-of-control and just as scripted movement")
-        TODO.append("add new cutscenes to list without editing .json (easy! use InputBox!)")
+        TODO.append("character pathe-ing; then add a go_to function, include in idle_functions.patrol")
 
         TODO.append("optimize map drawing: combine all sky layers, combine all ground layers")
         TODO.append("optimize map drawing: use just one texture for all mid layer static_objects")
@@ -51,19 +49,9 @@ class Game(pyglet.event.EventDispatcher):
 
         TODO.append("design more sprites and make default characters (in character_objects)")
 
-        TODO.append("make it possible to cancel trigger creation")
-        TODO.append("handle deletion of target of trigger")
-        TODO.append("add deletion of function choices to char edit")
-        TODO.append("add deletion of triggers to map edit")
-
-        TODO.append("add idle_function to characters - wander, stand still, patrol (req. pathing)")
-
-        TODO.append("drop list that appears if trigger action req. string argument")
-        TODO.append("allow a zone to be chosen as a trigger target")
+        TODO.append("add deletion of function choices to char edit - generally improve it")
 
         TODO.append("add players to saving - both save_map and save_state")
-
-        TODO.append("create decorator/thing to determine which properties to save")
 
         self.TODO = TODO
 
