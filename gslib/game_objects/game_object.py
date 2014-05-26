@@ -4,6 +4,7 @@ import os.path
 import collections
 
 from pyglet import image
+from pyglet import gl
 
 from gslib.constants import *
 from gslib.engine import sprite, rect
@@ -89,6 +90,13 @@ class GameObject(object):
 
         #variables for animation
         self.sprite_sheet = image.load(os.path.join(CHARACTERS_DIR, sprite_sheet))
+
+        # disable texture filtering
+        texture = self.sprite_sheet.get_texture()
+        gl.glBindTexture(texture.target, texture.id)
+        gl.glTexParameteri(texture.target, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
+        gl.glBindTexture(texture.target, 0)
+
         self._animation_state = 0
         self.sprite_height = sprite_height
         self.sprite_width = sprite_width
@@ -325,7 +333,7 @@ class GameObject(object):
     def _create_animations(self):
         seq_cols = self.sprite_sheet.width // self.sprite_width
         seq_rows = self.sprite_sheet.height // self.sprite_height
-        seq = image.ImageGrid(self.sprite_sheet, seq_rows, seq_cols)
+        seq = image.ImageGrid(self.sprite_sheet, seq_rows, seq_cols).get_texture_sequence()
         for i in range(seq_rows):
             self._animations.append(image.Animation.from_image_sequence(
                 seq[i * seq_cols:(i + 1) * seq_cols], (1 / TICKS_PER_SEC) * TICKS_PER_FRAME, True))

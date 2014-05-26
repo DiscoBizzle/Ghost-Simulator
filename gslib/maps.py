@@ -46,7 +46,7 @@ def _produce_collision(mid_layers, width, height):
 
 def _render_static(r, tiles, tileset_seq, grid_width, grid_height):
     render_me = collections.OrderedDict()
-    tex = pyglet.image.Texture.create(r.width, r.height)
+    tex = pyglet.image.Texture.create(r.width, r.height, mag_filter=pyglet.gl.GL_NEAREST)
 
     for x_s, y_s, d, t in tiles:
         x = x_s * TILE_SIZE - r.x

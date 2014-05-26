@@ -102,7 +102,8 @@ class Graphics(object):
         self.tile_sprite = {}
 
         for layer_name, layer in m.grid.iteritems():
-            self.map_texture[layer_name] = pyglet.image.Texture.create(grid_size * m.grid_width, grid_size * m.grid_height)
+            self.map_texture[layer_name] = pyglet.image.Texture.create(grid_size * m.grid_width, grid_size * m.grid_height,
+                                                                       mag_filter=pyglet.gl.GL_NEAREST)
             self.tile_sprite[layer_name] = sprite.Sprite(self.map_texture[layer_name])
 
         for layer_name, layer_texture in self.map_texture.iteritems():

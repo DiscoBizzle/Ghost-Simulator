@@ -41,7 +41,7 @@ class SmallDoor(Character):
     def _create_animations(self):
         seq_cols = self.sprite_sheet.width // self.sprite_width
         seq_rows = self.sprite_sheet.height // self.sprite_height
-        seq = image.ImageGrid(self.sprite_sheet, seq_rows, seq_cols)
+        seq = image.ImageGrid(self.sprite_sheet, seq_rows, seq_cols).get_texture_sequence()
         self._animations += seq[::6]
 
     def activate(self):
