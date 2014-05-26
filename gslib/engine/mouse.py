@@ -83,6 +83,9 @@ class MouseController(object):
         self.mouse_click((x, y), 'up', button)
         self.post_to_text_caret('on_mouse_release', x, y, button, modifiers)
 
+    def on_mouse_scroll(self, x, y, dx, dy):
+        self.game.zoom += dy / 10
+
     def mouse_click(self, pos, typ, button):
         self.interaction_this_click = False
         if self.game.state == MAIN_GAME or self.game.state == EDITOR:
@@ -193,15 +196,13 @@ class MouseController(object):
     def editor_click(self, pos, typ, button=None):
         if typ == 'up':  # only detect mouse down
             return
-        if pos[0] > self.game.dimensions[0] - self.game.camera_padding[1] or \
-           pos[0] < self.game.camera_padding[0] or \
-           pos[1] > self.game.dimensions[1] - self.game.camera_padding[3] or \
-           pos[1] < self.game.camera_padding[2]:  # don't check outside of level area
+        x, y = self.game.cursor.coord
+        # don't check outside of level area
+        if x < 0 or x >= LEVEL_WIDTH or y < 0 or y >= LEVEL_HEIGHT:
             return
         # if cursor exists, and is an object prototype, create new object
         if self.game.editor.object_prototype and self.game.cursor == self.game.editor.object_prototype:
             obj_type = type(self.game.cursor)
-            pos = self.game.cursor.coord
             name = self.game.cursor.__class__.__name__
             while True:
                 if name in self.game.map.objects.keys():
@@ -209,9 +210,8 @@ class MouseController(object):
                 else:
                     break
 
-            self.game.map.objects[name] = obj_type(self.game, x=pos[0], y=pos[1])
+            self.game.map.objects[name] = obj_type(self.game, x=x, y=y)
             self.game.gather_buttons_and_drop_lists_and_objects()
             self.interaction_this_click = True
 
             self.game.editor.create_undo_state()
-

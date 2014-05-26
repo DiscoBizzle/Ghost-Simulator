@@ -69,7 +69,8 @@ class Game(pyglet.event.EventDispatcher):
         self.object_collision_lookup = collision.ObjectCollisionLookup(self)
 
         self.camera_padding = (32, 32, 96, 32)  # left right up down
-        self.camera = camera.Camera(x=0, y=0)
+        self._zoom = 1.0
+        self.camera = camera.Camera(x=0, y=0, zoom=self._zoom)
 
         # enable alpha-blending
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
@@ -216,6 +217,15 @@ class Game(pyglet.event.EventDispatcher):
         self._map = map
         self.dispatch_event('on_map_change', map)
 
+    @property
+    def zoom(self):
+        return self._zoom
+
+    @zoom.setter
+    def zoom(self, zoom):
+        self._zoom = zoom
+        self.update_camera()
+
     def update_scheduler_frequency(self):
         pyglet.clock.unschedule(self.scheduler_hint_fun)
         pyglet.clock.schedule_interval(self.scheduler_hint_fun, 1.0 / self.options['scheduler_frequency'])
@@ -337,36 +347,39 @@ class Game(pyglet.event.EventDispatcher):
             self.update_exception_hook[1](exception)
 
     def update_camera(self):
-        avg_pos = [0, 0]
-        c = 0
-        for p in self.players.itervalues():
-            c += 1
-            avg_pos[0] += p.coord[0]
-            avg_pos[1] += p.coord[1]
+        # calculate the average position of all players
+        players = self.players.values()
+        avg_x = reduce(lambda total, p: total + p.coord[0], players, 0) / len(players)
+        avg_y = reduce(lambda total, p: total + p.coord[1], players, 0) / len(players)
 
-        avg_pos = (avg_pos[0] // c, avg_pos[1] // c)
-        # coord = (self.player1.coord[0] - (self.dimensions[0]/2), self.player1.coord[1] - (self.dimensions[1]/2))
-        coord = (avg_pos[0] - (self.dimensions[0] // 2), avg_pos[1] - (self.dimensions[1] // 2))
+        # account for zoom level
+        w = window.width / self.zoom
+        h = window.height / self.zoom
+
+        x = avg_x - (w / 2)
+        y = avg_y - (h / 2)
 
         pad = self.camera_padding
 
         # bottom
-        if avg_pos[1] > LEVEL_HEIGHT - self.dimensions[1] // 2 + pad[3]:
-            coord = (coord[0], LEVEL_HEIGHT - self.dimensions[1] + pad[3])
+        if avg_y > LEVEL_HEIGHT - h / 2 + pad[3]:
+            y = LEVEL_HEIGHT - h + pad[3]
 
         # right
-        if avg_pos[0] > LEVEL_WIDTH - self.dimensions[0] // 2 + pad[1]:
-            coord = (LEVEL_WIDTH - self.dimensions[0] + pad[1], coord[1])
+        if avg_x > LEVEL_WIDTH - w / 2 + pad[1]:
+            x = LEVEL_WIDTH - w + pad[1]
 
         # left
-        if avg_pos[0] < self.dimensions[0] // 2 - pad[0] or LEVEL_WIDTH < self.dimensions[0] - pad[0] - pad[1]:
-            coord = (-pad[0], coord[1])
+        if avg_x < w / 2 - pad[0] or LEVEL_WIDTH < w - pad[0] - pad[1]:
+            x = -pad[0]
 
         # top
-        if avg_pos[1] < self.dimensions[1] // 2 - pad[2] or LEVEL_HEIGHT < self.dimensions[1] - pad[2] - pad[3]:
-            coord = (coord[0], -pad[2])
+        if avg_y < h / 2 - pad[2] or LEVEL_HEIGHT < h - pad[2] - pad[3]:
+            y = -pad[2]
 
-        self.camera.x, self.camera.y = coord
+        self.camera.x = int(x * self.zoom)
+        self.camera.y = int(y * self.zoom)
+        self.camera.zoom = self.zoom
 
     def change_map(self):
         self.map_index = random.choice(self.map_dict.keys())
