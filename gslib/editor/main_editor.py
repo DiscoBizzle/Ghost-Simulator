@@ -54,10 +54,14 @@ def change_object_value(editor, which, increment):
 
 def set_function(editor, module):
     d = {'become_possessed_functions': 'possessed_function',
+         'become_unpossessed_functions': 'unpossessed_function',
          'when_scared_functions': 'feared_function',
          'has_touched_functions': 'has_touched_function',
-         'become_unpossessed_functions': 'unpossessed_function',
-         'when_harvested_functions': 'harvested_function'}
+         'is_touched_functions': 'is_touched_function',
+         'has_untouched_functions': 'has_untouched_function',
+         'is_untouched_functions': 'is_untouched_function',
+         'when_harvested_functions': 'harvested_function',
+         'idle_functions': 'idle_functions'}
     def func():
         if editor.drop_lists[module].selected:
             a = getattr(editor.object_to_edit, d[module])

@@ -218,7 +218,7 @@ class TriggerEditor(object):
         self.display_circles = []
 
         self._pos = (0, 0)
-        self.pos = (400, self.game.dimensions[1] - 300)
+        self.pos = (0, self.game.dimensions[1] - 100)
 
         self.enabled = False
 

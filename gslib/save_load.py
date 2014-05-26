@@ -68,7 +68,9 @@ def create_save_state(m):
 
 ##########################################################################################################
 character_type_map = {'Dude': character_objects.Dude,
-                      'SmallDoor': character_objects.SmallDoor}
+                      'SmallDoor': character_objects.SmallDoor,
+                      'Bomb': character_objects.Bomb,
+                      'SpriteBoss': character_objects.SpriteBoss}
 
 # trigger_type_map = {'OnHarvest': triggers.OnHarvest,
 #                     'OnHarvestConditional': triggers.OnHarvestConditional,
@@ -83,7 +85,8 @@ function_type_map = {'has_touched_function': u'has_touched_functions',
                      'harvested_function': u'when_harvested_functions',
                      'is_touched_function': u'is_touched_functions',
                      'has_untouched_function': u'has_untouched_functions',
-                     'is_untouched_function': u'is_untouched_functions'}
+                     'is_untouched_function': u'is_untouched_functions',
+                     'idle_functions': u'idle_functions'}
 
 def load_object(game, d):
     new_obj = character_type_map[d[u'object_type']](game)

@@ -17,6 +17,7 @@ from gslib import options, window
 import gslib
 from gslib.game_objects import player
 from gslib.ui import button, credits, menus, game_over_screen
+from gslib import maps
 
 
 class Game(pyglet.event.EventDispatcher):
@@ -52,6 +53,8 @@ class Game(pyglet.event.EventDispatcher):
         TODO.append("add deletion of function choices to char edit - generally improve it")
 
         TODO.append("add players to saving - both save_map and save_state")
+
+        TODO.append("better character function editor, specifically patrol path")
 
         self.TODO = TODO
 
@@ -110,11 +113,14 @@ class Game(pyglet.event.EventDispatcher):
 
         self._map = None
 
-        self.map_dict = {'level3': save_load.load_map(self, 'level3'),
-                         'level2': save_load.load_map(self, 'level2'),
-                         'martin': save_load.load_map(self, 'martin')}
+        self.map_dict = {}
 
-        self.map_index = 'level3'
+        # self.map_dict['level3'] = save_load.load_map(self, 'level3')
+        # self.map_dict['level2'] = save_load.load_map(self, 'level2')
+        # self.map_dict['martin'] = save_load.load_map(self, 'martin')
+        self.map_dict['boss1'] = save_load.load_map(self, 'boss1')
+
+        self.map_index = 'boss1'
         self.map = self.map_dict[self.map_index]
 
         self.game_buttons = {
@@ -363,7 +369,16 @@ class Game(pyglet.event.EventDispatcher):
         self.go_to_map(self.map_dict[self.map_index])
 
     def go_to_map(self, m):
-        self.map = m
+        if isinstance(m, maps.Map):
+            _map = m
+        else: # accept map name/index
+            if m in self.map_dict.values():
+                _map = self.map_dict[m]
+            else:
+                _map = save_load.load_map(self, m)
+                self.map_dict[m] = _map
+
+        self.map = _map
         self.gather_buttons_and_drop_lists_and_objects()
         self.fears_dict = self.map.fears_dict
 
@@ -371,8 +386,23 @@ class Game(pyglet.event.EventDispatcher):
         self.map.active_cutscene = c
         c.restart()
 
+    def find_objects_within_range(self, obj, rang):
+        r_squared = rang**2
+        objs_within_range = []
+        for o in self.objects.itervalues():
+            if o == obj:
+                continue
+            d = (obj.coord[0] - o.coord[0])**2 + (obj.coord[1] - o.coord[1])**2
+            if d < r_squared:
+                objs_within_range.append(o)
+
+        return objs_within_range
+
+
     def quit_game(self):
         self.window.dispatch_event('on_close')
+
+
 
 Game.register_event_type('on_state_change')
 Game.register_event_type('on_map_change')

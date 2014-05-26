@@ -168,7 +168,9 @@ class Graphics(object):
             self.game.world_objects_to_draw.append(object_sprite)
 
             for s, p in o.flair.itervalues():
-                s.set_position(x + p[0] + object_sprite.width // 2, y + p[1] + object_sprite.height // 2)
+                # s.set_position(x + p[0] + object_sprite.width // 2, y + p[1] + object_sprite.height // 2)
+                s.x = x + p[0] + object_sprite.width // 2
+                s.y = y + p[1] + object_sprite.height // 2
                 self.game.world_objects_to_draw.append(s)
 
             if o == self.game.selected_object:
@@ -180,6 +182,8 @@ class Graphics(object):
 
     def draw_character_stats(self):
         if self.game.disp_object_stats:
+            if self.game.object_stats is None:
+                return
             border = 4
             o = self.game.object_stats  # background, image, name, age
             o[1].x = self.game.dimensions[0] - o[1].width - o[2].content_width - border

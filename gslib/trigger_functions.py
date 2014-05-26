@@ -44,3 +44,11 @@ def change_map_trigger(targets):
             interacter.game_class.go_to_map(option)
     func.__name__ = 'change_map_trigger'
     return func
+
+def pick_up_torch_trigger(targets): # make this more generic with an options list to pick up flair/props
+    def func(interactee, interacter, option=None):
+        sprite = primitives.RectPrimitive(width=2, height=24, color=(139, 69, 19, 255))
+
+        interacter.flair['torch'] = (sprite, (10, 0))
+    func.__name__ = 'pick_up_torch_trigger'
+    return func

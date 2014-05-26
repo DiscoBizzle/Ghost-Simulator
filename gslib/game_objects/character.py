@@ -8,6 +8,7 @@ import json
 from gslib.engine import textures, text, sprite, primitives
 from gslib.game_objects.game_object import GameObject
 from gslib.constants import *
+from gslib.game_objects import character_functions
 
 
 WHITE = (255, 255, 255, 255)
@@ -120,7 +121,7 @@ def gen_name(gender):
 
 def draw_info_sheet(stats):
     if not stats:
-        return
+        return None
     font_size = 20
     #dim = w, h = (GAME_WIDTH - LEVEL_WIDTH, int((GAME_WIDTH - LEVEL_WIDTH) / 1.6))
 
@@ -175,7 +176,7 @@ def save_this(obj):
 
 
 class Character(GameObject):
-    def __init__(self, game_class, x, y, w, h, stats, **kwargs):
+    def __init__(self, game_class, x, y, w, h, stats=None, **kwargs):
         """
         Characters have various functions to determine their behaviour when things happen.
         self.feared_function - when the character is scared
@@ -201,7 +202,7 @@ class Character(GameObject):
         self.possessed_function = []
         self.unpossessed_function = []
         self.harvested_function = []
-        self.idle_functions = []
+        self.idle_functions = [character_functions.stand_still(self)]
         self.fainted = False
         self.feared_by_obj = None
         self.feared_from_pos = (0, 0)
@@ -215,7 +216,7 @@ class Character(GameObject):
         self._to_save = {'feared_function', 'possessed_function', 'unpossessed_function', 'harvested_function',
                          'has_touched_function', 'is_touched_function', 'has_untouched_function', 'is_untouched_function',
                          'stats', 'fears', 'scared_of', 'feared_speed', 'normal_speed',
-                         'states', 'coord', 'collision_weight', 'idle_functions'}
+                         'states', 'coord', 'collision_weight', 'idle_functions', 'patrol_path', 'patrol_index'}
 
     def get_stats(self, name):
         name = name
