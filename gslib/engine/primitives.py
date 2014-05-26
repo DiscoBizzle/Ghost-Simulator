@@ -102,13 +102,9 @@ class Primitive(object):
 class RectPrimitive(Primitive):
 
     num_verts = 4
+    mode = GL_QUADS
 
-    def __init__(self, x=0, y=0, width=0, height=0, rect=None, filled=True, **kwargs):
-
-        if filled:
-            self.mode = GL_QUADS
-        else:
-            self.mode = GL_LINE_LOOP
+    def __init__(self, x=0, y=0, width=0, height=0, rect=None, **kwargs):
 
         # passing in a Rect overrides x, y, width and height
         if rect is None:
