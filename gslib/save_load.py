@@ -165,7 +165,6 @@ def load_map(game, map_name):
             new_map.objects[o_name] = load_object(game, o_dict)
 
     for o_name, o_dict in prop_list: # have to load props second so they can be "held by" objects that already exist
-        print(o_name)
         new_map.objects[o_name[:-5]] = load_object(game, o_dict)
 
     for t_name, t_dict in map_dict[u'triggers'].iteritems():

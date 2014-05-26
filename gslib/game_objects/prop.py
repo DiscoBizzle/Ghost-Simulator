@@ -65,7 +65,6 @@ class Prop(GameObject):
             self._held_by = None
             return
         o_name = self.game_class.map.find_name_of_object(obj)
-        print(o_name, obj)
         self._held_by = o_name
         self.game_class.map.objects[o_name].held_props.append(self)
 
