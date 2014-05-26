@@ -173,10 +173,6 @@ class Game(pyglet.event.EventDispatcher):
 
         pyglet.clock.schedule_interval(self.update, TICK_INTERVAL)
 
-        # improve timing (hack)
-        self.scheduler_hint_fun = lambda dt: None
-        pyglet.clock.schedule_interval(self.scheduler_hint_fun, 1.0 / self.options['scheduler_frequency'])
-
         self.sound_handler.play_music('2 ghost lane')
 
         self.message_box = None  # If set, a message box taking all focus is being displayed.
@@ -225,10 +221,6 @@ class Game(pyglet.event.EventDispatcher):
     def zoom(self, zoom):
         self._zoom = zoom
         self.update_camera()
-
-    def update_scheduler_frequency(self):
-        pyglet.clock.unschedule(self.scheduler_hint_fun)
-        pyglet.clock.schedule_interval(self.scheduler_hint_fun, 1.0 / self.options['scheduler_frequency'])
 
     def on_state_change(self, state):
         # update menu enabled states

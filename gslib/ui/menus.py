@@ -195,12 +195,9 @@ class OptionsMenu(Menu):
                                                                  u'1920 x 1080'], **common)
         self.buttons['vsync'] = button.Button(self, self.vsync_toggle, order=(9, 0),
                                               text_states=[u'vsync: Off', u'vsync: On'], **common)
-        self.buttons['scheduler_frequency_display'] = button.Button(self, order=(10, 0), **common)
-        self.sliders['scheduler_frequency'] = slider.Slider(self, self.set_scheduler_frequency, range=(10.0, 300.0),
-                                                            sprite_batch=self.sprite_batch, order=(10, 1))
-        self.buttons['fullscreen'] = button.Button(self, self.fullscreen_toggle, order=(11, 0),
+        self.buttons['fullscreen'] = button.Button(self, self.fullscreen_toggle, order=(10, 0),
                                                    text_states=[u'fullscreen: Off', u'fullscreen: On'], **common)
-        self.buttons['reset'] = button.Button(self, self.reset, order=(12, 0), text=u'Reset Options', **common)
+        self.buttons['reset'] = button.Button(self, self.reset, order=(11, 0), text=u'Reset Options', **common)
 
         self.arrange_buttons()
 
@@ -228,10 +225,6 @@ class OptionsMenu(Menu):
     def set_music(self, value):
         self.game.options['music_volume'] = value
 
-    def set_scheduler_frequency(self, value):
-        self.game.options['scheduler_frequency'] = int(value)
-        self.game.update_scheduler_frequency()
-
     def vsync_toggle(self):
         self.game.options['vsync'] = not self.game.options['vsync']
 
@@ -252,12 +245,9 @@ class OptionsMenu(Menu):
             u'Sound Volume: {}'.format(int(self.game.options['sound_volume'] / 0.003))
         self.buttons['music_display'].text = \
             u'Music Volume: {}'.format(int(self.game.options['music_volume'] / 0.003))
-        self.buttons['scheduler_frequency_display'].text = \
-            u'Scheduler Freq: {}'.format(int(self.game.options['scheduler_frequency']))
 
         self.sliders['sound'].value = self.game.options['sound_volume']
         self.sliders['music'].value = self.game.options['music_volume']
-        self.sliders['scheduler_frequency'].value = self.game.options['scheduler_frequency']
 
         size = "{} x {}".format(*self.game.options['resolution'])
         if size in self.buttons['screen_size'].text_states:
