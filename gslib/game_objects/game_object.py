@@ -92,8 +92,8 @@ class GameObject(object):
         self.sprite_height = sprite_height
         self.sprite_width = sprite_width
         self._animations = []
-        self.sprite = None
         self._create_animations()
+        self.sprite = sprite.Sprite(self._animations[self._animation_state], x=self._coord[0], y=self._coord[1])
 
         #trigger functions
         self.has_touched_function = []
@@ -328,4 +328,3 @@ class GameObject(object):
         for i in range(seq_rows):
             self._animations.append(image.Animation.from_image_sequence(
                 seq[i * seq_cols:(i + 1) * seq_cols], (1 / TICKS_PER_SEC) * TICKS_PER_FRAME, True))
-        self.sprite = sprite.Sprite(self._animations[self._animation_state], x=self._coord[0], y=self._coord[1])

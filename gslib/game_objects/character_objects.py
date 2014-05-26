@@ -43,7 +43,6 @@ class SmallDoor(Character):
         seq_rows = self.sprite_sheet.height // self.sprite_height
         seq = image.ImageGrid(self.sprite_sheet, seq_rows, seq_cols)
         self._animations += seq[::6]
-        self.sprite = sprite.Sprite(self._animations[self._animation_state])
 
     def activate(self):
         self.state_index = str((int(self.state_index) + 1) % len(self.states))
