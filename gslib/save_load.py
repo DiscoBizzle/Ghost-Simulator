@@ -8,7 +8,7 @@ from gslib import cutscene
 from gslib import maps
 from gslib.constants import *
 from gslib.editor import trigger_edit
-from gslib.game_objects import character_objects, character_functions
+from gslib.game_objects import character_objects, character_functions, prop_objects
 
 
 def save_cutscene_as_dict(cs):
@@ -89,7 +89,11 @@ function_type_map = {'has_touched_function': u'has_touched_functions',
                      'idle_functions': u'idle_functions'}
 
 def load_object(game, d):
-    new_obj = character_type_map[d[u'object_type']](game)
+    name = d[u'object_type']
+    if '_prop' in name:
+        new_obj = prop_objects.possible_props[name[:-5]](game)
+    else:
+        new_obj = character_type_map[name](game)
     for k, v in d.iteritems():
         if '_function' in k:
             func_list = json.loads(v)
@@ -153,8 +157,16 @@ def load_map(game, map_name):
     game.map = new_map
 
     new_map.reset_fears_dict()
+    prop_list = []
     for o_name, o_dict in map_dict[u'objects'].iteritems():
-        new_map.objects[o_name] = load_object(game, o_dict)
+        if '_prop' in o_name:
+            prop_list.append((o_name, o_dict))
+        else:
+            new_map.objects[o_name] = load_object(game, o_dict)
+
+    for o_name, o_dict in prop_list: # have to load props second so they can be "held by" objects that already exist
+        print(o_name)
+        new_map.objects[o_name[:-5]] = load_object(game, o_dict)
 
     for t_name, t_dict in map_dict[u'triggers'].iteritems():
         new_map.triggers[t_name] = load_trigger(game, t_dict)

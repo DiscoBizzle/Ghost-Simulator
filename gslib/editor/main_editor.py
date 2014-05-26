@@ -8,7 +8,7 @@ from gslib.editor import trigger_edit
 from gslib.constants import *
 from gslib.editor import cutscene
 from gslib.engine import text
-from gslib.game_objects import character_objects, character_functions, game_object
+from gslib.game_objects import character_objects, character_functions, game_object, prop_objects
 from gslib.ui import button, drop_down_list
 
 
@@ -126,6 +126,7 @@ class Editor(object):
         ###################################################################
 
         self.possible_characters = character_objects.possible_characters
+        self.possible_characters = dict(self.possible_characters.items() + prop_objects.possible_props.items())
 
         self.buttons['pick_object_label'] = button.DefaultButton(self, None, pos=(100, self.game.dimensions[1] - 20), text="Place Object")
         self.drop_lists['pick_object'] = drop_down_list.DropDownList(self, self.possible_characters,

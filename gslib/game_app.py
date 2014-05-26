@@ -56,6 +56,10 @@ class Game(pyglet.event.EventDispatcher):
 
         TODO.append("better character function editor, specifically patrol path")
 
+        TODO.append("activate() while possessed button")
+        TODO.append("props that cant be possess-walked - can be picked up but cant pick up")
+        TODO.append("chars that can pick props up - works in conjunction with flair (keep flair for particle effects)")
+
         self.TODO = TODO
 
         # TODO: kill these attribs and make everything use the globals instead

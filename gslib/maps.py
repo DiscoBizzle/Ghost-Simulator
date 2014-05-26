@@ -205,3 +205,10 @@ class Map(object):
         self.fears_dict = {'player': []} # dictionary to keep track of what objects have which .fears
         for f in main_editor.get_fears_from_file():
             self.fears_dict[f] = []
+
+
+    def find_name_of_object(self, obj):
+        for name, o in self.objects.iteritems():
+            if o == obj:
+                return name
+        return False

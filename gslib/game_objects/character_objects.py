@@ -82,22 +82,28 @@ class Bomb(Character):
 
         self.state_index = 'normal'
 
+        self._health = 50
+
+    @property
+    def health(self):
+        return self._health
+
+    @health.setter
+    def health(self, val):
+        self._health = val
+        if self._health <= 0:
+            self.activate()
+
     def activate(self):
         if self.state_index == 'exploded':
             return
         self.state_index = 'exploded'
         for o in self.game_class.find_objects_within_range(self, 100):
-            if hasattr(o, 'health'):
+            if hasattr(o, 'health') and not o == self:
                 o.health -= 50
 
     def _update_animation(self):
         pass
-
-    def _create_animations(self):
-        seq_cols = self.sprite_sheet.width // self.sprite_width
-        seq_rows = self.sprite_sheet.height // self.sprite_height
-        seq = image.ImageGrid(self.sprite_sheet, seq_rows, seq_cols)
-        self._animations += seq
 
 
 class SpriteBoss(Character):
@@ -130,12 +136,6 @@ class SpriteBoss(Character):
 
     def _update_animation(self):
         pass
-
-    def _create_animations(self):
-        seq_cols = self.sprite_sheet.width // self.sprite_width
-        seq_rows = self.sprite_sheet.height // self.sprite_height
-        seq = image.ImageGrid(self.sprite_sheet, seq_rows, seq_cols)
-        self._animations += seq
 
 
 possible_characters = {'Small Door': SmallDoor,

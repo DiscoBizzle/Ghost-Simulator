@@ -173,6 +173,10 @@ class Graphics(object):
                 s.y = y + p[1] + object_sprite.height // 2
                 self.game.world_objects_to_draw.append(s)
 
+            if hasattr(o, 'held_props'):
+                for prop in o.held_props:
+                    self.game.world_objects_to_draw.append(prop.sprite)
+
             if o == self.game.selected_object:
                 r = o.highlight_radius
                 sprit = draw_circle(r, (200, 0, 0))

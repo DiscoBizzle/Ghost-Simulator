@@ -212,6 +212,8 @@ class Character(GameObject):
 
         self.possessed_by = []
 
+        self.held_props = []
+
         # TODO make easy way to add desired variables to this, perhaps using the decorator above this class and setter's?
         self._to_save = {'feared_function', 'possessed_function', 'unpossessed_function', 'harvested_function',
                          'has_touched_function', 'is_touched_function', 'has_untouched_function', 'is_untouched_function',
