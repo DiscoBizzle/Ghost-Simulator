@@ -311,7 +311,7 @@ class Clock(_ClockBase):
                 # Try to keep timing regular, even if overslept this time;
                 # but don't schedule in the past (which could lead to
                 # infinitely-worsing error).
-                item.next_ts = item.last_ts + item.interval
+                item.next_ts += item.interval
                 item.last_ts = ts
                 if item.next_ts <= ts:
                     if ts - item.next_ts < 0.05:
