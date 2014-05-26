@@ -115,7 +115,7 @@ class RectPrimitive(Primitive):
             self._width = width
             self._height = height
         else:
-            x, y = rect.size
+            x, y = rect.bottomleft
             self._width = rect.width
             self._height = rect.height
         super(RectPrimitive, self).__init__(x=x, y=y, **kwargs)
