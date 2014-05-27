@@ -111,8 +111,11 @@ class MouseController(object):
                     # TODO: take into account camera coordinates
                     self.interaction_this_click = self.game.editor.handle_map_click(pos)
 
-            if not self.interaction_this_click:
+            if not self.interaction_this_click and button == pyglet.window.mouse.LEFT:
                 self.check_object_click(pos, typ, button)
+
+            if not self.interaction_this_click and button == pyglet.window.mouse.RIGHT:
+                self.check_navigation_click(pos, typ, button)
 
     def mouse_move(self, pos):
         if self.game.state == MAIN_GAME or self.game.state == EDITOR:
@@ -157,6 +160,25 @@ class MouseController(object):
             self.game.disp_object_stats = False
             self.game.object_stats = None
             self.game.editor.object_to_edit_selected(None)
+
+    def check_navigation_click(self, pos, typ, button=None):
+        if typ == 'down':
+            start_t = self.game.players['player1'].coord
+            start_t = (start_t[0] // TILE_SIZE, start_t[1] // TILE_SIZE)
+            goal_t = self.game.camera.undo_camera(pos)
+            goal_t = (goal_t[0] // TILE_SIZE, goal_t[1] // TILE_SIZE)
+            path = self.game.pathfinder.get_path(start_t, goal_t, 1, 100)
+            # cheat; pretend we're not tile-based...
+            if path is not None:
+                # ignore start b/c we're already there
+                path.pop(0)
+                # make end coords we clicked on
+                goal_t = self.game.camera.undo_camera(pos)
+                path[len(path) - 1] = (goal_t[0] / TILE_SIZE, goal_t[1] / TILE_SIZE)
+                # TODO: more post-processing. move inside pathfinder? probably a good idea.
+            self.game.players['player1'].path = path or []
+            print(path)
+            self.interaction_this_click = True
 
     def check_button_click(self, pos, typ, mouse_button=None):
         if typ == 'up':

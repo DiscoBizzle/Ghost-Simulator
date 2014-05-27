@@ -122,6 +122,8 @@ class GameObject(object):
 
         self.cutscene_controlling = []
 
+        self.path = []
+
     @property
     def state_index(self):
         return self._state_index
@@ -169,6 +171,7 @@ class GameObject(object):
                 cc.game_object_hook(self)
         else:
             v_x, v_y = 0, 0
+
             if self.move_down:
                 v_y -= self.current_speed
                 self.direction = DOWN
@@ -180,6 +183,22 @@ class GameObject(object):
                 self.direction = LEFT
             if self.move_right:
                 v_x += self.current_speed
+
+            # FIXME draft path follow code
+            if not (self.move_up or self.move_down or self.move_left or self.move_right):
+                while len(self.path) > 0:
+                    p_coord_x = self.path[0][0] * TILE_SIZE
+                    p_coord_y = self.path[0][1] * TILE_SIZE
+                    if self.coord == (p_coord_x, p_coord_y):
+                        self.path.pop(0)
+                    else:
+                        v_x = max(-self.current_speed, min(self.current_speed, p_coord_x - self.coord[0]))
+                        v_y = max(-self.current_speed, min(self.current_speed, p_coord_y - self.coord[1]))
+                        #print('p_coord ', p_coord_x, p_coord_y, 'coord ', self.coord, 'v_x', v_x, 'v_y', v_y)
+                        break
+            else:
+                self.path = []
+
             self.velocity = (v_x, v_y)
 
         if not self.velocity == (0, 0):

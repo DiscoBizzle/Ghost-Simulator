@@ -5,6 +5,7 @@ import random
 import pyglet
 
 from gslib import collision
+from gslib import pathfinder
 from gslib import skills
 from gslib.editor.main_editor import Editor
 from gslib import save_load
@@ -63,6 +64,7 @@ class Game(pyglet.event.EventDispatcher):
         self.TODO = TODO
 
         self.object_collision_lookup = collision.ObjectCollisionLookup(self)
+        self.pathfinder = pathfinder.Pathfinder()
 
         self.camera_padding = (32, 32, 96, 32)  # left right up down
         self._zoom = 1.0
