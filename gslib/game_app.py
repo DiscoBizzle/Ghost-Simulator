@@ -62,10 +62,6 @@ class Game(pyglet.event.EventDispatcher):
 
         self.TODO = TODO
 
-        # TODO: kill these attribs and make everything use the globals instead
-        self.options = options
-        self.window = window
-
         self.object_collision_lookup = collision.ObjectCollisionLookup(self)
 
         self.camera_padding = (32, 32, 96, 32)  # left right up down
@@ -76,9 +72,9 @@ class Game(pyglet.event.EventDispatcher):
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
 
-        self.window.push_handlers(self)
+        window.push_handlers(self)
 
-        self.options.push_handlers(self)
+        options.push_handlers(self)
 
         # TODO: why would we want this?
         #self.set_location(5, 30)  # aligns window to top left of screen (on windows atleast)
@@ -90,7 +86,7 @@ class Game(pyglet.event.EventDispatcher):
         self.movie_player = movie.MoviePlayer()
         self.game_running = True
         self.graphics = graphics.Graphics(self)
-        self.window.set_caption("Ghost Simulator v. 0.000000001a")
+        window.set_caption("Ghost Simulator v. 0.000000001a")
 
         self.sound_handler = sound.Sound()
 
@@ -185,10 +181,6 @@ class Game(pyglet.event.EventDispatcher):
         self.state = MAIN_MENU
 
         self.fears_dict = self.map.fears_dict
-
-    @property
-    def dimensions(self):
-        return self.window.get_size()
 
     @property
     def state(self):
@@ -409,7 +401,7 @@ class Game(pyglet.event.EventDispatcher):
 
 
     def quit_game(self):
-        self.window.dispatch_event('on_close')
+        window.dispatch_event('on_close')
 
 
 

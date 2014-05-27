@@ -5,8 +5,8 @@ import io
 import pyglet
 import pyglet.window.key as Pkey
 
+from gslib import options, window
 from gslib.constants import *
-import collections
 
 
 class KeyController(object):
@@ -29,7 +29,7 @@ class KeyController(object):
         self.player_map = {'1': {'up': Pkey.UP, 'down': Pkey.DOWN, 'left': Pkey.LEFT, 'right': Pkey.RIGHT, 'possess': Pkey.F, 'harvest fear': Pkey.Z},
                            '2': {'up': Pkey.W, 'down': Pkey.S, 'left': Pkey.A, 'right': Pkey.D, 'possess': Pkey.Q, 'harvest fear': Pkey.X}}
 
-        self.game.window.push_handlers(self)
+        window.push_handlers(self)
 
     def on_key_press(self, symbol, modifiers):
         self.keys.on_key_press(symbol, modifiers)
@@ -95,7 +95,7 @@ class KeyController(object):
                 p.possess_key_up = True
 
         if self.keys[Pkey.F11]:
-            self.game.options['fullscreen'] = not self.game.options['fullscreen']
+            options['fullscreen'] = not options['fullscreen']
 
     def rebind(self, new_key):
         if new_key == Pkey.ESCAPE:

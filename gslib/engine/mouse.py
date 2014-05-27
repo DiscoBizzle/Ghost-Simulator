@@ -5,6 +5,7 @@ import pyglet
 from gslib.constants import *
 from gslib.engine import rect
 from gslib.game_objects import character
+from gslib import window
 
 
 class MouseController(object):
@@ -12,7 +13,7 @@ class MouseController(object):
         self.game = game
         self.interaction_this_click = False
         self.button_to_click = None
-        self.game.window.push_handlers(self)
+        window.push_handlers(self)
 
         self.object_capture_request = False
         self.object_capture_function = None

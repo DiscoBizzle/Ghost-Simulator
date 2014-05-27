@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function
 
 from pyglet import input
 
+from gslib import options
 from gslib.constants import *
 
 
@@ -40,13 +41,13 @@ class JoyController(object):
         elif button == 3:
             self.game.show_ranges = not self.game.show_ranges
         elif button == 4:
-            self.game.options['FOV'] = not self.game.options['FOV']
+            options['FOV'] = not options['FOV']
         elif button == 5:
-            self.game.options['VOF'] = not self.game.options['VOF']
+            options['VOF'] = not options['VOF']
         elif button == 6:
-            self.game.options['torch'] = not self.game.options['torch']
+            options['torch'] = not options['torch']
         elif button == 7:
-            self.game.options['vsync'] = not self.game.options['vsync']
+            options['vsync'] = not options['vsync']
         elif button == 9:
             if self.game.state == MAIN_MENU:
                 self.game.state = MAIN_GAME

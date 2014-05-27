@@ -5,6 +5,7 @@ import json
 from gslib import trigger_functions
 from gslib.engine import rect
 from gslib.ui import button, drop_down_list
+from gslib import window
 
 
 object_interaction_types = {'Have Fear Harvested': 'harvested_function',
@@ -218,7 +219,7 @@ class TriggerEditor(object):
         self.display_circles = []
 
         self._pos = (0, 0)
-        self.pos = (0, self.game.dimensions[1] - 100)
+        self.pos = (0, window.height - 100)
 
         self.enabled = False
 
@@ -271,7 +272,7 @@ class TriggerEditor(object):
         self.buttons = {}
         self.drop_lists = {}
 
-        self.buttons['toggle_trigger_editor'] = button.DefaultButton(self, self.toggle_self, text="Trigger Editor", pos=(0, self.game.dimensions[1] - 40))
+        self.buttons['toggle_trigger_editor'] = button.DefaultButton(self, self.toggle_self, text="Trigger Editor", pos=(0, window.height - 40))
 
         db = button.DefaultButton
 

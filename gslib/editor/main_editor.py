@@ -10,6 +10,7 @@ from gslib.editor import cutscene
 from gslib.engine import text
 from gslib.game_objects import character_objects, character_functions, game_object, prop_objects
 from gslib.ui import button, drop_down_list
+from gslib import window
 
 
 def get_fears_from_file():  # load all possible fears from file, without descriptions
@@ -128,9 +129,9 @@ class Editor(object):
         self.possible_characters = character_objects.possible_characters
         self.possible_characters = dict(self.possible_characters.items() + prop_objects.possible_props.items())
 
-        self.buttons['pick_object_label'] = button.DefaultButton(self, None, pos=(100, self.game.dimensions[1] - 20), text="Place Object")
+        self.buttons['pick_object_label'] = button.DefaultButton(self, None, pos=(100, window.height - 20), text="Place Object")
         self.drop_lists['pick_object'] = drop_down_list.DropDownList(self, self.possible_characters,
-                                                                     self.update_object_prototype, pos=(200, self.game.dimensions[1] - 20))
+                                                                     self.update_object_prototype, pos=(200, window.height - 20))
         self.object_prototype = None
 
         ###################################################################
@@ -168,16 +169,16 @@ class Editor(object):
         self.create_checklist_buttons()
         #fears/scared_by checklist show/hide
         self.buttons['fears_checklist_toggle'] = button.DefaultButton(self, self.toggle_fears_checklist,
-                                                                      pos=(self.game.dimensions[0] - 100 - h_off, self.game.dimensions[1] - v_off - 70),
+                                                                      pos=(window.width - 100 - h_off, window.height - v_off - 70),
                                                                       size=(100, 20), text="Fears")
         self.buttons['scared_of_checklist_toggle'] = button.DefaultButton(self, self.toggle_scared_of_checklist,
-                                                                      pos=(self.game.dimensions[0] - 210 - h_off, self.game.dimensions[1] - v_off - 70),
+                                                                      pos=(window.width - 210 - h_off, window.height - v_off - 70),
                                                                       size=(100, 20), text="Scared Of")
 
         # speed and weight edit button sets.
-        self.int_edits['normal_speed'] = IntEdit(self, (self.game.dimensions[0] - 210 - h_off, self.game.dimensions[1] - v_off - 35), 'normal_speed')
-        self.int_edits['feared_speed'] = IntEdit(self, (self.game.dimensions[0] - 100 - h_off, self.game.dimensions[1] - v_off - 35), 'feared_speed')
-        self.int_edits['collision_weight'] = IntEdit(self, (self.game.dimensions[0] - 320 - h_off, self.game.dimensions[1] - v_off - 35), 'collision_weight')
+        self.int_edits['normal_speed'] = IntEdit(self, (window.width - 210 - h_off, window.height - v_off - 35), 'normal_speed')
+        self.int_edits['feared_speed'] = IntEdit(self, (window.width - 100 - h_off, window.height - v_off - 35), 'feared_speed')
+        self.int_edits['collision_weight'] = IntEdit(self, (window.width - 320 - h_off, window.height - v_off - 35), 'collision_weight')
 
         for ie in self.int_edits.itervalues():
             self.buttons = dict(self.buttons.items() + ie.buttons.items())
@@ -191,24 +192,24 @@ class Editor(object):
         self.function_edit_buttons = []
         self.function_edit_lists = []
         self.buttons['function_edit_toggle'] = button.DefaultButton(self, self.toggle_function_edit,
-                                                                      pos=(self.game.dimensions[0] - 320 - h_off, self.game.dimensions[1] - v_off - 70),
+                                                                      pos=(window.width - 320 - h_off, window.height - v_off - 70),
                                                                       size=(100, 20), text="Function Edit", visible=False, enabled=False)
         self.object_edit_buttons.append('function_edit_toggle')
         for module, func_dict in character_functions.all_functions_dict.iteritems():
             #display button
             self.buttons[module] = button.DefaultButton(self, None,
-                                                        pos=(100, self.game.dimensions[1] - 200 - v_ind * 40),
+                                                        pos=(100, window.height - 200 - v_ind * 40),
                                                         size=(200, 20), text=module, visible=False, enabled=False)
             self.function_edit_buttons.append(module)
             # drop list to choose funciton for each object event type
             self.drop_lists[module] = drop_down_list.DropDownList(self, func_dict,
-                                                                  set_function(self, module), pos=(300, self.game.dimensions[1] - 200 - v_ind * 40),
+                                                                  set_function(self, module), pos=(300, window.height - 200 - v_ind * 40),
                                                                   size=(200, 20), visible=False, enabled=False)
             self.function_edit_lists.append(module)
             v_ind += 1
 
         self.buttons['delete_selection'] = button.DefaultButton(self, self.delete_selected_object,
-                                                        pos=(self.game.dimensions[0] - 210 - h_off, self.game.dimensions[1] - v_off - 200),
+                                                        pos=(window.width - 210 - h_off, window.height - v_off - 200),
                                                         size=(100, 20), text="Delete Object", visible=True, enabled=True)
 
 
@@ -233,15 +234,15 @@ class Editor(object):
         # Other buttons
         ###################################################################
         self.buttons['save_map'] = button.DefaultButton(self, self.save_map,
-                                                        pos=(self.game.dimensions[0] - 100 - h_off, self.game.dimensions[1] - v_off - 200),
+                                                        pos=(window.width - 100 - h_off, window.height - v_off - 200),
                                                         size=(100, 20), text="Save Map", visible=True, enabled=True)
 
         self.buttons['undo'] = button.DefaultButton(self, self.undo,
-                                                        pos=(self.game.dimensions[0] - 210 - h_off, self.game.dimensions[1] - v_off - 170),
+                                                        pos=(window.width - 210 - h_off, window.height - v_off - 170),
                                                         size=(100, 20), text="Undo", visible=True, enabled=True)
 
         self.buttons['redo'] = button.DefaultButton(self, self.redo,
-                                                        pos=(self.game.dimensions[0] - 100 - h_off, self.game.dimensions[1] - v_off - 170),
+                                                        pos=(window.width - 100 - h_off, window.height - v_off - 170),
                                                         size=(100, 20), text="Redo", visible=True, enabled=True)
 
         self.stored_button_enabled_state = {}
@@ -417,7 +418,7 @@ class Editor(object):
     def create_checklist_buttons(self):  # puts a button for each fear into the buttons dict
         ndown = 6
         for i, f in enumerate(self.possible_fears):
-            pos = ((i // ndown) * 105, self.game.dimensions[1] - 200 - (i % ndown) * 25)
+            pos = ((i // ndown) * 105, window.height - 200 - (i % ndown) * 25)
             self.buttons[f] = button.DefaultButton(self, set_fear_button(self, f), pos=pos,
                                                    size=(100, 20), text=f, visible=False, enabled=False)
 

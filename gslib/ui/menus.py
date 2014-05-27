@@ -5,6 +5,7 @@ import pyglet
 from gslib.constants import *
 from gslib.engine import text
 from gslib.ui import button, slider
+from gslib import options, window
 
 
 class Menu(object):
@@ -22,7 +23,7 @@ class Menu(object):
         self.font_size = self.base_font_size
         self.hori_offset = 60
         self.vert_offset = 40 + button_size[1] + 10
-        self.buttons_per_column = ((self.game.dimensions[1] - self.vert_offset) // (self.button_size[1] + 20)) - 1
+        self.buttons_per_column = ((window.height - self.vert_offset) // (self.button_size[1] + 20)) - 1
 
         self.batch = pyglet.graphics.Batch()
 
@@ -33,7 +34,7 @@ class Menu(object):
                                                            border_width=3, batch=self.batch)
         self.sliders['menu_scale'] = slider.Slider(self, (lambda _: self.arrange_buttons()), pos=(60 + 200 + 20, 40),
                                                    range=(1, 5 / frac), value=1 / frac, size=(200, 50), order=(-1, 1),
-                                                   enabled=self.game.options['menu_scale'], visible=False,
+                                                   enabled=options['menu_scale'], visible=False,
                                                    batch=self.batch)
 
     @property
@@ -44,11 +45,11 @@ class Menu(object):
     def enabled(self, enabled):
         if enabled and not self._enabled:
             self.arrange_buttons()
-            self.game.window.push_handlers(self)
-            self.game.options.push_handlers(self)
+            window.push_handlers(self)
+            options.push_handlers(self)
         elif not enabled and self._enabled:
-            self.game.window.remove_handlers(self)
-            self.game.options.remove_handlers(self)
+            window.remove_handlers(self)
+            options.remove_handlers(self)
         self._enabled = enabled
 
     def on_mouse_motion(self, x, y, dx, dy):
@@ -64,7 +65,7 @@ class Menu(object):
         self.mouse_event((x, y), 'up', button)
 
     def on_draw(self):
-        self.game.window.clear()
+        window.clear()
         self.batch.draw()
 
     def mouse_event(self, pos, typ, button=None):
@@ -76,16 +77,16 @@ class Menu(object):
                     return
 
     def arrange_buttons(self):
-        self.buttons['menu_scale_display'].visible = self.game.options['menu_scale']
-        self.buttons['menu_scale_display'].enabled = self.game.options['menu_scale']
-        self.sliders['menu_scale'].visible = self.game.options['menu_scale']
-        self.sliders['menu_scale'].enabled = self.game.options['menu_scale']
-        if self.game.options['menu_scale']:
+        self.buttons['menu_scale_display'].visible = options['menu_scale']
+        self.buttons['menu_scale_display'].enabled = options['menu_scale']
+        self.sliders['menu_scale'].visible = options['menu_scale']
+        self.sliders['menu_scale'].enabled = options['menu_scale']
+        if options['menu_scale']:
             self.set_menu_scale(self.sliders['menu_scale'].value)
         else:
             self.set_menu_scale(1 / self.frac)
 
-        self.buttons_per_column = (self.game.dimensions[1] - self.vert_offset) // (self.button_size[1] + 20) #- 1
+        self.buttons_per_column = (window.height - self.vert_offset) // (self.button_size[1] + 20) #- 1
 
         self.vert_offset = 50 #+ self.game_class.options['menu_scale'] * self.buttons['menu_scale_display'].size[1]
 
@@ -95,7 +96,7 @@ class Menu(object):
             button.size = self.button_size
             button.font_size = self.font_size
             button.pos = (self.hori_offset + (button.order[1] + (button.order[0] // self.buttons_per_column) * 2) * (self.button_size[0] + 20),
-                          self.game.dimensions[1] - (self.button_size[1] + self.vert_offset + (button.order[0] % self.buttons_per_column) * (self.button_size[1] + 10)))
+                          window.height - (self.button_size[1] + self.vert_offset + (button.order[0] % self.buttons_per_column) * (self.button_size[1] + 10)))
             if button.text_states:
                 button.text = button.text_states[button.text_states_toggle]
         for slider in self.sliders.itervalues():
@@ -103,14 +104,14 @@ class Menu(object):
                 continue
             slider.size = self.button_size
             slider.pos = (self.hori_offset + (slider.order[1] + (slider.order[0] // self.buttons_per_column) * 2) * (self.button_size[0] + 20),
-                          self.game.dimensions[1] - (self.button_size[1] + self.vert_offset + (slider.order[0] % self.buttons_per_column) * (self.button_size[1] + 10)))
+                          window.height - (self.button_size[1] + self.vert_offset + (slider.order[0] % self.buttons_per_column) * (self.button_size[1] + 10)))
 
     def set_menu_scale(self, value):
         self.button_size = (self.min_button_size[0] * value, self.min_button_size[1] * value)
-        if self.button_size[0] > self.game.dimensions[0] - self.hori_offset - 32:
-            self.button_size = (self.game.dimensions[0] - self.hori_offset - 32, self.button_size[1])
-        if self.button_size[1] > self.game.dimensions[1] - self.vert_offset - 32:
-            self.button_size = (self.button_size[0], self.game.dimensions[1] - self.vert_offset - 32)
+        if self.button_size[0] > window.width - self.hori_offset - 32:
+            self.button_size = (window.width - self.hori_offset - 32, self.button_size[1])
+        if self.button_size[1] > window.height - self.vert_offset - 32:
+            self.button_size = (self.button_size[0], window.height - self.vert_offset - 32)
 
         # self.buttons_per_column = int(((self.game_class.dimensions[1] - self.vert_offset) / (self.button_size[1]+20))) #- 1
         self.font_size = int(self.base_font_size * value * self.frac)
@@ -194,54 +195,54 @@ class OptionsMenu(Menu):
         self.arrange_buttons()
 
     def fov_toggle(self):
-        self.game.options['FOV'] = not self.game.options['FOV']
+        options['FOV'] = not options['FOV']
 
     def vof_toggle(self):
-        self.game.options['VOF'] = not self.game.options['VOF']
+        options['VOF'] = not options['VOF']
 
     def vof_value(self, val):
-        self.game.options['VOF_opacity'] = val
+        options['VOF_opacity'] = val
 
     def torch_toggle(self):
-        self.game.options['torch'] = not self.game.options['torch']
+        options['torch'] = not options['torch']
 
     def keybind_toggle(self):
         self.game.state = KEYBIND_MENU
 
     def menu_scale_toggle(self):
-        self.game.options['menu_scale'] = not self.game.options['menu_scale']
+        options['menu_scale'] = not options['menu_scale']
 
     def set_sound(self, value):
-        self.game.options['sound_volume'] = value
+        options['sound_volume'] = value
 
     def set_music(self, value):
-        self.game.options['music_volume'] = value
+        options['music_volume'] = value
 
     def vsync_toggle(self):
-        self.game.options['vsync'] = not self.game.options['vsync']
+        options['vsync'] = not options['vsync']
 
     def fullscreen_toggle(self):
-        self.game.options['fullscreen'] = not self.game.options['fullscreen']
+        options['fullscreen'] = not options['fullscreen']
 
     def update_button_text_and_slider_values(self):
-        self.buttons['FOV'].text_states_toggle = self.game.options['FOV']
-        self.buttons['VOF'].text_states_toggle = self.game.options['VOF']
-        self.sliders['VOF_opacity'].visible = self.game.options['VOF']
-        self.sliders['VOF_opacity'].value = self.game.options['VOF_opacity']
-        self.buttons['torch'].text_states_toggle = self.game.options['torch']
-        self.buttons['menu_scale'].text_states_toggle = self.game.options['menu_scale']
-        self.buttons['vsync'].text_states_toggle = self.game.options['vsync']
-        self.buttons['fullscreen'].text_states_toggle = self.game.options['fullscreen']
+        self.buttons['FOV'].text_states_toggle = options['FOV']
+        self.buttons['VOF'].text_states_toggle = options['VOF']
+        self.sliders['VOF_opacity'].visible = options['VOF']
+        self.sliders['VOF_opacity'].value = options['VOF_opacity']
+        self.buttons['torch'].text_states_toggle = options['torch']
+        self.buttons['menu_scale'].text_states_toggle = options['menu_scale']
+        self.buttons['vsync'].text_states_toggle = options['vsync']
+        self.buttons['fullscreen'].text_states_toggle = options['fullscreen']
 
         self.buttons['sound_display'].text = \
-            u'Sound Volume: {}'.format(int(self.game.options['sound_volume'] / 0.003))
+            u'Sound Volume: {}'.format(int(options['sound_volume'] / 0.003))
         self.buttons['music_display'].text = \
-            u'Music Volume: {}'.format(int(self.game.options['music_volume'] / 0.003))
+            u'Music Volume: {}'.format(int(options['music_volume'] / 0.003))
 
-        self.sliders['sound'].value = self.game.options['sound_volume']
-        self.sliders['music'].value = self.game.options['music_volume']
+        self.sliders['sound'].value = options['sound_volume']
+        self.sliders['music'].value = options['music_volume']
 
-        size = "{} x {}".format(*self.game.options['resolution'])
+        size = "{} x {}".format(*options['resolution'])
         if size in self.buttons['screen_size'].text_states:
             new_index = self.buttons['screen_size'].text_states.index(size) + 1
             self.buttons['screen_size'].text_states_toggle = new_index % len(self.buttons['screen_size'].text_states)
@@ -249,22 +250,22 @@ class OptionsMenu(Menu):
             self.buttons['screen_size'].text_states_toggle = 0
 
     def load(self):
-        self.game.options.load_options()
+        options.load_options()
 
     def save(self):
-        self.game.options.save_options()
+        options.save_options()
 
     def reset(self):
         # not using .update() to ensure .__setitem__() is called
         for k, v in DEFAULT_OPTIONS.iteritems():
-            self.game.options[k] = v
+            options[k] = v
 
     def set_screen_size(self):
         new_size = self.buttons['screen_size'].text_states[self.buttons['screen_size'].text_states_toggle]
         if 'x' in new_size:
             new_size = new_size.split(' x ')
             new_size = (int(new_size[0]), int(new_size[1]))
-            self.game.options['resolution'] = new_size
+            options['resolution'] = new_size
 
     def arrange_buttons(self):
         self.update_button_text_and_slider_values()

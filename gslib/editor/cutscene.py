@@ -9,6 +9,7 @@ from gslib import constants
 from gslib import cutscene
 from gslib import dialogue
 from gslib.ui import button, list_box, msg_box, drop_down_list
+from gslib import window
 
 
 class CutsceneEditor(object):
@@ -31,48 +32,48 @@ class CutsceneEditor(object):
             return tine
 
         # Misc
-        self.toggle_button = pu(button.DefaultButton(self, self.toggle_visible, pos=(0, self.game.dimensions[1] - 20),
+        self.toggle_button = pu(button.DefaultButton(self, self.toggle_visible, pos=(0, window.height - 20),
                                                      size=(100, 20), text="Cutscenes"))
         self.cutscene_list = pu(drop_down_list.DropDownList(self, self.cutscenes, self.select_cutscene,
-                                                            pos=(980, self.game.dimensions[1] - 55),
+                                                            pos=(980, window.height - 55),
                                                             size=(300, 20)))
-        self.cutscene_status_button = pu(button.DefaultButton(self, None, pos=(1060, self.game.dimensions[1] - 75),
+        self.cutscene_status_button = pu(button.DefaultButton(self, None, pos=(1060, window.height - 75),
                                          size=(1280 - 1060, 20), text="No cutscene selected."))
 
         # Cutscene playback controls
         self.play_button = pu(button.DefaultButton(self, self.play_cutscene,
-                                                   pos=(980, self.game.dimensions[1] - 75), size=(20, 20),
+                                                   pos=(980, window.height - 75), size=(20, 20),
                                                    text=u"\u25B6"))
         self.play_and_run_button = pu(button.DefaultButton(self, self.play_cutscene_and_run,
-                                                           pos=(1000, self.game.dimensions[1] - 75),
+                                                           pos=(1000, window.height - 75),
                                                            size=(40, 20), text=u"\u25B6 R"))
         self.stop_button = pu(button.DefaultButton(self, self.stop_cutscene,
-                                                   pos=(1040, self.game.dimensions[1] - 75), size=(20, 20),
+                                                   pos=(1040, window.height - 75), size=(20, 20),
                                                    text=u"\u25A0"))
 
         # Controls to add new action
         self.cutscene_new_action_list = pu(drop_down_list.DropDownList(self, cutscene.possible_actions, None,
-                                           pos=(980, self.game.dimensions[1] - 95),
+                                           pos=(980, window.height - 95),
                                            size=(280, 20)))
         pu(button.DefaultButton(self, self.add_cutscene_action,
-                                pos=(980 + 280, self.game.dimensions[1] - 95),
+                                pos=(980 + 280, window.height - 95),
                                 size=(20, 20), text="+"))
 
         # Manipulate action order
         pu(button.DefaultButton(self, self.push_cutscene_action_up,
-                                pos=(880, self.game.dimensions[1] - 115),
+                                pos=(880, window.height - 115),
                                 size=(50, 20), text="push ^"))
         pu(button.DefaultButton(self, self.push_cutscene_action_down,
-                                pos=(880, self.game.dimensions[1] - 135),
+                                pos=(880, window.height - 135),
                                 size=(50, 20), text="push v"))
         pu(button.DefaultButton(self, self.delete_cutscene_action,
-                                pos=(880, self.game.dimensions[1] - 155),
+                                pos=(880, window.height - 155),
                                 size=(50, 20), text="-"))
         pu(button.DefaultButton(self, self.scroll_cutscene_actions_up,
-                                pos=(880, self.game.dimensions[1] - 175),
+                                pos=(880, window.height - 175),
                                 size=(50, 20), text="more ^"))
         pu(button.DefaultButton(self, self.scroll_cutscene_actions_down,
-                                pos=(880, self.game.dimensions[1] - 195),
+                                pos=(880, window.height - 195),
                                 size=(50, 20), text="more v"))
 
         self.selected_cutscene = None
@@ -80,7 +81,7 @@ class CutsceneEditor(object):
         self.cutscene_actions_desc = collections.OrderedDict()
 
         self.cutscene_actions_list = pu(list_box.List(self, self.cutscene_actions_desc, self.select_cutscene_action,
-                                                      pos=(930, self.game.dimensions[1] - 95), size=(350, 20)))
+                                                      pos=(930, window.height - 95), size=(350, 20)))
 
         self.dyn_buttons = []
         self.dyn_lists = []

@@ -7,6 +7,7 @@ import pyglet
 from gslib.constants import *
 from gslib.engine import textures, text, sprite, primitives, rect, camera
 from gslib.game_objects.player import Player
+from gslib import options, window
 
 
 circle_tex = None
@@ -29,9 +30,9 @@ class Graphics(object):
         self.game = game
 
         self.field = sprite.Sprite(pyglet.image.load(os.path.join(SPRITES_DIR, 'field.png')).get_texture())
-        self.field.opacity = self.game.options['VOF_opacity']
-        self.field.scale_x = self.game.dimensions[0] / self.field.image.width
-        self.field.scale_y = self.game.dimensions[1] / self.field.image.height
+        self.field.opacity = options['VOF_opacity']
+        self.field.scale_x = window.width / self.field.image.width
+        self.field.scale_y = window.height / self.field.image.height
 
         self.light = sprite.Sprite(pyglet.image.load(os.path.join(SPRITES_DIR, 'light.png')).get_texture())
         self.light.scale_x = self.light.scale_y = 200 / self.light.image.height
@@ -44,8 +45,8 @@ class Graphics(object):
 
         self.camera_group = camera.CameraGroup(self.game.camera)
 
-        self.game.options.push_handlers(self)
-        self.game.window.push_handlers(self)
+        options.push_handlers(self)
+        window.push_handlers(self)
         self.game.push_handlers(self)
 
     def on_option_change(self, key, value):
@@ -61,12 +62,12 @@ class Graphics(object):
 
     def main_game_draw(self):
 
-        self.game.window.clear()
+        window.clear()
 
         self.draw_map_early()
         self.draw_objects()
         self.draw_map_late()
-        if self.game.options['torch']:
+        if options['torch']:
             self.draw_torch()
 
         self.draw_buttons()
@@ -88,7 +89,7 @@ class Graphics(object):
         if self.game.message_box is not None:
             self.game.message_box.draw()
 
-        if self.game.options['FOV']:
+        if options['FOV']:
             self.draw_world_objects()
             self.draw_screen_objects()
         else:
@@ -191,11 +192,11 @@ class Graphics(object):
                 return
             border = 4
             o = self.game.object_stats  # background, image, name, age
-            o[1].x = self.game.dimensions[0] - o[1].width - o[2].content_width - border
-            o[1].y = self.game.dimensions[1] - o[1].height - border
+            o[1].x = window.width - o[1].width - o[2].content_width - border
+            o[1].y = window.height - o[1].height - border
             o[0].x, o[0].y = o[1].x - border, o[1].y - border
             o[2].x = o[1].x + o[1].width
-            o[2].y = self.game.dimensions[1] - o[2].content_height
+            o[2].y = window.height - o[2].content_height
             o[3].x = o[2].x
             o[3].y = o[2].y - o[2].content_height
             self.game.screen_objects_to_draw += o  # self.game.object_stats
@@ -203,7 +204,7 @@ class Graphics(object):
     def draw_fear_bar(self):
         nplayers = len(self.game.players)
         self.game.screen_objects_to_draw.append(self.fear_text)
-        w = self.game.dimensions[0] - self.fear_text.content_width
+        w = window.width - self.fear_text.content_width
         h = 32
         for i, p in enumerate(self.game.players.itervalues()):
             sp = primitives.RectPrimitive(x=self.fear_text.content_width,
@@ -246,15 +247,15 @@ class Graphics(object):
             primitives.RectPrimitive(x=0, y=0, width=hole.right, height=hole.bottom, color=(0, 0, 0, 255)))
 
         self.game.screen_objects_to_draw.append(
-            primitives.RectPrimitive(x=hole.right, y=0, width=self.game.dimensions[0] - hole.right, height=hole.top,
+            primitives.RectPrimitive(x=hole.right, y=0, width=window.width - hole.right, height=hole.top,
                                      color=(0, 0, 0, 255)))
 
         self.game.screen_objects_to_draw.append(
-            primitives.RectPrimitive(x=hole.left, y=hole.top, width=self.game.dimensions[0] - hole.left,
-                                     height=self.game.dimensions[1] - hole.top, color=(0, 0, 0, 255)))
+            primitives.RectPrimitive(x=hole.left, y=hole.top, width=window.width - hole.left,
+                                     height=window.height - hole.top, color=(0, 0, 0, 255)))
 
         self.game.screen_objects_to_draw.append(
-            primitives.RectPrimitive(x=0, y=hole.bottom, width=hole.left, height=self.game.dimensions[1] - hole.bottom,
+            primitives.RectPrimitive(x=0, y=hole.bottom, width=hole.left, height=window.height - hole.bottom,
                                      color=(0, 0, 0, 255)))
 
         self.game.screen_objects_to_draw.append(self.light)
