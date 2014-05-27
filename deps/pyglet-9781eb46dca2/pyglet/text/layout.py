@@ -531,6 +531,13 @@ class TextLayoutGroup(graphics.Group):
     def unset_state(self):
         glPopAttrib()
 
+    def __eq__(self, other):
+        return (self.__class__ is other.__class__ and
+                self.parent == other.parent)
+
+    def __hash__(self):
+        return hash(self.parent)
+
 class ScrollableTextLayoutGroup(graphics.Group):
     '''Top-level rendering group for `ScrollableTextLayout`.
 
@@ -684,7 +691,7 @@ class TextLayoutTextureGroup(graphics.Group):
     def __eq__(self, other):
         return (self.__class__ is other.__class__ and
                 self.texture.id == other.texture.id and
-                self.parent is other.parent)
+                self.parent == other.parent)
 
     def __repr__(self):
         return '%s(%d, %r)' % (self.__class__.__name__,
