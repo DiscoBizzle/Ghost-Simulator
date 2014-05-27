@@ -197,7 +197,7 @@ class MouseController(object):
     def editor_click(self, pos, typ, button=None):
         if typ == 'up':  # only detect mouse down
             return
-        x, y = self.game.cursor.coord
+        x, y = self.calc_cursor_coord(pos, typ, button=button)
         # don't check outside of level area
         if x < 0 or x >= LEVEL_WIDTH or y < 0 or y >= LEVEL_HEIGHT:
             return
