@@ -24,22 +24,17 @@ class Menu(object):
         self.vert_offset = 40 + button_size[1] + 10
         self.buttons_per_column = ((self.game.dimensions[1] - self.vert_offset) // (self.button_size[1] + 20)) - 1
 
-        # TODO: use only one batch with OrderedGroups
-        # requires changes to group equality and hash functions to be efficient
-        self.sprite_batch = pyglet.graphics.Batch()
-        self.text_batch = pyglet.graphics.Batch()
+        self.batch = pyglet.graphics.Batch()
 
         self._enabled = False
 
-        self.buttons['menu_scale_display'] = button.Button(self, order=(-1, 0), visible=False,
-                                                           border_color=(120, 50, 80), border_width=3,
-                                                           color=(120, 0, 0), size=(200, 50), pos=(60, 40),
-                                                           sprite_batch=self.sprite_batch, text_batch=self.text_batch)
-        self.sliders['menu_scale'] = slider.Slider(self, (lambda _: self.arrange_buttons()), range=(1, 5 / frac),
-                                                   order=(-1, 1), value=1 / frac, size=(200, 50),
-                                                   pos=(60 + 200 + 20, 40), visible=False,
-                                                   enabled=self.game.options['menu_scale'],
-                                                   sprite_batch=self.sprite_batch)
+        self.buttons['menu_scale_display'] = button.Button(self, pos=(60, 40), order=(-1, 0), size=(200, 50),
+                                                           visible=False, color=(120, 0, 0), border_color=(120, 50, 80),
+                                                           border_width=3, batch=self.batch)
+        self.sliders['menu_scale'] = slider.Slider(self, (lambda _: self.arrange_buttons()), pos=(60 + 200 + 20, 40),
+                                                   range=(1, 5 / frac), value=1 / frac, size=(200, 50), order=(-1, 1),
+                                                   enabled=self.game.options['menu_scale'], visible=False,
+                                                   batch=self.batch)
 
     @property
     def enabled(self):
@@ -70,8 +65,7 @@ class Menu(object):
 
     def on_draw(self):
         self.game.window.clear()
-        self.sprite_batch.draw()
-        self.text_batch.draw()
+        self.batch.draw()
 
     def mouse_event(self, pos, typ, button=None):
         for slider in self.sliders.itervalues():
@@ -135,8 +129,7 @@ class MainMenu(Menu):
     def __init__(self, game, button_size):
         super(MainMenu, self).__init__(game, button_size)
 
-        common = dict(border_color=(120, 50, 80), border_width=3, color=(120, 0, 0), sprite_batch=self.sprite_batch,
-                      text_batch=self.text_batch)
+        common = dict(border_color=(120, 50, 80), border_width=3, color=(120, 0, 0), batch=self.batch)
 
         self.buttons['main_game'] = button.Button(self, self.go_to_main_game, order=(0, 0), text=u'Start Game',
                                                   **common)
@@ -149,7 +142,7 @@ class MainMenu(Menu):
         t = 'TODO:\n'
         for l in self.game.TODO:
             t += ' - ' + l + '\n'
-        self.todo_sprite = text.new(text=t, font_size=10, width=1000, batch=self.text_batch)
+        self.todo_sprite = text.new(text=t, font_size=10, width=1000, batch=self.batch)
         self.todo_sprite.x, self.todo_sprite.y = (400, 200)
 
     def go_to_main_game(self):
@@ -166,23 +159,22 @@ class OptionsMenu(Menu):
     def __init__(self, game, button_size):
         super(OptionsMenu, self).__init__(game, button_size)
 
-        common = dict(border_color=(120, 50, 80), border_width=3, color=(120, 0, 0), sprite_batch=self.sprite_batch,
-                      text_batch=self.text_batch)
+        common = dict(border_color=(120, 50, 80), border_width=3, color=(120, 0, 0), batch=self.batch)
 
         self.buttons['FOV'] = button.Button(self, self.fov_toggle, order=(0, 0),
                                             text_states=[u'Field of View: No', u'Field of View: Yes'], **common)
         self.buttons['VOF'] = button.Button(self, self.vof_toggle, order=(1, 0),
                                             text_states=[u'View of Field: No', u'View of Field: Yes'], **common)
         self.sliders['VOF_opacity'] = slider.Slider(self, self.vof_value, range=(0, 255), order=(1, 1),
-                                                    sprite_batch=self.sprite_batch)
+                                                    batch=self.batch)
         self.buttons['torch'] = button.Button(self, self.torch_toggle, order=(2, 0),
                                               text_states=[u'Torch: No', u'Torch: Yes'], **common)
         self.buttons['sound_display'] = button.Button(self, order=(3, 0), **common)
         self.buttons['music_display'] = button.Button(self, order=(4, 0), **common)
         self.sliders['sound'] = slider.Slider(self, self.set_sound, range=(0.0, 2.0), order=(3, 1),
-                                              sprite_batch=self.sprite_batch)
+                                              batch=self.batch)
         self.sliders['music'] = slider.Slider(self, self.set_music, range=(0.0, 2.0), order=(4, 1),
-                                              sprite_batch=self.sprite_batch)
+                                              batch=self.batch)
         self.buttons['menu_scale'] = button.Button(self, self.menu_scale_toggle, order=(5, 0),
                                                    text_states=[u'Menu Scaling: Off', u'Menu Scaling: On'], **common)
         self.buttons['key_bind'] = button.Button(self, self.keybind_toggle, order=(6, 0), text=u'Keybind Menu',
@@ -298,14 +290,12 @@ class SkillsMenu(Menu):
             self.buttons[skill] = button.Button(self, f,
                                                 text=skill + " cost:" + str(self.game.skills_dict[skill].cost),
                                                 border_color=(120, 50, 80), border_width=3, color=skill_color,
-                                                order=(temp_order, 0), sprite_batch=self.sprite_batch,
-                                                text_batch=self.text_batch)
+                                                order=(temp_order, 0), batch=self.batch)
             self.buttons[skill + "_description"] = button.Button(self, None,
                                                                  text=self.game.skills_dict[skill].description,
                                                                  border_color=(120, 50, 80), border_width=3,
                                                                  color=(30, 120, 140), order=(temp_order, 1),
-                                                                 sprite_batch=self.sprite_batch,
-                                                                 text_batch=self.text_batch)
+                                                                 batch=self.batch)
             temp_order += 1
         self.arrange_buttons()
 
@@ -338,8 +328,7 @@ class KeyBindMenu(Menu):
         self.arrange_buttons()
 
     def create_buttons(self):
-        common = dict(border_color=self.border_color, border_width=3, color=self.color,
-                      sprite_batch=self.sprite_batch, text_batch=self.text_batch)
+        common = dict(border_color=self.border_color, border_width=3, color=self.color, batch=self.batch)
         ord = 0
         self.buttons['load'] = button.Button(self, self.load, order=(ord, 0), text=u'Load', **common)
         self.buttons['save'] = button.Button(self, self.save, order=(ord, 1), text=u'Save', **common)

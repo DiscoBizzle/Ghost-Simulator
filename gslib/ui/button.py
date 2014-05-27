@@ -34,7 +34,7 @@ class Button(object):
 
     def __init__(self, owner, function=None, pos=(50, 50), order=(0, 0), size=(100, 100), visible=True, enabled=True,
                  color=(0, 0, 0), border_color=(0, 0, 0), border_width=2, text=u'', font_size=10, text_states=None,
-                 sprite_batch=None, sprite_group=None, text_batch=None, text_group=None):
+                 batch=None, group=None):
         self._pos = pos
         self._size = size
         self._color = color
@@ -46,20 +46,19 @@ class Button(object):
         self.text_states = text_states
         self.text_states_toggle = False
         self.enabled = enabled  # whether button can be activated, visible or not
-        self._sprite_batch = sprite_batch
-        self._sprite_group = sprite_group
-        self._text_batch = text_batch
-        self._text_group = text_group
+        self._batch = batch
+        self._sprite_group = pyglet.graphics.OrderedGroup(0, group)
+        self._text_group = pyglet.graphics.OrderedGroup(1, group)
         self._visible = visible
         self.owner = owner  # container that created the button, allows for the button function to interact with its creator
         self.function = function
         self.order = order
 
         self._text_layout = None
-        if self._sprite_batch is None:
+        if self._batch is None:
             self._vertex_list = pyglet.graphics.vertex_list(8, 'v2i', 'c3B')
         else:
-            self._vertex_list = self._sprite_batch.add(8, pyglet.gl.GL_QUADS, self._sprite_group, 'v2i', 'c3B')
+            self._vertex_list = self._batch.add(8, pyglet.gl.GL_QUADS, self._sprite_group, 'v2i', 'c3B')
         if self.visible:
             self._redraw()
 
@@ -108,7 +107,7 @@ class Button(object):
         self._visible = visible
         if not visible:
             self._vertex_list.vertices[:] = [0] * 16
-            if self._text_layout is not None and self._text_batch is not None:
+            if self._text_layout is not None and self._batch is not None:
                 # delete to remove from batch
                 self._text_layout.delete()
                 self._text_layout = None
@@ -152,7 +151,7 @@ class Button(object):
                                                   color=(200, 200, 200, 255), x=self._pos[0], y=self._pos[1],
                                                   width=self._size[0], height=self._size[1], anchor_x='left',
                                                   anchor_y='bottom', align='center', multiline=True,
-                                                  batch=self._text_batch, group=self._text_group)
+                                                  batch=self._batch, group=self._text_group)
             self._text_layout.content_valign = 'center'
         else:
             self._text_layout.begin_update()

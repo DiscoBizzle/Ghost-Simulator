@@ -22,7 +22,7 @@ class Slider(object):
     pos = ExecOnChange
 
     def __init__(self, owner, func, pos=(0, 0), range=(0, 100), value=50, size=(100, 20), back_color=(120, 0, 0),
-                 fore_color=(0, 120, 0), order=(0, 0), enabled=True, visible=True, sprite_batch=None, sprite_group=None,
+                 fore_color=(0, 120, 0), order=(0, 0), enabled=True, visible=True, batch=None, group=None,
                  horizontal=True):
 
         self.owner = owner
@@ -34,12 +34,12 @@ class Slider(object):
         self.size = size
         self.enabled = enabled
         self.pos = pos
-        self.sprite_batch = sprite_batch
-        self.sprite_group = sprite_group
-        if self.sprite_batch is None:
+        self._batch = batch
+        self._group = pyglet.graphics.OrderedGroup(0, group)
+        if self._batch is None:
             self.vertex_list = pyglet.graphics.vertex_list(8, 'v2i', 'c3B')
         else:
-            self.vertex_list = self.sprite_batch.add(8, pyglet.gl.GL_QUADS, self.sprite_group, 'v2i', 'c3B')
+            self.vertex_list = self._batch.add(8, pyglet.gl.GL_QUADS, self._group, 'v2i', 'c3B')
 
         self.order = order
 
