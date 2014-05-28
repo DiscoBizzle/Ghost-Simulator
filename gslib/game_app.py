@@ -213,6 +213,8 @@ class Game(pyglet.event.EventDispatcher):
 
     @zoom.setter
     def zoom(self, zoom):
+        if zoom < 0.1 or zoom == self._zoom:
+            return
         self._zoom = zoom
         self.update_camera()
 
@@ -333,39 +335,60 @@ class Game(pyglet.event.EventDispatcher):
             self.update_exception_hook[1](exception)
 
     def update_camera(self):
+        """
+        Update the camera's properties based on the players position and zoom level.
+        This will try to keep as much of the map on screen as possible.
+        """
+
+        # TODO: zoom out if players go out of view
+
+        zoom = self.zoom
+
         # calculate the average position of all players
         players = self.players.values()
         avg_x = reduce(lambda total, p: total + p.coord[0], players, 0) / len(players)
         avg_y = reduce(lambda total, p: total + p.coord[1], players, 0) / len(players)
 
+        w = window.width
+        h = window.height
+
         # account for zoom level
-        w = window.width / self.zoom
-        h = window.height / self.zoom
+        avg_x *= zoom
+        avg_y *= zoom
+        level_width = LEVEL_WIDTH * zoom
+        level_height = LEVEL_HEIGHT * zoom
 
-        x = avg_x - (w / 2)
-        y = avg_y - (h / 2)
+        pad_left, pad_right, pad_top, pad_bottom = map(lambda p: p * zoom, self.camera_padding)
 
-        pad = self.camera_padding
+        if pad_left + level_width + pad_right < w:
+            # level fits in window so center it
+            x = (level_width - w) / 2
+        elif avg_x < w / 2 - pad_left:
+            # close to left edge
+            x = -pad_left
+        elif avg_x > level_width - w / 2 + pad_right:
+            # close to right edge
+            x = level_width - w + pad_right
+        else:
+            # center on avg_x
+            x = avg_x - (w / 2)
 
-        # bottom
-        if avg_y > LEVEL_HEIGHT - h / 2 + pad[3]:
-            y = LEVEL_HEIGHT - h + pad[3]
+        if pad_bottom + level_height + pad_top < h:
+            # level fits in window so center it
+            y = (level_height - h) / 2
+        elif avg_y < h / 2 - pad_top:
+            # close to top edge
+            y = -pad_top
+        elif avg_y > level_height - h / 2 + pad_bottom:
+            # close to bottom edge
+            y = level_height - h + pad_bottom
+        else:
+            # center on avg_y
+            y = avg_y - (h / 2)
 
-        # right
-        if avg_x > LEVEL_WIDTH - w / 2 + pad[1]:
-            x = LEVEL_WIDTH - w + pad[1]
-
-        # left
-        if avg_x < w / 2 - pad[0] or LEVEL_WIDTH < w - pad[0] - pad[1]:
-            x = -pad[0]
-
-        # top
-        if avg_y < h / 2 - pad[2] or LEVEL_HEIGHT < h - pad[2] - pad[3]:
-            y = -pad[2]
-
-        self.camera.x = int(x * self.zoom)
-        self.camera.y = int(y * self.zoom)
-        self.camera.zoom = self.zoom
+        self.camera.x = int(x)
+        self.camera.y = int(y)
+        self.camera.zoom = zoom
 
     def change_map(self):
         self.map_index = random.choice(self.map_dict.keys())
