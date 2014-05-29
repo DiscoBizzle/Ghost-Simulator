@@ -69,7 +69,7 @@ class KeyController(object):
             self.game.state = SKILLS_SCREEN
 
         if self.game.state == MAIN_GAME or self.game.state == EDITOR:
-            self.game.show_fears = self.keys[self.key_map['Show Fears']]
+            # self.game.show_fears = self.keys[self.key_map['Show Fears']]
             self.game.show_ranges = self.keys[self.key_map['Show Fear Ranges']]
             if self.keys[self.key_map['Toggle Editor']]:
                 if self.game.state == EDITOR:

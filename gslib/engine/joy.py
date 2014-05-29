@@ -36,8 +36,8 @@ class JoyController(object):
             self.game.players['player1'].harvest_fear()
         elif button == 1:
             self.game.players['player1'].toggle_possess()
-        elif button == 2:
-            self.game.show_fears = not self.game.show_fears
+        # elif button == 2:
+        #     self.game.show_fears = not self.game.show_fears
         elif button == 3:
             self.game.show_ranges = not self.game.show_ranges
         elif button == 4:
