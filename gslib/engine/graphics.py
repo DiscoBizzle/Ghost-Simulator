@@ -235,11 +235,11 @@ class Graphics(object):
             self.game.camera.apply_camera((ppos[0] - self.light_size[0] // 2, ppos[1] - self.light_size[1] // 2)),
             self.light_size)
 
-        hole.width *= self.game.zoom
-        hole.height *= self.game.zoom
+        hole.width *= self.game.camera.zoom
+        hole.height *= self.game.camera.zoom
 
-        self.light.scale_x = (200 / self.light.image.height) * self.game.zoom
-        self.light.scale_y = (200 / self.light.image.height) * self.game.zoom
+        self.light.scale_x = (200 / self.light.image.height) * self.game.camera.zoom
+        self.light.scale_y = (200 / self.light.image.height) * self.game.camera.zoom
 
         self.light.position = hole.bottomleft
 

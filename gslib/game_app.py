@@ -291,7 +291,6 @@ class Game(pyglet.event.EventDispatcher):
             # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
             #self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
             self.ticks_clock.tick()
-            self.update_camera()
             #self.walrus.walrusss(self.dimensions[0], self.dimensions[1])
 
             if self.state == MAIN_GAME or self.state == EDITOR:
@@ -331,6 +330,8 @@ class Game(pyglet.event.EventDispatcher):
                 if self.state == EDITOR:
                     self.editor.update()
 
+                self.update_camera()
+
         except self.update_exception_hook[0] as exception:
             self.update_exception_hook[1](exception)
 
@@ -338,19 +339,31 @@ class Game(pyglet.event.EventDispatcher):
         """
         Update the camera's properties based on the players position and zoom level.
         This will try to keep as much of the map on screen as possible.
+        If a player wnaders off screen it will zoom out to show them.
         """
-
-        # TODO: zoom out if players go out of view
-
-        zoom = self.zoom
-
-        # calculate the average position of all players
-        players = self.players.values()
-        avg_x = reduce(lambda total, p: total + p.coord[0], players, 0) / len(players)
-        avg_y = reduce(lambda total, p: total + p.coord[1], players, 0) / len(players)
 
         w = window.width
         h = window.height
+
+        zoom = self.zoom
+
+        player_xs, player_ys = zip(*map(lambda p: p.coord, self.players.itervalues()))
+
+        # adjust zoom if maximum distance between players adjusted for zoom is greater than the window width
+        # add TILE_SIZE so the whole player can stay in view
+        diff_x = (max(player_xs) - min(player_xs)) + TILE_SIZE
+        if diff_x * zoom > w:
+            zoom = w / diff_x
+
+        # adjust zoom if maximum distance between players adjusted for zoom is greater than the window height
+        # add TILE_SIZE so the whole player can stay in view
+        diff_y = (max(player_ys) - min(player_ys)) + TILE_SIZE
+        if diff_y * zoom > h:
+            zoom = h / diff_y
+
+        # calculate the average position of all players
+        avg_x = reduce(lambda total, p: total + p, player_xs, 0) / len(player_xs)
+        avg_y = reduce(lambda total, p: total + p, player_ys, 0) / len(player_ys)
 
         # account for zoom level
         avg_x *= zoom
