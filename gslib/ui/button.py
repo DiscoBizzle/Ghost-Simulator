@@ -32,7 +32,7 @@ class Button(object):
     font_size = ExecOnChange
     text_states_toggle = ExecOnChange
 
-    def __init__(self, owner, function=None, pos=(50, 50), order=(0, 0), size=(100, 100), visible=True, enabled=True,
+    def __init__(self, owner=None, function=None, pos=(50, 50), order=(0, 0), size=(100, 100), visible=True, enabled=True,
                  color=(0, 0, 0), border_color=(0, 0, 0), border_width=2, text=u'', font_size=10, text_states=None,
                  batch=None, group=None):
         self._pos = pos
@@ -220,3 +220,56 @@ class DefaultButton(Button):
     def __init__(self, owner, function, pos=(0, 0), text=u"", size=(100, 20), **kwargs):
         super(DefaultButton, self).__init__(owner, function, size=size, pos=pos, border_color=(120, 50, 80),
                                             border_width=3, color=(120, 0, 0), text=text, **kwargs)
+
+    def flip_color_rg(self, value=None):
+        low_color = (120, 0, 0)
+        low_border_color = (120, 50, 80)
+
+        high_color = (0, 120, 0)
+        high_border_color = (0, 200, 0)
+
+        if not value is None:
+            if value:
+                self.color = high_color
+                self.border_color = high_border_color
+            else:
+                self.color = low_color
+                self.border_color = low_border_color
+        else:
+            if self.color == low_color:
+                self.color = high_color
+                self.border_color = high_border_color
+            elif self.color == high_color:
+                self.color = low_color
+                self.border_color = low_border_color
+
+class CheckBox(Button):
+    def __init__(self, owner, bool_property, text=u"", size=(100, 20), **kwargs):
+        super(CheckBox, self).__init__(owner, function=None, size=size, border_color=(120, 50, 80),
+                                            border_width=3, color=(120, 0, 0), text=text, **kwargs)
+
+        self.property_name = bool_property
+
+        self.low_color = (120, 0, 0)
+        self.low_border_color = (120, 50, 80)
+
+        self.high_color = (0, 120, 0)
+        self.high_border_color = (0, 200, 0)
+
+        self.update()
+
+
+    def update(self):
+        a = getattr(self.owner, self.property_name)
+        if a:
+            self.color = self.high_color
+            self.border_color = self.high_border_color
+        else:
+            self.color = self.low_color
+            self.border_color = self.low_border_color
+
+    def perf_function(self):
+        a = getattr(self.owner, self.property_name)
+        setattr(self.owner, self.property_name, not a)
+        self.update()
+

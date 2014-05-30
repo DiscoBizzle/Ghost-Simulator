@@ -6,7 +6,7 @@ import os.path
 from gslib import save_load
 from gslib.editor import trigger_edit
 from gslib.constants import *
-from gslib.editor import cutscene
+from gslib.editor import cutscene, character_edit
 from gslib.engine import text
 from gslib.game_objects import character_objects, character_functions, game_object, prop_objects
 from gslib.ui import button, drop_down_list
@@ -144,6 +144,25 @@ class Editor(object):
         self.drop_lists = dict(self.drop_lists.items() + self.trigger_editor.drop_lists.items())
 
         ###################################################################
+        # Character Template Editor
+        ###################################################################
+
+        self.character_template_editor = character_edit.CharacterTemplateEditor(self.game)
+
+        # # add prefix to keys, then combine with main editor buttons
+        # char_edit_buttons_prefixed = {}
+        # for k, v in self.character_template_editor.buttons.iteritems():
+        #     char_edit_buttons_prefixed[self.character_template_editor.pre + k] = v
+        #
+        #
+        # char_edit_lists_prefixed = {}
+        # for k, v in self.character_template_editor.drop_lists.iteritems():
+        #     char_edit_lists_prefixed[self.character_template_editor.pre + k] = v
+        #
+        # self.buttons = dict(self.buttons.items() + char_edit_buttons_prefixed.items())
+        # self.drop_lists = dict(self.drop_lists.items() + char_edit_lists_prefixed.items())
+
+        ###################################################################
         # Edit object
         ###################################################################
         self.object_edit_buttons = []
@@ -259,10 +278,24 @@ class Editor(object):
         return d
 
     def get_buttons(self):
-        return dict(self.buttons, **self.list_to_dict_shabby('editor_cutscene_b_', self.cutscene_editor.buttons))
+        # add prefix to keys, then combine with main editor buttons
+        char_edit_buttons_prefixed = {}
+        for k, v in self.character_template_editor.buttons.iteritems():
+            char_edit_buttons_prefixed[self.character_template_editor.pre + k] = v
+
+        cutscene_dict = dict(self.buttons, **self.list_to_dict_shabby('editor_cutscene_b_', self.cutscene_editor.buttons))
+        char_edit_dict = dict(cutscene_dict, **char_edit_buttons_prefixed)
+        return char_edit_dict
 
     def get_lists(self):
-        return dict(self.drop_lists, **self.list_to_dict_shabby('editor_cutscene_l_', self.cutscene_editor.lists))
+
+        char_edit_lists_prefixed = {}
+        for k, v in self.character_template_editor.drop_lists.iteritems():
+            char_edit_lists_prefixed[self.character_template_editor.pre + k] = v
+
+        cutscene_dict = dict(self.drop_lists, **self.list_to_dict_shabby('editor_cutscene_l_', self.cutscene_editor.lists))
+        char_edit_dict = dict(cutscene_dict, **char_edit_lists_prefixed)
+        return char_edit_dict
 
     def create_undo_state(self):
         n_history = 200

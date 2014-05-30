@@ -96,7 +96,7 @@ class Player(GameObject):
             if not isinstance(o, Player):
                 # if o.possessed_by:
                 #     continue
-                if self.check_distance(o, self.possess_range):
+                if self.check_distance(o, self.possess_range) and o.possessable:
                     d = self.get_distance_squared(o)
                     if d < closest[0]:
                         closest = (d, o)

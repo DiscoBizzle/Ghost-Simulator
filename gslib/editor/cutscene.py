@@ -93,7 +93,7 @@ class CutsceneEditor(object):
         self.hint = None
 
         # hide by default
-        #self.toggle_visible()
+        self.toggle_visible()
 
     def _get_buttons(self):
         return self.static_buttons + self.dyn_buttons
@@ -110,6 +110,7 @@ class CutsceneEditor(object):
             if ce != self.toggle_button:
                 ce.visible = not ce.visible
                 ce.enabled = not ce.enabled
+        self.toggle_button.flip_color_rg(self.play_button.visible) # green/red if activated/deactivated
 
     def change_cutscene_action_list_selection(self, action):
         if action is None:

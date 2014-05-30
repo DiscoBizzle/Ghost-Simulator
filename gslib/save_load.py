@@ -94,22 +94,23 @@ def load_object(game, d):
         new_obj = prop_objects.possible_props[name[:-5]](game)
     else:
         new_obj = character_type_map[name](game)
-    for k, v in d.iteritems():
-        if '_function' in k:
-            func_list = json.loads(v)
-            afd = character_functions.all_functions_dict
-            attr = getattr(new_obj, k)
-            func_names = [a.__name__ for a in attr]
-            for f in func_list:
-                if not 'trigger' in f and not 'perf_actions' in f:
-                    if not f in func_names:
-                        function_type = afd[function_type_map[k]]
-                        attr.append(function_type[f](new_obj))
-        elif k != u'object_type':
-            if k == u'fears':
-                fears = json.loads(v)
-                new_obj.fears.extend(fears)
-            setattr(new_obj, k, json.loads(v))
+    # for k, v in d.iteritems():
+    #     if '_function' in k:
+    #         func_list = json.loads(v)
+    #         afd = character_functions.all_functions_dict
+    #         attr = getattr(new_obj, k)
+    #         func_names = [a.__name__ for a in attr]
+    #         for f in func_list:
+    #             if not 'trigger' in f and not 'perf_actions' in f:
+    #                 if not f in func_names:
+    #                     function_type = afd[function_type_map[k]]
+    #                     attr.append(function_type[f](new_obj))
+    #     elif k != u'object_type':
+    #         if k == u'fears':
+    #             fears = json.loads(v)
+    #             new_obj.fears.extend(fears)
+    #         setattr(new_obj, k, json.loads(v))
+    new_obj.load_from_dict(d)
 
     return new_obj
 

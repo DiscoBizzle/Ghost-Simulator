@@ -43,7 +43,7 @@ class FearsList(collections.MutableSequence):
 
 
 class GameObject(object):
-    def __init__(self, game_class, x, y, w, h, sprite_sheet, sprite_width, sprite_height):
+    def __init__(self, game_class, x, y, w, h, sprite_sheet=None, sprite_width=32, sprite_height=32):
         """
         To add an object to a map:
         map.objects['object name'] = object
@@ -89,7 +89,10 @@ class GameObject(object):
         self.scream_thresh = 50
 
         #variables for animation
-        self.sprite_sheet = image.load(os.path.join(CHARACTERS_DIR, sprite_sheet))
+        if not sprite_sheet is None:
+            self.sprite_sheet = image.load(os.path.join(CHARACTERS_DIR, sprite_sheet))
+        else:
+            self.sprite_sheet = image.load(os.path.join(CHARACTERS_DIR, 'DudeSheet.png'))
 
         # disable texture filtering
         texture = self.sprite_sheet.get_texture()

@@ -218,12 +218,11 @@ class TriggerEditor(object):
         self.display_zones = []
         self.display_circles = []
 
-        self._pos = (0, 0)
-        self.pos = (0, window.height - 100)
-
         self.enabled = False
 
+        self._pos = (0, 0)
         self.create_elements()
+        self.pos = (0, window.height - 100)
 
         self.action_options_map = {'begin_cutscene_trigger': self.game.map.cutscenes,
                                    'change_map_trigger': self.game.map_dict}
@@ -250,6 +249,8 @@ class TriggerEditor(object):
         for v in self.drop_lists.itervalues():
             v.visible = self.enabled
             v.enabled = self.enabled
+
+        self.buttons['toggle_trigger_editor'].flip_color_rg(self.enabled)
 
     def update_element_positions(self):
         size = (120, 20)

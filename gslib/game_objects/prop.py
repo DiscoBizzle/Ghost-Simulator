@@ -66,7 +66,7 @@ class Prop(GameObject):
             return
         o_name = self.game_class.map.find_name_of_object(obj)
         self._held_by = o_name
-        self.game_class.map.objects[o_name].held_props.append(self)
+        self.game_class.map.objects[o_name].held_objects.append(self)
 
     def update(self, dt):
 
@@ -118,6 +118,35 @@ class Prop(GameObject):
 
         save_dict[u'object_type'] = self.__class__.__name__ + '_prop'
         return save_dict
+
+    def load_from_dict(self, d):
+
+        function_type_map = {'has_touched_function': u'has_touched_functions',
+                     'feared_function': u'when_scared_functions',
+                     'possessed_function': u'become_possessed_functions',
+                     'unpossessed_function': u'become_unpossessed_functions',
+                     'harvested_function': u'when_harvested_functions',
+                     'is_touched_function': u'is_touched_functions',
+                     'has_untouched_function': u'has_untouched_functions',
+                     'is_untouched_function': u'is_untouched_functions',
+                     'idle_functions': u'idle_functions'}
+
+        for k, v in d.iteritems():
+            if '_function' in k:
+                func_list = json.loads(v)
+                afd = character_functions.all_functions_dict
+                attr = getattr(self, k)
+                func_names = [a.__name__ for a in attr]
+                for f in func_list:
+                    if not 'trigger' in f and not 'perf_actions' in f:
+                        if not f in func_names:
+                            function_type = afd[function_type_map[k]]
+                            attr.append(function_type[f](self))
+            elif k != u'object_type':
+                if k == u'fears':
+                    fears = json.loads(v)
+                    self.fears.extend(fears)
+                setattr(self, k, json.loads(v))
 
     def activate(self):
         pass
