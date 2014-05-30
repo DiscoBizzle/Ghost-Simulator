@@ -286,12 +286,16 @@ class Game(pyglet.event.EventDispatcher):
         self.fears_dict = self.map.fears_dict
 
     def update(self, dt):
+
         try:
             # this is fixed timestep, 30 FPS. if game runs slower, we lag.
             # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
             #self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
             self.ticks_clock.tick()
             #self.walrus.walrusss(self.dimensions[0], self.dimensions[1])
+
+            if self.message_box:
+                self.message_box.update()
 
             if self.state == MAIN_GAME or self.state == EDITOR:
 

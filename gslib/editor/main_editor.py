@@ -278,23 +278,14 @@ class Editor(object):
         return d
 
     def get_buttons(self):
-        # add prefix to keys, then combine with main editor buttons
-        char_edit_buttons_prefixed = {}
-        for k, v in self.character_template_editor.buttons.iteritems():
-            char_edit_buttons_prefixed[self.character_template_editor.pre + k] = v
-
         cutscene_dict = dict(self.buttons, **self.list_to_dict_shabby('editor_cutscene_b_', self.cutscene_editor.buttons))
-        char_edit_dict = dict(cutscene_dict, **char_edit_buttons_prefixed)
+        char_edit_dict = dict(cutscene_dict, **self.character_template_editor.get_buttons())
         return char_edit_dict
 
     def get_lists(self):
 
-        char_edit_lists_prefixed = {}
-        for k, v in self.character_template_editor.drop_lists.iteritems():
-            char_edit_lists_prefixed[self.character_template_editor.pre + k] = v
-
         cutscene_dict = dict(self.drop_lists, **self.list_to_dict_shabby('editor_cutscene_l_', self.cutscene_editor.lists))
-        char_edit_dict = dict(cutscene_dict, **char_edit_lists_prefixed)
+        char_edit_dict = dict(cutscene_dict, **self.character_template_editor.get_lists())
         return char_edit_dict
 
     def create_undo_state(self):

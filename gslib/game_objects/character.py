@@ -319,7 +319,7 @@ class Character(GameObject):
         self._held_by = None
         self._collision_weight = self.collision_weight
         self.held_offset = (0, 0) # offset from centre when held
-        self.held_objects = []
+        self.held_objects = [] # should not be edited directly - use .held_by on target object
 
         self.patrol_path = []
         self.patrol_index = 0
@@ -364,6 +364,9 @@ class Character(GameObject):
 
     @held_by.setter
     def held_by(self, obj):
+        if not self.can_be_picked_up or not obj.can_pick__up:
+            return
+
         if obj is None:
             self._held_by = None
             return
@@ -379,7 +382,7 @@ class Character(GameObject):
             else:
                 self.update_idle_or_feared(dt)
 
-        if not self.can_walk: # check this after, things other than walking may occur in above functions
+        if not self.can_walk or self.held_by: # check this after, things other than walking may occur in above functions
             self.move_down = False
             self.move_up = False
             self.move_left = False
