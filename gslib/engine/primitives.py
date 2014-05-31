@@ -19,7 +19,7 @@ class PrimitiveGroup(pyglet.graphics.Group):
         glPopAttrib()
 
     def __eq__(self, other):
-        return (isinstance(other, self.__class__) and
+        return (other.__class__ is self.__class__ and
                 self.parent == other.parent and
                 self.blend_src == other.blend_src and
                 self.blend_dest == other.blend_dest)
