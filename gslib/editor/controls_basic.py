@@ -13,10 +13,15 @@ class IntControl(HLayout):
         self.obj = obj
         self.attr = attr
 
+        self.lower_bound = None
+        self.upper_bound = None
+
+        self.number_label = RGButton(self, None, text=str(getattr(self.obj, self.attr)), size=(50, 20))
+
         super(IntControl, self).__init__([
             RGButton(self, None, text=name),
             RGButton(self, lambda: self._add_minus(False), text='-', size=(20, 20)),
-            RGButton(self, None, text=str(getattr(self.obj, self.attr)), size=(50, 20)),
+            self.number_label,
             RGButton(self, lambda: self._add_minus(True), text='+', size=(20, 20))
         ])
 
@@ -28,7 +33,16 @@ class IntControl(HLayout):
             inc = 50
         if not positive:
             inc = -inc
-        setattr(self.obj, self.attr, getattr(self.obj, self.attr) + inc)
+
+        pro_val = getattr(self.obj, self.attr) + inc
+        if pro_val > self.upper_bound:
+            pro_val = self.upper_bound
+        if pro_val < self.lower_bound:
+            pro_val = self.lower_bound
+
+        setattr(self.obj, self.attr, pro_val)
+
+        self.number_label.text = str(getattr(self.obj, self.attr))
 
 
 class GameObjectControl(HLayout):

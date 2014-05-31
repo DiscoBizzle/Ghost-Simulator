@@ -33,7 +33,7 @@ class Button(object):
     font_size = ExecOnChange
     text_states_toggle = ExecOnChange
 
-    def __init__(self, owner=None, function=None, pos=(50, 50), size=(100, 100), visible=True, enabled=True,
+    def __init__(self, owner=None, function=None, pos=(50, 50), size=(1, 1), visible=True, enabled=True,
                  color=(0, 0, 0), border_color=(0, 0, 0), border_width=2, text=u'', font_size=10, window=None,
                  batch=None, group=None):
         self._pos = pos

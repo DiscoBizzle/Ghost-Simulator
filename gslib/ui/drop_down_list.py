@@ -37,7 +37,7 @@ class DropDownList(object):
     selected_name = ExecOnChange
     pos = ExecOnChange
 
-    def __init__(self, owner, items, function=None, pos=(50, 50), size=(100, 20), visible=True, enabled=True, color=(120, 0, 0),
+    def __init__(self, owner, items, function=None, pos=(50, 50), size=(1, 1), visible=True, enabled=True, color=(120, 0, 0),
                  border_color=(120, 50, 80), border_width=2, text=None, font_size=10, labels='dictkey', order=(0, 0), **kwargs):
         self.pos = pos
         self.size = size

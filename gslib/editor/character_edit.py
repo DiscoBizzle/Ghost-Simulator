@@ -45,6 +45,7 @@ class BasicEditor(object):
 
         self.buttons = {}
         self.drop_lists = {}
+        self.layouts = {} # name: (layout, position/order, order=True/False)
 
         self.sub_editors = []
         self.sub_editors_pos = (0, 0)
@@ -92,6 +93,18 @@ class BasicEditor(object):
             b.size = size
 
 
+        for l in self.layouts.itervalues():
+            lay = l[0]
+            if l[2]: #order positioning
+                order = l[1]
+                pos = (self.pos[0] + order[1] * (size[0] + horizontal_spacing), p1 - order[0] * (size[1] + vert_spacing))
+            else:
+                pos = l[1]
+
+            lay.x, lay.y = pos
+            lay.do_layout()
+
+
         for e in self.sub_editors:
             if not e.toggle_order is None: # set toggle button position of sub-editor in grid of owning editor
                 pos = (self.pos[0] + e.toggle_order[1] * (size[0] + horizontal_spacing), p1 - e.toggle_order[0] * (size[1] + vert_spacing))
@@ -117,6 +130,12 @@ class BasicEditor(object):
             v.visible = self.enabled
             v.enabled = self.enabled
 
+        for l in self.layouts.itervalues():
+            lay = l[0]
+            for b in lay.get():
+                b.visible = self.enabled
+                b.enabled = self.enabled
+
         self.buttons[self.toggle_button_name].flip_color_rg(self.enabled)
 
         for t in self.sub_editors:
@@ -132,6 +151,11 @@ class BasicEditor(object):
         edit_buttons_prefixed = {}
         for k, v in self.buttons.iteritems():
             edit_buttons_prefixed[self.pre + k] = v
+
+        for l in self.layouts.itervalues():
+            lay = l[0]
+            for thing in lay.get():
+                edit_buttons_prefixed[self.pre + str(thing)] = thing
 
         for t in self.sub_editors:
             edit_buttons_prefixed = dict(edit_buttons_prefixed, **t.get_buttons())
@@ -232,7 +256,8 @@ class CharacterTemplateEditor(BasicEditor):
         pass # bio, age, etc.
 
     def create_can_walk_elements(self, toggle_order):
-        pass # show walk speed editors
+        # show walk speed editors
+        self.sub_editors.append(MoveSpeedEditor(self.game, self.char_to_edit, pos=self.sub_editors_pos, toggle_order=toggle_order))
 
     def create_has_special_properties_elements(self, toggle_order):
         pass # choice of "fire", "wet", etc. Text attributes to base conditional triggers off.
@@ -361,6 +386,33 @@ class ScaredOfEditor(BasicEditor):
             self.buttons[f] = bu(self, toggle_fear(f), text=f.title(), order=(i // n_col, i % n_col))
             if f in self.character.scared_of:
                 self.buttons[f].toggle_color_rg(True)
+
+
+        self.update_element_positions()
+
+
+class MoveSpeedEditor(BasicEditor):
+    def __init__(self, game, char, pos, toggle_pos=(0, 0), toggle_order=None):
+        super(MoveSpeedEditor, self).__init__(game, "Move Speed Editor", pos=pos, toggle_pos=toggle_pos, toggle_order=toggle_order)
+        self.pre = 'move_speed_'
+        self.character = char
+
+
+        self.create_elements()
+
+    def create_elements(self):
+        bu = button.DefaultButton
+        dl = drop_down_list.DropDownList
+
+        self.buttons['main_label'] = bu(self, None, text='Move Speed Editor', order=(-1, 0))
+
+        normal = controls_basic.IntControl('Normal Speed', self.character, 'normal_speed')
+        normal.lower_bound, normal.upper_bound = 0, 32
+        feared = controls_basic.IntControl('Feared Speed', self.character, 'feared_speed')
+        feared.lower_bound, feared.upper_bound = 0, 32
+
+        self.layouts['normal'] = (normal, (0, 0), True)
+        self.layouts['feared'] = (feared, (1, 0), True)
 
 
         self.update_element_positions()

@@ -144,6 +144,9 @@ class RGButton(button.Button):
     def height(self, v):
         self.size = (self.size[0], v)
 
+    def do_layout(self):
+        pass
+
 
 class RGDropDownList(drop_down_list.DropDownList):
 
@@ -184,3 +187,6 @@ class RGDropDownList(drop_down_list.DropDownList):
     @height.setter
     def height(self, v):
         self.size = (self.size[0], v)
+
+    def do_layout(self):
+        pass
