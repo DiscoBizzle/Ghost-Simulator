@@ -24,7 +24,7 @@ class FearsList(collections.MutableSequence):
 
     def __delitem__(self, key):
         val = self.list[key]
-        self.owner.game_class.map.fears_dict[v].remove(self.owner)
+        self.owner.game_class.map.fears_dict[val].remove(self.owner)
         del self.list[key]
 
     def __setitem__(self, key, value):

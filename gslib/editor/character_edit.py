@@ -120,7 +120,8 @@ class BasicEditor(object):
         self.buttons[self.toggle_button_name].flip_color_rg(self.enabled)
 
         for t in self.sub_editors:
-            t.toggle_self(value)
+            if t.enabled: # close open sub-editors, but don't open them
+                t.toggle_self(value)
 
 
     def create_elements(self): # placeholder for auto-complete
@@ -221,10 +222,11 @@ class CharacterTemplateEditor(BasicEditor):
 
     def create_can_scare_elements(self, toggle_order):
         # selection of what this char scares
-        self.sub_editors.append(ScaresEditor(self.game, self.char_to_edit, pos=self.sub_editors_pos, toggle_order=toggle_order))
+        self.sub_editors.append(FearsEditor(self.game, self.char_to_edit, pos=self.sub_editors_pos, toggle_order=toggle_order))
 
     def create_can_be_scared_elements(self, toggle_order):
-        pass # selection of what this char is scared of
+        # selection of what this char is scared of
+        self.sub_editors.append(ScaredOfEditor(self.game, self.char_to_edit, pos=self.sub_editors_pos, toggle_order=toggle_order))
 
     def create_has_stats_elements(self, toggle_order):
         pass # bio, age, etc.
@@ -280,15 +282,16 @@ class CharacterTemplateEditor(BasicEditor):
         pass
 
 
-class ScaresEditor(BasicEditor):
+class FearsEditor(BasicEditor):
     def __init__(self, game, char, pos, toggle_pos=(0, 0), toggle_order=None):
-        super(ScaresEditor, self).__init__(game, 'Scares Editor', pos=pos, toggle_pos=toggle_pos, toggle_order=toggle_order)
+        super(FearsEditor, self).__init__(game, 'Fears Editor', pos=pos, toggle_pos=toggle_pos, toggle_order=toggle_order)
 
-        self.pre = 'scares_'
+        self.pre = 'fears_'
         self.character = char
 
         self.possible_fears = get_fears_from_file()
         self.possible_fears.append(u'player')
+        self.possible_fears.sort()
 
         self.create_elements()
 
@@ -297,6 +300,67 @@ class ScaresEditor(BasicEditor):
         bu = button.DefaultButton
         dl = drop_down_list.DropDownList
 
-        self.buttons['main_label'] = bu(self, None, text='Scares Editor', order=(0, 0))
+        self.buttons['main_label'] = bu(self, None, text='Fears Editor', order=(-1, 0))
+
+        def toggle_fear(fear):
+            def func():
+                if fear in self.character.fears:
+                    self.character.fears.remove(fear)
+                    self.buttons[fear].flip_color_rg(False)
+                else:
+                    self.character.fears.append(fear)
+                    self.buttons[fear].flip_color_rg(True)
+
+            return func
+
+        n_col = 4
+
+        for i, f in enumerate(self.possible_fears):
+            self.buttons[f] = bu(self, toggle_fear(f), text=f.title(), order=(i // n_col, i % n_col))
+            if f in self.character.fears:
+                self.buttons[f].toggle_color_rg(True)
+
+
+        self.update_element_positions()
+
+
+class ScaredOfEditor(BasicEditor):
+    def __init__(self, game, char, pos, toggle_pos=(0, 0), toggle_order=None):
+        super(ScaredOfEditor, self).__init__(game, 'Scared of Editor', pos=pos, toggle_pos=toggle_pos, toggle_order=toggle_order)
+
+        self.pre = 'scared_of_'
+        self.character = char
+
+        self.possible_fears = get_fears_from_file()
+        self.possible_fears.append(u'player')
+        self.possible_fears.sort()
+
+        self.create_elements()
+
+
+    def create_elements(self):
+        bu = button.DefaultButton
+        dl = drop_down_list.DropDownList
+
+        self.buttons['main_label'] = bu(self, None, text='Scared of Editor', order=(-1, 0))
+
+        def toggle_fear(fear):
+            def func():
+                if fear in self.character.scared_of:
+                    self.character.scared_of.remove(fear)
+                    self.buttons[fear].flip_color_rg(False)
+                else:
+                    self.character.scared_of.append(fear)
+                    self.buttons[fear].flip_color_rg(True)
+
+            return func
+
+        n_col = 4
+
+        for i, f in enumerate(self.possible_fears):
+            self.buttons[f] = bu(self, toggle_fear(f), text=f.title(), order=(i // n_col, i % n_col))
+            if f in self.character.scared_of:
+                self.buttons[f].toggle_color_rg(True)
+
 
         self.update_element_positions()
