@@ -31,6 +31,10 @@ class KeyController(object):
 
         window.push_handlers(self)
 
+    def on_deactivate(self):
+        # clear every key as we no longer have keyboard focus
+        self.keys.clear()
+
     def on_key_press(self, symbol, modifiers):
         self.keys.on_key_press(symbol, modifiers)
         self.handle_keys(symbol, modifiers)
