@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
 import pyglet
+from pyglet.window import mouse
 
 from gslib.utils import ExecOnChange, exec_on_change_meta
 from gslib.constants import *
@@ -32,8 +33,8 @@ class Button(object):
     font_size = ExecOnChange
     text_states_toggle = ExecOnChange
 
-    def __init__(self, owner=None, function=None, pos=(50, 50), order=(0, 0), size=(100, 100), visible=True, enabled=True,
-                 color=(0, 0, 0), border_color=(0, 0, 0), border_width=2, text=u'', font_size=10, text_states=None,
+    def __init__(self, owner=None, function=None, pos=(50, 50), size=(100, 100), visible=True, enabled=True,
+                 color=(0, 0, 0), border_color=(0, 0, 0), border_width=2, text=u'', font_size=10, window=None,
                  batch=None, group=None):
         self._pos = pos
         self._size = size
@@ -43,8 +44,6 @@ class Button(object):
         self._border_width = border_width
         self.text = text
         self.font_size = font_size
-        self.text_states = text_states
-        self.text_states_toggle = False
         self.enabled = enabled  # whether button can be activated, visible or not
         self._batch = batch
         self._sprite_group = pyglet.graphics.OrderedGroup(0, group)
@@ -52,15 +51,16 @@ class Button(object):
         self._visible = visible
         self.owner = owner  # container that created the button, allows for the button function to interact with its creator
         self.function = function
-        self.order = order
+        self._window = window
+        self._pressed = False
 
         self._text_layout = None
         if self._batch is None:
             self._vertex_list = pyglet.graphics.vertex_list(8, 'v2i', 'c3B')
         else:
             self._vertex_list = self._batch.add(8, pyglet.gl.GL_QUADS, self._sprite_group, 'v2i', 'c3B')
-        if self.visible:
-            self._redraw()
+
+        self.update()
 
     @property
     def pos(self):
@@ -112,7 +112,7 @@ class Button(object):
                 self._text_layout.delete()
                 self._text_layout = None
         else:
-            self._redraw()
+            self.update()
 
     @property
     def color(self):
@@ -136,7 +136,16 @@ class Button(object):
         self._border_color = border_color
         self._update_colors()
 
-    def _redraw(self):
+    @property
+    def pressed(self):
+        return self._pressed
+
+    @pressed.setter
+    def pressed(self, pressed):
+        self._pressed = pressed
+        self._update_colors()
+
+    def update(self):
         self._update_text()
         self._update_position()
         self._update_colors()
@@ -144,8 +153,6 @@ class Button(object):
     def _update_text(self):
         if not self.visible:
             return
-        if self.text_states:
-            self._text = self.text_states[self.text_states_toggle]
         if self._text_layout is None:
             self._text_layout = pyglet.text.Label(text=self.text, font_name=FONT, font_size=self.font_size,
                                                   color=(200, 200, 200, 255), x=self._pos[0], y=self._pos[1],
@@ -163,10 +170,13 @@ class Button(object):
     def _update_colors(self):
         if not self.visible:
             return
-        colors = (self._border_color * 4 + self._color * 4)
-        colors = list(colors)
-        colors[9:12] = [min(int(x * 1.5), 255) for x in colors[9:12]]
-        colors[21:24] = [min(int(x * 1.5), 255) for x in colors[21:24]]
+        colors = list(self._border_color * 4 + self._color * 4)
+        if self.pressed:
+            colors[3:6] = [min(int(x * 1.5), 255) for x in colors[9:12]]
+            colors[15:18] = [min(int(x * 1.5), 255) for x in colors[21:24]]
+        else:
+            colors[9:12] = [min(int(x * 1.5), 255) for x in colors[9:12]]
+            colors[21:24] = [min(int(x * 1.5), 255) for x in colors[21:24]]
         self._vertex_list.colors[:] = colors
 
     def _update_position(self):
@@ -194,20 +204,18 @@ class Button(object):
         return False
 
     def check_clicked_no_function(self, click_pos):
+        if not self.enabled:
+            return False
+
         x, y = self.pos
         w, h = self.size
 
-        if x <= click_pos[0] < x + w and y <= click_pos[1] < y + h:
-            if self.enabled:
-                return True
-        return False
+        return (x <= click_pos[0] < x + w and
+                y <= click_pos[1] < y + h)
 
     def perf_function(self):
         if self.function is not None:
             self.function()
-
-    def text_toggle(self):
-        self.text_states_toggle = not self.text_states_toggle
 
     def draw(self):
         if not self.visible:
@@ -215,9 +223,41 @@ class Button(object):
         self._vertex_list.draw(pyglet.gl.GL_QUADS)
         self._text_layout.draw()
 
+    def on_mouse_press(self, x, y, button, modifiers):
+        if button == pyglet.window.mouse.LEFT:
+            if self.check_clicked_no_function((x, y)):
+                self.pressed = True
+                if self._window is not None:
+                    self._window.push_handlers(on_mouse_release=self.on_mouse_release,
+                                               on_mouse_leave=self.on_mouse_leave)
+                return pyglet.event.EVENT_HANDLED
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        if button == pyglet.window.mouse.LEFT:
+            self.check_clicked((x, y))
+            self.pressed = False
+            if self._window is not None:
+                self._window.remove_handlers(on_mouse_release=self.on_mouse_release,
+                                             on_mouse_leave=self.on_mouse_leave)
+
+    def on_mouse_leave(self, x, y):
+        self.pressed = False
+        if self._window is not None:
+            self._window.remove_handlers(on_mouse_release=self.on_mouse_release,
+                                         on_mouse_leave=self.on_mouse_leave)
+
+    def create_handlers(self):
+        if self._window is not None:
+            self._window.push_handlers(on_mouse_press=self.on_mouse_press)
+
+    def delete_handlers(self):
+        if self._window is not None:
+            self._window.remove_handlers(on_mouse_press=self.on_mouse_press)
+
 
 class DefaultButton(Button):
-    def __init__(self, owner, function, pos=(0, 0), text=u"", size=(100, 20), **kwargs):
+    def __init__(self, owner, function, order=(0, 0), pos=(0, 0), text=u"", size=(100, 20), **kwargs):
+        self.order = order
         super(DefaultButton, self).__init__(owner, function, size=size, pos=pos, border_color=(120, 50, 80),
                                             border_width=3, color=(120, 0, 0), text=text, **kwargs)
 
@@ -267,6 +307,7 @@ class CheckBox(Button):
         else:
             self.color = self.low_color
             self.border_color = self.low_border_color
+        super(CheckBox, self).update()
 
     def perf_function(self):
         a = getattr(self.owner, self.property_name)

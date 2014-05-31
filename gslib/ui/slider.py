@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function
 from gslib.utils import ExecOnChange, exec_on_change_meta
 
 import pyglet
+from pyglet.window import mouse
 
 
 class Slider(object):
@@ -21,10 +22,11 @@ class Slider(object):
     size = ExecOnChange
     pos = ExecOnChange
 
-    def __init__(self, owner, func, pos=(0, 0), range=(0, 100), value=50, size=(100, 20), back_color=(120, 0, 0),
-                 fore_color=(0, 120, 0), order=(0, 0), enabled=True, visible=True, batch=None, group=None,
+    def __init__(self, owner=None, function=None, pos=(0, 0), range=(0, 100), value=50, size=(100, 20), back_color=(120, 0, 0),
+                 fore_color=(0, 120, 0), enabled=True, visible=True, window=None, batch=None, group=None,
                  horizontal=True):
 
+        self._window = window
         self.owner = owner
         self.min, self.max = range
         self._visible = visible
@@ -41,11 +43,9 @@ class Slider(object):
         else:
             self.vertex_list = self._batch.add(8, pyglet.gl.GL_QUADS, self._group, 'v2i', 'c3B')
 
-        self.order = order
-
         self.is_clicked = False
 
-        self.func = func
+        self.func = function
 
         self.horizontal = horizontal
 
@@ -111,7 +111,7 @@ class Slider(object):
 
     def check_clicked(self, pos, typ):
         if not self.enabled:
-            return
+            return False
         click_pos = pos
         w, h = self.size
         w //= 2
@@ -133,6 +133,59 @@ class Slider(object):
             self.func(self.value)
             return True
         return False
+
+    def clicked(self, x, y):
+        if self.horizontal:
+            frac = (x - self.pos[0]) / self.size[0]
+        else:
+            frac = (self.pos[1] + self.size[1] - y) / self.size[1] # measured from top
+        self.value = self.min + (self.max - self.min) * frac
+        self.func(self.value)
+
+    def in_bounds(self, x, y):
+        control_x, control_y = self.pos
+        width, height = self.size
+
+        return (control_x <= x < control_x + width and
+                control_y <= y < control_y + height)
+
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        if buttons & pyglet.window.mouse.LEFT:
+            self.clicked(x, y)
+            return pyglet.event.EVENT_HANDLED
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        if button == pyglet.window.mouse.LEFT and self.enabled and self.in_bounds(x, y):
+            if self._window is not None:
+                self._window.push_handlers(on_mouse_drag=self.on_mouse_drag,
+                                           on_mouse_release=self.on_mouse_release,
+                                           on_mouse_leave=self.on_mouse_leave)
+            self.clicked(x, y)
+            return pyglet.event.EVENT_HANDLED
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        if button == pyglet.window.mouse.LEFT:
+            if self._window is not None:
+                self._window.remove_handlers(on_mouse_drag=self.on_mouse_drag,
+                                             on_mouse_release=self.on_mouse_release,
+                                             on_mouse_leave=self.on_mouse_leave)
+
+    def on_mouse_leave(self, x, y):
+        if self._window is not None:
+            self._window.remove_handlers(on_mouse_drag=self.on_mouse_drag,
+                                         on_mouse_release=self.on_mouse_release,
+                                         on_mouse_leave=self.on_mouse_leave)
+
+    def create_handlers(self):
+        if self._window is not None:
+            self._window.push_handlers(on_mouse_press=self.on_mouse_press)
+
+    def delete_handlers(self):
+        if self._window is not None:
+            self._window.remove_handlers(on_mouse_press=self.on_mouse_press)
+
+    def update(self):
+        self.redraw()
 
     def draw(self):
         self.vertex_list.draw(pyglet.gl.GL_QUADS)

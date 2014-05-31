@@ -108,9 +108,9 @@ class KeyController(object):
         else:
             self.key_map[action] = new_key
 
-        self.game.keybind_menu.buttons[action + ' key'].color = self.game.keybind_menu.color
-        self.game.keybind_menu.buttons[action + ' key'].border_color = self.game.keybind_menu.border_color
-        self.game.keybind_menu.buttons[action + ' key'].text = Pkey.symbol_string(new_key)
+        self.game.keybind_menu.controls[action + ' key'].color = self.game.keybind_menu.color
+        self.game.keybind_menu.controls[action + ' key'].border_color = self.game.keybind_menu.border_color
+        self.game.keybind_menu.controls[action + ' key'].text = Pkey.symbol_string(new_key)
 
         self.keys[new_key] = False
         self.game.action_to_rebind = None
@@ -138,12 +138,12 @@ class KeyController(object):
                     name = l[:semi]
                     val = int(l[semi+1:])
                     self.key_map[name] = val
-                    self.game.keybind_menu.buttons[name + ' key'].text = Pkey.symbol_string(val)
+                    self.game.keybind_menu.controls[name + ' key'].text = Pkey.symbol_string(val)
                 else:
                     semi = l.find(';')
                     name = l[:semi]
                     val = int(l[semi+1:])
-                    self.game.keybind_menu.buttons[name + ' key'].text = Pkey.symbol_string(val)
+                    self.game.keybind_menu.controls[name + ' key'].text = Pkey.symbol_string(val)
                     player_n = int(name[7])
                     name = name[9:]
                     self.player_map[str(player_n)][name] = val

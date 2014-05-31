@@ -54,4 +54,9 @@ class Options(dict, pyglet.event.EventDispatcher):
             # TODO: proper error handling
             raise
 
+    def reset_options(self):
+        # not using .update() to ensure .__setitem__() is called
+        for k, v in DEFAULT_OPTIONS.iteritems():
+            self[k] = v
+
 Options.register_event_type('on_option_change')

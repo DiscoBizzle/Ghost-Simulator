@@ -118,18 +118,17 @@ class Game(pyglet.event.EventDispatcher):
 
         self.map_dict = {}
 
-        # self.map_dict['level3'] = save_load.load_map(self, 'level3')
-        # self.map_dict['level2'] = save_load.load_map(self, 'level2')
-        # self.map_dict['martin'] = save_load.load_map(self, 'martin')
+        self.map_dict['level3'] = save_load.load_map(self, 'level3')
+        self.map_dict['level2'] = save_load.load_map(self, 'level2')
+        self.map_dict['martin'] = save_load.load_map(self, 'martin')
         self.map_dict['boss1'] = save_load.load_map(self, 'boss1')
 
         self.map_index = 'boss1'
         self.map = self.map_dict[self.map_index]
 
         self.game_buttons = {
-            'change_map': button.Button(self, self.change_map, pos=(0, 0), size=(20, 20), visible=True,
-                                        text=u'M', border_color=(120, 50, 80), border_width=3,
-                                        color=(120, 0, 0), enabled=True)}
+            'change_map': button.Button(function=self.change_map, pos=(0, 0), size=(20, 20), visible=True, text=u'M',
+                                        border_color=(120, 50, 80), border_width=3, color=(120, 0, 0), window=window)}
 
         # self.toPossess = None
         self.selected_object = None
@@ -232,7 +231,12 @@ class Game(pyglet.event.EventDispatcher):
             self.movie_player.remove_handlers(self)
         elif self.last_state == GAME_OVER:
             self.game_over_screen.remove_handlers(self)
+        elif self.last_state == MAIN_GAME:
+            for but in self.game_buttons.itervalues():
+                but.delete_handlers()
         if state == MAIN_GAME:
+            for but in self.game_buttons.itervalues():
+                but.create_handlers()
             if self.sound_handler.music_playing is not None:
                 if self.sound_handler.music_playing.name != 'transylvania':
                     self.sound_handler.play_music('transylvania')
@@ -441,11 +445,8 @@ class Game(pyglet.event.EventDispatcher):
 
         return objs_within_range
 
-
     def quit_game(self):
         window.dispatch_event('on_close')
-
-
 
 Game.register_event_type('on_state_change')
 Game.register_event_type('on_map_change')

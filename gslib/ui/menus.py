@@ -8,11 +8,37 @@ from gslib.ui import button, slider
 from gslib import options, window
 
 
+class MenuButton(button.Button):
+    def __init__(self, order=(0, 0), border_color=(120, 50, 80), border_width=3, color=(120, 0, 0), **kwargs):
+        self.order = order
+        super(MenuButton, self).__init__(border_color=border_color, border_width=border_width, color=color,
+                                         window=window, **kwargs)
+
+
+class MenuSlider(slider.Slider):
+    def __init__(self, order=(0, 0), **kwargs):
+        self.order = order
+        super(MenuSlider, self).__init__(window=window, **kwargs)
+
+
+class MenuLabel(button.Button):
+    def __init__(self, order=(0, 0), border_color=(120, 50, 80), border_width=3, color=(120, 0, 0), **kwargs):
+        self.order = order
+        super(MenuLabel, self).__init__(border_color=border_color, border_width=border_width, color=color,
+                                        window=window, **kwargs)
+
+    # FIXME: currently nuking button handlers until a Labal control is made
+    def create_handlers(self):
+        pass
+
+    def delete_handlers(self):
+        pass
+
+
 class Menu(object):
     def __init__(self, game, button_size):
         self.game = game
-        self.buttons = {}
-        self.sliders = {}
+        self.controls = {}
         self.button_size = button_size
         self.original_button_size = button_size
         mi = min(button_size[0], button_size[1])
@@ -29,13 +55,10 @@ class Menu(object):
 
         self._enabled = False
 
-        self.buttons['menu_scale_display'] = button.Button(self, pos=(60, 40), order=(-1, 0), size=(200, 50),
-                                                           visible=False, color=(120, 0, 0), border_color=(120, 50, 80),
-                                                           border_width=3, batch=self.batch)
-        self.sliders['menu_scale'] = slider.Slider(self, (lambda _: self.arrange_buttons()), pos=(60 + 200 + 20, 40),
-                                                   range=(1, 5 / frac), value=1 / frac, size=(200, 50), order=(-1, 1),
-                                                   enabled=options['menu_scale'], visible=False,
-                                                   batch=self.batch)
+        self.controls['menu_scale_display'] = MenuLabel(order=(-1, 0), pos=(60, 40), size=(200, 50), batch=self.batch)
+        self.controls['menu_scale'] = MenuSlider(order=(-1, 1), function=(lambda _: self.arrange_buttons()),
+                                                 pos=(60 + 200 + 20, 40), range=(1, 5 / frac), value=1 / frac,
+                                                 size=(200, 50), batch=self.batch)
 
     @property
     def enabled(self):
@@ -43,46 +66,33 @@ class Menu(object):
 
     @enabled.setter
     def enabled(self, enabled):
-        if enabled and not self._enabled:
-            self.arrange_buttons()
+        if enabled == self._enabled:
+            return
+        self._enabled = enabled
+        if enabled:
             window.push_handlers(self)
             options.push_handlers(self)
-        elif not enabled and self._enabled:
+            for control in self.controls.itervalues():
+                control.create_handlers()
+                control.update()
+            self.arrange_buttons()
+        else:
+            for control in self.controls.itervalues():
+                control.delete_handlers()
             window.remove_handlers(self)
             options.remove_handlers(self)
-        self._enabled = enabled
-
-    def on_mouse_motion(self, x, y, dx, dy):
-        self.mouse_event((x, y), 'move')
-
-    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        self.mouse_event((x, y), 'move')
-
-    def on_mouse_press(self, x, y, button, modifiers):
-        self.mouse_event((x, y), 'down', button)
-
-    def on_mouse_release(self, x, y, button, modifiers):
-        self.mouse_event((x, y), 'up', button)
 
     def on_draw(self):
         window.clear()
         self.batch.draw()
 
-    def mouse_event(self, pos, typ, button=None):
-        for slider in self.sliders.itervalues():
-            slider.check_clicked(pos, typ)
-        if typ == 'down':
-            for button in self.buttons.itervalues():
-                if button.check_clicked(pos):
-                    return
-
     def arrange_buttons(self):
-        self.buttons['menu_scale_display'].visible = options['menu_scale']
-        self.buttons['menu_scale_display'].enabled = options['menu_scale']
-        self.sliders['menu_scale'].visible = options['menu_scale']
-        self.sliders['menu_scale'].enabled = options['menu_scale']
+        self.controls['menu_scale_display'].visible = options['menu_scale']
+        self.controls['menu_scale_display'].enabled = options['menu_scale']
+        self.controls['menu_scale'].visible = options['menu_scale']
+        self.controls['menu_scale'].enabled = options['menu_scale']
         if options['menu_scale']:
-            self.set_menu_scale(self.sliders['menu_scale'].value)
+            self.set_menu_scale(self.controls['menu_scale'].value)
         else:
             self.set_menu_scale(1 / self.frac)
 
@@ -90,21 +100,14 @@ class Menu(object):
 
         self.vert_offset = 50 #+ self.game_class.options['menu_scale'] * self.buttons['menu_scale_display'].size[1]
 
-        for button in self.buttons.itervalues():
-            if button.order[0] == -1:
+        for control in self.controls.itervalues():
+            if control.order[0] == -1:
                 continue
-            button.size = self.button_size
-            button.font_size = self.font_size
-            button.pos = (self.hori_offset + (button.order[1] + (button.order[0] // self.buttons_per_column) * 2) * (self.button_size[0] + 20),
-                          window.height - (self.button_size[1] + self.vert_offset + (button.order[0] % self.buttons_per_column) * (self.button_size[1] + 10)))
-            if button.text_states:
-                button.text = button.text_states[button.text_states_toggle]
-        for slider in self.sliders.itervalues():
-            if slider.order[0] == -1:
-                continue
-            slider.size = self.button_size
-            slider.pos = (self.hori_offset + (slider.order[1] + (slider.order[0] // self.buttons_per_column) * 2) * (self.button_size[0] + 20),
-                          window.height - (self.button_size[1] + self.vert_offset + (slider.order[0] % self.buttons_per_column) * (self.button_size[1] + 10)))
+            control.size = self.button_size
+            control.pos = (self.hori_offset + (control.order[1] + (control.order[0] // self.buttons_per_column) * 2) * (self.button_size[0] + 20),
+                           window.height - (self.button_size[1] + self.vert_offset + (control.order[0] % self.buttons_per_column) * (self.button_size[1] + 10)))
+            if isinstance(control, button.Button):
+                control.font_size = self.font_size
 
     def set_menu_scale(self, value):
         self.button_size = (self.min_button_size[0] * value, self.min_button_size[1] * value)
@@ -115,7 +118,7 @@ class Menu(object):
 
         # self.buttons_per_column = int(((self.game_class.dimensions[1] - self.vert_offset) / (self.button_size[1]+20))) #- 1
         self.font_size = int(self.base_font_size * value * self.frac)
-        self.buttons['menu_scale_display'].text = u"Menu scale: {}".format(
+        self.controls['menu_scale_display'].text = u"Menu scale: {}".format(
             round(self.button_size[0] / self.original_button_size[0], 2))
 
     def on_option_change(self, key, value):
@@ -130,13 +133,14 @@ class MainMenu(Menu):
     def __init__(self, game, button_size):
         super(MainMenu, self).__init__(game, button_size)
 
-        common = dict(border_color=(120, 50, 80), border_width=3, color=(120, 0, 0), batch=self.batch)
-
-        self.buttons['main_game'] = button.Button(self, self.go_to_main_game, order=(0, 0), text=u'Start Game',
-                                                  **common)
-        self.buttons['credits'] = button.Button(self, self.go_to_credits, order=(1, 0), text=u'Credits', **common)
-        self.buttons['options'] = button.Button(self, self.go_to_options, order=(2, 0), text=u'Options', **common)
-        self.buttons['quit'] = button.Button(self, self.game.quit_game, order=(3, 0), text=u'Quit', **common)
+        self.controls['main_game'] = MenuButton(order=(0, 0), function=self.go_to_main_game, text=u'Start Game',
+                                                batch=self.batch)
+        self.controls['credits'] = MenuButton(order=(1, 0), function=self.go_to_credits, text=u'Credits',
+                                              batch=self.batch)
+        self.controls['options'] = MenuButton(order=(2, 0), function=self.go_to_options, text=u'Options',
+                                              batch=self.batch)
+        self.controls['quit'] = MenuButton(order=(3, 0), function=self.game.quit_game, text=u'Quit',
+                                           batch=self.batch)
 
         self.arrange_buttons()
 
@@ -156,123 +160,125 @@ class MainMenu(Menu):
         self.game.state = OPTIONS_MENU
 
 
+class OptionsMenuToggleCheckBox(MenuButton):
+    def __init__(self, option_key=None, display_text=None, **kwargs):
+        self.option_key = option_key
+        self.display_text = display_text
+        super(OptionsMenuToggleCheckBox, self).__init__(function=self.toggle_option, text=self.create_text(), **kwargs)
+
+    def on_option_change(self, key, value):
+        if key == self.option_key:
+            self.text = self.create_text()
+
+    def create_text(self):
+        if options[self.option_key]:
+            return u"{}: Yes".format(self.display_text)
+        else:
+            return u"{}: No".format(self.display_text)
+
+    def toggle_option(self):
+        options[self.option_key] = not options[self.option_key]
+
+    def update(self):
+        self.text = self.create_text()
+        super(OptionsMenuToggleCheckBox, self).update()
+
+    def create_handlers(self):
+        options.push_handlers(self)
+        super(OptionsMenuToggleCheckBox, self).create_handlers()
+
+    def delete_handlers(self):
+        options.remove_handlers(self)
+        super(OptionsMenuToggleCheckBox, self).delete_handlers()
+
+
 class OptionsMenu(Menu):
     def __init__(self, game, button_size):
         super(OptionsMenu, self).__init__(game, button_size)
 
-        common = dict(border_color=(120, 50, 80), border_width=3, color=(120, 0, 0), batch=self.batch)
-
-        self.buttons['FOV'] = button.Button(self, self.fov_toggle, order=(0, 0),
-                                            text_states=[u'Field of View: No', u'Field of View: Yes'], **common)
-        self.buttons['VOF'] = button.Button(self, self.vof_toggle, order=(1, 0),
-                                            text_states=[u'View of Field: No', u'View of Field: Yes'], **common)
-        self.sliders['VOF_opacity'] = slider.Slider(self, self.vof_value, range=(0, 255), order=(1, 1),
-                                                    batch=self.batch)
-        self.buttons['torch'] = button.Button(self, self.torch_toggle, order=(2, 0),
-                                              text_states=[u'Torch: No', u'Torch: Yes'], **common)
-        self.buttons['sound_display'] = button.Button(self, order=(3, 0), **common)
-        self.buttons['music_display'] = button.Button(self, order=(4, 0), **common)
-        self.sliders['sound'] = slider.Slider(self, self.set_sound, range=(0.0, 2.0), order=(3, 1),
-                                              batch=self.batch)
-        self.sliders['music'] = slider.Slider(self, self.set_music, range=(0.0, 2.0), order=(4, 1),
-                                              batch=self.batch)
-        self.buttons['menu_scale'] = button.Button(self, self.menu_scale_toggle, order=(5, 0),
-                                                   text_states=[u'Menu Scaling: Off', u'Menu Scaling: On'], **common)
-        self.buttons['key_bind'] = button.Button(self, self.keybind_toggle, order=(6, 0), text=u'Keybind Menu',
-                                                 **common)
-        self.buttons['load'] = button.Button(self, self.load, order=(7, 0), text=u'Load Options', **common)
-        self.buttons['save'] = button.Button(self, self.save, order=(7, 1), text=u'Save Options', **common)
-        self.buttons['screen_size_display'] = button.Button(self, order=(8, 0), text=u'Screen Size', **common)
-        self.buttons['screen_size'] = button.Button(self, self.set_screen_size, order=(8, 1),
-                                                    text_states=[u'1024 x 768', u'1280 x 720', u'1600 x 900',
-                                                                 u'1920 x 1080'], **common)
-        self.buttons['vsync'] = button.Button(self, self.vsync_toggle, order=(9, 0),
-                                              text_states=[u'vsync: Off', u'vsync: On'], **common)
-        self.buttons['fullscreen'] = button.Button(self, self.fullscreen_toggle, order=(10, 0),
-                                                   text_states=[u'fullscreen: Off', u'fullscreen: On'], **common)
-        self.buttons['reset'] = button.Button(self, self.reset, order=(11, 0), text=u'Reset Options', **common)
+        self._create_controls()
 
         self.arrange_buttons()
 
-    def fov_toggle(self):
-        options['FOV'] = not options['FOV']
+    def _create_controls(self):
+        self.controls['FOV'] = OptionsMenuToggleCheckBox(order=(0, 0), option_key='FOV', display_text=u'Field of View',
+                                                         batch=self.batch)
+        self.controls['VOF'] = OptionsMenuToggleCheckBox(order=(1, 0), option_key='VOF', display_text=u'View of Field',
+                                                         batch=self.batch)
+        self.controls['VOF_opacity'] = MenuSlider(order=(1, 1), function=self.vof_value, range=(0, 255),
+                                                  batch=self.batch)
+        self.controls['vsync'] = OptionsMenuToggleCheckBox(order=(2, 0), option_key='vsync', display_text=u'VSync',
+                                                           batch=self.batch)
+        self.controls['fullscreen'] = OptionsMenuToggleCheckBox(order=(3, 0), option_key='fullscreen',
+                                                                display_text='Fullscreen', batch=self.batch)
+        self.controls['screen_size_display'] = MenuLabel(order=(4, 0), text=u'Screen Size:', batch=self.batch)
+        self.controls['screen_size'] = MenuButton(order=(4, 1), function=self.set_screen_size, batch=self.batch)
 
-    def vof_toggle(self):
-        options['VOF'] = not options['VOF']
+        self.controls['sound_display'] = MenuLabel(order=(5, 0), batch=self.batch)
+        self.controls['sound'] = MenuSlider(order=(5, 1), function=self.set_sound, range=(0.0, 2.0), batch=self.batch)
+        self.controls['music_display'] = MenuLabel(order=(6, 0), batch=self.batch)
+        self.controls['music'] = MenuSlider(order=(6, 1), function=self.set_music, range=(0.0, 2.0), batch=self.batch)
 
-    def vof_value(self, val):
+        self.controls['torch'] = OptionsMenuToggleCheckBox(order=(7, 0), option_key='torch', display_text=u'Torch',
+                                                           batch=self.batch)
+        self.controls['menu_scale_option'] = OptionsMenuToggleCheckBox(order=(8, 0), option_key='menu_scale',
+                                                                       display_text=u'Menu Scaling', batch=self.batch)
+
+        self.controls['key_bind'] = MenuButton(order=(9, 0), function=self.keybind_toggle, text=u'Keybind Menu',
+                                               batch=self.batch)
+
+        self.controls['load'] = MenuButton(order=(10, 0), function=options.load_options, text=u'Load Options',
+                                           batch=self.batch)
+        self.controls['save'] = MenuButton(order=(10, 1), function=options.save_options, text=u'Save Options',
+                                           batch=self.batch)
+        self.controls['reset'] = MenuButton(order=(11, 0), function=options.reset_options, text=u'Reset Options',
+                                            batch=self.batch)
+
+    @staticmethod
+    def vof_value(val):
         options['VOF_opacity'] = val
-
-    def torch_toggle(self):
-        options['torch'] = not options['torch']
 
     def keybind_toggle(self):
         self.game.state = KEYBIND_MENU
 
-    def menu_scale_toggle(self):
-        options['menu_scale'] = not options['menu_scale']
-
-    def set_sound(self, value):
+    @staticmethod
+    def set_sound(value):
         options['sound_volume'] = value
 
-    def set_music(self, value):
+    @staticmethod
+    def set_music(value):
         options['music_volume'] = value
 
-    def vsync_toggle(self):
-        options['vsync'] = not options['vsync']
+    def update_controls(self):
+        self.controls['VOF_opacity'].visible = options['VOF']
+        self.controls['VOF_opacity'].value = options['VOF_opacity']
 
-    def fullscreen_toggle(self):
-        options['fullscreen'] = not options['fullscreen']
-
-    def update_button_text_and_slider_values(self):
-        self.buttons['FOV'].text_states_toggle = options['FOV']
-        self.buttons['VOF'].text_states_toggle = options['VOF']
-        self.sliders['VOF_opacity'].visible = options['VOF']
-        self.sliders['VOF_opacity'].value = options['VOF_opacity']
-        self.buttons['torch'].text_states_toggle = options['torch']
-        self.buttons['menu_scale'].text_states_toggle = options['menu_scale']
-        self.buttons['vsync'].text_states_toggle = options['vsync']
-        self.buttons['fullscreen'].text_states_toggle = options['fullscreen']
-
-        self.buttons['sound_display'].text = \
+        self.controls['sound_display'].text = \
             u'Sound Volume: {}'.format(int(options['sound_volume'] / 0.003))
-        self.buttons['music_display'].text = \
+        self.controls['music_display'].text = \
             u'Music Volume: {}'.format(int(options['music_volume'] / 0.003))
 
-        self.sliders['sound'].value = options['sound_volume']
-        self.sliders['music'].value = options['music_volume']
+        self.controls['sound'].value = options['sound_volume']
+        self.controls['music'].value = options['music_volume']
 
-        size = "{} x {}".format(*options['resolution'])
-        if size in self.buttons['screen_size'].text_states:
-            new_index = self.buttons['screen_size'].text_states.index(size) + 1
-            self.buttons['screen_size'].text_states_toggle = new_index % len(self.buttons['screen_size'].text_states)
+        self.controls['screen_size'].text = u"{}\u00D7{}".format(*options['resolution'])
+
+    @staticmethod
+    def set_screen_size():
+        # possible resolutions
+        pos_res = [(1024, 768), (1280, 720), (1600, 900), (1920, 1080)]
+        res = options['resolution']
+        if res in pos_res:
+            options['resolution'] = pos_res[(pos_res.index(res) + 1) % len(pos_res)]
         else:
-            self.buttons['screen_size'].text_states_toggle = 0
-
-    def load(self):
-        options.load_options()
-
-    def save(self):
-        options.save_options()
-
-    def reset(self):
-        # not using .update() to ensure .__setitem__() is called
-        for k, v in DEFAULT_OPTIONS.iteritems():
-            options[k] = v
-
-    def set_screen_size(self):
-        new_size = self.buttons['screen_size'].text_states[self.buttons['screen_size'].text_states_toggle]
-        if 'x' in new_size:
-            new_size = new_size.split(' x ')
-            new_size = (int(new_size[0]), int(new_size[1]))
-            options['resolution'] = new_size
+            options['resolution'] = pos_res[0]
 
     def arrange_buttons(self):
-        self.update_button_text_and_slider_values()
+        self.update_controls()
         super(OptionsMenu, self).arrange_buttons()
 
     def on_option_change(self, key, value):
-        self.update_button_text_and_slider_values()
+        self.update_controls()
         super(OptionsMenu, self).on_option_change(key, value)
 
 
@@ -288,11 +294,11 @@ class SkillsMenu(Menu):
             else:
                 skill_color = UNLEARNABLE_COLOR
             f = lambda skill2=skill: self.learn_skill(skill2)
-            self.buttons[skill] = button.Button(self, f,
+            self.controls[skill] = MenuButton(function=f,
                                                 text=skill + " cost:" + str(self.game.skills_dict[skill].cost),
                                                 border_color=(120, 50, 80), border_width=3, color=skill_color,
                                                 order=(temp_order, 0), batch=self.batch)
-            self.buttons[skill + "_description"] = button.Button(self, None,
+            self.controls[skill + "_description"] = MenuButton(function=None,
                                                                  text=self.game.skills_dict[skill].description,
                                                                  border_color=(120, 50, 80), border_width=3,
                                                                  color=(30, 120, 140), order=(temp_order, 1),
@@ -304,15 +310,15 @@ class SkillsMenu(Menu):
         self.game.players['player1'].learn_skill(skill)
         print(self.game.players['player1'].skills_learnt)
 
-        for skill in self.buttons:
-            if self.buttons[skill].order[0] != -1 and self.buttons[skill].order[1] == 0:
+        for skill in self.controls:
+            if self.controls[skill].order[0] != -1 and self.controls[skill].order[1] == 0:
                 if skill in self.game.players['player1'].skills_learnt:
                     skill_color = LEARNT_SKILL_COLOR
                 elif self.game.skills_dict[skill].can_be_learnt(self.game.players['player1']):
                     skill_color = CAN_BE_LEARNT_COLOR
                 else:
                     skill_color = UNLEARNABLE_COLOR
-                self.buttons[skill].color = skill_color
+                self.controls[skill].color = skill_color
 
 
 class KeyBindMenu(Menu):
@@ -329,32 +335,31 @@ class KeyBindMenu(Menu):
         self.arrange_buttons()
 
     def create_buttons(self):
-        common = dict(border_color=self.border_color, border_width=3, color=self.color, batch=self.batch)
-        ord = 0
-        self.buttons['load'] = button.Button(self, self.load, order=(ord, 0), text=u'Load', **common)
-        self.buttons['save'] = button.Button(self, self.save, order=(ord, 1), text=u'Save', **common)
-        ord += 1
+        order = 0
+        self.controls['load'] = MenuButton(function=self.load, order=(order, 0), text=u'Load', batch=self.batch)
+        self.controls['save'] = MenuButton(function=self.save, order=(order, 1), text=u'Save', batch=self.batch)
+        order += 1
         for player, p_map in self.game.key_controller.player_map.iteritems():
             for k, v in p_map.iteritems():
                 name = 'Player ' + str(player) + ' ' + k
-                self.buttons[name] = button.Button(self, order=(ord, 0), text=unicode(name), **common)
-                self.buttons[name + ' key'] = button.Button(self, self.rebind(name), order=(ord, 1),
+                self.controls[name] = MenuButton(order=(order, 0), text=unicode(name), batch=self.batch)
+                self.controls[name + ' key'] = MenuButton(function=self.rebind(name), order=(order, 1),
                                                             text=unicode(pyglet.window.key.symbol_string(p_map[k])),
-                                                            **common)
-                ord += 1
+                                                            batch=self.batch)
+                order += 1
 
         for k, v in self.game.key_controller.key_map.iteritems():
-            self.buttons[k] = button.Button(self, order=(ord, 0), text=unicode(k), **common)
-            self.buttons[k + ' key'] = button.Button(self, self.rebind(k), order=(ord, 1),
-                                                     text=unicode(pyglet.window.key.symbol_string(v)), **common)
-            ord += 1
+            self.controls[k] = MenuButton(order=(order, 0), text=unicode(k), batch=self.batch)
+            self.controls[k + ' key'] = MenuButton(function=self.rebind(k), order=(order, 1),
+                                                     text=unicode(pyglet.window.key.symbol_string(v)), batch=self.batch)
+            order += 1
 
     def rebind(self, action_name):
         def func():
             self.game.action_to_rebind = action_name
             self.game.state = KEYBIND_CAPTURE
-            self.buttons[action_name + ' key'].color = self.active_color
-            self.buttons[action_name + ' key'].border_color = self.active_border_color
+            self.controls[action_name + ' key'].color = self.active_color
+            self.controls[action_name + ' key'].border_color = self.active_border_color
         return func
 
     def save(self):
