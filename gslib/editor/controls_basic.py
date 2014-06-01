@@ -35,9 +35,9 @@ class IntControl(HLayout):
             inc = -inc
 
         pro_val = getattr(self.obj, self.attr) + inc
-        if pro_val > self.upper_bound:
+        if pro_val > self.upper_bound and self.upper_bound is not None:
             pro_val = self.upper_bound
-        if pro_val < self.lower_bound:
+        if pro_val < self.lower_bound and self.lower_bound is not None:
             pro_val = self.lower_bound
 
         setattr(self.obj, self.attr, pro_val)
