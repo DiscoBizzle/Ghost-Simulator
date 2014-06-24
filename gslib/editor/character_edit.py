@@ -3,7 +3,7 @@ __author__ = 'Martin'
 from gslib.ui import button, drop_down_list
 from gslib.editor import controls, controls_basic
 from gslib.constants import *
-from gslib.game_objects import character
+from gslib.game_objects import character, character_functions
 from gslib.ui import msg_box
 from gslib import window
 
@@ -266,7 +266,8 @@ class CharacterTemplateEditor(BasicEditor):
         pass # trails, etc
 
     def create_has_ai_elements(self, toggle_order):
-        pass # char function editor
+        # char function editor
+        self.sub_editors.append(AIEditor(self.game, self.char_to_edit, pos=self.sub_editors_pos, toggle_order=toggle_order))
 
 
 
@@ -416,3 +417,83 @@ class MoveSpeedEditor(BasicEditor):
 
 
         self.update_element_positions()
+
+
+AI_function_map = {'become_possessed_functions': 'possessed_function',
+                     'become_unpossessed_functions': 'unpossessed_function',
+                     'when_scared_functions': 'feared_function',
+                     'has_touched_functions': 'has_touched_function',
+                     'is_touched_functions': 'is_touched_function',
+                     'has_untouched_functions': 'has_untouched_function',
+                     'is_untouched_functions': 'is_untouched_function',
+                     'when_harvested_functions': 'harvested_function',
+                     'idle_functions': 'idle_functions'}
+
+
+class AIEditor(BasicEditor):
+    def __init__(self, game, char, pos, toggle_pos=(0, 0), toggle_order=None):
+        super(AIEditor, self).__init__(game, "AI Editor", pos=pos, toggle_pos=toggle_pos, toggle_order=toggle_order)
+        self.pre = 'ai_'
+        self.character = char
+
+
+        self.create_elements()
+
+    def create_elements(self):
+        bu = button.DefaultButton
+        dl = drop_down_list.DropDownList
+
+        self.buttons['main_label'] = bu(self, None, text='AI Editor', order=(-1, 0))
+
+        i = 0
+        for module, func_dict in character_functions.all_functions_dict.iteritems():
+            self.buttons[module + '_label'] = bu(self, None, text=module, order=(i, 0))
+
+            self.drop_lists[module + '_add'] = dl(self, func_dict, self.add_function(module), order=(i, 1))
+
+            self.drop_lists[module + '_select'] = dl(self, getattr(self.character, AI_function_map[module]), self.select_function(module), order=(i, 2), labels='func_name')
+
+            self.buttons[module + '_delete'] = bu(self, self.delete_function(module), text="Delete Selected", order=(i, 3))
+            self.buttons[module + '_delete'].visible = False
+            self.buttons[module + '_delete'].enabled = False
+            i += 1
+
+
+        self.update_element_positions()
+
+    def add_function(self, module):
+
+        def func():
+            s = self.drop_lists[module + '_add'].selected # the function chosen from drop list
+            if s:
+                a = getattr(self.character, AI_function_map[module]) # get the attribute for this class of AI functions
+                f = s(self.character) # the function to add, with the character as the target
+                if not f.func_name in [c.func_name for c in a]: # ensures functions are unique
+                    a.append(f)
+
+            self.drop_lists[module + '_select'].refresh()
+        return func
+
+    def select_function(self, module): # TODO add in target pickers (e.g. for walk to point)
+        def func():
+            s = self.drop_lists[module + '_select'].selected
+
+            if s: # show/hide delete button
+                self.buttons[module + '_delete'].visible = True
+                self.buttons[module + '_delete'].enabled = True
+            else:
+                self.buttons[module + '_delete'].visible = False
+                self.buttons[module + '_delete'].enabled = False
+
+
+        return func
+
+    def delete_function(self, module):
+        def func():
+            s = self.drop_lists[module + '_select'].selected
+            if s:
+                a = getattr(self.character, AI_function_map[module])
+                a.remove(s)
+
+            self.drop_lists[module + '_select'].refresh()
+        return func
