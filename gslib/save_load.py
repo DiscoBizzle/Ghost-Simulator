@@ -8,7 +8,7 @@ from gslib import cutscene
 from gslib import maps
 from gslib.constants import *
 from gslib.editor import trigger_edit
-from gslib.game_objects import character_objects, character_functions, prop_objects
+from gslib.game_objects import character_objects, prop_objects
 
 
 def save_cutscene_as_dict(cs):
@@ -72,21 +72,6 @@ character_type_map = {'Dude': character_objects.Dude,
                       'Bomb': character_objects.Bomb,
                       'SpriteBoss': character_objects.SpriteBoss}
 
-# trigger_type_map = {'OnHarvest': triggers.OnHarvest,
-#                     'OnHarvestConditional': triggers.OnHarvestConditional,
-#                     'IsTouched': triggers.IsTouched,
-#                     'IsTouchedConditional': triggers.IsTouchedConditional}
-
-
-function_type_map = {'has_touched_function': u'has_touched_functions',
-                     'feared_function': u'when_scared_functions',
-                     'possessed_function': u'become_possessed_functions',
-                     'unpossessed_function': u'become_unpossessed_functions',
-                     'harvested_function': u'when_harvested_functions',
-                     'is_touched_function': u'is_touched_functions',
-                     'has_untouched_function': u'has_untouched_functions',
-                     'is_untouched_function': u'is_untouched_functions',
-                     'idle_functions': u'idle_functions'}
 
 def load_object(game, d):
     name = d[u'object_type']
@@ -94,22 +79,6 @@ def load_object(game, d):
         new_obj = prop_objects.possible_props[name[:-5]](game)
     else:
         new_obj = character_type_map[name](game)
-    # for k, v in d.iteritems():
-    #     if '_function' in k:
-    #         func_list = json.loads(v)
-    #         afd = character_functions.all_functions_dict
-    #         attr = getattr(new_obj, k)
-    #         func_names = [a.__name__ for a in attr]
-    #         for f in func_list:
-    #             if not 'trigger' in f and not 'perf_actions' in f:
-    #                 if not f in func_names:
-    #                     function_type = afd[function_type_map[k]]
-    #                     attr.append(function_type[f](new_obj))
-    #     elif k != u'object_type':
-    #         if k == u'fears':
-    #             fears = json.loads(v)
-    #             new_obj.fears.extend(fears)
-    #         setattr(new_obj, k, json.loads(v))
     new_obj.load_from_dict(d)
 
     return new_obj

@@ -151,11 +151,17 @@ class Trigger(object):
         interactees = [self.game.objects[i] for i in self.object_references['interactees']]
         for interactee in interactees:
             if not self.interaction_type is None:
-                def perf_actions_interactee(interacter):
-                    return self.perf_actions(interactee, interacter)
+
+                class PerfTriggerActions(object): # the AI functions are classes, so this has to be too
+                    def __init__(self, func, interacte):
+                        self.func = func
+                        self.interactee = interacte
+
+                    def function(self, interacter):
+                        self.func(self.interactee, interacter)
 
                 attr = getattr(interactee, self.interaction_type)
-                attr.append(perf_actions_interactee)
+                attr.append(PerfTriggerActions(self.perf_actions, interactee))
 
     def create_save_dict(self):
         save_dict = {}
@@ -202,7 +208,7 @@ class Trigger(object):
             o_funcs = getattr(interactee_obj, self.interaction_type)
             # o_funcs.remove(self.perf_actions)
             for fun in o_funcs:
-                if fun.func_name == 'perf_actions_interactee':
+                if fun.__class__.__name__ == 'PerfTriggerActions':
                     o_funcs.remove(fun)
                     return
 

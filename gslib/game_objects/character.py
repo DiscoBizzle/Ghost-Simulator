@@ -8,37 +8,12 @@ import json
 from gslib.engine import textures, text, sprite, primitives
 from gslib.game_objects.game_object import GameObject
 from gslib.constants import *
-from gslib.game_objects import character_functions
+from gslib.character_functions_dir import AI_functions
+import inspect
 
 
 WHITE = (255, 255, 255, 255)
 GREY = (60, 60, 60, 255)
-
-def test():
-    pygame.init()
-    pygame.font.init()
-    random.seed()
-    screen = pygame.display.set_mode((800, 800))
-    char = Character(None, 0, 0, 16, 32, gen_character({'image_name': os.path.join(CHARACTERS_DIR, 'Sprite_front.png')}))
-    screen.blit(char.info_sheet, (0, 0))
-    screen.blit(char.sprite, (char.info_sheet.get_width() + 10, 0))
-    pygame.display.update()
-    print(char.fears)
-    raw_input()
-    pygame.quit()
-
-
-def fill_background(surface, border_size):
-    border = pygame.image.load(os.path.join(SPRITES_DIR, 'info_sheet_border_tile.png'))
-    border = pygame.transform.scale(border, (border_size, border_size))
-    bw = border.get_width()
-    bh = border.get_height()
-    w = surface.get_width()
-    h = surface.get_height()
-
-    for i in range(w / bw + 1):
-        for j in range(h / bh + 1):
-            surface.blit(border, (i * bw, j * bh))
 
 
 def load_stats(fname):
@@ -202,7 +177,7 @@ class Character_old(GameObject):
         self.possessed_function = []
         self.unpossessed_function = []
         self.harvested_function = []
-        self.idle_functions = [character_functions.stand_still(self)]
+        self.idle_functions = [AI_functions.all_functions_dict['idle_functions']['StandStill'](self)]
         self.fainted = False
         self.feared_by_obj = None
         self.feared_from_pos = (0, 0)
@@ -311,7 +286,7 @@ class Character(GameObject):
         self.possessed_function = []
         self.unpossessed_function = []
         self.harvested_function = []
-        self.idle_functions = [character_functions.stand_still(self)]
+        self.idle_functions = [AI_functions.all_functions_dict['idle_functions']['StandStill'](self)]
 
         self.feared_by_obj = None
         self.feared_from_pos = (0, 0)
@@ -345,7 +320,7 @@ class Character(GameObject):
         self.has_special_render_properties = False
         self.has_ai = True
 
-        self.has_touched_function.append(character_functions.try_pick_up(self))
+        # self.has_touched_function.append(AI_functions.all_functions_dict['has_touched_functions']['PickUp'](self))
 
     @property
     def collision_weight(self):
@@ -399,13 +374,13 @@ class Character(GameObject):
 
         if self.fear_timer: # do feared functions while scared
             for f in self.feared_function:
-                f()
+                f.function()
             self.fear_timer -= 1
 
         elif self.update_timer >= 50: # otherwise do idle functions
             self.update_timer = 0
             for i in self.idle_functions:
-                i()
+                i.function()
 
     def update_while_possessed(self, dt):
         if self.possessor_gets_motion_control:
@@ -428,11 +403,13 @@ class Character(GameObject):
         for s in to_save:
             o = getattr(self, s)
             if isinstance(o, list):
-                if o:
-                    if hasattr(o[0], '__call__'): # check if function
-                        t_list = [f.__name__ for f in o]
-                        save_dict[s] = json.dumps(t_list)
-                        continue
+                if o and 'function' in s: # check not empty, and is list of functions
+                    t_list = []
+                    for f in o:
+                        if not 'PerfTriggerActions' in f.__class__.__name__: # this makes sure we don't save the functions create from triggers
+                            t_list.append(f.save_to_dict())
+                    save_dict[s] = json.dumps(t_list)
+                    continue
 
             if s == u'fears':
                 o = list(o)
@@ -443,27 +420,23 @@ class Character(GameObject):
 
     def load_from_dict(self, d):
 
-        function_type_map = {'has_touched_function': u'has_touched_functions',
-                     'feared_function': u'when_scared_functions',
-                     'possessed_function': u'become_possessed_functions',
-                     'unpossessed_function': u'become_unpossessed_functions',
-                     'harvested_function': u'when_harvested_functions',
-                     'is_touched_function': u'is_touched_functions',
-                     'has_untouched_function': u'has_untouched_functions',
-                     'is_untouched_function': u'is_untouched_functions',
-                     'idle_functions': u'idle_functions'}
-
         for k, v in d.iteritems():
             if '_function' in k:
                 func_list = json.loads(v)
-                afd = character_functions.all_functions_dict
-                attr = getattr(self, k)
-                func_names = [a.__name__ for a in attr]
-                for f in func_list:
-                    if not 'trigger' in f and not 'perf_actions' in f:
-                        if not f in func_names:
-                            function_type = afd[function_type_map[k]]
-                            attr.append(function_type[f](self))
+                for module_name, function_name, function_dict in func_list:
+                    func = AI_functions.load_function(self, module_name, function_name, function_dict)
+                    attr = getattr(self, func.function_type) # get the function list for this character
+                    attr.append(func)
+
+                # func_list = json.loads(v)
+                # afd = character_functions.all_functions_dict
+                # attr = getattr(self, k)
+                # func_names = [a.__name__ for a in attr]
+                # for f in func_list:
+                #     if not 'trigger' in f and not 'perf_actions' in f:
+                #         if not f in func_names:
+                #             function_type = afd[function_type_map[k]]
+                #             attr.append(function_type[f](self))
             elif k != u'object_type':
                 if k == u'fears':
                     fears = json.loads(v)
@@ -472,4 +445,4 @@ class Character(GameObject):
 
 
 if __name__ == "__main__":
-    test()
+    pass

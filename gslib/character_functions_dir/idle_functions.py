@@ -1,7 +1,8 @@
-__author__ = 'Martin'
+from __future__ import absolute_import, division, print_function
 import random
-from AI_functions import BaseFunction
+from gslib.character_functions_dir.base_function import BaseFunction
 
+__author__ = 'Martin'
 
 class IdleFunction(BaseFunction):
     def __init__(self, name, obj):

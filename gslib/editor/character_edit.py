@@ -3,7 +3,8 @@ __author__ = 'Martin'
 from gslib.ui import button, drop_down_list
 from gslib.editor import controls, controls_basic
 from gslib.constants import *
-from gslib.game_objects import character, character_functions
+from gslib.game_objects import character
+from gslib.character_functions_dir import AI_functions
 from gslib.ui import msg_box
 from gslib import window
 
@@ -419,15 +420,6 @@ class MoveSpeedEditor(BasicEditor):
         self.update_element_positions()
 
 
-AI_function_map = {'become_possessed_functions': 'possessed_function',
-                     'become_unpossessed_functions': 'unpossessed_function',
-                     'when_scared_functions': 'feared_function',
-                     'has_touched_functions': 'has_touched_function',
-                     'is_touched_functions': 'is_touched_function',
-                     'has_untouched_functions': 'has_untouched_function',
-                     'is_untouched_functions': 'is_untouched_function',
-                     'when_harvested_functions': 'harvested_function',
-                     'idle_functions': 'idle_functions'}
 
 
 class AIEditor(BasicEditor):
@@ -435,6 +427,7 @@ class AIEditor(BasicEditor):
         super(AIEditor, self).__init__(game, "AI Editor", pos=pos, toggle_pos=toggle_pos, toggle_order=toggle_order)
         self.pre = 'ai_'
         self.character = char
+        self.sub_editors_pos = self.pos[0], self.pos[1] - 400
 
 
         self.create_elements()
@@ -446,18 +439,19 @@ class AIEditor(BasicEditor):
         self.buttons['main_label'] = bu(self, None, text='AI Editor', order=(-1, 0))
 
         i = 0
-        for module, func_dict in character_functions.all_functions_dict.iteritems():
+        for module, func_dict in AI_functions.all_functions_dict.iteritems():
             self.buttons[module + '_label'] = bu(self, None, text=module, order=(i, 0))
 
             self.drop_lists[module + '_add'] = dl(self, func_dict, self.add_function(module), order=(i, 1))
 
-            self.drop_lists[module + '_select'] = dl(self, getattr(self.character, AI_function_map[module]), self.select_function(module), order=(i, 2), labels='func_name')
+            self.drop_lists[module + '_select'] = dl(self, getattr(self.character, AI_functions.function_map[module]), self.select_function(module), order=(i, 2), labels='classname')
 
             self.buttons[module + '_delete'] = bu(self, self.delete_function(module), text="Delete Selected", order=(i, 3))
-            self.buttons[module + '_delete'].visible = False
-            self.buttons[module + '_delete'].enabled = False
+
             i += 1
 
+
+        self.sub_editors.append(AIFunctionEditor(self.game, None, self.sub_editors_pos, toggle_order=(-1, 1)))
 
         self.update_element_positions()
 
@@ -466,15 +460,15 @@ class AIEditor(BasicEditor):
         def func():
             s = self.drop_lists[module + '_add'].selected # the function chosen from drop list
             if s:
-                a = getattr(self.character, AI_function_map[module]) # get the attribute for this class of AI functions
+                a = getattr(self.character, AI_functions.function_map[module]) # get the attribute for this class of AI functions
                 f = s(self.character) # the function to add, with the character as the target
-                if not f.func_name in [c.func_name for c in a]: # ensures functions are unique
+                if not f.name in [c.name for c in a]: # ensures functions are unique
                     a.append(f)
 
             self.drop_lists[module + '_select'].refresh()
         return func
 
-    def select_function(self, module): # TODO add in target pickers (e.g. for walk to point)
+    def select_function(self, module):
         def func():
             s = self.drop_lists[module + '_select'].selected
 
@@ -485,6 +479,7 @@ class AIEditor(BasicEditor):
                 self.buttons[module + '_delete'].visible = False
                 self.buttons[module + '_delete'].enabled = False
 
+            self.sub_editors[0].func_class = s
 
         return func
 
@@ -492,8 +487,117 @@ class AIEditor(BasicEditor):
         def func():
             s = self.drop_lists[module + '_select'].selected
             if s:
-                a = getattr(self.character, AI_function_map[module])
+                a = getattr(self.character, AI_functions.function_map[module])
                 a.remove(s)
 
             self.drop_lists[module + '_select'].refresh()
         return func
+
+
+class AIFunctionEditor(BasicEditor):
+    def __init__(self, game, function_class, pos, toggle_pos=(0, 0), toggle_order=None):
+        super(AIFunctionEditor, self).__init__(game, "AI Function Editor", pos=pos, toggle_pos=toggle_pos, toggle_order=toggle_order)
+        self.pre = 'ai_function_'
+        self._func_class = function_class
+
+        self.create_elements()
+
+    @property
+    def func_class(self):
+        return self._func_class
+
+    @func_class.setter
+    def func_class(self, func):
+        self._func_class = func
+        self.create_elements()
+
+
+    def create_elements(self):
+        if self._func_class is None:
+            return
+
+        bu = button.DefaultButton
+        dl = drop_down_list.DropDownList
+
+        self.buttons['main_label'] = bu(self, None, text='AI Function Editor', order=(-1, 0))
+        self.buttons['main_label_name'] = bu(self, None, text=self.func_class.name, order=(-1, 1))
+
+        if self.func_class.text_options:
+            self.buttons['text_options_label'] = bu(self, None, text="Text Options", order=(0, 0))
+            self.drop_lists['text_options'] = dl(self, self.func_class.text_options, self.choose_text_option, order=(0, 1))
+            self.drop_lists['text_options_select'] = dl(self, self.func_class.active_text_options, self.select_text_option, order=(0, 2))
+            self.buttons['text_options_delete'] = bu(self, self.delete_text_option, text="Delete Selected", order=(0, 3))
+
+        if self.func_class.number_coordinates != 0:
+            self.buttons['coordinates_label'] = bu(self, None, text="Coordinate Options", order=(1, 0))
+
+            self.buttons['coordinates_add'] = bu(self, self.add_coordinate, text="Add Coordinate", order=(1, 1))
+            self.drop_lists['coordinates_select'] = dl(self, self.func_class.coordinates, self.select_coordinate, order=(1, 2))
+            self.buttons['coordinates_edit'] = bu(self, self.edit_coordinate, text="Edit Coordinate", order=(1, 3))
+            self.buttons['coordinates_delete'] = bu(self, self.delete_coordinate, text="Delete Coordinate", order=(1, 4))
+
+        self.update_element_positions()
+
+
+    def choose_text_option(self):
+        opt = self.drop_lists['text_options'].selected
+        self.func_class.active_text_options.add(opt)
+
+    def select_text_option(self):
+        s = self.drop_lists['text_options_select'].selected
+
+        if s: # show/hide delete button
+            self.buttons['text_options_delete'].visible = True
+            self.buttons['text_options_delete'].enabled = True
+        else:
+            self.buttons['text_options_delete'].visible = False
+            self.buttons['text_options_delete'].enabled = False
+
+    def delete_text_option(self):
+        s = self.drop_lists['text_options_select'].selected
+        if s:
+            self.func_class.active_text_options.remove(s)
+
+        self.drop_lists['text_options_select'].refresh()
+
+
+    def add_coordinate(self):
+        if not (0, 0) in self.func_class.coordinates and (len(self.func_class.coordinates) < self.func_class.number_coordinates or self.func_class.number_coordinates == -1):
+            self.func_class.coordinates.append((0, 0))
+            self.drop_lists['coordinates_select'].refresh()
+
+    def select_coordinate(self):
+        s = self.drop_lists['coordinates_select'].selected
+
+        if s: # show/hide delete button
+            self.buttons['coordinates_delete'].visible = True
+            self.buttons['coordinates_delete'].enabled = True
+            self.buttons['coordinates_edit'].visible = True
+            self.buttons['coordinates_edit'].enabled = True
+        else:
+            self.buttons['coordinates_delete'].visible = False
+            self.buttons['coordinates_delete'].enabled = False
+            self.buttons['coordinates_edit'].visible = False
+            self.buttons['coordinates_edit'].enabled = False
+
+    def edit_coordinate(self):
+        s = self.drop_lists['coordinates_select'].selected
+        coord_index = self.func_class.coordinates.index(s)
+
+        def set_coord(pos):
+            self.func_class.coordinates[coord_index] = pos
+            self.drop_lists['coordinates_select'].refresh()
+            self.drop_lists['coordinates_select'].set_to_value(pos)
+            self.buttons['coordinates_edit'].flip_color_rg(False)
+
+        self.game.mouse_controller.pick_position(set_coord)
+        self.buttons['coordinates_edit'].flip_color_rg(True)
+
+    def delete_coordinate(self):
+        s = self.drop_lists['coordinates_select'].selected
+        if s:
+            self.func_class.coordinates.remove(s)
+
+        self.drop_lists['coordinates_select'].refresh()
+
+

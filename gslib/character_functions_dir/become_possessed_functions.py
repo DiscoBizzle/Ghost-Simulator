@@ -1,8 +1,7 @@
 from __future__ import absolute_import, division, print_function
-from AI_functions import BaseFunction
+from gslib.character_functions_dir.base_function import BaseFunction
 
 __author__ = 'Martin'
-
 ################################################################################
 ### possession functions
 ### These happen when a character is possessed

@@ -118,12 +118,13 @@ class Game(pyglet.event.EventDispatcher):
 
         self.map_dict = {}
 
-        self.map_dict['level3'] = save_load.load_map(self, 'level3')
-        self.map_dict['level2'] = save_load.load_map(self, 'level2')
-        self.map_dict['martin'] = save_load.load_map(self, 'martin')
-        self.map_dict['boss1'] = save_load.load_map(self, 'boss1')
+        # self.map_dict['level3'] = save_load.load_map(self, 'level3')
+        # self.map_dict['level2'] = save_load.load_map(self, 'level2')
+        # self.map_dict['martin'] = save_load.load_map(self, 'martin')
+        # self.map_dict['boss1'] = save_load.load_map(self, 'boss1')
+        self.map_dict['boss2'] = save_load.load_map(self, 'boss2')
 
-        self.map_index = 'boss1'
+        self.map_index = 'boss2'
         self.map = self.map_dict[self.map_index]
 
         self.game_buttons = {

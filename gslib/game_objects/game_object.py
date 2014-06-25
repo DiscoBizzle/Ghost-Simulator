@@ -8,6 +8,7 @@ from pyglet import gl
 
 from gslib.constants import *
 from gslib.engine import sprite, rect
+import inspect
 
 
 class FearsList(collections.MutableSequence):

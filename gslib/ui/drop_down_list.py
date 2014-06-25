@@ -88,6 +88,8 @@ class DropDownList(object):
             for i in self.items:
                 if self.labels == 'func_name':
                     t = i.func_name
+                elif self.labels == 'classname':
+                    t = i.__class__.__name__
                 else:
                     t = str(i)
                 self.drop_buttons.append(button.Button(self, list_func(self, i, t), size=self.size, font_size=self.font_size,
