@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
 import pyglet
-from pyglet.gl import *
+from pyglet import gl
 
 
 class PrimitiveGroup(pyglet.graphics.Group):
@@ -11,12 +11,12 @@ class PrimitiveGroup(pyglet.graphics.Group):
         self.blend_dest = blend_dest
 
     def set_state(self):
-        glPushAttrib(GL_COLOR_BUFFER_BIT)
-        glEnable(GL_BLEND)
-        glBlendFunc(self.blend_src, self.blend_dest)
+        gl.glPushAttrib(gl.GL_COLOR_BUFFER_BIT)
+        gl.glEnable(gl.GL_BLEND)
+        gl.glBlendFunc(self.blend_src, self.blend_dest)
 
     def unset_state(self):
-        glPopAttrib()
+        gl.glPopAttrib()
 
     def __eq__(self, other):
         return (other.__class__ is self.__class__ and
@@ -35,7 +35,7 @@ class Primitive(object):
     num_verts = None
     mode = None
 
-    def __init__(self, x=0, y=0, color=(0, 0, 0, 255), blend_src=GL_SRC_ALPHA, blend_dest=GL_ONE_MINUS_SRC_ALPHA,
+    def __init__(self, x=0, y=0, color=(0, 0, 0, 255), blend_src=gl.GL_SRC_ALPHA, blend_dest=gl.GL_ONE_MINUS_SRC_ALPHA,
                  batch=None, group=None):
         self._x = x
         self._y = y
@@ -51,15 +51,16 @@ class Primitive(object):
             self._vertex_list = self._batch.add(self.num_verts, self.mode, self._group, 'v2i', 'c4B')
 
         self._update_colors()
+        self._update_verticies()
 
     @property
     def x(self):
         return self._x
 
     @x.setter
-    def x(self, x):
-        dx = x - self._x
-        self._x = x
+    def x(self, value):
+        dx = value - self._x
+        self._x = value
         self._move_x(dx)
 
     @property
@@ -67,9 +68,9 @@ class Primitive(object):
         return self._y
 
     @y.setter
-    def y(self, y):
-        dy = y - self._y
-        self._y = y
+    def y(self, value):
+        dy = value - self._y
+        self._y = value
         self._move_y(dy)
 
     @property
@@ -77,8 +78,8 @@ class Primitive(object):
         return self._color
 
     @color.setter
-    def color(self, color):
-        self._color = color
+    def color(self, value):
+        self._color = value
         self._update_colors()
 
     def draw(self):
@@ -90,19 +91,37 @@ class Primitive(object):
         self._vertex_list.colors[:] = (self._color * self.num_verts)
 
     def _move_x(self, dx):
-        self._vertex_list.vertices[::2] = map(lambda x: x + dx, self._vertex_list.vertices[::2])
+        self._vertex_list.vertices[::2] = [int(x + dx) for x in self._vertex_list.vertices[::2]]
 
     def _move_y(self, dy):
-        self._vertex_list.vertices[1::2] = map(lambda y: y + dy, self._vertex_list.vertices[1::2])
+        self._vertex_list.vertices[1::2] = [int(y + dy) for y in self._vertex_list.vertices[1::2]]
 
     def _update_verticies(self):
         raise NotImplementedError()
+
+    def __del__(self):
+        if self._vertex_list is not None:
+            self._vertex_list.delete()
+
+    def delete(self):
+        """
+        Force immediate removal from video memory.
+
+        This is often necessary when using batches, as the Python garbage
+        collector will not necessarily call the finalizer as soon as the
+        sprite is garbage.
+        """
+        self._vertex_list.delete()
+        self._vertex_list = None
+
+        # Easy way to break circular reference, speeds up GC
+        self._group = None
 
 
 class RectPrimitive(Primitive):
 
     num_verts = 4
-    mode = GL_QUADS
+    mode = gl.GL_QUADS
 
     def __init__(self, x=0, y=0, width=0, height=0, rect=None, **kwargs):
 
@@ -116,15 +135,13 @@ class RectPrimitive(Primitive):
             self._height = rect.height
         super(RectPrimitive, self).__init__(x=x, y=y, **kwargs)
 
-        self._update_verticies()
-
     @property
     def width(self):
         return self._width
 
     @width.setter
-    def width(self, width):
-        self._width = width
+    def width(self, value):
+        self._width = value
         self._update_verticies()
 
     @property
@@ -132,8 +149,8 @@ class RectPrimitive(Primitive):
         return self._height
 
     @height.setter
-    def height(self, height):
-        self._height = height
+    def height(self, value):
+        self._height = value
         self._update_verticies()
 
     def _update_verticies(self):
