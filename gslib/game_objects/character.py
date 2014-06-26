@@ -449,7 +449,7 @@ class Character(GameObject):
                     fears = json.loads(v)
                     self.fears.extend(fears)
                 elif k == u'sprite_sheet_name':
-                    setattr(self, 'sprite_sheet', image.load(json.loads(v)))
+                    setattr(self, 'sprite_sheet', image.load(os.path.join(CHARACTERS_DIR, json.loads(v))))
                 setattr(self, k, json.loads(v))
 
         self._create_animations()
