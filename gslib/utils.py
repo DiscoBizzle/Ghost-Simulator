@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function
 
+
 class ExecOnChange(object):
     """Descriptor class to force update when changed.
 
@@ -16,11 +17,15 @@ class ExecOnChange(object):
             raise AttributeError("{} has no attribute {}".format(instance, self.name))
 
     def __set__(self, instance, value):
-        already_set = hasattr(instance, self._name)
-        setattr(instance, self._name, value)
-        if already_set:
-            for func in self.funcs:
-                getattr(instance, func)()
+        if hasattr(instance, self._name):
+            old_value = getattr(instance, self._name)
+            if value != old_value:
+                setattr(instance, self._name, value)
+                for func in self.funcs:
+                    getattr(instance, func)()
+        else:
+            setattr(instance, self._name, value)
+
 
 def exec_on_change_meta(funcs):
     """Do magic so that the ExecOnChange descriptor doesn't need explicit
@@ -32,11 +37,10 @@ def exec_on_change_meta(funcs):
     variables are changed.
     """
     class ExecOnChangeMeta(type):
-        def __new__(cls, name, bases, attrs):
+        def __new__(mcs, name, bases, attrs):
             for attr_name in attrs:
                 if attrs[attr_name] == ExecOnChange:
                     attrs[attr_name] = ExecOnChange(attr_name, funcs)
-            return type.__new__(cls, name, bases, attrs)
+            return type.__new__(mcs, name, bases, attrs)
 
     return ExecOnChangeMeta
-
