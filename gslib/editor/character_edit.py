@@ -7,6 +7,7 @@ from gslib.game_objects import character
 from gslib.character_functions_dir import AI_functions
 from gslib.ui import msg_box
 from gslib import window
+import json
 
 import io
 import os.path
@@ -179,16 +180,18 @@ class CharacterTemplateEditor(BasicEditor):
     """
     Sub-editors are re-created when a new template is created.
     """
-    def __init__(self, game):
+    def __init__(self, game, main_editor):
         super(CharacterTemplateEditor, self).__init__(game, 'Character Editor', (0, window.height - 160), (0, window.height - 60))
-
+        self.main_editor = main_editor
         self.pre = 'cte_'
 
         self.char_to_edit = None
         self.char_template_name = 'Default'
         self.char_state_to_edit = None
 
-        self.sub_editors_pos = (300, window.height - 100)
+        self.sub_editors_pos = (300, window.height - 200)
+
+        self.char_template_list = []
 
         self.create_elements()
 
@@ -197,7 +200,12 @@ class CharacterTemplateEditor(BasicEditor):
         dl = drop_down_list.DropDownList
 
         self.buttons['new_character'] = bu(self, self.new_character_template, text='New Character Template', order=(-2, 0))
+        self.buttons['pick_character'] = bu(self, self.pick_char_to_edit, text='Pick Character to Edit', order=(-2, 1))
+        self.buttons['copy_character'] = bu(self, self.copy_as_template, text='Copy as new Template', order=(-2, 2))
+        self.drop_lists['load_template'] = dl(self, self.char_template_list, self.load_character_template, order=(-2, 3))
+        self.buttons['save_template'] = bu(self, self.save_character_template, text="Save Character Template", order=(-2, 4))
 
+        self.refresh_template_list()
         self.update_element_positions()
 
     def create_character_elements(self): # re-create for new character
@@ -273,21 +281,83 @@ class CharacterTemplateEditor(BasicEditor):
 
 
 
-    def new_character_template(self):
+    def new_character_template(self): # new default template to edit
         self.char_to_edit = character.Character(self.game, 0, 0, 32, 32)
         self.sub_editors = []
         self.create_character_elements()
 
+    def pick_char_to_edit(self): # choose existing character to edit (specific instance of character)
+        def pick(char):
+            self.char_to_edit = char
+            self.sub_editors = []
+            self.create_character_elements()
+            self.buttons['pick_character'].flip_color_rg(False)
+
+        self.game.mouse_controller.pick_object(pick, return_object=True)
+        self.buttons['pick_character'].flip_color_rg(True)
+
+    def copy_as_template(self): # copy current char_to_edit as new template
+        if self.char_to_edit:
+            dic = self.char_to_edit.create_save_dict()
+            self.char_to_edit = character.Character(self.game, 0, 0, 32, 32)
+            self.char_to_edit.load_from_dict(dic)
+            self.sub_editors = []
+            self.create_character_elements()
+
+            self.char_template_name += ' - Copy'
+            self.buttons['rename_character'].text = 'Rename: ' + self.char_template_name
+
     def save_character_template(self):
-        pass
+        def save():
+            dic = self.char_to_edit.create_save_dict()
+            dump = json.dumps(dic)
+            with io.open(os.path.join(CHARACTERS_DIR, self.char_template_name + '.char'), 'wt', encoding='utf-8') as f:
+                f.write(unicode(dump))
+
+            self.refresh_template_list()
+
+        if self.char_template_name in self.char_template_list:
+            msg_box.QuestionBox(self.game, "A character of this name already exists, overwrite?", on_yes_fun=save).show()
+        else:
+            save()
+
+
+    def refresh_template_list(self): # refreshes possible templates
+        del self.char_template_list[:] # empties list, but preserves the reference
+        for f in os.listdir(CHARACTERS_DIR):
+            if f.endswith(".char"):
+                self.char_template_list.append(f[:-5]) # strip .char
+
+        self.drop_lists['load_template'].refresh()
+
+        self.main_editor.get_possible_characters() # refresh list of objects that can be placed
 
     def load_character_template(self):
-        pass
+        fil_name = self.drop_lists['load_template'].selected
+        if fil_name:
+            with io.open(os.path.join(CHARACTERS_DIR, fil_name + '.char'), 'r', encoding='utf-8') as f:
+                dic = json.load(f)
+                self.char_to_edit = character.Character(self.game, 0, 0, 32, 32)
+                self.char_to_edit.load_from_dict(dic)
+                self.sub_editors = []
+                self.create_character_elements()
 
-    def rename_character_template(self):
+                self.char_template_name = fil_name # strip .char
+                self.buttons['rename_character'].text = 'Rename: ' + self.char_template_name
+
+    def rename_character_template(self): # TODO rename the sprite sheet as well
         def new_name(name):
-            self.char_template_name = name
-            self.buttons['rename_character'].text = 'Rename: ' + name
+            def do_rename():
+                if self.char_template_name + '.char' in os.listdir(CHARACTERS_DIR):
+                    os.rename(os.path.join(CHARACTERS_DIR, self.char_template_name + '.char'), os.path.join(CHARACTERS_DIR, name + '.char'))
+                self.char_template_name = name
+                self.buttons['rename_character'].text = 'Rename: ' + name
+                self.refresh_template_list()
+
+            if name in self.char_template_list:
+                msg_box.QuestionBox(self.game, "A character of this name already exists, overwrite?", on_yes_fun=do_rename()).show()
+            else:
+                do_rename()
 
         msg_box.InputBox(self.game, 'Enter template name:', '', new_name).show()
 
@@ -345,7 +415,7 @@ class FearsEditor(BasicEditor):
         for i, f in enumerate(self.possible_fears):
             self.buttons[f] = bu(self, toggle_fear(f), text=f.title(), order=(i // n_col, i % n_col))
             if f in self.character.fears:
-                self.buttons[f].toggle_color_rg(True)
+                self.buttons[f].flip_color_rg(True)
 
 
         self.update_element_positions()
@@ -387,7 +457,7 @@ class ScaredOfEditor(BasicEditor):
         for i, f in enumerate(self.possible_fears):
             self.buttons[f] = bu(self, toggle_fear(f), text=f.title(), order=(i // n_col, i % n_col))
             if f in self.character.scared_of:
-                self.buttons[f].toggle_color_rg(True)
+                self.buttons[f].flip_color_rg(True)
 
 
         self.update_element_positions()

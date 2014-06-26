@@ -26,7 +26,7 @@ class BaseFunction(object):
         d['current_coordinate_index'] = self.current_coordinate_index
         d['module_name'] = self.module_name
 
-        return self.module_name, self.name, d
+        return self.module_name, self.__class__.__name__, d
 
     def load_from_dict(self, d):
         self.coordinates = d['coordinates']

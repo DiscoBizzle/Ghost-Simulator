@@ -91,8 +91,10 @@ class GameObject(object):
 
         #variables for animation
         if not sprite_sheet is None:
+            self.sprite_sheet_name = os.path.join(CHARACTERS_DIR, sprite_sheet)
             self.sprite_sheet = image.load(os.path.join(CHARACTERS_DIR, sprite_sheet))
         else:
+            self.sprite_sheet_name = os.path.join(CHARACTERS_DIR, 'DudeSheet.png')
             self.sprite_sheet = image.load(os.path.join(CHARACTERS_DIR, 'DudeSheet.png'))
 
         # disable texture filtering
@@ -354,9 +356,11 @@ class GameObject(object):
                 self.animation_state = ANIM_LEFTWALK
 
     def _create_animations(self):
+        self._animations = []
         seq_cols = self.sprite_sheet.width // self.sprite_width
         seq_rows = self.sprite_sheet.height // self.sprite_height
         seq = image.ImageGrid(self.sprite_sheet, seq_rows, seq_cols).get_texture_sequence()
         for i in range(seq_rows):
             self._animations.append(image.Animation.from_image_sequence(
                 seq[i * seq_cols:(i + 1) * seq_cols], (1 / TICKS_PER_SEC) * TICKS_PER_FRAME, True))
+

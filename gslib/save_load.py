@@ -8,7 +8,7 @@ from gslib import cutscene
 from gslib import maps
 from gslib.constants import *
 from gslib.editor import trigger_edit
-from gslib.game_objects import character_objects, prop_objects
+from gslib.game_objects import character, prop_objects
 
 
 def save_cutscene_as_dict(cs):
@@ -67,10 +67,10 @@ def create_save_state(m):
 
 
 ##########################################################################################################
-character_type_map = {'Dude': character_objects.Dude,
-                      'SmallDoor': character_objects.SmallDoor,
-                      'Bomb': character_objects.Bomb,
-                      'SpriteBoss': character_objects.SpriteBoss}
+# character_type_map = {'Dude': character_objects.Dude,
+#                       'SmallDoor': character_objects.SmallDoor,
+#                       'Bomb': character_objects.Bomb,
+#                       'SpriteBoss': character_objects.SpriteBoss}
 
 
 def load_object(game, d):
@@ -78,7 +78,7 @@ def load_object(game, d):
     if '_prop' in name:
         new_obj = prop_objects.possible_props[name[:-5]](game)
     else:
-        new_obj = character_type_map[name](game)
+        new_obj = character.Character(game, 0, 0, 32, 32)
     new_obj.load_from_dict(d)
 
     return new_obj

@@ -225,7 +225,7 @@ class MouseController(object):
             return
         # if cursor exists, and is an object prototype, create new object
         if self.game.editor.object_prototype and self.game.cursor == self.game.editor.object_prototype:
-            obj_type = type(self.game.cursor)
+            # obj_type = type(self.game.cursor)
             name = self.game.cursor.__class__.__name__
             while True:
                 if name in self.game.map.objects.keys():
@@ -233,7 +233,11 @@ class MouseController(object):
                 else:
                     break
 
-            self.game.map.objects[name] = obj_type(self.game, x=x, y=y)
+            dic = self.game.editor.object_prototype.create_save_dict()
+            ch = character.Character(self.game, 0, 0, 32, 32)
+            ch.load_from_dict(dic)
+
+            self.game.map.objects[name] = ch
             self.game.gather_buttons_and_drop_lists_and_objects()
             self.interaction_this_click = True
 

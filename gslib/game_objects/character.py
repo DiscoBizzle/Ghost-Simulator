@@ -9,7 +9,7 @@ from gslib.engine import textures, text, sprite, primitives
 from gslib.game_objects.game_object import GameObject
 from gslib.constants import *
 from gslib.character_functions_dir import AI_functions
-import inspect
+from pyglet import image
 
 
 WHITE = (255, 255, 255, 255)
@@ -150,118 +150,118 @@ def save_this(obj):
     return g
 
 
-class Character_old(GameObject):
-    def __init__(self, game_class, x, y, w, h, stats=None, **kwargs):
-        """
-        Characters have various functions to determine their behaviour when things happen.
-        self.feared_function - when the character is scared
-        self.possessed_function - occurs when the character becomes possessed
-        self.unpossessed_function - occurs when the character becomes unpossessed
-        self.harvested_function - when the character has had its fear harvested (ooga booga'd)
-
-        Make these functions in character_functions_dir
-         - Function should take in any parameters and return a function.
-        """
-        super(Character_old, self).__init__(game_class, x, y, w, h, **kwargs)
-        if stats:
-            for f in stats['fears']:
-                self.fears.append(f)
-            for f in stats['scared_of']:
-                self.scared_of.append(f)
-            # self.scared_of.append(u'player')
-
-        self.stats = stats
-        self.info_sheet = draw_info_sheet(self.stats)
-
-        self.feared_function = []
-        self.possessed_function = []
-        self.unpossessed_function = []
-        self.harvested_function = []
-        self.idle_functions = [AI_functions.all_functions_dict['idle_functions']['StandStill'](self)]
-        self.fainted = False
-        self.feared_by_obj = None
-        self.feared_from_pos = (0, 0)
-
-        self.patrol_path = []
-        self.patrol_index = 0
-
-        self.possessed_by = []
-
-        self.held_props = []
-
-        # TODO make easy way to add desired variables to this, perhaps using the decorator above this class and setter's?
-        self._to_save = {'feared_function', 'possessed_function', 'unpossessed_function', 'harvested_function',
-                         'has_touched_function', 'is_touched_function', 'has_untouched_function', 'is_untouched_function',
-                         'stats', 'fears', 'scared_of', 'feared_speed', 'normal_speed',
-                         'states', 'coord', 'collision_weight', 'idle_functions', 'patrol_path', 'patrol_index'}
-
-    def get_stats(self, name):
-        name = name
-        image = os.path.join(CHARACTERS_DIR, name) + '_front.png'
-        age, bio, self.fears = load_stats(name)
-        return {'name': name, 'age': age, 'image_name': image, 'bio': bio}
-
-    def update(self, dt):
-
-        if not self.cutscene_controlling:
-            if not self.possessed_by:
-                self.update_timer += 1
-                #pick random direction (currently only one of 8 directions, but at a random speed)
-
-                if self.update_timer >= 50 and not self.fear_timer:
-                    self.update_timer = 0
-
-                    self.move_down = False
-                    self.move_up = False
-                    self.move_left = False
-                    self.move_right = False
-
-                    for i in self.idle_functions:
-                        i()
-
-                if self.fear_timer:
-                    for f in self.feared_function:
-                        f()
-                    self.fear_timer -= 1
-
-            else:
-                # self.possessed_function(self)
-                self.current_speed = self.normal_speed
-                # tie move to possessing player move
-                self.move_down = self.possessed_by[-1].move_down  # last player to possess get control
-                self.move_up = self.possessed_by[-1].move_up
-                self.move_left = self.possessed_by[-1].move_left
-                self.move_right = self.possessed_by[-1].move_right
-
-        GameObject.update(self, dt)
-
-
-    def create_save_dict(self):
-        to_save = self._to_save
-
-        save_dict = {}
-        for s in to_save:
-            o = getattr(self, s)
-            if isinstance(o, list):
-                if o:
-                    if hasattr(o[0], '__call__'): # check if function
-                        t_list = [f.__name__ for f in o]
-                        save_dict[s] = json.dumps(t_list)
-                        continue
-
-            if s == u'fears':
-                o = list(o)
-            save_dict[s] = json.dumps(o)
-
-        save_dict[u'object_type'] = self.__class__.__name__
-        return save_dict
-
-    def activate(self):
-        pass
+# class Character_old(GameObject):
+#     def __init__(self, game_class, x, y, w, h, stats=None, **kwargs):
+#         """
+#         Characters have various functions to determine their behaviour when things happen.
+#         self.feared_function - when the character is scared
+#         self.possessed_function - occurs when the character becomes possessed
+#         self.unpossessed_function - occurs when the character becomes unpossessed
+#         self.harvested_function - when the character has had its fear harvested (ooga booga'd)
+#
+#         Make these functions in character_functions_dir
+#          - Function should take in any parameters and return a function.
+#         """
+#         super(Character_old, self).__init__(game_class, x, y, w, h, **kwargs)
+#         if stats:
+#             for f in stats['fears']:
+#                 self.fears.append(f)
+#             for f in stats['scared_of']:
+#                 self.scared_of.append(f)
+#             # self.scared_of.append(u'player')
+#
+#         self.stats = stats
+#         self.info_sheet = draw_info_sheet(self.stats)
+#
+#         self.feared_function = []
+#         self.possessed_function = []
+#         self.unpossessed_function = []
+#         self.harvested_function = []
+#         # self.idle_functions = [AI_functions.all_functions_dict['idle_functions']['StandStill'](self)]
+#         self.fainted = False
+#         self.feared_by_obj = None
+#         self.feared_from_pos = (0, 0)
+#
+#         self.patrol_path = []
+#         self.patrol_index = 0
+#
+#         self.possessed_by = []
+#
+#         self.held_props = []
+#
+#         # TODO make easy way to add desired variables to this, perhaps using the decorator above this class and setter's?
+#         self._to_save = {'feared_function', 'possessed_function', 'unpossessed_function', 'harvested_function',
+#                          'has_touched_function', 'is_touched_function', 'has_untouched_function', 'is_untouched_function',
+#                          'stats', 'fears', 'scared_of', 'feared_speed', 'normal_speed',
+#                          'states', 'coord', 'collision_weight', 'idle_functions', 'patrol_path', 'patrol_index'}
+#
+#     def get_stats(self, name):
+#         name = name
+#         image = 'characters/torch.png' # os.path.join(CHARACTERS_DIR, name) + '_front.png'
+#         age, bio, self.fears = load_stats(name)
+#         return {'name': name, 'age': age, 'image_name': image, 'bio': bio}
+#
+#     def update(self, dt):
+#
+#         if not self.cutscene_controlling:
+#             if not self.possessed_by:
+#                 self.update_timer += 1
+#                 #pick random direction (currently only one of 8 directions, but at a random speed)
+#
+#                 if self.update_timer >= 50 and not self.fear_timer:
+#                     self.update_timer = 0
+#
+#                     self.move_down = False
+#                     self.move_up = False
+#                     self.move_left = False
+#                     self.move_right = False
+#
+#                     for i in self.idle_functions:
+#                         i()
+#
+#                 if self.fear_timer:
+#                     for f in self.feared_function:
+#                         f()
+#                     self.fear_timer -= 1
+#
+#             else:
+#                 # self.possessed_function(self)
+#                 self.current_speed = self.normal_speed
+#                 # tie move to possessing player move
+#                 self.move_down = self.possessed_by[-1].move_down  # last player to possess get control
+#                 self.move_up = self.possessed_by[-1].move_up
+#                 self.move_left = self.possessed_by[-1].move_left
+#                 self.move_right = self.possessed_by[-1].move_right
+#
+#         GameObject.update(self, dt)
+#
+#
+#     def create_save_dict(self):
+#         to_save = self._to_save
+#
+#         save_dict = {}
+#         for s in to_save:
+#             o = getattr(self, s)
+#             if isinstance(o, list):
+#                 if o:
+#                     if hasattr(o[0], '__call__'): # check if function
+#                         t_list = [f.__name__ for f in o]
+#                         save_dict[s] = json.dumps(t_list)
+#                         continue
+#
+#             if s == u'fears':
+#                 o = list(o)
+#             save_dict[s] = json.dumps(o)
+#
+#         save_dict[u'object_type'] = self.__class__.__name__
+#         return save_dict
+#
+#     def activate(self):
+#         pass
 
 
 class Character(GameObject):
-    def __init__(self, game_class, x, y, w, h, stats=None, **kwargs):
+    def __init__(self, game_class, x, y, w=32, h=32, stats=None, **kwargs):
         """
         Characters have various functions to determine their behaviour when things happen.
         self.feared_function - when the character is scared
@@ -280,13 +280,14 @@ class Character(GameObject):
                 self.scared_of.append(f)
 
         self.stats = stats
-        self.info_sheet = draw_info_sheet(self.stats)
+        self.info_sheet = None # draw_info_sheet(self.stats)
 
         self.feared_function = []
         self.possessed_function = []
         self.unpossessed_function = []
         self.harvested_function = []
-        self.idle_functions = [AI_functions.all_functions_dict['idle_functions']['StandStill'](self)]
+        self.idle_functions = []
+        # self.idle_functions = [AI_functions.all_functions_dict['idle_functions']['StandStill'](self)]
 
         self.feared_by_obj = None
         self.feared_from_pos = (0, 0)
@@ -296,8 +297,6 @@ class Character(GameObject):
         self.held_offset = (0, 0) # offset from centre when held
         self.held_objects = [] # should not be edited directly - use .held_by on target object
 
-        self.patrol_path = []
-        self.patrol_index = 0
 
         self.possessed_by = []
 
@@ -306,7 +305,8 @@ class Character(GameObject):
         self._to_save = {'feared_function', 'possessed_function', 'unpossessed_function', 'harvested_function',
                          'has_touched_function', 'is_touched_function', 'has_untouched_function', 'is_untouched_function',
                          'stats', 'fears', 'scared_of', 'feared_speed', 'normal_speed',
-                         'states', 'coord', 'collision_weight', 'idle_functions', 'patrol_path', 'patrol_index'}
+                         'states', 'coord', 'collision_weight', 'idle_functions', 'sprite_sheet_name', 'dimensions',
+                         'sprite_width', 'sprite_height'}
 
         self.possessor_gets_motion_control = True
         self.possessable = True
@@ -367,20 +367,28 @@ class Character(GameObject):
 
     def update_idle_or_feared(self, dt):
         self.update_timer += 1
-        self.move_down = False
-        self.move_up = False
-        self.move_left = False
-        self.move_right = False
 
-        if self.fear_timer: # do feared functions while scared
+        if self.fear_timer and len(self.feared_function): # do feared functions while scared
+
+            self.move_down = False
+            self.move_up = False
+            self.move_left = False
+            self.move_right = False
+
             for f in self.feared_function:
-                f.function()
+                f.function(None)
             self.fear_timer -= 1
 
         elif self.update_timer >= 50: # otherwise do idle functions
             self.update_timer = 0
+
+            self.move_down = False
+            self.move_up = False
+            self.move_left = False
+            self.move_right = False
+
             for i in self.idle_functions:
-                i.function()
+                i.function(None)
 
     def update_while_possessed(self, dt):
         if self.possessor_gets_motion_control:
@@ -419,7 +427,6 @@ class Character(GameObject):
         return save_dict
 
     def load_from_dict(self, d):
-
         for k, v in d.iteritems():
             if '_function' in k:
                 func_list = json.loads(v)
@@ -441,7 +448,12 @@ class Character(GameObject):
                 if k == u'fears':
                     fears = json.loads(v)
                     self.fears.extend(fears)
+                elif k == u'sprite_sheet_name':
+                    setattr(self, 'sprite_sheet', image.load(json.loads(v)))
                 setattr(self, k, json.loads(v))
+
+        self._create_animations()
+        self._update_animation()
 
 
 if __name__ == "__main__":

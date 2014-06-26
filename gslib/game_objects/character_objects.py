@@ -59,7 +59,7 @@ class Dude(Character):
         self.normal_speed = 1
         self.feared_speed = 5
 
-        self.feared_function.append(character_functions.panic(self))
+        # self.feared_function.append(character_functions.panic(self))
         # self.idle_functions.append(character_functions.stand_still(self))
 
         self.direction = DOWN

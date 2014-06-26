@@ -78,10 +78,10 @@ class Patrol(IdleFunction):
         tpos = self.coordinates[self.current_coordinate_index]
         cpos = obj.coord
 
-        if tpos == cpos: # advance to next point in patrol
+        if (tpos[0] - cpos[0])**2 + (tpos[1] - cpos[1])**2 < 2500: # advance to next point in patrol
             self.current_coordinate_index += 1
-            self.current_coordinate_index % len(self.coordinates)
-            self.function() # advance to coordinate just changed to
+            self.current_coordinate_index %= len(self.coordinates)
+            self.function(other) # advance to coordinate just changed to
 
         if tpos[0] > cpos[0]: # TODO make this follow pathfinding
             obj.move_right = True

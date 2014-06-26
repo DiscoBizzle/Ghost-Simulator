@@ -131,6 +131,8 @@ class Game(pyglet.event.EventDispatcher):
             'change_map': button.Button(function=self.change_map, pos=(0, 0), size=(20, 20), visible=True, text=u'M',
                                         border_color=(120, 50, 80), border_width=3, color=(120, 0, 0), window=window)}
 
+        self.game_drop_lists = {}
+
         # self.toPossess = None
         self.selected_object = None
 
@@ -152,7 +154,6 @@ class Game(pyglet.event.EventDispatcher):
         self.cursor = None
         self.new_trigger_capture = False
 
-        self.game_drop_lists = {}
 
         self.buttons = {}
         self.drop_lists = {}
