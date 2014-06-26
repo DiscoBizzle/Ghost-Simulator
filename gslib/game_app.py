@@ -236,12 +236,13 @@ class Game(pyglet.event.EventDispatcher):
         elif self.last_state == MAIN_GAME:
             for but in self.game_buttons.itervalues():
                 but.delete_handlers()
+            if self.sound_handler.current_music != '2 ghost lane':
+                self.sound_handler.play_music('2 ghost lane')
         if state == MAIN_GAME:
             for but in self.game_buttons.itervalues():
                 but.create_handlers()
-            if self.sound_handler.music_playing is not None:
-                if self.sound_handler.music_playing.name != 'transylvania':
-                    self.sound_handler.play_music('transylvania')
+            if self.sound_handler.current_music != 'transylvania':
+                self.sound_handler.play_music('transylvania')
         elif state == EDITOR:
             self.editor.enter_edit_mode()
         elif state == CREDITS:
