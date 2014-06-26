@@ -90,12 +90,11 @@ class GameObject(object):
         self.scream_thresh = 50
 
         #variables for animation
-        if not sprite_sheet is None:
-            self.sprite_sheet_name = os.path.join(CHARACTERS_DIR, sprite_sheet)
-            self.sprite_sheet = image.load(os.path.join(CHARACTERS_DIR, sprite_sheet))
+        if sprite_sheet is not None:
+            self.sprite_sheet_name = sprite_sheet
         else:
-            self.sprite_sheet_name = os.path.join(CHARACTERS_DIR, 'DudeSheet.png')
-            self.sprite_sheet = image.load(os.path.join(CHARACTERS_DIR, 'DudeSheet.png'))
+            self.sprite_sheet_name = 'DudeSheet.png'
+        self.sprite_sheet = image.load(os.path.join(CHARACTERS_DIR, self.sprite_sheet_name))
 
         # disable texture filtering
         texture = self.sprite_sheet.get_texture()
