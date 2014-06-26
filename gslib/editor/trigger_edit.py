@@ -317,7 +317,7 @@ class TriggerEditor(object):
         self.drop_lists['new_action'] = dl(self, trigger_functions_dict, self.add_action, order=(7, 1))
         self.drop_lists['actions'] = dl(self, {}, self.select_action, order=(7, 2), labels='func_name')
         self.buttons['delete_action'] = db(self, self.delete_action, text="Delete Action", order=(7, 3))
-        self.drop_lists['action_options'] = dl(self, {}, self.set_action_option, order=(7, 4), visible=False, enabled=False)
+        self.drop_lists['action_options'] = dl(self, {}, self.set_action_option, order=(7, 4), visible=False)
 
 
         self.update_element_positions()

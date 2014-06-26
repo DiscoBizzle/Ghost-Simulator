@@ -61,7 +61,8 @@ class BasicEditor(object):
         self._pos = (0, 0)
         self.toggle_pos = toggle_pos
         self.toggle_order = toggle_order
-        self.buttons[self.toggle_button_name] = button.DefaultButton(self, self.toggle_self, text=toggle_button_text, pos=toggle_pos)
+        self.toggle_button = button.DefaultButton(self, self.toggle_self, text=toggle_button_text, pos=toggle_pos)
+        self.buttons[self.toggle_button_name] = self.toggle_button
 
         self.pos = pos
 
@@ -141,6 +142,8 @@ class BasicEditor(object):
         self.buttons[self.toggle_button_name].flip_color_rg(self.enabled)
 
         for t in self.sub_editors:
+            t.toggle_button.enabled = self.enabled
+            t.toggle_button.visible = self.enabled
             if t.enabled: # close open sub-editors, but don't open them
                 t.toggle_self(value)
 

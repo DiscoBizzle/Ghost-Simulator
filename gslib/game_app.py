@@ -155,8 +155,6 @@ class Game(pyglet.event.EventDispatcher):
         self.new_trigger_capture = False
 
 
-        self.buttons = {}
-        self.drop_lists = {}
         self.objects = {}
         self.gather_buttons_and_drop_lists_and_objects()
 
@@ -175,7 +173,6 @@ class Game(pyglet.event.EventDispatcher):
         self.sound_handler.play_music('2 ghost lane')
 
         self.message_box = None  # If set, a message box taking all focus is being displayed.
-        self.text_caret = None   # If set, all keyboard input & copy of mouse events should be posted to this object.
 
         self.dialogue = None  # If set, dialogue is being played.
 
@@ -235,12 +232,12 @@ class Game(pyglet.event.EventDispatcher):
             self.game_over_screen.remove_handlers(self)
         elif self.last_state == MAIN_GAME:
             for but in self.game_buttons.itervalues():
-                but.delete_handlers()
+                but.enabled = False
             if self.sound_handler.current_music != '2 ghost lane':
                 self.sound_handler.play_music('2 ghost lane')
         if state == MAIN_GAME:
             for but in self.game_buttons.itervalues():
-                but.create_handlers()
+                but.enabled = True
             if self.sound_handler.current_music != 'transylvania':
                 self.sound_handler.play_music('transylvania')
         elif state == EDITOR:
@@ -283,9 +280,6 @@ class Game(pyglet.event.EventDispatcher):
         self.update_camera()
 
     def gather_buttons_and_drop_lists_and_objects(self):
-        self.buttons = dict(self.game_buttons.items())
-        self.drop_lists = dict(self.game_drop_lists.items())
-
         self.objects = dict(self.players.items() + self.map.objects.items())
         if self.cursor:
             self.objects['cursor'] = self.cursor

@@ -112,38 +112,6 @@ class RGButton(button.Button):
     def get(self):
         return [self]
 
-    @property
-    def x(self):
-        return self.pos[0]
-
-    @x.setter
-    def x(self, v):
-        self.pos = (v, self.pos[1])
-
-    @property
-    def y(self):
-        return self.pos[1]
-
-    @y.setter
-    def y(self, v):
-        self.pos = (self.pos[0], v)
-
-    @property
-    def width(self):
-        return self.size[0]
-
-    @width.setter
-    def width(self, v):
-        self.size = (v, self.size[1])
-
-    @property
-    def height(self):
-        return self.size[1]
-
-    @height.setter
-    def height(self, v):
-        self.size = (self.size[0], v)
-
     def do_layout(self):
         pass
 
@@ -155,38 +123,6 @@ class RGDropDownList(drop_down_list.DropDownList):
 
     def get(self):
         return [self]
-
-    @property
-    def x(self):
-        return self.pos[0]
-
-    @x.setter
-    def x(self, v):
-        self.pos = (v, self.pos[1])
-
-    @property
-    def y(self):
-        return self.pos[1]
-
-    @y.setter
-    def y(self, v):
-        self.pos = (self.pos[0], v)
-
-    @property
-    def width(self):
-        return self.size[0]
-
-    @width.setter
-    def width(self, v):
-        self.size = (v, self.size[1])
-
-    @property
-    def height(self):
-        return self.size[1]
-
-    @height.setter
-    def height(self, v):
-        self.size = (self.size[0], v)
 
     def do_layout(self):
         pass

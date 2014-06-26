@@ -43,23 +43,7 @@ class KeyController(object):
         self.keys.on_key_release(symbol, modifiers)
         self.handle_keys(symbol, modifiers)
 
-    def on_text(self, text):
-        if self.game.text_caret is not None:
-            self.game.text_caret.on_text(text)
-
-    def on_text_motion(self, motion):
-        if self.game.text_caret is not None:
-            self.game.text_caret.on_text_motion(motion)
-
-    def on_text_motion_select(self, motion):
-        if self.game.text_caret is not None:
-            self.game.text_caret.on_text_motion_select(motion)
-
     def handle_keys(self, symbol, modifiers):
-        # text input mode?
-        if self.game.text_caret is not None:
-            return
-
         if self.game.state == KEYBIND_CAPTURE:
             self.rebind(symbol)
             self.game.state = KEYBIND_MENU

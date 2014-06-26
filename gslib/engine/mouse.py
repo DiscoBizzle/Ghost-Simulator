@@ -62,27 +62,17 @@ class MouseController(object):
                 self.interaction_this_click = True
             self.position_capture_function = f
 
-    def post_to_text_caret(self, fun_name, *args):
-        # post copy to text editor if set. don't overlap the text editor with usable controls!
-        # (input message boxes get away with it because they disable all non-msgbox controls.)
-        if self.game.text_caret is not None and hasattr(self.game.text_caret, fun_name):
-            getattr(self.game.text_caret, fun_name)(*args)
-
     def on_mouse_motion(self, x, y, dx, dy):
         self.mouse_move((x, y))
-        self.post_to_text_caret('on_mouse_motion', x, y, dx, dy)
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.mouse_move((x, y))
-        self.post_to_text_caret('on_mouse_drag', x, y, dx, dy, buttons, modifiers)
 
     def on_mouse_press(self, x, y, button, modifiers):
         self.mouse_click((x, y), 'down', button)
-        self.post_to_text_caret('on_mouse_press', x, y, button, modifiers)
 
     def on_mouse_release(self, x, y, button, modifiers):
         self.mouse_click((x, y), 'up', button)
-        self.post_to_text_caret('on_mouse_release', x, y, button, modifiers)
 
     def on_mouse_scroll(self, x, y, dx, dy):
         self.game.zoom += dy / 10
@@ -90,14 +80,6 @@ class MouseController(object):
     def mouse_click(self, pos, typ, button):
         self.interaction_this_click = False
         if self.game.state == MAIN_GAME or self.game.state == EDITOR:
-
-            if not self.interaction_this_click:
-                self.check_list_event(pos, typ, button)
-
-            if not self.interaction_this_click:
-                self.check_button_click(pos, typ, button)
-
-
             if not self.interaction_this_click and self.position_capture_request:
                 self.position_capture_request = False
                 self.position_capture_function(pos, typ, button)
@@ -121,8 +103,6 @@ class MouseController(object):
         if self.game.state == MAIN_GAME or self.game.state == EDITOR:
             if self.game.message_box:
                 return
-            for k, v in dict(self.game.drop_lists, **self.game.editor.get_lists() if self.game.state == EDITOR else {}).iteritems():
-                v.handle_event(pos, 'move')
             if self.game.cursor:
                 self.game.cursor.coord = self.calc_cursor_coord(pos, 'move')
 
@@ -179,42 +159,6 @@ class MouseController(object):
             self.game.players['player1'].path = path or []
             print(path)
             self.interaction_this_click = True
-
-    def check_button_click(self, pos, typ, mouse_button=None):
-        if typ == 'up':
-            return
-        to_click = None
-        if self.game.message_box is not None:
-            for button in self.game.message_box.buttons:
-                if button.check_clicked_no_function(pos):
-                    to_click = button
-            self.interaction_this_click = True  # never continue checking when message box is up
-        else:
-            for button in dict(self.game.buttons, **self.game.editor.get_buttons() if self.game.state == EDITOR else {}).itervalues():
-                if button.check_clicked_no_function(pos):
-                    to_click = button
-
-        if to_click:
-            self.interaction_this_click = True
-            # self.button_to_click = to_click
-            if self.game.state == EDITOR and not (to_click.text == "Undo" or to_click.text == "Redo") and not self.game.message_box:
-                self.game.editor.create_undo_state()
-            to_click.perf_function()
-            # if button.check_clicked(pos):
-            #     self.interaction_this_click = True
-
-    def check_list_event(self, pos, typ, button=None):
-        to_click = None
-        for v in dict(self.game.drop_lists, **self.game.editor.get_lists() if self.game.state == EDITOR else {}).itervalues():
-            if v.check_click_within_area(pos):
-                to_click = v
-                if v.open:
-                    break
-        if to_click:
-            if self.game.state == EDITOR:
-                self.game.editor.create_undo_state()
-            if to_click.handle_event(pos, typ, button):
-                self.interaction_this_click = True
 
     def editor_click(self, pos, typ, button=None):
         if typ == 'up':  # only detect mouse down

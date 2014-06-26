@@ -8,6 +8,7 @@ from gslib.constants import *
 from gslib.engine import textures, text, sprite, primitives, rect, camera
 from gslib.game_objects.player import Player
 from gslib import options, window
+from gslib.ui import drop_down_list
 
 
 circle_tex = None
@@ -87,7 +88,7 @@ class Graphics(object):
             self.game.dialogue.draw()
 
         if self.game.message_box is not None:
-            self.game.message_box.draw()
+            self.game.screen_objects_to_draw.append(self.game.message_box)
 
         if options['FOV']:
             self.draw_world_objects()
@@ -135,32 +136,19 @@ class Graphics(object):
                 self.game.world_objects_to_draw.append(r)
 
     def draw_buttons(self):
-        for button in dict(self.game.buttons, **self.game.editor.get_buttons() if self.game.state == EDITOR else {}).itervalues():
-            if not button.visible:
-                continue
-            self.game.screen_objects_to_draw.append(button)
+        self.game.screen_objects_to_draw.extend(self.game.game_buttons.values())
+        if self.game.state == EDITOR:
+            self.game.screen_objects_to_draw.extend(self.game.editor.get_buttons().values())
 
     def draw_drop_lists(self):
-        priority_buttons = []
-        for l in dict(self.game.drop_lists, **self.game.editor.get_lists() if self.game.state == EDITOR else {}).itervalues():
-            if not l.visible:
-                continue
-            if hasattr(l, 'main_button'):
-                self.game.screen_objects_to_draw.append(l.main_button)
-            if not l.open:
-                continue
-            for b in l.drop_buttons:
-                if l.open and l.__class__.__name__ != "List":
-                    priority_buttons.append(b)
-                else:
-                    self.game.screen_objects_to_draw.append(b)
-
-            if hasattr(l, 'slider'):
-                if l.open:
-                    priority_buttons.append(l.slider)
-                else:
-                    self.game.screen_objects_to_draw.append(l.slider)
-        self.game.screen_objects_to_draw += priority_buttons
+        if self.game.state == EDITOR:
+            for dl in self.game.editor.get_lists().itervalues():
+                self.game.screen_objects_to_draw.append(dl.main_button)
+            for dl in self.game.editor.get_lists().itervalues():
+                if dl.open:
+                    self.game.screen_objects_to_draw.extend(dl.drop_buttons)
+                    if isinstance(dl, drop_down_list.DropDownListSlider):
+                        self.game.screen_objects_to_draw.append(dl.slider)
 
     def draw_objects(self):
         for o in sorted(self.game.objects.values() + self.game.map.static_objects, key=(lambda obj: -obj.coord[1])):

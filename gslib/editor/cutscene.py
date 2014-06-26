@@ -34,6 +34,7 @@ class CutsceneEditor(object):
         # Misc
         self.toggle_button = pu(button.DefaultButton(self, self.toggle_visible, pos=(0, window.height - 20),
                                                      size=(100, 20), text="Cutscenes"))
+        self.toggle_button.enabled = True
         self.cutscene_list = pu(drop_down_list.DropDownList(self, self.cutscenes, self.select_cutscene,
                                                             pos=(980, window.height - 55),
                                                             size=(300, 20)))
@@ -80,7 +81,7 @@ class CutsceneEditor(object):
         self.selected_cutscene_action = None
         self.cutscene_actions_desc = collections.OrderedDict()
 
-        self.cutscene_actions_list = pu(list_box.List(self, self.cutscene_actions_desc, self.select_cutscene_action,
+        self.cutscene_actions_list = pu(drop_down_list.DropDownList(self, self.cutscene_actions_desc, self.select_cutscene_action,
                                                       pos=(930, window.height - 95), size=(350, 20)))
 
         self.dyn_buttons = []
@@ -92,8 +93,8 @@ class CutsceneEditor(object):
 
         self.hint = None
 
-        # hide by default
-        self.toggle_visible()
+        self.visible = False
+        self._update_visible()
 
     def _get_buttons(self):
         return self.static_buttons + self.dyn_buttons
@@ -104,13 +105,16 @@ class CutsceneEditor(object):
     buttons = property(_get_buttons)
     lists = property(_get_lists)
 
-
-    def toggle_visible(self):
+    def _update_visible(self):
         for ce in self.static_buttons + self.static_lists + self.dyn_buttons + self.dyn_lists:
             if ce != self.toggle_button:
-                ce.visible = not ce.visible
-                ce.enabled = not ce.enabled
+                ce.visible = self.visible
+                ce.enabled = self.visible
         self.toggle_button.flip_color_rg(self.play_button.visible) # green/red if activated/deactivated
+
+    def toggle_visible(self):
+        self.visible = not self.visible
+        self._update_visible()
 
     def change_cutscene_action_list_selection(self, action):
         if action is None:
@@ -168,7 +172,7 @@ class CutsceneEditor(object):
 
         def add_control(x):
             # ALL the boilerplate!
-            if isinstance(x, drop_down_list.DropDownList) or isinstance(x, list_box.List):
+            if isinstance(x, drop_down_list.DropDownList):
                 self.dyn_lists.append(x)
             elif isinstance(x, button.Button):
                 self.dyn_buttons.append(x)

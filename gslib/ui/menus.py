@@ -9,10 +9,11 @@ from gslib import options, window
 
 
 class MenuButton(button.Button):
-    def __init__(self, order=(0, 0), border_color=(120, 50, 80), border_width=3, color=(120, 0, 0), **kwargs):
+    def __init__(self, order=(0, 0), border_color=(120, 50, 80), border_width=3, color=(120, 0, 0), text_font=FONT,
+                 text_color=(200, 200, 200, 255), **kwargs):
         self.order = order
         super(MenuButton, self).__init__(border_color=border_color, border_width=border_width, color=color,
-                                         window=window, **kwargs)
+                                         window=window, text_font=text_font, text_color=text_color, **kwargs)
 
 
 class MenuSlider(slider.Slider):
@@ -21,11 +22,7 @@ class MenuSlider(slider.Slider):
         super(MenuSlider, self).__init__(window=window, **kwargs)
 
 
-class MenuLabel(button.Button):
-    def __init__(self, order=(0, 0), border_color=(120, 50, 80), border_width=3, color=(120, 0, 0), **kwargs):
-        self.order = order
-        super(MenuLabel, self).__init__(border_color=border_color, border_width=border_width, color=color,
-                                        window=window, **kwargs)
+class MenuLabel(MenuButton):
 
     # FIXME: currently nuking button handlers until a Labal control is made
     def create_handlers(self):
@@ -73,12 +70,11 @@ class Menu(object):
             window.push_handlers(self)
             options.push_handlers(self)
             for control in self.controls.itervalues():
-                control.create_handlers()
-                control.update()
+                control.enabled = True
             self.arrange_buttons()
         else:
             for control in self.controls.itervalues():
-                control.delete_handlers()
+                control.enabled = False
             window.remove_handlers(self)
             options.remove_handlers(self)
 

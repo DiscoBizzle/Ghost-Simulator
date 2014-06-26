@@ -142,6 +142,7 @@ class Editor(object):
         ###################################################################
 
         self.trigger_editor = trigger_edit.TriggerEditor(self.game)
+        self.buttons['toggle_trigger_editor'] = self.trigger_editor.buttons['toggle_trigger_editor']
 
         self.buttons = dict(self.buttons.items() + self.trigger_editor.buttons.items())
         self.drop_lists = dict(self.drop_lists.items() + self.trigger_editor.drop_lists.items())
@@ -151,6 +152,7 @@ class Editor(object):
         ###################################################################
 
         self.character_template_editor = character_edit.CharacterTemplateEditor(self.game, self)
+        self.buttons['toggle_char_edit'] = self.character_template_editor.toggle_button
 
         # # add prefix to keys, then combine with main editor buttons
         # char_edit_buttons_prefixed = {}
@@ -232,7 +234,7 @@ class Editor(object):
 
         self.buttons['delete_selection'] = button.DefaultButton(self, self.delete_selected_object,
                                                         pos=(window.width - 210 - h_off, window.height - v_off - 200),
-                                                        size=(100, 20), text="Delete Object", visible=True, enabled=True)
+                                                        size=(100, 20), text="Delete Object", visible=True)
         #
         #
         # self.object_edit_buttons += ['fears_checklist_toggle', 'scared_of_checklist_toggle',
@@ -257,18 +259,20 @@ class Editor(object):
         ###################################################################
         self.buttons['save_map'] = button.DefaultButton(self, self.save_map,
                                                         pos=(window.width - 100 - h_off, window.height - v_off - 200),
-                                                        size=(100, 20), text="Save Map", visible=True, enabled=True)
+                                                        size=(100, 20), text="Save Map", visible=True)
 
         self.buttons['undo'] = button.DefaultButton(self, self.undo,
                                                         pos=(window.width - 210 - h_off, window.height - v_off - 170),
-                                                        size=(100, 20), text="Undo", visible=True, enabled=True)
+                                                        size=(100, 20), text="Undo", visible=True)
 
         self.buttons['redo'] = button.DefaultButton(self, self.redo,
                                                         pos=(window.width - 100 - h_off, window.height - v_off - 170),
-                                                        size=(100, 20), text="Redo", visible=True, enabled=True)
+                                                        size=(100, 20), text="Redo", visible=True)
 
-        self.stored_button_enabled_state = {}
-        self.stored_list_enabled_state = {}
+        self.stored_button_enabled_state = {'place_object_label': True, 'toggle_trigger_editor': True,
+                                            'delete_selection': True, 'toggle_char_edit': True, 'save_map': True,
+                                            'undo': True, 'redo': True}
+        self.stored_list_enabled_state = {'place_object': True}
 
     def list_to_dict_shabby(self, base_key, l):
         k = 0
@@ -340,6 +344,7 @@ class Editor(object):
         for lk, lv in self.drop_lists.iteritems():
             self.stored_list_enabled_state[lk] = lv.enabled
             lv.enabled = False
+        self.character_template_editor.toggle_self(False)
 
     def enable_main_editor(self):
         for bk, be in self.stored_button_enabled_state.iteritems():
@@ -354,9 +359,11 @@ class Editor(object):
             save_load.restore_save_state(self.game, self.game.map, self.save_state)
             # refresh all things that refer to specific entities that have been re-created
             self.drop_lists['triggers'].refresh()
+        self.enable_main_editor()
 
     def exit_edit_mode(self):
         self.save_state = save_load.create_save_state(self.game.map)
+        self.disable_main_editor()
 
     def delete_selected_object(self):
         del self.game.map.objects[self.object_to_edit_name]
