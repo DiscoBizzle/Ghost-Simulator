@@ -352,7 +352,7 @@ class Game(pyglet.event.EventDispatcher):
 
         zoom = self.zoom
 
-        player_xs, player_ys = zip(*map(lambda p: p.coord, self.players.itervalues()))
+        player_xs, player_ys = zip(*(p.coord for p in self.players.itervalues()))
 
         # adjust zoom if maximum distance between players adjusted for zoom is greater than the window width
         # add TILE_SIZE so the whole player can stay in view
@@ -376,7 +376,7 @@ class Game(pyglet.event.EventDispatcher):
         level_width = LEVEL_WIDTH * zoom
         level_height = LEVEL_HEIGHT * zoom
 
-        pad_left, pad_right, pad_top, pad_bottom = map(lambda p: p * zoom, self.camera_padding)
+        pad_left, pad_right, pad_top, pad_bottom = (p * zoom for p in self.camera_padding)
 
         if pad_left + level_width + pad_right < w:
             # level fits in window so center it

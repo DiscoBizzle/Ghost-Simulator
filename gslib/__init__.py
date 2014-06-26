@@ -27,10 +27,11 @@ class GameWindow(pyglet.window.Window):
             self.set_fullscreen(fullscreen=value)
             options['resolution'] = self.get_size()
         elif key == 'resolution':
+            width, height = value
             if self.fullscreen:
-                self.set_fullscreen(width=value[0], height=value[1])
+                self.set_fullscreen(width=width, height=height)
             else:
-                self.set_size(*value)
+                self.set_size(width, height)
 
 
 options = Options(DEFAULT_OPTIONS)

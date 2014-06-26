@@ -42,12 +42,13 @@ class Credits(pyglet.event.EventDispatcher):
         self.v_offset = 0
         self.batch = pyglet.graphics.Batch()
 
-        text = u""
+        items = []
         for job, names in self.credits.iteritems():
-            text += job + '\n'
+            items.append(u'{}\n'.format(job))
             for name in names:
-                text += '\t' + name + '\n'
-            text += '\n'
+                items.append(u'\t{}\n'.format(name))
+            items.append(u'\n')
+        text = u''.join(items)
 
         self.text_label = pyglet.text.Label(text, FONT, self.font_size, color=self.color,
                                             width=window.width, batch=self.batch, multiline=True)
