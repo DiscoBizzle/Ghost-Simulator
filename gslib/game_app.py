@@ -10,7 +10,7 @@ from gslib import skills
 from gslib.editor.main_editor import Editor
 from gslib import save_load
 
-# from gslib import walrus
+from gslib import walrus
 from gslib.engine import mouse, key, graphics, movie, sound, joy, camera
 from gslib.constants import *
 from gslib.class_proxy import Proxy
@@ -142,7 +142,7 @@ class Game(pyglet.event.EventDispatcher):
 
         self.show_fears = False
         self.show_ranges = False
-        # self.walrus = walrus.MetaWalrus()
+        self.walrus = walrus.MetaWalrus()
 
         self.key_controller.load()
 
@@ -271,8 +271,10 @@ class Game(pyglet.event.EventDispatcher):
         if options['VOF']:
             self.graphics.field.draw()
 
+        if options['walrus']:
+            self.walrus.walruss()
+
         self.fps_clock.draw()
-        #self.walrus.walruss()
         self.ticks_clock_display.draw()
         self.draw_clock_display.draw()
 
@@ -293,7 +295,8 @@ class Game(pyglet.event.EventDispatcher):
             # PHYSICS & COLLISION MUST BE DONE WITH FIXED TIMESTEP.
             #self.objects.append(character.Character(self, 50, 50, 16, 16, character.gen_character()))
             self.ticks_clock.tick()
-            #self.walrus.walrusss(self.dimensions[0], self.dimensions[1])
+            if options['walrus']:
+                self.walrus.walrusss(window.width, window.height)
 
             if self.message_box:
                 self.message_box.update()

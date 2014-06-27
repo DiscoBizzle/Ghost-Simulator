@@ -110,4 +110,5 @@ FONT = ['Helvetica']
 
 DEFAULT_OPTIONS = {'FOV': True, 'VOF': False, 'torch': False, 'menu_scale': False, 'vsync': False,
                    'sound_volume': INITIAL_SOUND_VOLUME, 'music_volume': INITIAL_MUSIC_VOLUME,
-                   'fullscreen': False, 'resolution': (GAME_WIDTH, GAME_HEIGHT), 'VOF_opacity': 128}
+                   'fullscreen': False, 'resolution': (GAME_WIDTH, GAME_HEIGHT), 'VOF_opacity': 128,
+                   'walrus': False}

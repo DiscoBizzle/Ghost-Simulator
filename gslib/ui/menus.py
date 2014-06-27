@@ -238,6 +238,9 @@ class OptionsMenu(Menu):
         self.controls['reset'] = MenuButton(order=(11, 0), function=options.reset_options, text=u'Reset Options',
                                             batch=self.batch)
 
+        self.controls['walrus'] = OptionsMenuToggleCheckBox(order=(13, 0), option_key='walrus', display_text=u'WALRUS',
+                                                            batch=self.batch)
+
     @staticmethod
     def vof_value(val):
         options['VOF_opacity'] = val
