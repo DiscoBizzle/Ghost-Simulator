@@ -39,9 +39,6 @@ class MessageBox(pyglet.event.EventDispatcher):
         for b in self.buttons:
             b.draw()
 
-    def update(self):
-        pass
-
 MessageBox.register_event_type('on_hide')
 
 
@@ -90,9 +87,8 @@ class InputBox(InfoBox):
         if on_finish_input_fun is not None:
             self.on_finish_input = on_finish_input_fun
 
-        self.input = start_input
         self.text_document = pyglet.text.document.FormattedDocument()
-        self.text_document.text = self.input
+        self.text_document.text = start_input
         self.text_layout = pyglet.text.layout.IncrementalTextLayout(self.text_document, 300, 50, multiline=False)
         self.text_layout.x = 400
         self.text_layout.y = 310
@@ -110,14 +106,11 @@ class InputBox(InfoBox):
     def hide(self):
         super(InputBox, self).hide()
         window.remove_handlers(self)
-        self.dispatch_event('on_finish_input', self.input)
+        self.dispatch_event('on_finish_input', self.text_document.text)
 
     def draw(self):
         super(InputBox, self).draw()
         self.text_layout.draw()
-
-    def update(self):
-        self.input = self.text_document.text
 
     def on_activate(self):
         return self.text_caret.on_activate()

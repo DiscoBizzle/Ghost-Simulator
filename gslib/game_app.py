@@ -298,9 +298,6 @@ class Game(pyglet.event.EventDispatcher):
             if options['walrus']:
                 self.walrus.walrusss(window.width, window.height)
 
-            if self.message_box:
-                self.message_box.update()
-
             if self.state == MAIN_GAME or self.state == EDITOR:
 
                 self.last_touching = self.touching[:]  # creates a copy
