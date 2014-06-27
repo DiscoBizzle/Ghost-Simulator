@@ -1,5 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
+import pyglet
+
 from gslib.ui import button, slider
 from gslib.utils import ExecOnChange, exec_on_change_meta
 from gslib.ui import control
@@ -20,7 +22,7 @@ def list_func(owner, val, text=None):
                 owner.selected = val
             else:
                 owner.selected = owner.items[val]
-        if owner.function:
+        if owner.function is not None:
             owner.function()
     return func
 
@@ -36,8 +38,9 @@ class DropDownList(control.Control):
     font_size = ExecOnChange
     selected_name = ExecOnChange
 
-    def __init__(self, owner, items, function=None, color=(120, 0, 0),
-                 border_color=(120, 50, 80), border_width=2, text=None, font_size=10, labels='dictkey', order=(0, 0), **kwargs):
+    def __init__(self, owner=None, items=None, function=None, color=(120, 0, 0),
+                 border_color=(120, 50, 80), border_width=2, text=None, font_size=10, labels='dictkey', order=(0, 0),
+                 window=window, **kwargs):
         super(DropDownList, self).__init__(window=window, **kwargs)
         self.color = color
         self.border_color = border_color
@@ -47,6 +50,8 @@ class DropDownList(control.Control):
         self.labels = labels
         self._open = False
 
+        self._drop_group = pyglet.graphics.OrderedGroup(99, self._group)
+
         self.function = function
 
         self.order = order
@@ -55,10 +60,11 @@ class DropDownList(control.Control):
         self.items = items
         self.selected_name = "<None>"
         self.selected = None
-        self.main_button = button.DefaultButton(owner=self, function=self.main_button_click, pos=self.pos, size=self.size, font_size=font_size, visible=self.visible,
-                                         text=u"<None>",
-                                         border_color=self.border_color, border_width=self.border_width,
-                                         color=self.color)
+        self.main_button = button.DefaultButton(owner=self, function=self.main_button_click, pos=self.pos,
+                                                size=self.size, font_size=font_size, visible=self.visible,
+                                                text=u"<None>", border_color=self.border_color,
+                                                border_width=self.border_width, color=self.color, batch=self._batch,
+                                                group=self._group)
         self.drop_buttons = []
 
         self.first_time = True
@@ -92,10 +98,13 @@ class DropDownList(control.Control):
         if not new_items is None:
             self.items = new_items
 
-        self.drop_buttons = [button.DefaultButton(self, list_func(self, None), size=self.size, font_size=self.font_size,
-                                               visible=False, text=u"<None>",
-                                               border_color=self.border_color, border_width=self.border_width,
-                                               color=self.color)]
+        for b in self.drop_buttons:
+            b.delete()
+
+        self.drop_buttons = [
+            button.DefaultButton(self, list_func(self, None), size=self.size, font_size=self.font_size, visible=False,
+                                 text=u"<None>", border_color=self.border_color, border_width=self.border_width,
+                                 color=self.color, batch=self._batch, group=self._drop_group)]
 
         if isinstance(self.items, list):
             for i in self.items:
@@ -105,10 +114,11 @@ class DropDownList(control.Control):
                     t = i.__class__.__name__
                 else:
                     t = str(i)
-                self.drop_buttons.append(button.DefaultButton(self, list_func(self, i, t), size=self.size, font_size=self.font_size,
-                                                   visible=False, text=t,
-                                                   border_color=self.border_color, border_width=self.border_width,
-                                                   color=self.color))
+                self.drop_buttons.append(
+                    button.DefaultButton(self, list_func(self, i, t), size=self.size, font_size=self.font_size,
+                                         visible=False, text=t, border_color=self.border_color,
+                                         border_width=self.border_width, color=self.color, batch=self._batch,
+                                         group=self._drop_group))
         else:
             for k, v in self.items.iteritems():
                 if self.labels == 'classname':
@@ -117,10 +127,11 @@ class DropDownList(control.Control):
                     t += unicode(k)
                 else:
                     t = unicode(k)
-                self.drop_buttons.append(button.DefaultButton(self, list_func(self, k, t), size=self.size, font_size=self.font_size,
-                                                       visible=False, text=t,
-                                                       border_color=self.border_color, border_width=self.border_width,
-                                                       color=self.color))
+                self.drop_buttons.append(
+                    button.DefaultButton(self, list_func(self, k, t), size=self.size, font_size=self.font_size,
+                                         visible=False, text=t, border_color=self.border_color,
+                                         border_width=self.border_width, color=self.color, batch=self._batch,
+                                         group=self._drop_group))
 
         if not self.first_time: # prevent self.function() being run before the owner of this list is fully initialised
             self.set_to_default()
@@ -142,7 +153,7 @@ class DropDownList(control.Control):
             b.color = self.color
             b.border_color = self.border_color
             b.size = self.size
-            b.visible = self.visible
+            b.visible = self.open and self.visible
             b.font_size = self.font_size
             b.pos = (self.pos[0], self.pos[1] - (1 + i) * self.size[1])
 

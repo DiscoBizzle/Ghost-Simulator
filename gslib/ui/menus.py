@@ -4,7 +4,7 @@ import pyglet
 
 from gslib.constants import *
 from gslib.engine import text
-from gslib.ui import button, slider
+from gslib.ui import button, slider, drop_down_list
 from gslib import options, window
 
 
@@ -30,6 +30,12 @@ class MenuLabel(MenuButton):
 
     def delete_handlers(self):
         pass
+
+
+class MenuDropDownList(drop_down_list.DropDownList):
+    def __init__(self, order=(0, 0), **kwargs):
+        super(MenuDropDownList, self).__init__(window=window, **kwargs)
+        self.order = order
 
 
 class Menu(object):
@@ -208,7 +214,9 @@ class OptionsMenu(Menu):
         self.controls['fullscreen'] = OptionsMenuToggleCheckBox(order=(3, 0), option_key='fullscreen',
                                                                 display_text='Fullscreen', batch=self.batch)
         self.controls['screen_size_display'] = MenuLabel(order=(4, 0), text=u'Screen Size:', batch=self.batch)
-        self.controls['screen_size'] = MenuButton(order=(4, 1), function=self.set_screen_size, batch=self.batch)
+        pos_res = [(1024, 768), (1280, 720), (1600, 900), (1920, 1080)]
+        self.controls['screen_size'] = MenuDropDownList(order=(4, 1), items=pos_res, function=self.set_screen_size,
+                                                        batch=self.batch)
 
         self.controls['sound_display'] = MenuLabel(order=(5, 0), batch=self.batch)
         self.controls['sound'] = MenuSlider(order=(5, 1), function=self.set_sound, range=(0.0, 2.0), batch=self.batch)
@@ -257,17 +265,11 @@ class OptionsMenu(Menu):
         self.controls['sound'].value = options['sound_volume']
         self.controls['music'].value = options['music_volume']
 
-        self.controls['screen_size'].text = u"{}\u00D7{}".format(*options['resolution'])
+        self.controls['screen_size'].selected_name = u"{}\u00D7{}".format(*options['resolution'])
 
-    @staticmethod
-    def set_screen_size():
-        # possible resolutions
-        pos_res = [(1024, 768), (1280, 720), (1600, 900), (1920, 1080)]
-        res = options['resolution']
-        if res in pos_res:
-            options['resolution'] = pos_res[(pos_res.index(res) + 1) % len(pos_res)]
-        else:
-            options['resolution'] = pos_res[0]
+    def set_screen_size(self):
+        if self.controls['screen_size'].selected is not None:
+            options['resolution'] = self.controls['screen_size'].selected
 
     def arrange_buttons(self):
         self.update_controls()
