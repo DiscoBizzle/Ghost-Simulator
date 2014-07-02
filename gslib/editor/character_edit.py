@@ -1,3 +1,4 @@
+from __future__ import absolute_import, division, print_function
 __author__ = 'Martin'
 
 from gslib.ui import button, drop_down_list
@@ -149,7 +150,20 @@ class BasicEditor(object):
 
 
     def create_elements(self): # placeholder for auto-complete
-        pass
+        def main_label_down():
+            self.buttons['main_label'].on_drag = main_label_drag
+
+        def main_label_up():
+            self.buttons['main_label'].on_drag = None
+            self.pos = self.buttons['main_label'].pos[0], self.buttons['main_label'].pos[1] - self.vert_spacing
+
+        def main_label_drag(d):
+            p = self.buttons['main_label'].pos
+            self.buttons['main_label'].pos = p[0] + d[0], p[1] + d[1]
+
+        self.buttons['main_label'] = button.DefaultButton(self, None, text=self.toggle_button_text, order=(-1, 0))
+        self.buttons['main_label'].on_click_down = main_label_down
+        self.buttons['main_label'].on_click_up = main_label_up
 
 
     def get_buttons(self):
@@ -199,14 +213,15 @@ class CharacterTemplateEditor(BasicEditor):
         self.create_elements()
 
     def create_elements(self): # main buttons that are not character template-dependent
+        super(CharacterTemplateEditor, self).create_elements()
         bu = button.DefaultButton
         dl = drop_down_list.DropDownList
 
-        self.buttons['new_character'] = bu(self, self.new_character_template, text='New Character Template', order=(-2, 0))
-        self.buttons['pick_character'] = bu(self, self.pick_char_to_edit, text='Pick Character to Edit', order=(-2, 1))
-        self.buttons['copy_character'] = bu(self, self.copy_as_template, text='Copy as new Template', order=(-2, 2))
-        self.drop_lists['load_template'] = dl(self, self.char_template_list, self.load_character_template, order=(-2, 3))
-        self.buttons['save_template'] = bu(self, self.save_character_template, text="Save Character Template", order=(-2, 4))
+        self.buttons['new_character'] = bu(self, self.new_character_template, text='New Character Template', order=(0, 0))
+        self.buttons['pick_character'] = bu(self, self.pick_char_to_edit, text='Pick Character to Edit', order=(0, 1))
+        self.buttons['copy_character'] = bu(self, self.copy_as_template, text='Copy as new Template', order=(0, 2))
+        self.drop_lists['load_template'] = dl(self, self.char_template_list, self.load_character_template, order=(0, 3))
+        self.buttons['save_template'] = bu(self, self.save_character_template, text="Save Character Template", order=(0, 4))
 
         self.refresh_template_list()
         self.update_element_positions()
@@ -218,8 +233,8 @@ class CharacterTemplateEditor(BasicEditor):
         if self.char_to_edit is None:
             return
 
-        self.buttons['generic_properties_label'] = bu(self, None, text='Generic Properties', order=(-1, 0))
-        self.buttons['generic_properties_toggle_label'] = bu(self, None, text='Detailed Editors', order=(-1, 1))
+        self.buttons['generic_properties_label'] = bu(self, None, text='Generic Properties', order=(1, 0))
+        self.buttons['generic_properties_toggle_label'] = bu(self, None, text='Detailed Editors', order=(1, 1))
 
         def bool_flip(p):
             def func():
@@ -243,17 +258,17 @@ class CharacterTemplateEditor(BasicEditor):
         for i, p in enumerate(bool_properties):
             str_p = p.replace('_', ' ')
             str_p = str_p.title()
-            self.buttons[p] = bu(self, bool_flip(p), text=str_p, order=(i, 0)) # bool toggle of generic character abilities
+            self.buttons[p] = bu(self, bool_flip(p), text=str_p, order=(i+2, 0)) # bool toggle of generic character abilities
             self.buttons[p].flip_color_rg(getattr(self.char_to_edit, p)) # set button colour to reflect true/false
 
             if p in sub_editors_creators.keys():
-                sub_editors_creators[p]((i, 1))
+                sub_editors_creators[p]((i+2, 1))
 
 
-        self.buttons['rename_character'] = bu(self, self.rename_character_template, text='Rename: Default', order=(i + 2, 0))
-        self.buttons['inspecte_character'] = bu(self, self.inspect_character, text='Inspect Character', order=(i + 3, 0))
+        self.buttons['rename_character'] = bu(self, self.rename_character_template, text='Rename: Default', order=(i + 4, 0))
+        self.buttons['inspecte_character'] = bu(self, self.inspect_character, text='Inspect Character', order=(i + 5, 0))
 
-        self.create_collision_elements((2, 1))
+        self.create_collision_elements((4, 1))
 
         self.update_element_positions()
 
@@ -401,10 +416,11 @@ class CollisionEditor(BasicEditor):
         self.create_elements()
 
     def create_elements(self):
+        super(CollisionEditor, self).create_elements()
         bu = button.DefaultButton
         dl = drop_down_list.DropDownList
 
-        self.buttons['main_label'] = bu(self, None, text='Collision Editor', order=(-1, 0))
+        # self.buttons['main_label'] = bu(self, None, text='Collision Editor', order=(-1, 0))
 
         collision_weight = controls_basic.IntControl('Collision Weight', self.character, 'collision_weight')
         collision_weight.lower_bound = 0
@@ -429,10 +445,11 @@ class FearsEditor(BasicEditor):
 
 
     def create_elements(self):
+        super(FearsEditor, self).create_elements()
         bu = button.DefaultButton
         dl = drop_down_list.DropDownList
 
-        self.buttons['main_label'] = bu(self, None, text='Fears Editor', order=(-1, 0))
+        # self.buttons['main_label'] = bu(self, None, text='Fears Editor', order=(-1, 0))
 
         def toggle_fear(fear):
             def func():
@@ -471,10 +488,11 @@ class ScaredOfEditor(BasicEditor):
 
 
     def create_elements(self):
+        super(ScaredOfEditor, self).create_elements()
         bu = button.DefaultButton
         dl = drop_down_list.DropDownList
 
-        self.buttons['main_label'] = bu(self, None, text='Scared of Editor', order=(-1, 0))
+        # self.buttons['main_label'] = bu(self, None, text='Scared of Editor', order=(-1, 0))
 
         def toggle_fear(fear):
             def func():
@@ -508,10 +526,11 @@ class MoveSpeedEditor(BasicEditor):
         self.create_elements()
 
     def create_elements(self):
+        super(MoveSpeedEditor, self).create_elements()
         bu = button.DefaultButton
         dl = drop_down_list.DropDownList
 
-        self.buttons['main_label'] = bu(self, None, text='Move Speed Editor', order=(-1, 0))
+        # self.buttons['main_label'] = bu(self, None, text='Move Speed Editor', order=(-1, 0))
 
         normal = controls_basic.IntControl('Normal Speed', self.character, 'normal_speed')
         normal.lower_bound, normal.upper_bound = 0, 32
@@ -538,10 +557,11 @@ class AIEditor(BasicEditor):
         self.create_elements()
 
     def create_elements(self):
+        super(AIEditor, self).create_elements()
         bu = button.DefaultButton
         dl = drop_down_list.DropDownList
 
-        self.buttons['main_label'] = bu(self, None, text='AI Editor', order=(-1, 0))
+        # self.buttons['main_label'] = bu(self, None, text='AI Editor', order=(-1, 0))
 
         i = 0
         for module, func_dict in AI_functions.all_functions_dict.iteritems():
@@ -618,13 +638,14 @@ class AIFunctionEditor(BasicEditor):
 
 
     def create_elements(self):
+        super(AIFunctionEditor, self).create_elements()
         if self._func_class is None:
             return
 
         bu = button.DefaultButton
         dl = drop_down_list.DropDownList
 
-        self.buttons['main_label'] = bu(self, None, text='AI Function Editor', order=(-1, 0))
+        # self.buttons['main_label'] = bu(self, None, text='AI Function Editor', order=(-1, 0))
         self.buttons['main_label_name'] = bu(self, None, text=self.func_class.name, order=(-1, 1))
 
         if self.func_class.text_options:

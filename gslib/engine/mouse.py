@@ -21,6 +21,9 @@ class MouseController(object):
         self.position_capture_request = False
         self.position_capture_function = None
 
+        self.mouse_motion_capture_request = False
+        self.mouse_motion_capture_function = None
+
     def pick_object(self, func, return_object=False):
         """
             Pass in function to receive picked object_name as sole argument
@@ -105,6 +108,10 @@ class MouseController(object):
                 return
             if self.game.cursor:
                 self.game.cursor.coord = self.calc_cursor_coord(pos, 'move')
+
+            if self.mouse_motion_capture_request:
+                self.mouse_motion_capture_request = False
+                self.mouse_motion_capture_function(pos)
 
     def calc_cursor_coord(self, pos, typ, button=None):
         if self.game.key_controller.keys[self.game.key_controller.key_map['Snap to Grid']]:
