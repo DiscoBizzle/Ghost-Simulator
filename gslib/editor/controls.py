@@ -14,6 +14,8 @@ class Container(object):
         self.things = things
         self.x = 0
         self.y = 0
+        for t in self.get():
+            t.enabled = True
 
     @property
     def _unique_name(self):

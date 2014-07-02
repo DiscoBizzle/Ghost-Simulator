@@ -125,19 +125,19 @@ class BasicEditor(object):
             self.enabled = not self.enabled
         else:
             self.enabled = value
+
+        # set all controls to disabled so they cannot be interacted with
+        # TODO: need to account for controls that should be disabled when editor is open (currently this never occurs)
         for k, v in self.buttons.iteritems():
             if not k == self.toggle_button_name:
-                v.visible = self.enabled
                 v.enabled = self.enabled
 
         for v in self.drop_lists.itervalues():
-            v.visible = self.enabled
             v.enabled = self.enabled
 
         for l in self.layouts.itervalues():
             lay = l[0]
             for b in lay.get():
-                b.visible = self.enabled
                 b.enabled = self.enabled
 
         self.buttons[self.toggle_button_name].flip_color_rg(self.enabled)
@@ -164,10 +164,15 @@ class BasicEditor(object):
         self.buttons['main_label'] = button.DefaultButton(self, None, text=self.toggle_button_text, order=(-1, 0))
         self.buttons['main_label'].on_click_down = main_label_down
         self.buttons['main_label'].on_click_up = main_label_up
+        self.buttons['main_label'].enabled = True
 
 
     def get_buttons(self):
         edit_buttons_prefixed = {}
+        if not self.enabled: # only pass out the toggle button if not enabled
+            edit_buttons_prefixed[self.pre + self.toggle_button_name] = self.buttons[self.toggle_button_name]
+            return edit_buttons_prefixed
+
         for k, v in self.buttons.iteritems():
             edit_buttons_prefixed[self.pre + k] = v
 
@@ -184,6 +189,9 @@ class BasicEditor(object):
 
     def get_lists(self):
         edit_lists_prefixed = {}
+        if not self.enabled: # don't pass out lists is not enabled
+
+            return edit_lists_prefixed
         for k, v in self.drop_lists.iteritems():
             edit_lists_prefixed[self.pre + k] = v
 
@@ -222,6 +230,9 @@ class CharacterTemplateEditor(BasicEditor):
         self.buttons['copy_character'] = bu(self, self.copy_as_template, text='Copy as new Template', order=(0, 2))
         self.drop_lists['load_template'] = dl(self, self.char_template_list, self.load_character_template, order=(0, 3))
         self.buttons['save_template'] = bu(self, self.save_character_template, text="Save Character Template", order=(0, 4))
+        for b in self.buttons.itervalues():
+            b.enabled = True
+        self.drop_lists['load_template'].enabled = True
 
         self.refresh_template_list()
         self.update_element_positions()
@@ -260,13 +271,16 @@ class CharacterTemplateEditor(BasicEditor):
             str_p = str_p.title()
             self.buttons[p] = bu(self, bool_flip(p), text=str_p, order=(i+2, 0)) # bool toggle of generic character abilities
             self.buttons[p].flip_color_rg(getattr(self.char_to_edit, p)) # set button colour to reflect true/false
+            self.buttons[p].enabled = True
 
             if p in sub_editors_creators.keys():
                 sub_editors_creators[p]((i+2, 1))
 
 
         self.buttons['rename_character'] = bu(self, self.rename_character_template, text='Rename: Default', order=(i + 4, 0))
-        self.buttons['inspecte_character'] = bu(self, self.inspect_character, text='Inspect Character', order=(i + 5, 0))
+        self.buttons['rename_character'].enabled = True
+        self.buttons['inspect_character'] = bu(self, self.inspect_character, text='Inspect Character', order=(i + 5, 0))
+        self.buttons['inspect_character'].enabled = True
 
         self.create_collision_elements((4, 1))
 
@@ -420,8 +434,6 @@ class CollisionEditor(BasicEditor):
         bu = button.DefaultButton
         dl = drop_down_list.DropDownList
 
-        # self.buttons['main_label'] = bu(self, None, text='Collision Editor', order=(-1, 0))
-
         collision_weight = controls_basic.IntControl('Collision Weight', self.character, 'collision_weight')
         collision_weight.lower_bound = 0
 
@@ -449,7 +461,6 @@ class FearsEditor(BasicEditor):
         bu = button.DefaultButton
         dl = drop_down_list.DropDownList
 
-        # self.buttons['main_label'] = bu(self, None, text='Fears Editor', order=(-1, 0))
 
         def toggle_fear(fear):
             def func():
@@ -466,6 +477,7 @@ class FearsEditor(BasicEditor):
 
         for i, f in enumerate(self.possible_fears):
             self.buttons[f] = bu(self, toggle_fear(f), text=f.title(), order=(i // n_col, i % n_col))
+            self.buttons[f].enabled = True
             if f in self.character.fears:
                 self.buttons[f].flip_color_rg(True)
 
@@ -492,8 +504,6 @@ class ScaredOfEditor(BasicEditor):
         bu = button.DefaultButton
         dl = drop_down_list.DropDownList
 
-        # self.buttons['main_label'] = bu(self, None, text='Scared of Editor', order=(-1, 0))
-
         def toggle_fear(fear):
             def func():
                 if fear in self.character.scared_of:
@@ -509,6 +519,7 @@ class ScaredOfEditor(BasicEditor):
 
         for i, f in enumerate(self.possible_fears):
             self.buttons[f] = bu(self, toggle_fear(f), text=f.title(), order=(i // n_col, i % n_col))
+            self.buttons[f].enabled = True
             if f in self.character.scared_of:
                 self.buttons[f].flip_color_rg(True)
 
@@ -522,15 +533,12 @@ class MoveSpeedEditor(BasicEditor):
         self.pre = 'move_speed_'
         self.character = char
 
-
         self.create_elements()
 
     def create_elements(self):
         super(MoveSpeedEditor, self).create_elements()
         bu = button.DefaultButton
         dl = drop_down_list.DropDownList
-
-        # self.buttons['main_label'] = bu(self, None, text='Move Speed Editor', order=(-1, 0))
 
         normal = controls_basic.IntControl('Normal Speed', self.character, 'normal_speed')
         normal.lower_bound, normal.upper_bound = 0, 32
@@ -540,9 +548,7 @@ class MoveSpeedEditor(BasicEditor):
         self.layouts['normal'] = (normal, (0, 0), True)
         self.layouts['feared'] = (feared, (1, 0), True)
 
-
         self.update_element_positions()
-
 
 
 
@@ -561,18 +567,20 @@ class AIEditor(BasicEditor):
         bu = button.DefaultButton
         dl = drop_down_list.DropDownList
 
-        # self.buttons['main_label'] = bu(self, None, text='AI Editor', order=(-1, 0))
-
         i = 0
         for module, func_dict in AI_functions.all_functions_dict.iteritems():
             self.buttons[module + '_label'] = bu(self, None, text=module, order=(i, 0))
+            self.buttons[module + '_label'].enabled = True
 
             self.drop_lists[module + '_add'] = dl(self, func_dict, self.add_function(module), order=(i, 1))
+            self.drop_lists[module + '_add'].enabled = True
 
             self.drop_lists[module + '_select'] = dl(self, getattr(self.character, AI_functions.function_map[module]), self.select_function(module), order=(i, 2), labels='classname')
+            self.drop_lists[module + '_select'].enabled = True
 
             self.buttons[module + '_delete'] = bu(self, self.delete_function(module), text="Delete Selected", order=(i, 3))
-
+            self.buttons[module + '_delete'].visible = False
+            self.buttons[module + '_delete'].enabled = False
             i += 1
 
 
@@ -645,22 +653,31 @@ class AIFunctionEditor(BasicEditor):
         bu = button.DefaultButton
         dl = drop_down_list.DropDownList
 
-        # self.buttons['main_label'] = bu(self, None, text='AI Function Editor', order=(-1, 0))
         self.buttons['main_label_name'] = bu(self, None, text=self.func_class.name, order=(-1, 1))
 
         if self.func_class.text_options:
             self.buttons['text_options_label'] = bu(self, None, text="Text Options", order=(0, 0))
             self.drop_lists['text_options'] = dl(self, self.func_class.text_options, self.choose_text_option, order=(0, 1))
+            self.drop_lists['text_options'].enabled = True
             self.drop_lists['text_options_select'] = dl(self, self.func_class.active_text_options, self.select_text_option, order=(0, 2))
+            self.drop_lists['text_options_select'].enabled = True
             self.buttons['text_options_delete'] = bu(self, self.delete_text_option, text="Delete Selected", order=(0, 3))
+            self.buttons['text_options_delete'].visible = False
+            self.buttons['text_options_delete'].enabled = False
 
         if self.func_class.number_coordinates != 0:
             self.buttons['coordinates_label'] = bu(self, None, text="Coordinate Options", order=(1, 0))
 
             self.buttons['coordinates_add'] = bu(self, self.add_coordinate, text="Add Coordinate", order=(1, 1))
+            self.buttons['coordinates_add'].enabled = True
             self.drop_lists['coordinates_select'] = dl(self, self.func_class.coordinates, self.select_coordinate, order=(1, 2))
+            self.drop_lists['coordinates_select'].enabled = True
             self.buttons['coordinates_edit'] = bu(self, self.edit_coordinate, text="Edit Coordinate", order=(1, 3))
+            self.buttons['coordinates_edit'].enabled = True
             self.buttons['coordinates_delete'] = bu(self, self.delete_coordinate, text="Delete Coordinate", order=(1, 4))
+            self.buttons['coordinates_delete'].visible = False
+            self.buttons['coordinates_delete'].enabled = False
+
 
         self.update_element_positions()
 
