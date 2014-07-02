@@ -8,7 +8,7 @@ import json
 from gslib.engine import textures, text, sprite, primitives
 from gslib.game_objects.game_object import GameObject
 from gslib.constants import *
-from gslib.character_functions_dir import AI_functions
+from gslib.character_functions import AI_functions
 from pyglet import image
 
 
@@ -159,7 +159,7 @@ def save_this(obj):
 #         self.unpossessed_function - occurs when the character becomes unpossessed
 #         self.harvested_function - when the character has had its fear harvested (ooga booga'd)
 #
-#         Make these functions in character_functions_dir
+#         Make these functions in character_functions
 #          - Function should take in any parameters and return a function.
 #         """
 #         super(Character_old, self).__init__(game_class, x, y, w, h, **kwargs)
@@ -269,7 +269,7 @@ class Character(GameObject):
         self.unpossessed_function - occurs when the character becomes unpossessed
         self.harvested_function - when the character has had its fear harvested (ooga booga'd)
 
-        Make these functions in character_functions_dir
+        Make these functions in character_functions
          - Function should take in any parameters and return a function.
         """
         super(Character, self).__init__(game_class, x, y, w, h, **kwargs)
@@ -435,15 +435,6 @@ class Character(GameObject):
                     attr = getattr(self, func.function_type) # get the function list for this character
                     attr.append(func)
 
-                # func_list = json.loads(v)
-                # afd = character_functions.all_functions_dict
-                # attr = getattr(self, k)
-                # func_names = [a.__name__ for a in attr]
-                # for f in func_list:
-                #     if not 'trigger' in f and not 'perf_actions' in f:
-                #         if not f in func_names:
-                #             function_type = afd[function_type_map[k]]
-                #             attr.append(function_type[f](self))
             elif k != u'object_type':
                 if k == u'fears':
                     fears = json.loads(v)
@@ -454,6 +445,7 @@ class Character(GameObject):
 
         self._create_animations()
         self._update_animation()
+        print(self.__dict__)
 
 
 if __name__ == "__main__":

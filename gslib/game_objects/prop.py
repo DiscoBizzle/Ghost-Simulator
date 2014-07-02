@@ -8,7 +8,6 @@ import json
 from gslib.engine import textures, text, sprite, primitives
 from gslib.game_objects.game_object import GameObject
 from gslib.constants import *
-from gslib.game_objects import character_functions
 
 
 class Prop(GameObject):

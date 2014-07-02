@@ -4,7 +4,7 @@ from gslib.ui import button, drop_down_list
 from gslib.editor import controls, controls_basic
 from gslib.constants import *
 from gslib.game_objects import character
-from gslib.character_functions_dir import AI_functions
+from gslib.character_functions import AI_functions
 from gslib.ui import msg_box
 from gslib import window
 import json

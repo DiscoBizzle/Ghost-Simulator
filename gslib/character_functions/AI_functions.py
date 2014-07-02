@@ -1,8 +1,9 @@
+from __future__ import absolute_import, division, print_function
 __author__ = 'Martin'
 
 import inspect
 
-import become_possessed_functions, become_unpossessed_functions, idle_functions, \
+from gslib.character_functions import become_possessed_functions, become_unpossessed_functions, idle_functions, \
     has_touched_functions, has_untouched_functions, is_touched_functions, is_untouched_functions, \
     when_harvested_functions, when_scared_functions
 
@@ -21,7 +22,7 @@ for m in modules_list:
             if not "Function" in f.__name__:
                 funcs[f.__name__] = f
 
-    all_functions_dict[m.__name__[30:]] = funcs # cuts off "gslib.character_functions_dir." from module name
+    all_functions_dict[m.__name__[26:]] = funcs # cuts off "gslib.character_functions." from module name
 
     del funcs
 

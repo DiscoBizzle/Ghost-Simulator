@@ -1,5 +1,5 @@
 from __future__ import absolute_import, division, print_function
-from gslib.character_functions_dir.base_function import BaseFunction
+from gslib.character_functions.base_function import BaseFunction
 
 __author__ = 'Martin'
 
