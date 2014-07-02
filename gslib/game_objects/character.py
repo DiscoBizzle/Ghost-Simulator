@@ -294,7 +294,7 @@ class Character(GameObject):
 
         self._held_by = None
         self._collision_weight = self.collision_weight
-        self.held_offset = (0, 0) # offset from centre when held
+        self.held_offset = (8, 0) # offset from centre when held
         self.held_objects = [] # should not be edited directly - use .held_by on target object
 
 
@@ -306,7 +306,7 @@ class Character(GameObject):
                          'has_touched_function', 'is_touched_function', 'has_untouched_function', 'is_untouched_function',
                          'stats', 'fears', 'scared_of', 'feared_speed', 'normal_speed',
                          'states', 'coord', 'collision_weight', 'idle_functions', 'sprite_sheet_name', 'dimensions',
-                         'sprite_width', 'sprite_height'}
+                         'sprite_width', 'sprite_height', 'can_be_picked_up', 'can_pick_up'}
 
         self.possessor_gets_motion_control = True
         self.possessable = True
@@ -339,15 +339,15 @@ class Character(GameObject):
 
     @held_by.setter
     def held_by(self, obj):
-        if not self.can_be_picked_up or not obj.can_pick__up:
+        if not self.can_be_picked_up or not obj.can_pick_up:
             return
 
         if obj is None:
             self._held_by = None
             return
-        o_name = self.game_class.find_name_of_object(obj)
-        self._held_by = o_name
-        self.game_class.objects[o_name].held_objects.append(self)
+
+        self._held_by = obj
+        obj.held_objects.append(self)
 
 
     def update(self, dt):
@@ -364,6 +364,9 @@ class Character(GameObject):
             self.move_right = False
 
         GameObject.update(self, dt)
+
+        for o in self.held_objects:
+            o.coord = self.coord[0] + self.held_offset[0], self.coord[1] + self.held_offset[1]
 
     def update_idle_or_feared(self, dt):
         self.update_timer += 1
@@ -445,7 +448,6 @@ class Character(GameObject):
 
         self._create_animations()
         self._update_animation()
-        print(self.__dict__)
 
 
 if __name__ == "__main__":

@@ -251,10 +251,16 @@ class CharacterTemplateEditor(BasicEditor):
 
 
         self.buttons['rename_character'] = bu(self, self.rename_character_template, text='Rename: Default', order=(i + 2, 0))
+        self.buttons['inspecte_character'] = bu(self, self.inspect_character, text='Inspect Character', order=(i + 3, 0))
 
+        self.create_collision_elements((2, 1))
 
         self.update_element_positions()
 
+
+    def create_collision_elements(self, toggle_order):
+        # collision weight edit
+        self.sub_editors.append(CollisionEditor(self.game, self.char_to_edit, pos=self.sub_editors_pos, toggle_order=toggle_order))
 
     def create_can_scare_elements(self, toggle_order):
         # selection of what this char scares
@@ -282,7 +288,9 @@ class CharacterTemplateEditor(BasicEditor):
         self.sub_editors.append(AIEditor(self.game, self.char_to_edit, pos=self.sub_editors_pos, toggle_order=toggle_order))
 
 
-
+    def inspect_character(self):
+        if self.char_to_edit:
+            print(self.char_to_edit.__dict__)
 
     def new_character_template(self): # new default template to edit
         self.char_to_edit = character.Character(self.game, 0, 0, 32, 32)
@@ -380,6 +388,30 @@ class CharacterTemplateEditor(BasicEditor):
 
     def delete_character_state(self):
         pass
+
+
+class CollisionEditor(BasicEditor):
+    def __init__(self, game, char, pos, toggle_pos=(0, 0), toggle_order=None):
+        super(CollisionEditor, self).__init__(game, 'Collision Editor', pos=pos, toggle_pos=toggle_pos, toggle_order=toggle_order)
+
+        self.pre = 'collision_'
+        self.character = char
+
+
+        self.create_elements()
+
+    def create_elements(self):
+        bu = button.DefaultButton
+        dl = drop_down_list.DropDownList
+
+        self.buttons['main_label'] = bu(self, None, text='Collision Editor', order=(-1, 0))
+
+        collision_weight = controls_basic.IntControl('Collision Weight', self.character, 'collision_weight')
+        collision_weight.lower_bound = 0
+
+        self.layouts['collision_weight'] = (collision_weight, (0, 0), True)
+
+        self.update_element_positions()
 
 
 class FearsEditor(BasicEditor):

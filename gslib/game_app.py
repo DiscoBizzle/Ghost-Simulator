@@ -301,6 +301,7 @@ class Game(pyglet.event.EventDispatcher):
             if self.state == MAIN_GAME or self.state == EDITOR:
 
                 self.last_touching = self.touching[:]  # creates a copy
+                del self.touching[:] # clears list
 
                 if self.map.active_cutscene is not None and not self.map.active_cutscene.done:
                     self.map.active_cutscene.update()
