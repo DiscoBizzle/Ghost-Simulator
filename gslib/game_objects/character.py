@@ -8,7 +8,7 @@ import json
 from gslib.engine import textures, text, sprite, primitives
 from gslib.game_objects.game_object import GameObject
 from gslib.constants import *
-from gslib.character_functions import AI_functions
+from gslib.character_functions import ai_functions
 from pyglet import image
 
 
@@ -434,7 +434,7 @@ class Character(GameObject):
             if '_function' in k:
                 func_list = json.loads(v)
                 for module_name, function_name, function_dict in func_list:
-                    func = AI_functions.load_function(self, module_name, function_name, function_dict)
+                    func = ai_functions.load_function(self, module_name, function_name, function_dict)
                     attr = getattr(self, func.function_type) # get the function list for this character
                     attr.append(func)
 

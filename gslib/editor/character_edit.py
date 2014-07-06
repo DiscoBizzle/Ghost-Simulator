@@ -5,7 +5,7 @@ from gslib.ui import button, drop_down_list
 from gslib.editor import controls, controls_basic
 from gslib.constants import *
 from gslib.game_objects import character
-from gslib.character_functions import AI_functions
+from gslib.character_functions import ai_functions
 from gslib.ui import msg_box
 from gslib import window
 import json
@@ -568,14 +568,14 @@ class AIEditor(BasicEditor):
         dl = drop_down_list.DropDownList
 
         i = 0
-        for module, func_dict in AI_functions.all_functions_dict.iteritems():
+        for module, func_dict in ai_functions.all_functions_dict.iteritems():
             self.buttons[module + '_label'] = bu(self, None, text=module, order=(i, 0))
             self.buttons[module + '_label'].enabled = True
 
             self.drop_lists[module + '_add'] = dl(self, func_dict, self.add_function(module), order=(i, 1))
             self.drop_lists[module + '_add'].enabled = True
 
-            self.drop_lists[module + '_select'] = dl(self, getattr(self.character, AI_functions.function_map[module]), self.select_function(module), order=(i, 2), labels='classname')
+            self.drop_lists[module + '_select'] = dl(self, getattr(self.character, ai_functions.function_map[module]), self.select_function(module), order=(i, 2), labels='classname')
             self.drop_lists[module + '_select'].enabled = True
 
             self.buttons[module + '_delete'] = bu(self, self.delete_function(module), text="Delete Selected", order=(i, 3))
@@ -593,7 +593,7 @@ class AIEditor(BasicEditor):
         def func():
             s = self.drop_lists[module + '_add'].selected # the function chosen from drop list
             if s:
-                a = getattr(self.character, AI_functions.function_map[module]) # get the attribute for this class of AI functions
+                a = getattr(self.character, ai_functions.function_map[module]) # get the attribute for this class of AI functions
                 f = s(self.character) # the function to add, with the character as the target
                 if not f.name in [c.name for c in a]: # ensures functions are unique
                     a.append(f)
@@ -620,7 +620,7 @@ class AIEditor(BasicEditor):
         def func():
             s = self.drop_lists[module + '_select'].selected
             if s:
-                a = getattr(self.character, AI_functions.function_map[module])
+                a = getattr(self.character, ai_functions.function_map[module])
                 a.remove(s)
 
             self.drop_lists[module + '_select'].refresh()

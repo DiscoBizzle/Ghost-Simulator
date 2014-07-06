@@ -11,7 +11,7 @@ import random
 # Please make these only require game_class by default (for purposes of editor)
 from gslib.engine import sprite
 from gslib.game_objects import character
-from gslib.character_functions import AI_functions
+from gslib.character_functions import ai_functions
 
 
 class SmallDoor(Character):
