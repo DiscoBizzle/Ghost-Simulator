@@ -58,8 +58,8 @@ class Graphics(object):
         self.field.scale_x = width / self.field.image.width
         self.field.scale_y = height / self.field.image.height
 
-    def on_map_change(self, map):
-        self._draw_map(map)
+    def on_map_change(self, m):
+        self._draw_map(m)
 
     def main_game_draw(self):
 
@@ -72,7 +72,6 @@ class Graphics(object):
             self.draw_torch()
 
         self.draw_buttons()
-        self.draw_drop_lists()
         if self.game.state == EDITOR:
             self.draw_editor()
 
@@ -124,6 +123,7 @@ class Graphics(object):
                 self.game.world_objects_to_draw.append(layer_sprite)
 
     def draw_editor(self):
+        self.game.screen_objects_to_draw.append(self.game.editor)
         trig = self.game.editor.trigger_editor.drop_lists['triggers'].selected
         if not trig is None:
             zone = self.game.editor.trigger_editor.drop_lists['zones'].selected
@@ -137,18 +137,6 @@ class Graphics(object):
 
     def draw_buttons(self):
         self.game.screen_objects_to_draw.extend(self.game.game_buttons.values())
-        if self.game.state == EDITOR:
-            self.game.screen_objects_to_draw.extend(self.game.editor.get_buttons().values())
-
-    def draw_drop_lists(self):
-        if self.game.state == EDITOR:
-            for dl in self.game.editor.get_lists().itervalues():
-                self.game.screen_objects_to_draw.append(dl.main_button)
-            for dl in self.game.editor.get_lists().itervalues():
-                if dl.open:
-                    self.game.screen_objects_to_draw.extend(dl.drop_buttons)
-                    if isinstance(dl, drop_down_list.DropDownListSlider):
-                        self.game.screen_objects_to_draw.append(dl.slider)
 
     def draw_objects(self):
         for o in sorted(self.game.objects.values() + self.game.map.static_objects, key=(lambda obj: -obj.coord[1])):

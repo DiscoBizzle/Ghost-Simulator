@@ -9,7 +9,6 @@ from gslib import pathfinder
 from gslib import skills
 from gslib.editor.main_editor import Editor
 from gslib import save_load
-
 from gslib import walrus
 from gslib.engine import mouse, key, graphics, movie, sound, joy, camera
 from gslib.constants import *
@@ -88,7 +87,6 @@ class Game(pyglet.event.EventDispatcher):
         self.movie_player = movie.MoviePlayer()
         self.game_running = True
         self.graphics = graphics.Graphics(self)
-        window.set_caption("Ghost Simulator v. 0.000000001a")
 
         self.sound_handler = sound.Sound()
 
@@ -154,9 +152,8 @@ class Game(pyglet.event.EventDispatcher):
         self.cursor = None
         self.new_trigger_capture = False
 
-
         self.objects = {}
-        self.gather_buttons_and_drop_lists_and_objects()
+        self.gather_objects()
 
         self.highlighted_control = ""
 
@@ -187,33 +184,33 @@ class Game(pyglet.event.EventDispatcher):
         return self._state
 
     @state.setter
-    def state(self, state):
-        if state == self._state:
+    def state(self, value):
+        if value == self._state:
             return
         self.last_state = self._state
-        self._state = state
-        self.dispatch_event('on_state_change', state)
+        self._state = value
+        self.dispatch_event('on_state_change', value)
 
     @property
     def map(self):
         return self._map
 
     @map.setter
-    def map(self, map):
-        if map == self._map:
+    def map(self, value):
+        if value == self._map:
             return
-        self._map = map
-        self.dispatch_event('on_map_change', map)
+        self._map = value
+        self.dispatch_event('on_map_change', value)
 
     @property
     def zoom(self):
         return self._zoom
 
     @zoom.setter
-    def zoom(self, zoom):
-        if zoom < 0.1 or zoom == self._zoom:
+    def zoom(self, value):
+        if value < 0.1 or value == self._zoom:
             return
-        self._zoom = zoom
+        self._zoom = value
         self.update_camera()
 
     def on_state_change(self, state):
@@ -261,7 +258,6 @@ class Game(pyglet.event.EventDispatcher):
     def on_game_over_close(self):
         self.state = MAIN_MENU
 
-    # pyglet event
     def on_draw(self):
         self.draw_clock.tick()
 
@@ -274,15 +270,18 @@ class Game(pyglet.event.EventDispatcher):
         if options['walrus']:
             self.walrus.walruss()
 
-        self.fps_clock.draw()
-        self.ticks_clock_display.draw()
-        self.draw_clock_display.draw()
+        if options['show_fps']:
+            self.fps_clock.draw()
+            self.ticks_clock_display.draw()
+            self.draw_clock_display.draw()
 
     def on_resize(self, width, height):
         self.update_camera()
 
-    def gather_buttons_and_drop_lists_and_objects(self):
-        self.objects = dict(self.players.items() + self.map.objects.items())
+    def gather_objects(self):
+        self.objects = {}
+        self.objects.update(self.players)
+        self.objects.update(self.map.objects)
         if self.cursor:
             self.objects['cursor'] = self.cursor
 
@@ -416,7 +415,7 @@ class Game(pyglet.event.EventDispatcher):
     def go_to_map(self, m):
         if isinstance(m, maps.Map):
             _map = m
-        else: # accept map name/index
+        else:  # accept map name/index
             if m in self.map_dict.values():
                 _map = self.map_dict[m]
             else:
@@ -424,7 +423,7 @@ class Game(pyglet.event.EventDispatcher):
                 self.map_dict[m] = _map
 
         self.map = _map
-        self.gather_buttons_and_drop_lists_and_objects()
+        self.gather_objects()
         self.fears_dict = self.map.fears_dict
 
     def run_cutscene(self, c):
@@ -443,7 +442,8 @@ class Game(pyglet.event.EventDispatcher):
 
         return objs_within_range
 
-    def quit_game(self):
+    @staticmethod
+    def quit_game():
         window.dispatch_event('on_close')
 
 Game.register_event_type('on_state_change')

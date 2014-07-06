@@ -38,6 +38,7 @@ options = Options(DEFAULT_OPTIONS)
 options.load_options()
 
 window = GameWindow(width=options['resolution'][0], height=options['resolution'][1], resizable=True,
-                    vsync=options['vsync'], fullscreen=options['fullscreen'])
+                    vsync=options['vsync'], fullscreen=options['fullscreen'], caption=WINDOW_CAPTION)
+window.set_minimum_size(640, 480)
 
 game = class_proxy.Proxy()

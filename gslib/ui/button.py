@@ -206,7 +206,7 @@ class Button(Control, pyglet.event.EventDispatcher):
         self._text_layout.draw()
 
     def on_mouse_press(self, x, y, button, modifiers):
-        if self.enabled and button & mouse.LEFT and self.in_bounds(x, y):
+        if self.enabled and button == mouse.LEFT and self.in_bounds(x, y):
             self.dispatch_event('on_click_down')
             self.pressed = True
             if self._window is not None:
@@ -216,7 +216,7 @@ class Button(Control, pyglet.event.EventDispatcher):
             return pyglet.event.EVENT_HANDLED
 
     def on_mouse_release(self, x, y, button, modifiers):
-        if button & mouse.LEFT:
+        if button == mouse.LEFT:
             if self.enabled and self.in_bounds(x, y):
                 self.dispatch_event('on_click_up')
             self.pressed = False
@@ -232,9 +232,9 @@ class Button(Control, pyglet.event.EventDispatcher):
                                          on_mouse_leave=self.on_mouse_leave,
                                          on_mouse_drag=self.on_mouse_drag)
 
-    def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.pressed = self.in_bounds(x, y)
-        if self.pressed and self.enabled:
+        if self.enabled:
             self.dispatch_event('on_drag', (dx, dy))
 
     def create_handlers(self):

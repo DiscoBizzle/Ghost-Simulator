@@ -108,7 +108,7 @@ class Menu(object):
             control.size = self.button_size
             control.pos = (self.hori_offset + (control.order[1] + (control.order[0] // self.buttons_per_column) * 2) * (self.button_size[0] + 20),
                            window.height - (self.button_size[1] + self.vert_offset + (control.order[0] % self.buttons_per_column) * (self.button_size[1] + 10)))
-            if isinstance(control, button.Button):
+            if hasattr(control, 'font_size'):
                 control.font_size = self.font_size
 
     def set_menu_scale(self, value):
@@ -181,10 +181,6 @@ class OptionsMenuToggleCheckBox(MenuButton):
     def toggle_option(self):
         options[self.option_key] = not options[self.option_key]
 
-    def update(self):
-        self.text = self.create_text()
-        super(OptionsMenuToggleCheckBox, self).update()
-
     def create_handlers(self):
         options.push_handlers(self)
         super(OptionsMenuToggleCheckBox, self).create_handlers()
@@ -219,9 +215,9 @@ class OptionsMenu(Menu):
                                                         batch=self.batch)
 
         self.controls['sound_display'] = MenuLabel(order=(5, 0), batch=self.batch)
-        self.controls['sound'] = MenuSlider(order=(5, 1), function=self.set_sound, range=(0.0, 2.0), batch=self.batch)
+        self.controls['sound'] = MenuSlider(order=(5, 1), function=self.set_sound, range=(0.0, 1.0), batch=self.batch)
         self.controls['music_display'] = MenuLabel(order=(6, 0), batch=self.batch)
-        self.controls['music'] = MenuSlider(order=(6, 1), function=self.set_music, range=(0.0, 2.0), batch=self.batch)
+        self.controls['music'] = MenuSlider(order=(6, 1), function=self.set_music, range=(0.0, 1.0), batch=self.batch)
 
         self.controls['torch'] = OptionsMenuToggleCheckBox(order=(7, 0), option_key='torch', display_text=u'Torch',
                                                            batch=self.batch)
@@ -231,15 +227,17 @@ class OptionsMenu(Menu):
         self.controls['key_bind'] = MenuButton(order=(9, 0), function=self.keybind_toggle, text=u'Keybind Menu',
                                                batch=self.batch)
 
-        self.controls['load'] = MenuButton(order=(10, 0), function=options.load_options, text=u'Load Options',
+        self.controls['load'] = MenuButton(order=(11, 0), function=options.load_options, text=u'Load Options',
                                            batch=self.batch)
-        self.controls['save'] = MenuButton(order=(10, 1), function=options.save_options, text=u'Save Options',
+        self.controls['save'] = MenuButton(order=(11, 1), function=options.save_options, text=u'Save Options',
                                            batch=self.batch)
-        self.controls['reset'] = MenuButton(order=(11, 0), function=options.reset_options, text=u'Reset Options',
+        self.controls['reset'] = MenuButton(order=(12, 0), function=options.reset_options, text=u'Reset Options',
                                             batch=self.batch)
 
-        self.controls['walrus'] = OptionsMenuToggleCheckBox(order=(13, 0), option_key='walrus', display_text=u'WALRUS',
+        self.controls['walrus'] = OptionsMenuToggleCheckBox(order=(14, 0), option_key='walrus', display_text=u'WALRUS',
                                                             batch=self.batch)
+        self.controls['show_fps'] = OptionsMenuToggleCheckBox(order=(15, 0), option_key='show_fps',
+                                                              display_text=u'Show FPS', batch=self.batch)
 
     @staticmethod
     def vof_value(val):
@@ -260,10 +258,8 @@ class OptionsMenu(Menu):
         self.controls['VOF_opacity'].visible = options['VOF']
         self.controls['VOF_opacity'].value = options['VOF_opacity']
 
-        self.controls['sound_display'].text = \
-            u'Sound Volume: {}'.format(int(options['sound_volume'] / 0.003))
-        self.controls['music_display'].text = \
-            u'Music Volume: {}'.format(int(options['music_volume'] / 0.003))
+        self.controls['sound_display'].text = u'Sound Volume: {:.0%}'.format(options['sound_volume'])
+        self.controls['music_display'].text = u'Music Volume: {:.0%}'.format(options['music_volume'])
 
         self.controls['sound'].value = options['sound_volume']
         self.controls['music'].value = options['music_volume']

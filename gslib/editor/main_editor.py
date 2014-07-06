@@ -367,7 +367,7 @@ class Editor(object):
 
     def delete_selected_object(self):
         del self.game.map.objects[self.object_to_edit_name]
-        self.game.gather_buttons_and_drop_lists_and_objects()
+        self.game.gather_objects()
 
     def save_map(self):
         save_load.save_map(self.game.map)
@@ -401,7 +401,6 @@ class Editor(object):
         else:
             self.object_to_edit = None
 
-
     def update_object_prototype(self):
         if self.drop_lists['place_object'].selected:
             self.object_prototype = self.drop_lists['place_object'].selected(self.game)
@@ -409,10 +408,21 @@ class Editor(object):
         else:
             self.object_prototype = None
         self.game.cursor = self.object_prototype
-        self.game.gather_buttons_and_drop_lists_and_objects()
-
+        self.game.gather_objects()
 
     def update(self):
         self.cutscene_editor.update()
 
-
+    def draw(self):
+        buttons = self.get_buttons()
+        lists = self.get_lists()
+        for b in buttons.itervalues():
+            b.draw()
+        for dl in lists.itervalues():
+            dl.main_button.draw()
+        for dl in lists.itervalues():
+            if dl.open:
+                for b in dl.drop_buttons:
+                    b.draw()
+                if hasattr(dl, 'slider'):
+                    dl.slider.draw()

@@ -17,7 +17,7 @@ class CameraGroup(pyglet.graphics.Group):
         pyglet.gl.glPopMatrix()
 
     def __eq__(self, other):
-        return (isinstance(other, self.__class__) and
+        return (other.__class__ is self.__class__ and
                 other.parent == self.parent and
                 other.camera is self.camera)
 

@@ -13,7 +13,7 @@ __all__ = ['STARTUP', 'MAIN_MENU', 'MAIN_GAME', 'MOVIE', 'GAME_OVER', 'SKILLS_SC
            'MUSIC_DIR', 'SOUND_DIR', 'VIDEO_DIR', 'CHARACTERS_DIR', 'SPRITES_DIR', 'CREDITS_FILE', 'SKILLS_FILE',
            'KEYMAP_FILE', 'OPTIONS_FILE', 'SAVE_DIR', 'LEARNT_SKILL_COLOR', 'CAN_BE_LEARNT_COLOR', 'UNLEARNABLE_COLOR',
            'INITIAL_SOUND_VOLUME', 'INITIAL_MUSIC_VOLUME', 'FONT', 'DEFAULT_OPTIONS', 'DIALOGUE_DIR', 'MAPS_DIR',
-           'DATA_DIR', 'TICK_INTERVAL']
+           'DATA_DIR', 'TICK_INTERVAL', 'WINDOW_CAPTION']
 
 
 def fallback_files(target, required, *fnames):
@@ -109,6 +109,7 @@ INITIAL_MUSIC_VOLUME = 1.0
 FONT = ['Helvetica']
 
 DEFAULT_OPTIONS = {'FOV': True, 'VOF': False, 'torch': False, 'menu_scale': False, 'vsync': False,
-                   'sound_volume': INITIAL_SOUND_VOLUME, 'music_volume': INITIAL_MUSIC_VOLUME,
-                   'fullscreen': False, 'resolution': (GAME_WIDTH, GAME_HEIGHT), 'VOF_opacity': 128,
-                   'walrus': False}
+                   'sound_volume': INITIAL_SOUND_VOLUME, 'music_volume': INITIAL_MUSIC_VOLUME, 'fullscreen': False,
+                   'resolution': (GAME_WIDTH, GAME_HEIGHT), 'VOF_opacity': 128, 'walrus': False, 'show_fps': False}
+
+WINDOW_CAPTION = "Ghost Simulator v. 0.000000001a"

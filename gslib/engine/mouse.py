@@ -172,7 +172,7 @@ class MouseController(object):
             return
         x, y = self.calc_cursor_coord(pos, typ, button=button)
         # don't check outside of level area
-        if x < 0 or x >= LEVEL_WIDTH or y < 0 or y >= LEVEL_HEIGHT:
+        if not (0 <= x < LEVEL_WIDTH and 0 <= y < LEVEL_HEIGHT):
             return
         # if cursor exists, and is an object prototype, create new object
         if self.game.editor.object_prototype and self.game.cursor == self.game.editor.object_prototype:
@@ -189,7 +189,7 @@ class MouseController(object):
             ch.load_from_dict(dic)
 
             self.game.map.objects[name] = ch
-            self.game.gather_buttons_and_drop_lists_and_objects()
+            self.game.gather_objects()
             self.interaction_this_click = True
 
             self.game.editor.create_undo_state()

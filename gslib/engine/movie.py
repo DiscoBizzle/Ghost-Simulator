@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function
 import os.path
 
 import pyglet
+from pyglet.window import key, mouse
 
 from gslib import window
 from gslib.constants import *
@@ -42,6 +43,7 @@ class MoviePlayer(pyglet.event.EventDispatcher):
         if self._player is not None:
             self._player.pause()
             self._player.remove_handlers(on_eos=self.stop)
+            self._player.delete()
             self._player = None
         self._playing = False
         self.dispatch_event('on_movie_end')
@@ -57,15 +59,15 @@ class MoviePlayer(pyglet.event.EventDispatcher):
             self._player.get_texture().blit(0, 0, width=window.width, height=window.height)
 
     def on_key_press(self, symbol, modifiers):
-        if symbol == pyglet.window.key.ESCAPE:
+        if symbol == key.ESCAPE:
             self.stop()
             return pyglet.event.EVENT_HANDLED
-        elif symbol == pyglet.window.key.SPACE:
+        elif symbol == key.SPACE:
             self._toggle_pause()
             return pyglet.event.EVENT_HANDLED
 
     def on_mouse_press(self, x, y, button, modifiers):
-        if button == pyglet.window.mouse.LEFT:
+        if button == mouse.LEFT:
             self._toggle_pause()
             return pyglet.event.EVENT_HANDLED
 

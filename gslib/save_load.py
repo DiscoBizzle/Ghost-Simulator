@@ -155,7 +155,7 @@ def restore_save_state(game, m, state_dict):
     for o_name, o_dict in state_dict[u'objects'].iteritems():
         m.objects[o_name] = load_object(game, o_dict)
 
-    game.gather_buttons_and_drop_lists_and_objects()
+    game.gather_objects()
 
     for t_name, t_dict in state_dict[u'triggers'].iteritems():
         m.triggers[t_name] = load_trigger(game, t_dict)

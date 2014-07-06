@@ -64,7 +64,7 @@ class KeyController(object):
                     self.game.state = MAIN_GAME
                 else:
                     self.game.state = EDITOR
-                self.game.gather_buttons_and_drop_lists_and_objects()
+                self.game.gather_objects()
 
         for k, p in self.game.players.iteritems():
             p.move_down = self.keys[self.player_map[k[-1]]['down']]

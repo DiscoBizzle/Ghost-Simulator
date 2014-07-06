@@ -134,7 +134,7 @@ class Slider(control.Control, pyglet.event.EventDispatcher):
             return pyglet.event.EVENT_HANDLED
 
     def on_mouse_press(self, x, y, button, modifiers):
-        if button & mouse.LEFT and self.enabled and self.in_bounds(x, y):
+        if button == mouse.LEFT and self.enabled and self.in_bounds(x, y):
             if self._window is not None:
                 self._window.push_handlers(on_mouse_drag=self.on_mouse_drag,
                                            on_mouse_release=self.on_mouse_release,
@@ -143,7 +143,7 @@ class Slider(control.Control, pyglet.event.EventDispatcher):
             return pyglet.event.EVENT_HANDLED
 
     def on_mouse_release(self, x, y, button, modifiers):
-        if button & mouse.LEFT:
+        if button == mouse.LEFT:
             if self._window is not None:
                 self._window.remove_handlers(on_mouse_drag=self.on_mouse_drag,
                                              on_mouse_release=self.on_mouse_release,
