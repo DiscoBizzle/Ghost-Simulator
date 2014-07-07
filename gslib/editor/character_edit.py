@@ -150,20 +150,17 @@ class BasicEditor(object):
 
 
     def create_elements(self): # placeholder for auto-complete
-        def main_label_down():
-            self.buttons['main_label'].on_drag = main_label_drag
-
         def main_label_up():
-            self.buttons['main_label'].on_drag = None
-            self.pos = self.buttons['main_label'].pos[0], self.buttons['main_label'].pos[1] - self.vert_spacing
+            x, y = self.buttons['main_label'].pos
+            self.pos = (x, y - self.vert_spacing)
 
-        def main_label_drag(d):
-            p = self.buttons['main_label'].pos
-            self.buttons['main_label'].pos = p[0] + d[0], p[1] + d[1]
+        def main_label_drag(dx, dy):
+            x, y = self.buttons['main_label'].pos
+            self.buttons['main_label'].pos = x + dx, y + dy
 
         self.buttons['main_label'] = button.DefaultButton(self, None, text=self.toggle_button_text, order=(-1, 0))
-        self.buttons['main_label'].on_click_down = main_label_down
         self.buttons['main_label'].on_click_up = main_label_up
+        self.buttons['main_label'].on_drag = main_label_drag
         self.buttons['main_label'].enabled = True
 
 

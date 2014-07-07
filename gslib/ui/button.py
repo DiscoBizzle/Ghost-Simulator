@@ -59,6 +59,11 @@ class Button(Control, pyglet.event.EventDispatcher):
         self._text_layout = None
         self._vertex_list = self._create_vertex_list()
 
+        self._main_window_handlers = {'on_mouse_press': self.on_mouse_press}
+        self._extra_window_handlers = {'on_mouse_release': self.on_mouse_release,
+                                       'on_mouse_leave': self.on_mouse_leave,
+                                       'on_mouse_drag': self.on_mouse_drag}
+
         self._update()
 
     @property
@@ -206,47 +211,38 @@ class Button(Control, pyglet.event.EventDispatcher):
         self._text_layout.draw()
 
     def on_mouse_press(self, x, y, button, modifiers):
-        if self.enabled and button == mouse.LEFT and self.in_bounds(x, y):
+        if button == mouse.LEFT and self.in_bounds(x, y):
             self.dispatch_event('on_click_down')
             self.pressed = True
             if self._window is not None:
-                self._window.push_handlers(on_mouse_release=self.on_mouse_release,
-                                           on_mouse_leave=self.on_mouse_leave,
-                                           on_mouse_drag=self.on_mouse_drag)
+                self._window.push_handlers(**self._extra_window_handlers)
             return pyglet.event.EVENT_HANDLED
 
     def on_mouse_release(self, x, y, button, modifiers):
         if button == mouse.LEFT:
-            if self.enabled and self.in_bounds(x, y):
+            if self.in_bounds(x, y):
                 self.dispatch_event('on_click_up')
             self.pressed = False
             if self._window is not None:
-                self._window.remove_handlers(on_mouse_release=self.on_mouse_release,
-                                             on_mouse_leave=self.on_mouse_leave,
-                                             on_mouse_drag=self.on_mouse_drag)
+                self._window.remove_handlers(**self._extra_window_handlers)
 
     def on_mouse_leave(self, x, y):
         self.pressed = False
         if self._window is not None:
-            self._window.remove_handlers(on_mouse_release=self.on_mouse_release,
-                                         on_mouse_leave=self.on_mouse_leave,
-                                         on_mouse_drag=self.on_mouse_drag)
+            self._window.remove_handlers(**self._extra_window_handlers)
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.pressed = self.in_bounds(x, y)
-        if self.enabled:
-            self.dispatch_event('on_drag', (dx, dy))
+        self.dispatch_event('on_drag', dx, dy)
 
     def create_handlers(self):
         if self._window is not None:
-            self._window.push_handlers(on_mouse_press=self.on_mouse_press)
+            self._window.push_handlers(**self._main_window_handlers)
 
     def delete_handlers(self):
         if self._window is not None:
-            self._window.remove_handlers(on_mouse_press=self.on_mouse_press)
-            self._window.remove_handlers(on_mouse_release=self.on_mouse_release,
-                                         on_mouse_leave=self.on_mouse_leave,
-                                         on_mouse_drag=self.on_mouse_drag)
+            self._window.remove_handlers(**self._main_window_handlers)
+            self._window.remove_handlers(**self._extra_window_handlers)
 
     def __del__(self):
         self.delete()
